@@ -9,6 +9,11 @@ using Factories;
 using Models.Meta;
 using Models.Observations;
 using Models.Population;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Actuators;
+using Unity.VisualScripting;
+using UnityEngine;
 
 namespace Models.Agents
 {
@@ -16,7 +21,7 @@ namespace Models.Agents
 
 
 
-    public class PersonAgent : IPersonBase
+    public class PersonAgent : Agent, IPersonBase
     {
         private readonly PersonController _controller;
         private readonly PersonRewardController _rewardController;
@@ -40,7 +45,32 @@ namespace Models.Agents
         private PersonActionsBuyBaseProductPhase _baseBuyActions;
         private PersonActionsBuyLuxuryProductPhase _luxuryBuyActions;
         private readonly PersonObservations _observations;
+        
+        public bool maskActions = true;
+        public bool maskBaseBuyActions = false;
+        public bool maskLuxuryBuyActions = false;
+        public bool maskJobActions = false;
 
+        const int baseBuxMax = 0;
+        const int baseBuyLimitLow = 1;
+        const int baseBuyLimitHigh = 2;
+        const int baseBuyNothing = 3;
+        
+        const int luxBuxMax = 5;
+        const int luxBuyLimitLow = 6;
+        const int luxBuyLimitHigh = 7;
+        const int luxBuyNothing = 8;
+        
+        const int jobQuitOnly = 9;
+        const int jobTryChangeLowDesiredSalary = 10;
+        const int jobTryChangeHighDesiredSalary = 11;
+        const int jobTryGetNewLowDesiredSalary = 12;
+        const int jobTryGetNewAverageDesiredSalary = 13;
+        const int jobTryGetNewHighDesiredSalary = 14;
+        const int jobNoChange = 15;
+
+        const int doNothing = 16;
+        
         public PersonAgent(string parentAId, string parentBId, PersonObservations observations,
             PersonController controller, PersonRewardController rewardController)
         {
@@ -59,8 +89,163 @@ namespace Models.Agents
         public PersonAgent()
         {
         }
+        
+        public override void OnEpisodeBegin()
+        {
+            
+        }
+        
+        public override void CollectObservations(VectorSensor sensor)
+        {
+            sensor.AddObservation(_observations.Age);
+            sensor.AddObservation(_observations.LuxuryProducts);
+            sensor.AddObservation(_observations.OpenJobPositions);
+            sensor.AddObservation(_observations.UnsatisfiedBaseDemand);
+            sensor.AddObservation((float)_observations.Capital);
+            sensor.AddObservation((float)_observations.DesiredSalary);
+            sensor.AddObservation((float)_observations.MonthlyIncome);
+            sensor.AddObservation((float)_observations.MonthlyExpenses);
+            sensor.AddObservation((float)_observations.SatisfactionRate);
+            
+        }
+        
+        public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+        {
+            if (_observations.JobStatus is JobStatus.None or JobStatus.Retired || maskJobActions)
+            {
+                actionMask.SetActionEnabled(0, jobTryChangeHighDesiredSalary, false);
+                actionMask.SetActionEnabled(0, jobTryChangeLowDesiredSalary, false);
+                actionMask.SetActionEnabled(0, jobTryGetNewHighDesiredSalary, false);
+                actionMask.SetActionEnabled(0, jobTryGetNewLowDesiredSalary, false);
+                actionMask.SetActionEnabled(0, jobQuitOnly, false);
+                actionMask.SetActionEnabled(0, jobNoChange, false);
+            }
+            else if (_observations.JobStatus != JobStatus.Unemployed)
+            {
+                actionMask.SetActionEnabled(0, jobTryChangeHighDesiredSalary, false);
+                actionMask.SetActionEnabled(0, jobTryChangeLowDesiredSalary, false);
+                actionMask.SetActionEnabled(0, jobQuitOnly, false);
+            }
+            else if (_observations.JobStatus != JobStatus.Employed)
+            {
+                actionMask.SetActionEnabled(0, jobTryGetNewHighDesiredSalary, false);
+                actionMask.SetActionEnabled(0, jobTryGetNewLowDesiredSalary, false);
+            }
+            if (_observations.AgeStatus is not AgeStatus.RetiredAge or AgeStatus.WorkerAge || maskBaseBuyActions)
+            {
+                actionMask.SetActionEnabled(0, baseBuxMax, false);
+                actionMask.SetActionEnabled(0, baseBuyLimitHigh, false);
+                actionMask.SetActionEnabled(0, baseBuyLimitLow, false);
+                actionMask.SetActionEnabled(0, baseBuyNothing, false);
+            }
+            if (_observations.AgeStatus is not AgeStatus.RetiredAge or AgeStatus.WorkerAge || maskLuxuryBuyActions)
+            {
+                actionMask.SetActionEnabled(0, luxBuxMax, false);
+                actionMask.SetActionEnabled(0, luxBuyLimitHigh, false);
+                actionMask.SetActionEnabled(0, luxBuyLimitLow, false);
+                actionMask.SetActionEnabled(0, luxBuyNothing, false);
+            }
+            
+            
+        }
+        
+        public override void OnActionReceived(ActionBuffers actionBuffers)
+        {
+            var decision= actionBuffers.DiscreteActions[0];
 
-        public void Update(decimal avgIncome, TempPopulationUpdateModel tempPop, PopulationFactory factory,
+            switch (decision)
+            {
+                case baseBuxMax:
+                    _baseBuyActions.BuyExactAmountOfDemandedBaseResources();
+                    break;
+                case baseBuyLimitLow:
+                    _baseBuyActions.BuyDemandedBaseResourcesWithIncomeSpendingLimit();
+                    break;
+                case baseBuyLimitHigh:
+                    _baseBuyActions.BuyDemandedBaseResourcesWithCapitalSpendingLimit();
+                    break;
+                case baseBuyNothing:
+                    AddReward(-0.01F);
+                    break;
+                case luxBuxMax:
+                    _luxuryBuyActions.BuyExactAmountOfDemandedLuxuryProduct();
+                    break;
+                case luxBuyLimitLow:
+                    _luxuryBuyActions.BuyDemandedLuxuryProductWithIncomeSpendingLimit();
+                    break;
+                case luxBuyLimitHigh:
+                    _luxuryBuyActions.BuyDemandedBaseProductWithCapitalSpendingLimit();
+                    break;
+                case luxBuyNothing:
+                    AddReward(-0.01F);
+                    break;
+                case jobNoChange:
+                {
+                    if (_observations.JobStatus == JobStatus.Unemployed)
+                    {
+                        AddReward(-0.1F);
+                    }
+
+                    break;
+                }
+                case jobQuitOnly:
+                    _jobActions.QuitJobAndStayUnemployed();
+                    break;
+                case jobTryChangeHighDesiredSalary:
+                    _jobActions.SearchForNewJobFromEmployedWithHighIncreasedDemandedSalary();
+                    break;
+                case jobTryChangeLowDesiredSalary:
+                    _jobActions.SearchForNewJobFromEmployedWithSlightlyIncreasedDemandedSalary();
+                    break;
+                case jobTryGetNewHighDesiredSalary:
+                case jobTryGetNewAverageDesiredSalary:
+                    _jobActions.SearchForNewJobFromUnemployedWithAboveAverageDemandedSalary();
+                    break;
+                case jobTryGetNewLowDesiredSalary:
+                    _jobActions.SearchForNewJobFromUnemployedWithMinimumDemandedSalary();
+                    break;
+                case doNothing:
+                {
+                    if ((maskJobActions && maskBaseBuyActions && maskLuxuryBuyActions) == false)
+                    {
+                        AddReward(-0.1F);
+                    }
+
+                    break;
+                }
+            }
+            UpdateMasking(decision);
+        }
+
+        private void UpdateMasking(int decision)
+        {
+            switch (decision)
+            {
+                case <= baseBuyNothing:
+                    maskBaseBuyActions = true;
+                    break;
+                case <= luxBuyNothing:
+                    maskLuxuryBuyActions = true;
+                    break;
+                case <= jobNoChange:
+                    maskJobActions = true;
+                    break;
+            }
+
+            
+        }
+
+        public void ResetMasking()
+        {
+            if (maskJobActions && maskBaseBuyActions && maskLuxuryBuyActions)
+            {
+                maskJobActions = false;
+                maskBaseBuyActions = false;
+                maskLuxuryBuyActions = false;
+            }
+        }
+
+        public void YearlyAgentUpdate(decimal avgIncome, TempPopulationUpdateModel tempPop, PopulationFactory factory,
             PopulationPropabilityController probController)
         {
             _controller.Update(avgIncome, tempPop, factory, probController);

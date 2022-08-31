@@ -7,18 +7,15 @@ using Settings;
 
 namespace Controller.Actions
 {
-
-
-
     public class PersonActionsBuyLuxuryProductPhase : IPersonAction
     {
         private readonly PersonResourceDemandSettings _settings;
-        private readonly CountryEconomyMarketsModel _market;
+        private readonly ICountryEconomyMarketsModel _market;
         private readonly PersonObservations _observations;
         private readonly PersonRewardController _rewardController;
 
         public PersonActionsBuyLuxuryProductPhase(PersonResourceDemandSettings settings,
-            CountryEconomyMarketsModel market, PersonRewardController rewardController, PersonObservations observations)
+            ICountryEconomyMarketsModel market, PersonRewardController rewardController, PersonObservations observations)
         {
             _settings = settings;
             _market = market;
@@ -26,7 +23,7 @@ namespace Controller.Actions
             _observations = observations;
         }
 
-        public void BuyExactAmountOfDemandedLuxuryResources()
+        public void BuyExactAmountOfDemandedLuxuryProduct()
         {
             int demand = GetDemand();
             var request = new ProductRequestModel(ProductType.LuxuryProduct, ProductRequestSearchType.MaxAmount,
@@ -35,7 +32,7 @@ namespace Controller.Actions
             UpdateProperties(receipt, demand);
         }
 
-        public void BuyDemandedBaseResourcesWithIncomeSpendingLimit()
+        public void BuyDemandedLuxuryProductWithIncomeSpendingLimit()
         {
             int demand = GetDemand();
             decimal maxSpendable = _observations.MonthlyIncome;
@@ -52,7 +49,7 @@ namespace Controller.Actions
             UpdateProperties(receipt, demand);
         }
 
-        public void BuyDemandedBaseResourcesWithCapitalSpendingLimit()
+        public void BuyDemandedBaseProductWithCapitalSpendingLimit()
         {
             int demand = GetDemand();
             decimal maxSpendable = _observations.Capital;
@@ -80,7 +77,7 @@ namespace Controller.Actions
                 _market.ReportDemand(demandLeft, ProductType.BaseProduct);
             }
 
-            _observations.TotalLuxuryProducts += receipt.AmountBought;
+            _observations.LuxuryProducts += receipt.AmountBought;
         }
 
         private int GetDemand()

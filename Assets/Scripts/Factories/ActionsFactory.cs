@@ -15,10 +15,10 @@ namespace Factories
     {
         private readonly JobMarketController _jobMarketController;
         private readonly PopulationController _populationController;
-        private readonly CountryEconomyMarketsModel _market;
+        private readonly ICountryEconomyMarketsModel _market;
 
         public ActionsFactory(JobMarketController jobMarketController, PopulationController populationController,
-            CountryEconomyMarketsModel market)
+            ICountryEconomyMarketsModel market)
         {
             _jobMarketController = jobMarketController;
             _populationController = populationController;

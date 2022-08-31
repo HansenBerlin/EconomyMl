@@ -14,11 +14,11 @@ namespace Controller.Actions
     {
         private readonly PersonResourceDemandSettings _settings;
         private readonly PersonObservations _observations;
-        private readonly CountryEconomyMarketsModel _market;
+        private readonly ICountryEconomyMarketsModel _market;
         private readonly PersonRewardController _rewardController;
 
         public PersonActionsBuyBaseProductPhase(PersonResourceDemandSettings settings,
-            CountryEconomyMarketsModel market, PersonRewardController rewardController, PersonObservations observations)
+            ICountryEconomyMarketsModel market, PersonRewardController rewardController, PersonObservations observations)
         {
             _settings = settings;
             _market = market;

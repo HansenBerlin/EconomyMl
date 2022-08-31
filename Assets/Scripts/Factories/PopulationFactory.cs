@@ -17,19 +17,25 @@ namespace Factories
         private int ParentMinimumAge => _policies.AgeBoundaries.AdultMinAge;
         private AgeBoundaryPolicy AgePolicy => _policies.AgeBoundaries;
         private readonly PoliciesWrapper _policies;
-        private readonly PopulationPropabilityController _controller;
-        private readonly ActionsFactory _actionsFactory;
+        private readonly PopulationPropabilityController _propabilityController;
+        private readonly JobMarketController _jobMarketController;
+        private ActionsFactory _actionsFactory;
         private readonly List<int> _distributionOfAges;
 
 
-        public PopulationFactory(PoliciesWrapper policies, PopulationPropabilityController controller,
-            ActionsFactory actionsFactory)
+        public PopulationFactory(PoliciesWrapper policies, PopulationPropabilityController propabilityController, JobMarketController jobMarketController)
         {
             _policies = policies;
-            _controller = controller;
-            _actionsFactory = actionsFactory;
-            _distributionOfAges = controller.AgeDistribution;
+            _propabilityController = propabilityController;
+            _distributionOfAges = propabilityController.AgeDistribution;
+            _jobMarketController = jobMarketController;
 
+        }
+
+        public void SetupActions(ActionsFactory actionsFactory)
+        {
+            _actionsFactory = actionsFactory;
+            
         }
 
         private int FindMatchingGenerationBucketIndex(int age)
@@ -191,12 +197,12 @@ namespace Factories
 
         private PersonAgent CreateAdult(int age, string parentAId, string parentBId)
         {
-            var financialData = _controller.InitialIncomeAndCapital(age);
+            var financialData = _propabilityController.InitialIncomeAndCapital(age);
             decimal income = financialData[0];
             //Console.WriteLine(income);
             decimal capital = financialData[1];
 
-            var observations = new PersonObservations(age, income, capital, _policies);
+            var observations = new PersonObservations(age, income, capital, _policies, _jobMarketController);
             var personController = new PersonController(_policies, _actionsFactory);
             var rewardController = new PersonRewardController(observations);
             var person = new PersonAgent(parentAId, parentBId, observations, personController, rewardController);
@@ -205,7 +211,7 @@ namespace Factories
 
         public PersonAgent CreateChild(int age, string parentAId, string parentBId)
         {
-            var observations = new PersonObservations(age, 0, 0, _policies);
+            var observations = new PersonObservations(age, 0, 0, _policies, _jobMarketController);
             var personController = new PersonController(_policies, _actionsFactory);
             var rewardController = new PersonRewardController(observations);
             var person = new PersonAgent(parentAId, parentBId, observations, personController, rewardController);

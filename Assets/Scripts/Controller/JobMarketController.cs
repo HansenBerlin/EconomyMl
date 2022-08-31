@@ -18,6 +18,11 @@ namespace Controller
             _openJobPositions.AddRange(openJobPositions);
         }
 
+        public int OpenJobPositionsCount()
+        {
+            return _openJobPositions.Count;
+        }
+
         public void AdaptSalaryForLeftopenPositions(decimal newSalary, string companyId)
         {
             foreach (var j in _openJobPositions.Where(x => x.CompanyId == companyId))

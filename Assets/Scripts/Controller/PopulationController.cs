@@ -51,6 +51,7 @@ namespace Controller
                 //person.ActionBuyMonthlyStuff(countryEconomyMarkets);
                 //person.ActionRethinkJobSituation(_jobController);
                 //person.UpdateExpenses();
+                person.ResetMasking();
             }
         }
 
@@ -79,7 +80,7 @@ namespace Controller
                 int rn = StatisticalDistributionController.CreateRandom(0, range.Count);
                 int indexpick = range[rn];
                 var person = _populationModel.Population[indexpick];
-                person.Update(avgIncome, tempChanges, _factory, _propabilityController);
+                person.YearlyAgentUpdate(avgIncome, tempChanges, _factory, _propabilityController);
                 range.RemoveAt(rn);
             }
 
