@@ -1,9 +1,10 @@
-﻿using EconomyBase.Enums;
-using EconomyBase.Models.Population;
-using MathNet.Numerics;
-using ScottPlot.Statistics;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Enums;
+using Models.Population;
 
-namespace EconomyBase.Controller
+namespace Controller
 {
 
 
@@ -29,7 +30,7 @@ namespace EconomyBase.Controller
         {
             if (maxTotalPositions < openJobPositions.Count)
             {
-                throw new InvalidParameterException();
+                throw new Exception();
             }
 
             int countCurrent = _openJobPositions.Count(x => x.CompanyId == companyId);

@@ -1,13 +1,15 @@
-﻿using EconomyBase.Controller.Actions;
-using EconomyBase.Controller.Rewards;
-using EconomyBase.Enums;
-using EconomyBase.Factories;
-using EconomyBase.Models;
-using EconomyBase.Models.Observations;
-using EconomyBase.Models.Population;
-using EconomyBase.Settings;
+﻿using System;
+using System.Collections.Generic;
+using Controller.Actions;
+using Controller.Rewards;
+using Enums;
+using Factories;
+using Models.Meta;
+using Models.Observations;
+using Models.Population;
+using Settings;
 
-namespace EconomyBase.Controller
+namespace Controller
 {
 
 

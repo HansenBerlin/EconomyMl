@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using EconomyBase.Enums;
-using EconomyBase.Factories;
-using EconomyBase.Repositories;
+using Enums;
+using Factories;
+using Repositories;
 
-namespace EconomyBase.Controller
+namespace Controller
 {
 
 

@@ -1,4 +1,4 @@
-﻿namespace EconomyBase.Policies
+﻿namespace Policies
 {
 
 

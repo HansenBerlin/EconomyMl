@@ -1,8 +1,8 @@
-﻿using EconomyBase.Enums;
-using EconomyBase.Models.Business;
-using EconomyBase.Models.Population;
+﻿using System.Collections.Generic;
+using Enums;
+using Models.Population;
 
-namespace EconomyBase.Factories
+namespace Factories
 {
 
 

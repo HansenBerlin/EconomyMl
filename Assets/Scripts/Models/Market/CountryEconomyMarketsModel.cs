@@ -1,9 +1,12 @@
-﻿using EconomyBase.Controller;
-using EconomyBase.Enums;
-using EconomyBase.Models.Business;
-using EconomyBase.Models.Population;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Controller;
+using Enums;
+using Models.Business;
+using Models.Population;
 
-namespace EconomyBase.Models.Market
+namespace Models.Market
 {
 
 

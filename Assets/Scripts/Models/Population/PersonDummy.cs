@@ -1,6 +1,6 @@
-﻿using EconomyBase.Models.Agents;
+﻿using Models.Agents;
 
-namespace EconomyBase.Models.Population
+namespace Models.Population
 {
 
 

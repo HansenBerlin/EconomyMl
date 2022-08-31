@@ -1,4 +1,4 @@
-﻿namespace EconomyBase.Settings
+﻿namespace Settings
 {
 
 

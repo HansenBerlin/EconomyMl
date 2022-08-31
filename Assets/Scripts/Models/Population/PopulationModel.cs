@@ -1,8 +1,10 @@
-﻿using EconomyBase.Enums;
-using EconomyBase.Models.Meta;
-using EconomyBase.Repositories;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Enums;
+using Models.Meta;
+using Repositories;
 
-namespace EconomyBase.Models.Population
+namespace Models.Population
 {
 
 

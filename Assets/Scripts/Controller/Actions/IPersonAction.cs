@@ -1,4 +1,4 @@
-﻿namespace EconomyBase.Controller.Actions
+﻿namespace Controller.Actions
 {
 
 

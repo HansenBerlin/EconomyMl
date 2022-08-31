@@ -1,4 +1,6 @@
-﻿namespace EconomyBase.Controller
+﻿using System;
+
+namespace Controller
 {
 
 

@@ -1,7 +1,6 @@
-﻿using EconomyBase.Models.Observations;
-using EconomyBase.Models.Population;
+﻿using Models.Observations;
 
-namespace EconomyBase.Controller.Rewards
+namespace Controller.Rewards
 {
 
 

@@ -1,4 +1,6 @@
-﻿namespace EconomyBase.Models.Meta
+﻿using System;
+
+namespace Models.Meta
 {
 
 

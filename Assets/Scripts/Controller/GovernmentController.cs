@@ -1,7 +1,8 @@
-﻿using EconomyBase.Models.Meta;
-using EconomyBase.Models.Population;
+﻿using System.Linq;
+using Models.Meta;
+using Models.Population;
 
-namespace EconomyBase.Controller
+namespace Controller
 {
 
 

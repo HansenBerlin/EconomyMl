@@ -1,7 +1,6 @@
-﻿using EconomyBase.Enums;
-using EconomyBase.Models.Population;
+﻿using Enums;
 
-namespace EconomyBase.Models.Business
+namespace Models.Business
 {
 
 

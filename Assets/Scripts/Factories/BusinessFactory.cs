@@ -1,13 +1,13 @@
-﻿using EconomyBase.Controller;
-using EconomyBase.Enums;
-using EconomyBase.Models.Business;
-using EconomyBase.Models.Market;
-using EconomyBase.Models.Meta;
-using EconomyBase.Policies;
-using EconomyBase.Repositories;
-using EconomyBase.Settings;
+﻿using Controller;
+using Enums;
+using Models.Business;
+using Models.Market;
+using Models.Meta;
+using Policies;
+using Repositories;
+using Settings;
 
-namespace EconomyBase.Factories
+namespace Factories
 {
 
 

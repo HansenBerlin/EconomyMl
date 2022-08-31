@@ -1,15 +1,14 @@
-﻿using EconomyBase.Controller;
-using EconomyBase.Enums;
-using EconomyBase.Models.Market;
-using EconomyBase.Models.Meta;
-using EconomyBase.Models.Production;
-using EconomyBase.Repositories;
-using EconomyBase.Settings;
+﻿using System.Collections.Generic;
+using Controller;
+using Enums;
+using Models.Market;
+using Models.Meta;
+using Models.Production;
+using Repositories;
+using Settings;
 
-namespace EconomyBase.Factories
+namespace Factories
 {
-
-
 
     public static class ProductionFactory
     {

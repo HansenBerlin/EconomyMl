@@ -1,6 +1,6 @@
-﻿using EconomyBase.Models.Population;
+﻿using Models.Population;
 
-namespace EconomyBase.Controller
+namespace Controller
 {
 
 

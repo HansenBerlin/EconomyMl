@@ -1,8 +1,10 @@
-﻿using EconomyBase.Enums;
-using EconomyBase.Models.Population;
-using EconomyBase.Settings;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Enums;
+using Models.Population;
+using Settings;
 
-namespace EconomyBase.Models.Observations
+namespace Models.Observations
 {
 
 

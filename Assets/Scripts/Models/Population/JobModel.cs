@@ -1,6 +1,8 @@
-﻿using EconomyBase.Enums;
+﻿using System;
+using System.Collections.Generic;
+using Enums;
 
-namespace EconomyBase.Models.Population
+namespace Models.Population
 {
 
 

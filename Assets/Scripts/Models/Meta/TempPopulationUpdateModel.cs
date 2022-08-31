@@ -1,6 +1,7 @@
-﻿using EconomyBase.Models.Population;
+﻿using System.Collections.Generic;
+using Models.Population;
 
-namespace EconomyBase.Models
+namespace Models.Meta
 {
 
 

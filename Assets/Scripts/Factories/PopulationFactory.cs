@@ -1,11 +1,13 @@
-﻿using EconomyBase.Controller;
-using EconomyBase.Controller.Rewards;
-using EconomyBase.Models.Agents;
-using EconomyBase.Models.Observations;
-using EconomyBase.Models.Population;
-using EconomyBase.Settings;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Controller;
+using Controller.Rewards;
+using Models.Agents;
+using Models.Observations;
+using Models.Population;
+using Settings;
 
-namespace EconomyBase.Factories
+namespace Factories
 {
 
 

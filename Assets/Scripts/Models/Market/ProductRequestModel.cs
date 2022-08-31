@@ -1,6 +1,6 @@
-﻿using EconomyBase.Enums;
+﻿using Enums;
 
-namespace EconomyBase.Models.Market
+namespace Models.Market
 {
 
 

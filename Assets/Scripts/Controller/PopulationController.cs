@@ -1,11 +1,12 @@
-﻿using EconomyBase.Enums;
-using EconomyBase.Factories;
-using EconomyBase.Models;
-using EconomyBase.Models.Market;
-using EconomyBase.Models.Meta;
-using EconomyBase.Models.Population;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Enums;
+using Factories;
+using Models.Market;
+using Models.Meta;
+using Models.Population;
 
-namespace EconomyBase.Controller
+namespace Controller
 {
 
 
@@ -37,7 +38,7 @@ namespace EconomyBase.Controller
 
             foreach (var person in _populationModel.AgeRangeAdult.OrderBy(_ => rng.Next()))
             {
-                person.ActionBuyDailyStuff(countryEconomyMarkets, dayOfMonth);
+                //person.ActionBuyDailyStuff(countryEconomyMarkets, dayOfMonth);
             }
         }
 
@@ -47,9 +48,9 @@ namespace EconomyBase.Controller
 
             foreach (var person in _populationModel.AgeRangeAdult.OrderBy(_ => rng.Next()))
             {
-                person.ActionBuyMonthlyStuff(countryEconomyMarkets);
-                person.ActionRethinkJobSituation(_jobController);
-                person.UpdateExpenses();
+                //person.ActionBuyMonthlyStuff(countryEconomyMarkets);
+                //person.ActionRethinkJobSituation(_jobController);
+                //person.UpdateExpenses();
             }
         }
 

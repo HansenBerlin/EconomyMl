@@ -1,4 +1,6 @@
-﻿namespace EconomyBase.Models.Population
+﻿using System.Collections.Generic;
+
+namespace Models.Population
 {
 
 

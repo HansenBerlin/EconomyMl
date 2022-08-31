@@ -1,11 +1,10 @@
-﻿using EconomyBase.Controller;
-using EconomyBase.Controller.Actions;
-using EconomyBase.Enums;
-using EconomyBase.Factories;
-using EconomyBase.Models.Market;
-using EconomyBase.Models.Observations;
+﻿using System.Collections.Generic;
+using Controller;
+using Enums;
+using Factories;
+using Models.Meta;
 
-namespace EconomyBase.Models.Population
+namespace Models.Population
 {
     public interface IPersonBase
     {

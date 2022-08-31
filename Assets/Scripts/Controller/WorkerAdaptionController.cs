@@ -1,4 +1,4 @@
-﻿namespace EconomyBase.Controller
+﻿namespace Controller
 {
 
 

@@ -1,9 +1,14 @@
-﻿using EconomyBase.Enums;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Enums;
 using ScottPlot;
 using ScottPlot.Statistics;
-using ScottPlot.Styles;
+using UnityEngine.UIElements;
+using Common = Unity.Burst.Intrinsics.Common;
+using Tools = UnityEditor.Tools;
 
-namespace EconomyBase.Factories
+namespace Factories
 {
 
 
@@ -11,7 +16,7 @@ namespace EconomyBase.Factories
     public static class ChartFactory
     {
         private const string Path = @"C:\Users\Hannes\source\repos\HWR\Studienarbeit\stats\";
-        private static readonly IStyle Style = ScottPlot.Style.Default;
+        private static readonly ScottPlot.Styles.IStyle Style = ScottPlot.Style.Default;
 
         private static string BuildPath(ChartType type, string title)
         {
@@ -59,7 +64,7 @@ namespace EconomyBase.Factories
                 var values = valueSets[i].ToArray();
                 if (isLogScale)
                 {
-                    values = Tools.Log10(values);
+                    values = ScottPlot.Tools.Log10(values);
                 }
 
                 if (hasLabels)
@@ -107,7 +112,7 @@ namespace EconomyBase.Factories
                 var values = valueSets[i].ToArray();
                 if (isLogScale)
                 {
-                    values = Tools.Log10(values);
+                    values = ScottPlot.Tools.Log10(values);
                 }
 
                 if (hasLabels)
@@ -142,7 +147,7 @@ namespace EconomyBase.Factories
             var plt = new Plot(600, 400);
             int min = (int) values.Min();
             int max = (int) values.Max();
-            (double[] counts, double[] binEdges) = Common.Histogram(values.ToArray(), min, max, 1);
+            (double[] counts, double[] binEdges) = ScottPlot.Statistics.Common.Histogram(values.ToArray(), min, max, 1);
             double[] leftEdges = binEdges.Take(binEdges.Length - 1).ToArray();
             var bar = plt.AddBar(counts, leftEdges);
             var barWidth = (values.Max() - values.Min()) / values.Count;

@@ -1,12 +1,12 @@
-﻿using EconomyBase.Controller;
-using EconomyBase.Controller.Actions;
-using EconomyBase.Controller.Rewards;
-using EconomyBase.Enums;
-using EconomyBase.Models.Market;
-using EconomyBase.Models.Observations;
-using EconomyBase.Settings;
+﻿using Controller;
+using Controller.Actions;
+using Controller.Rewards;
+using Enums;
+using Models.Market;
+using Models.Observations;
+using Settings;
 
-namespace EconomyBase.Factories
+namespace Factories
 {
 
 

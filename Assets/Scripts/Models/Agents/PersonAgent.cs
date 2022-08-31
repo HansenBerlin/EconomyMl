@@ -1,14 +1,16 @@
-﻿using EconomyBase.Controller;
-using EconomyBase.Controller.Actions;
-using EconomyBase.Controller.Rewards;
-using EconomyBase.Enums;
-using EconomyBase.Factories;
-using EconomyBase.Models.Market;
-using EconomyBase.Models.Observations;
-using EconomyBase.Models.Population;
-using EconomyBase.Settings;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Controller;
+using Controller.Actions;
+using Controller.Rewards;
+using Enums;
+using Factories;
+using Models.Meta;
+using Models.Observations;
+using Models.Population;
 
-namespace EconomyBase.Models.Agents
+namespace Models.Agents
 {
 
 
@@ -19,7 +21,7 @@ namespace EconomyBase.Models.Agents
         private readonly PersonController _controller;
         private readonly PersonRewardController _rewardController;
 
-        public bool IsDummy { get; protected init; }
+        public bool IsDummy { get; protected set; }
         public string Id { get; } = Guid.NewGuid().ToString();
         private string _parentAId;
         private string _parentBId;

@@ -1,9 +1,11 @@
-﻿using EconomyBase.Controller;
-using EconomyBase.Enums;
-using EconomyBase.Models.Meta;
-using EconomyBase.Repositories;
+﻿using System;
+using System.Collections.Generic;
+using Controller;
+using Enums;
+using Models.Meta;
+using Repositories;
 
-namespace EconomyBase.Models.Production
+namespace Models.Production
 {
 
 

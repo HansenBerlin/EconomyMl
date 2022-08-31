@@ -1,6 +1,7 @@
-﻿using EconomyBase.Controller;
+﻿using System;
+using Controller;
 
-namespace EconomyBase.Exceptions
+namespace Exceptions
 {
 
 

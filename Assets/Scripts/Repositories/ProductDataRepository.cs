@@ -1,4 +1,7 @@
-﻿namespace EconomyBase.Repositories
+﻿using System;
+using System.Collections.Generic;
+
+namespace Repositories
 {
 
 

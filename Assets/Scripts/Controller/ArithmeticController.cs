@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EconomyBase.Controller
+namespace Controller
 {
     public static class ArithmeticController
     {

@@ -1,6 +1,7 @@
-﻿using EconomyBase.Enums;
+﻿using System.Collections.Generic;
+using Enums;
 
-namespace EconomyBase.Controller
+namespace Controller
 {
 
 

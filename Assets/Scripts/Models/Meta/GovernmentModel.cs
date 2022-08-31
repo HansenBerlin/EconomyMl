@@ -1,7 +1,7 @@
-﻿using EconomyBase.Repositories;
-using EconomyBase.Settings;
+﻿using Repositories;
+using Settings;
 
-namespace EconomyBase.Models.Meta
+namespace Models.Meta
 {
 
 

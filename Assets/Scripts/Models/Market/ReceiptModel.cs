@@ -1,4 +1,4 @@
-﻿namespace EconomyBase.Models.Market
+﻿namespace Models.Market
 {
 
 

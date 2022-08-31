@@ -1,11 +1,8 @@
-﻿using EconomyBase.Controller.Rewards;
-using EconomyBase.Enums;
-using EconomyBase.Models.Agents;
-using EconomyBase.Models.Market;
-using EconomyBase.Models.Observations;
-using EconomyBase.Settings;
+﻿using Controller.Rewards;
+using Enums;
+using Models.Observations;
 
-namespace EconomyBase.Controller.Actions
+namespace Controller.Actions
 {
 
 
