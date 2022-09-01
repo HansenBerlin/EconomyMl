@@ -13,18 +13,20 @@ namespace Factories
 
 
 
-    public class PopulationFactory
+    public class PopulationFactory : MonoBehaviour
     {
         private int ParentMinimumAge => _policies.AgeBoundaries.AdultMinAge;
         private AgeBoundaryPolicy AgePolicy => _policies.AgeBoundaries;
-        private readonly PoliciesWrapper _policies;
-        private readonly PopulationPropabilityController _propabilityController;
-        private readonly JobMarketController _jobMarketController;
+        private PoliciesWrapper _policies;
+        private PopulationPropabilityController _propabilityController;
+        private JobMarketController _jobMarketController;
         private ActionsFactory _actionsFactory;
-        private readonly List<int> _distributionOfAges;
+        private List<int> _distributionOfAges;
+        public GameObject myPrefab;
 
 
-        public PopulationFactory(PoliciesWrapper policies, PopulationPropabilityController propabilityController, JobMarketController jobMarketController)
+
+        public void Init(PoliciesWrapper policies, PopulationPropabilityController propabilityController, JobMarketController jobMarketController)
         {
             _policies = policies;
             _propabilityController = propabilityController;
@@ -206,8 +208,8 @@ namespace Factories
             var observations = new PersonObservations(age, income, capital, _policies, _jobMarketController);
             var personController = new PersonController(_policies, _actionsFactory);
             var rewardController = new PersonRewardController(observations);
-            var gameObject = new GameObject();
-            var person = gameObject.AddComponent<PersonAgent>();
+            var go = Instantiate(myPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            PersonAgent person = go.GetComponent<PersonAgent>();
             person.Init(parentAId, parentBId, observations, personController, rewardController);
             return person;
         }
@@ -217,8 +219,8 @@ namespace Factories
             var observations = new PersonObservations(age, 0, 0, _policies, _jobMarketController);
             var personController = new PersonController(_policies, _actionsFactory);
             var rewardController = new PersonRewardController(observations);
-            var gameObject = new GameObject();
-            var person = gameObject.AddComponent<PersonAgent>();
+            var go = Instantiate(myPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            PersonAgent person = go.GetComponent<PersonAgent>();
             person.Init(parentAId, parentBId, observations, personController, rewardController);
             return person;
         }

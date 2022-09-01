@@ -22,6 +22,7 @@ namespace Controller
         public int Month { get; set; }
         private EnvironmentModel envSettings;
         public GameObject environment;
+        public GameObject popFactory;
         public GovernmentController governmentController;
         public PopulationController populationController;
         public ICountryEconomyMarketsModel countryEconomyMarket;
@@ -36,10 +37,10 @@ namespace Controller
 
         public void Update()
         {
-            if (Month > 120)
+            if (Month > 12000)
             {
-                Setup();
-                Month = 0;
+                //Setup();
+                //Month = 0;
                 return;
             }
             UpdateBusinesses();
@@ -121,6 +122,11 @@ namespace Controller
                 governmentController.PayoutUnemployed();
                 governmentController.PayoutRetired();
 
+                if (Month % 12 == 0)
+                {
+                    populationController.YearlyUpdatePopulation();
+                }
+
                 foreach (var business in businesses.OrderBy(_ => rng.Next()))
                 {
                     business.Reset(envSettings.Month);
@@ -133,8 +139,7 @@ namespace Controller
         public void Setup()
         {
             int simulateYears = 1;
-            int initPopulation = 1000;
-            int iterations = simulateYears * 12;
+            int initPopulation = 10;
 
 
             var ageBoundaryPolicies = new AgeBoundaryPolicy(18, 67);
@@ -161,7 +166,8 @@ namespace Controller
             var populationModel = new PopulationModel(population, populationData, envSettings);
             var government = new GovernmentModel(federalPolicies, govData);
             governmentController = new GovernmentController(government, populationModel);
-            var newRef = new PopulationFactory(policyWrapper, populationPropabilityController, workerController);
+            var newRef = popFactory.GetComponent<PopulationFactory>();
+            newRef.Init(policyWrapper, populationPropabilityController, workerController);
             populationController = new PopulationController(envSettings, populationModel, workerController, newRef,
                 populationPropabilityController);
             countryEconomyMarket =

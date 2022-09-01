@@ -80,6 +80,7 @@ namespace Models.Agents
             var parameters = gameObject.GetComponent<BehaviorParameters>();
             parameters.BehaviorName = "Economy";
             _observations = observations;
+            _observations.InitChildren(Children);
             _controller = controller;
             _rewardController = rewardController;
             _controller.Setup(this, _observations, _rewardController);
@@ -135,15 +136,16 @@ namespace Models.Agents
             {
                 actionMask.SetActionEnabled(0, jobTryGetNewHighDesiredSalary, false);
                 actionMask.SetActionEnabled(0, jobTryGetNewLowDesiredSalary, false);
+                actionMask.SetActionEnabled(0, jobTryGetNewAverageDesiredSalary, false);
             }
-            if (_observations.AgeStatus is not AgeStatus.RetiredAge or AgeStatus.WorkerAge || maskBaseBuyActions)
+            if ((_observations.AgeStatus != AgeStatus.RetiredAge && _observations.AgeStatus != AgeStatus.WorkerAge) || maskBaseBuyActions)
             {
                 actionMask.SetActionEnabled(0, baseBuxMax, false);
                 actionMask.SetActionEnabled(0, baseBuyLimitHigh, false);
                 actionMask.SetActionEnabled(0, baseBuyLimitLow, false);
                 actionMask.SetActionEnabled(0, baseBuyNothing, false);
             }
-            if (_observations.AgeStatus is not AgeStatus.RetiredAge or AgeStatus.WorkerAge || maskLuxuryBuyActions)
+            if ((_observations.AgeStatus != AgeStatus.RetiredAge && _observations.AgeStatus != AgeStatus.WorkerAge) || maskLuxuryBuyActions)
             {
                 actionMask.SetActionEnabled(0, luxBuxMax, false);
                 actionMask.SetActionEnabled(0, luxBuyLimitHigh, false);
@@ -237,7 +239,7 @@ namespace Models.Agents
                     break;
             }
         }
-        
+
         private void UpdateReward(int decision)
         {
             switch (decision)
@@ -257,7 +259,10 @@ namespace Models.Agents
         public void ResetMasking(int month)
         {
             Month = month;
-            AddReward(_controller.GetCombinedReward());
+            _observations.JobReward = 0;
+            _observations.BaseBuyReward = 0;
+            _observations.LuxuryBuyReward = 0;
+            _observations.CapitalReward = 0;
             _observations.MonthlyExpenses = 0;
             if (maskJobActions && maskBaseBuyActions && maskLuxuryBuyActions)
             {
@@ -267,10 +272,11 @@ namespace Models.Agents
             }
         }
 
-        public void YearlyAgentUpdate(decimal avgIncome, TempPopulationUpdateModel tempPop, PopulationFactory factory,
-            PopulationPropabilityController probController)
+        public void YearlyAgentUpdate(decimal avgIncome, TempPopulationUpdateModel tempPop, PopulationFactory factory, PopulationPropabilityController probController)
         {
+            AddReward(_controller.GetCombinedReward());
             _controller.Update(avgIncome, tempPop, factory, probController);
+            EndEpisode();
         }
 
         public void UpdateCapital(decimal amount)
