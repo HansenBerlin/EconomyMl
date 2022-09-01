@@ -8,13 +8,14 @@ using Models.Meta;
 using Models.Observations;
 using Models.Population;
 using Settings;
+using UnityEngine;
 
 namespace Controller
 {
 
 
 
-    public class PersonController
+    public class PersonController : MonoBehaviour
     {
         private readonly PoliciesWrapper _policies;
         private IPersonBase _person;
@@ -42,9 +43,9 @@ namespace Controller
         {
             return new List<IPersonAction>
             {
-                _factory.Create(PersonActionType.JobDecision, this, _observations, _rewardController),
-                _factory.Create(PersonActionType.BaseProductBuy, this, _observations, _rewardController),
-                _factory.Create(PersonActionType.LuxuryProductBuy, this, _observations, _rewardController)
+                _factory.Create(PersonActionType.JobDecision),
+                _factory.Create(PersonActionType.BaseProductBuy),
+                _factory.Create(PersonActionType.LuxuryProductBuy)
             };
         }
 
@@ -68,10 +69,10 @@ namespace Controller
 
         private decimal ReducedIncome(decimal calculationBase)
         {
-            var policy = _policies.WorkerPolicies;
-            decimal reducedIncome = calculationBase * policy.UnemployedSupportRate;
-            decimal income = reducedIncome > policy.UnemployedSupportMax ? policy.UnemployedSupportMax : reducedIncome;
-            income = income < policy.UnemployedSupportMin ? policy.UnemployedSupportMin : income;
+            var policy = _policies.federalUnemployedPaymentPolicies;
+            decimal reducedIncome = calculationBase * (decimal)policy.UnemployedSupportRate;
+            decimal income = reducedIncome > (decimal)policy.UnemployedSupportMax ? (decimal)policy.UnemployedSupportMax : reducedIncome;
+            income = income < (decimal)policy.UnemployedSupportMin ? (decimal)policy.UnemployedSupportMin : income;
             return income;
         }
 
@@ -79,7 +80,8 @@ namespace Controller
         {
             var age = _observations.Age;
             var agesPolicy = _policies.AgeBoundaries;
-            (int schoolAge, int minYearsInSchool, _) = _policies.EducationBoundaries;
+            int schoolAge = _policies.EducationBoundaries.AgeToStartSchool;
+            int minYearsInSchool = _policies.EducationBoundaries.MinYearsInSchool;
             if (age < schoolAge)
                 return JobStatus.None;
             if (age >= schoolAge && age < schoolAge + minYearsInSchool)
@@ -177,7 +179,7 @@ namespace Controller
 
         }
 
-        public void Update(decimal avgIncome, TempPopulationUpdateModel tempPop, PopulationFactory factory,
+        public void UpdateAgent(decimal avgIncome, TempPopulationUpdateModel tempPop, PopulationFactory factory,
             PopulationPropabilityController probController)
         {
             _observations.Age++;
@@ -251,7 +253,7 @@ namespace Controller
         {
             _observations.DesiredSalary = avgIncome * 0.7M;
             _observations.JobStatus = JobStatus.Unemployed;
-            _observations.MonthlyIncome = _policies.WorkerPolicies.UnemployedSupportMin;
+            _observations.MonthlyIncome = (decimal)_policies.federalUnemployedPaymentPolicies.UnemployedSupportMin;
         }
 
 
@@ -268,11 +270,15 @@ namespace Controller
             int minAge = parentAge - randomAgeDifference > 18 ? parentAge - randomAgeDifference : 18;
             var secondParent = factory.FindPersonWithinValueRange(minAge, parentAge + randomAgeDifference,
                 tempPop.Current, _person.Id);
-            if (secondParent == null) throw new Exception();
-            var child = factory.CreateChild(0, _person.Id, secondParent.Id);
+            string secondParentId = "dead";
+            if (secondParent != null)
+            {
+                secondParentId = secondParent.Id;
+            }
+            var child = factory.CreateChild(0, _person.Id, secondParentId);
             if (child.IsDummy == false)
             {
-                secondParent.AddChild(child);
+                secondParent?.AddChild(child);
                 children.Add(child);
                 tempPop.Born.Add(child);
             }

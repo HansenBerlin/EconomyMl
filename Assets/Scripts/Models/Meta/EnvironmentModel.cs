@@ -11,7 +11,6 @@ namespace Models.Meta
         [field:SerializeField]
         public int Month { get; set; }
         
-        [field:SerializeField]
         public int Day { get; set; }
         
         public int Year => (int) Math.Floor((double) Month / 12);

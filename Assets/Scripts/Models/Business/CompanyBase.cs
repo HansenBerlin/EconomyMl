@@ -91,9 +91,9 @@ namespace Models.Business
             ProductController = productController;
             _policy = policy;
             Production = productController.Template;
-            var openPositions =
-                JobPositionFactory.Create(policy.InitialWorkers, policy.MinSalary, Id, Workers, TypeProduced);
-            //OpenJobPositions.AddRange(openPositions);
+            ProductController.AddNew(policy.InitialResources);
+            countryEconomyMarkets.ReportProduction(policy.InitialResources, TypeProduced);
+            var openPositions = JobPositionFactory.Create(policy.InitialWorkers, policy.MinSalary, Id, Workers, TypeProduced);
             jobMarket.AddOpenJobPositions(openPositions);
         }
 

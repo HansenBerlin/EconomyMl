@@ -20,7 +20,7 @@ namespace Controller
 
         public decimal PayIncomeTax(decimal baseAmount)
         {
-            decimal tax = baseAmount * _government.IncomeTaxRate;
+            decimal tax = baseAmount * (decimal)_government.IncomeTaxRate;
             _government.Capital += tax;
             _government.IncomeTaxInMonth += tax;
             return tax;
@@ -28,7 +28,7 @@ namespace Controller
 
         public decimal PayConsumerTax(decimal baseAmount)
         {
-            decimal tax = baseAmount * _government.ConsumerTaxRate;
+            decimal tax = baseAmount * (decimal)_government.ConsumerTaxRate;
             _government.Capital += tax;
             _government.ConsumerTaxInMonth += tax;
             return tax;
@@ -36,7 +36,7 @@ namespace Controller
 
         public decimal PayProfitTax(decimal baseAmount)
         {
-            decimal tax = baseAmount > 0 ? _government.ProfitTaxRate * baseAmount : 0;
+            decimal tax = baseAmount > 0 ? (decimal)_government.ProfitTaxRate * baseAmount : 0;
             _government.Capital += tax;
             _government.ProfitTaxInMonth += tax;
             return tax;
@@ -76,7 +76,7 @@ namespace Controller
 
         public decimal GetMaxFederalWorkerPayment()
         {
-            return _government.WorkerSalary;
+            return (decimal)_government.WorkerSalary;
         }
 
         public bool InvestInEfficientFederalServices()

@@ -1,15 +1,13 @@
-﻿namespace Settings
+﻿using UnityEngine;
+
+namespace Settings
 {
-
-
-
-    public record FederalServicesPolicy(int ServiceUnitsPerPersonInPopulation, decimal FederalWorkerSalary,
-        decimal IncomeTaxRate, decimal ProfitTaxRate, decimal ConsumerTaxRate)
+    public class FederalServicesPolicy : MonoBehaviour
     {
-        public int ServiceUnitsPerPersonInPopulation { get; } = ServiceUnitsPerPersonInPopulation;
-        public decimal IncomeTaxRate { get; } = IncomeTaxRate;
-        public decimal ProfitTaxRate { get; } = ProfitTaxRate;
-        public decimal ConsumerTaxRate { get; } = ConsumerTaxRate;
-        public decimal FederalWorkerSalary { get; } = FederalWorkerSalary;
+        public int ServiceUnitsPerPersonInPopulation;
+        public float IncomeTaxRate;
+        public float ProfitTaxRate;
+        public float ConsumerTaxRate;
+        public float FederalWorkerSalary;
     }
 }

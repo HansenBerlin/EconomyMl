@@ -10,10 +10,10 @@ namespace Models.Meta
     {
         private readonly FederalServicesPolicy _policy;
         private decimal Gdp;
-        public decimal IncomeTaxRate => _policy.IncomeTaxRate;
-        public decimal ProfitTaxRate => _policy.ProfitTaxRate;
-        public decimal ConsumerTaxRate => _policy.ConsumerTaxRate;
-        public decimal WorkerSalary => _policy.FederalWorkerSalary;
+        public float IncomeTaxRate => _policy.IncomeTaxRate;
+        public float ProfitTaxRate => _policy.ProfitTaxRate;
+        public float ConsumerTaxRate => _policy.ConsumerTaxRate;
+        public float WorkerSalary => _policy.FederalWorkerSalary;
         public decimal ServiceUnitsNeededPerPop => _policy.ServiceUnitsPerPersonInPopulation;
         public decimal Capital { get; set; }
         public decimal RetirementFundCapital { get; set; }

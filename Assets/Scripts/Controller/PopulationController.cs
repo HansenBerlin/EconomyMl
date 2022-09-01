@@ -51,7 +51,7 @@ namespace Controller
                 //person.ActionBuyMonthlyStuff(countryEconomyMarkets);
                 //person.ActionRethinkJobSituation(_jobController);
                 //person.UpdateExpenses();
-                person.ResetMasking(month);
+                person.RequestJobDecision(month);
             }
         }
 

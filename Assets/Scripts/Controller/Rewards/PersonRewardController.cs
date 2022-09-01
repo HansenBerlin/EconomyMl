@@ -1,9 +1,10 @@
 ﻿using Enums;
 using Models.Observations;
+using UnityEngine;
 
 namespace Controller.Rewards
 {
-    public class PersonRewardController
+    public class PersonRewardController : MonoBehaviour
     {
         private readonly PersonObservations _observations;
 
@@ -26,26 +27,30 @@ namespace Controller.Rewards
         
         public void RewardForBaseProductSatisfaction(int amountBought, int demanded)
         {
-            _observations.BaseBuyReward = demanded - amountBought > 0 ? -0.1F : 0.1F;
+            _observations.BaseBuyReward = demanded - amountBought == 0 ? 0.1F : 0;
         }
         
         public void RewardForLuxuryProductSatisfaction(int amountBought, int demanded)
         {
-            var demandFactor = demanded - amountBought > 0 ? -0.1F : 0.1F;
+            var demandFactor = demanded - amountBought == 0 ? 0.1F : 0F;
             var amountFactor = amountBought * 0.5F / (_observations.LuxuryProducts + 1);
             var overBoughFactor = _observations.Capital < 0 ? 0.5F : 0;
             _observations.LuxuryBuyReward = demandFactor + amountFactor + overBoughFactor;
         }
 
-        public void RewardForJobChange(decimal salaryBefore, decimal salaryAfter, bool wasUnemployed, bool isDecisionSkipped)
+        public void RewardForJobChange(decimal salaryBefore, decimal salaryAfter, bool isUnemployed, bool isDecisionSkipped)
         {
-            if (isDecisionSkipped)
+            if (isDecisionSkipped && isUnemployed)
             {
-                _observations.JobReward = -0.2F;
+                _observations.JobReward = -0.1F;
+            }
+            if (isDecisionSkipped && isUnemployed == false)
+            {
+                _observations.JobReward = +0.01F;
             }
             if (salaryBefore > salaryAfter)
             {
-                if (wasUnemployed)
+                if (isUnemployed)
                 {
                     _observations.JobReward = (float)(salaryAfter / salaryBefore - 1) + 0.1F;
                 }
@@ -53,12 +58,9 @@ namespace Controller.Rewards
             }
             if (salaryBefore < salaryAfter)
             {
-                if (wasUnemployed)
-                {
-                    _observations.JobReward = (float)(salaryBefore / salaryAfter - 1) + 0.2F;
-                }
                 _observations.JobReward = (float)(salaryBefore / salaryAfter - 1);
             }
+            
         }
     }
 }

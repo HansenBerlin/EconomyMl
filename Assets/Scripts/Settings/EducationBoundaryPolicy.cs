@@ -1,12 +1,11 @@
-﻿namespace Settings
+﻿using UnityEngine;
+
+namespace Settings
 {
-
-
-
-    public record EducationBoundaryPolicy(int AgeToStartSchool, int MinYearsInSchool, int MaxYearsInSchool)
+    public class EducationBoundaryPolicy : MonoBehaviour
     {
-        public int AgeToStartSchool { get; } = AgeToStartSchool;
-        public int MinYearsInSchool { get; } = MinYearsInSchool;
-        public int MaxYearsInSchool { get; } = MaxYearsInSchool;
+        public int AgeToStartSchool;
+        public int MinYearsInSchool;
+        public int MaxYearsInSchool;
     }
 }

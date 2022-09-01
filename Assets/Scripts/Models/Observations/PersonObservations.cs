@@ -4,13 +4,14 @@ using Controller;
 using Enums;
 using Models.Population;
 using Settings;
+using UnityEngine;
 
 namespace Models.Observations
 {
 
 
 
-    public class PersonObservations
+    public class PersonObservations : MonoBehaviour
     {
         private readonly PoliciesWrapper _policies;
         private readonly JobMarketController _jobMarket;
@@ -25,8 +26,8 @@ namespace Models.Observations
         public JobStatus JobStatus { get; set; }
         public decimal AverageIncome { get; set; }
         public int OpenJobPositions => _jobMarket.OpenJobPositionsCount();
-        private List<IPersonBase> _children;
-        public int UnderageChildrenCount => _children.Count(c => c.AgeStatus == AgeStatus.UnderageChild);
+        //private List<IPersonBase> _children;
+        //public int UnderageChildrenCount => _children.Count(c => c.AgeStatus == AgeStatus.UnderageChild);
 
         public int Age { get; set; }
 
@@ -49,15 +50,12 @@ namespace Models.Observations
 
             set => _ageStatus = value;
         }
-
-        public void InitChildren(List<IPersonBase> children)
-        {
-            _children = children;
-        }
+        
 
         private AgeStatus GetAgeStatus()
         {
-            (int adultMinAge, int workerMaxAge) = _policies.AgeBoundaries;
+            int adultMinAge = _policies.AgeBoundaries.AdultMinAge;
+            int workerMaxAge = _policies.AgeBoundaries.WorkerMaxAge;
             if (_ageStatus == AgeStatus.Dead)
                 return AgeStatus.Dead;
             if (Age > 0 && Age < adultMinAge)

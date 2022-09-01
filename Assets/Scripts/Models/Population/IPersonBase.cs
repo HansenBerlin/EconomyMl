@@ -26,11 +26,10 @@ namespace Models.Population
         void AddChild(IPersonBase child);
         void AddParents(string idA, string idB);
         decimal Pay();
-        void ResetMasking(int month);
-        void Init(string parentAId, string parentBId, PersonObservations observations,
-            PersonController controller, PersonRewardController rewardController);
+        void Init(string parentAId, string parentBId, decimal initialIncome, decimal initialCapital);
 
         void YearlyAgentUpdate(decimal avgIncome, TempPopulationUpdateModel tempPop, PopulationFactory factory, PopulationPropabilityController probController);
+        void RequestJobDecision(int month);
     }
 }
 

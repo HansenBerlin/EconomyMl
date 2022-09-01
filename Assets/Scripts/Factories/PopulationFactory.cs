@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Controller;
 using Controller.Rewards;
@@ -7,6 +8,7 @@ using Models.Observations;
 using Models.Population;
 using Settings;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Factories
 {
@@ -16,29 +18,21 @@ namespace Factories
     public class PopulationFactory : MonoBehaviour
     {
         private int ParentMinimumAge => _policies.AgeBoundaries.AdultMinAge;
-        private AgeBoundaryPolicy AgePolicy => _policies.AgeBoundaries;
         private PoliciesWrapper _policies;
         private PopulationPropabilityController _propabilityController;
-        private JobMarketController _jobMarketController;
-        private ActionsFactory _actionsFactory;
         private List<int> _distributionOfAges;
-        public GameObject myPrefab;
+        
+        public GameObject personAgentPrefab;
+        public GameObject populationDataTemplate; 
+        public GameObject policiesWrapper; 
 
 
-
-        public void Init(PoliciesWrapper policies, PopulationPropabilityController propabilityController, JobMarketController jobMarketController)
+        public void Awake()
         {
-            _policies = policies;
-            _propabilityController = propabilityController;
-            _distributionOfAges = propabilityController.AgeDistribution;
-            _jobMarketController = jobMarketController;
-
-        }
-
-        public void SetupActions(ActionsFactory actionsFactory)
-        {
-            _actionsFactory = actionsFactory;
-            
+            _policies = policiesWrapper.GetComponent<PoliciesWrapper>();
+            var template = populationDataTemplate.GetComponent<PopulationDataTemplateModel>();
+            _propabilityController = new PopulationPropabilityController(template);
+            _distributionOfAges = _propabilityController.AgeDistribution;
         }
 
         private int FindMatchingGenerationBucketIndex(int age)
@@ -205,23 +199,17 @@ namespace Factories
             //Console.WriteLine(income);
             decimal capital = financialData[1];
 
-            var observations = new PersonObservations(age, income, capital, _policies, _jobMarketController);
-            var personController = new PersonController(_policies, _actionsFactory);
-            var rewardController = new PersonRewardController(observations);
-            var go = Instantiate(myPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            var go = Instantiate(personAgentPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             PersonAgent person = go.GetComponent<PersonAgent>();
-            person.Init(parentAId, parentBId, observations, personController, rewardController);
+            person.Init(parentAId, parentBId, income, capital);
             return person;
         }
 
         public PersonAgent CreateChild(int age, string parentAId, string parentBId)
         {
-            var observations = new PersonObservations(age, 0, 0, _policies, _jobMarketController);
-            var personController = new PersonController(_policies, _actionsFactory);
-            var rewardController = new PersonRewardController(observations);
-            var go = Instantiate(myPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            var go = Instantiate(personAgentPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             PersonAgent person = go.GetComponent<PersonAgent>();
-            person.Init(parentAId, parentBId, observations, personController, rewardController);
+            person.Init(parentAId, parentBId, 0, 0);
             return person;
         }
     }

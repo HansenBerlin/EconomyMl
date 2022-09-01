@@ -1,11 +1,11 @@
-﻿namespace Settings
+﻿using UnityEngine;
+
+namespace Settings
 {
 
-
-
-    public record AgeBoundaryPolicy(int AdultMinAge, int WorkerMaxAge)
+    public class AgeBoundaryPolicy : MonoBehaviour
     {
-        public int AdultMinAge { get; } = AdultMinAge;
-        public int WorkerMaxAge { get; } = WorkerMaxAge;
+        public int AdultMinAge;
+        public int WorkerMaxAge;
     }
 }

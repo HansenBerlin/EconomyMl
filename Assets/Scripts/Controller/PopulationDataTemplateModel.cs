@@ -1,22 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Enums;
+using UnityEngine;
 
 namespace Controller
 {
 
 
 
-    public class PopulationDataTemplateModel
+    public class PopulationDataTemplateModel : MonoBehaviour
     {
-        private DemographyType _type;
-        private int _initialPopulationCount;
-
-        public PopulationDataTemplateModel(DemographyType type, int initialPopulationCount)
-        {
-            _type = type;
-            _initialPopulationCount = initialPopulationCount;
-        }
+        [Tooltip("Enum of type DevelopingCountrySociety, EmergingCountrySociety or IndustrialCountrySociety")]
+        public DemographyType _type;
+        public int _initialPopulationCount;
+        
 
         public List<int> CreateAgeDistributionTemplate()
         {

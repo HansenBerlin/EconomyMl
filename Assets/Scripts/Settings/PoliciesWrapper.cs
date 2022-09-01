@@ -1,14 +1,29 @@
-﻿namespace Settings
+﻿using System;
+using UnityEngine;
+
+namespace Settings
 {
 
 
 
-    public record PoliciesWrapper(AgeBoundaryPolicy AgeBoundaries, EducationBoundaryPolicy EducationBoundaries,
-        WorkerPolicy WorkerPolicies, FederalServicesPolicy FederalPolicies)
+    public class PoliciesWrapper : MonoBehaviour
     {
-        public AgeBoundaryPolicy AgeBoundaries { get; } = AgeBoundaries;
-        public EducationBoundaryPolicy EducationBoundaries { get; } = EducationBoundaries;
-        public WorkerPolicy WorkerPolicies { get; } = WorkerPolicies;
-        public FederalServicesPolicy FederalPolicies { get; } = FederalPolicies;
+        public AgeBoundaryPolicy AgeBoundaries { get; private set;}
+        public EducationBoundaryPolicy EducationBoundaries { get; private set;}
+        public FederalUnemployedPaymentPolicy federalUnemployedPaymentPolicies { get; private set; }
+        public FederalServicesPolicy FederalPolicies { get; private set; }
+
+        public GameObject AgeBoundaryPolicyGo;
+        public GameObject EducationBoundaryPolicyGo;
+        public GameObject WorkerPolicyGo;
+        public GameObject FederalServicesPolicyGo;
+
+        public void Awake()
+        {
+            AgeBoundaries = AgeBoundaryPolicyGo.GetComponent<AgeBoundaryPolicy>();
+            EducationBoundaries = EducationBoundaryPolicyGo.GetComponent<EducationBoundaryPolicy>();
+            federalUnemployedPaymentPolicies = WorkerPolicyGo.GetComponent<FederalUnemployedPaymentPolicy>();
+            FederalPolicies = FederalServicesPolicyGo.GetComponent<FederalServicesPolicy>();
+        }
     }
 }
