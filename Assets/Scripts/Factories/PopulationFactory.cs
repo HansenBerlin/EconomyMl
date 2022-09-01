@@ -6,6 +6,7 @@ using Models.Agents;
 using Models.Observations;
 using Models.Population;
 using Settings;
+using UnityEngine;
 
 namespace Factories
 {
@@ -205,7 +206,9 @@ namespace Factories
             var observations = new PersonObservations(age, income, capital, _policies, _jobMarketController);
             var personController = new PersonController(_policies, _actionsFactory);
             var rewardController = new PersonRewardController(observations);
-            var person = new PersonAgent(parentAId, parentBId, observations, personController, rewardController);
+            var gameObject = new GameObject();
+            var person = gameObject.AddComponent<PersonAgent>();
+            person.Init(parentAId, parentBId, observations, personController, rewardController);
             return person;
         }
 
@@ -214,7 +217,9 @@ namespace Factories
             var observations = new PersonObservations(age, 0, 0, _policies, _jobMarketController);
             var personController = new PersonController(_policies, _actionsFactory);
             var rewardController = new PersonRewardController(observations);
-            var person = new PersonAgent(parentAId, parentBId, observations, personController, rewardController);
+            var gameObject = new GameObject();
+            var person = gameObject.AddComponent<PersonAgent>();
+            person.Init(parentAId, parentBId, observations, personController, rewardController);
             return person;
         }
     }

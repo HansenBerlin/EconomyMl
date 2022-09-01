@@ -31,6 +31,13 @@ namespace Models.Observations
         public int Age { get; set; }
 
         private AgeStatus _ageStatus;
+        
+        public float JobReward;
+        public float BaseBuyReward;
+        public float LuxuryBuyReward;
+        public float CapitalReward;
+
+        
 
         public AgeStatus AgeStatus
         {
@@ -51,7 +58,7 @@ namespace Models.Observations
         private AgeStatus GetAgeStatus()
         {
             (int adultMinAge, int workerMaxAge) = _policies.AgeBoundaries;
-            if (AgeStatus == AgeStatus.Dead)
+            if (_ageStatus == AgeStatus.Dead)
                 return AgeStatus.Dead;
             if (Age > 0 && Age < adultMinAge)
                 return AgeStatus.UnderageChild;

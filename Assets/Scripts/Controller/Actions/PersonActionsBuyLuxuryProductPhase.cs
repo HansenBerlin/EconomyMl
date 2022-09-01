@@ -29,6 +29,8 @@ namespace Controller.Actions
             var request = new ProductRequestModel(ProductType.LuxuryProduct, ProductRequestSearchType.MaxAmount,
                 maxAmount: demand);
             var receipt = _market.Buy(request);
+            
+            _rewardController.RewardForLuxuryProductSatisfaction(receipt.AmountBought, demand);
             UpdateProperties(receipt, demand);
         }
 
@@ -46,6 +48,7 @@ namespace Controller.Actions
 
             }
 
+            _rewardController.RewardForLuxuryProductSatisfaction(receipt.AmountBought, demand);
             UpdateProperties(receipt, demand);
         }
 
@@ -63,6 +66,7 @@ namespace Controller.Actions
 
             }
 
+            _rewardController.RewardForLuxuryProductSatisfaction(receipt.AmountBought, demand);
             UpdateProperties(receipt, demand);
         }
 

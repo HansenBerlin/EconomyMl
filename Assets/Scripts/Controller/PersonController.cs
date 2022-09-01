@@ -38,8 +38,6 @@ namespace Controller
             _observations.MonthlyIncome = InitialIncome();
         }
 
-
-
         public List<IPersonAction> InitActions()
         {
             return new List<IPersonAction>
@@ -48,6 +46,11 @@ namespace Controller
                 _factory.Create(PersonActionType.BaseProductBuy, this, _observations, _rewardController),
                 _factory.Create(PersonActionType.LuxuryProductBuy, this, _observations, _rewardController)
             };
+        }
+
+        public float GetCombinedReward()
+        {
+            return _rewardController.CombinedReward();
         }
 
 

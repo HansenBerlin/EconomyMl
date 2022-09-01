@@ -42,7 +42,7 @@ namespace Controller
             }
         }
 
-        public void MonthlyUpdatePopulation(ICountryEconomyMarketsModel countryEconomyMarkets)
+        public void MonthlyUpdatePopulation(ICountryEconomyMarketsModel countryEconomyMarkets, int month)
         {
             var rng = StatisticalDistributionController.Rng;
 
@@ -51,7 +51,7 @@ namespace Controller
                 //person.ActionBuyMonthlyStuff(countryEconomyMarkets);
                 //person.ActionRethinkJobSituation(_jobController);
                 //person.UpdateExpenses();
-                person.ResetMasking();
+                person.ResetMasking(month);
             }
         }
 

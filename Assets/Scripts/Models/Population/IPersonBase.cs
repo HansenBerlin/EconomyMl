@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using Controller;
+using Controller.Rewards;
 using Enums;
 using Factories;
 using Models.Meta;
+using Models.Observations;
 
 namespace Models.Population
 {
@@ -24,7 +26,9 @@ namespace Models.Population
         void AddChild(IPersonBase child);
         void AddParents(string idA, string idB);
         decimal Pay();
-        void ResetMasking();
+        void ResetMasking(int month);
+        void Init(string parentAId, string parentBId, PersonObservations observations,
+            PersonController controller, PersonRewardController rewardController);
 
         void YearlyAgentUpdate(decimal avgIncome, TempPopulationUpdateModel tempPop, PopulationFactory factory, PopulationPropabilityController probController);
     }

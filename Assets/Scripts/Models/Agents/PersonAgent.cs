@@ -12,6 +12,7 @@ using Models.Population;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -23,15 +24,16 @@ namespace Models.Agents
 
     public class PersonAgent : Agent, IPersonBase
     {
-        private readonly PersonController _controller;
-        private readonly PersonRewardController _rewardController;
+        private PersonController _controller;
+        private PersonRewardController _rewardController;
+
 
         public bool IsDummy { get; protected set; }
         public string Id { get; } = Guid.NewGuid().ToString();
         private string _parentAId;
         private string _parentBId;
         public JobStatus JobStatus => _observations.JobStatus;
-        public int Age => _observations.Age;
+        public int Age { get; } = 20;
         public decimal Capital => _observations.Capital;
         public decimal MonthlyIncome => _observations.MonthlyIncome;
         public int UnderageChildrenCount => Children.Count(c => c.AgeStatus == AgeStatus.UnderageChild);
@@ -44,9 +46,10 @@ namespace Models.Agents
         private PersonActionsJobPhase _jobActions;
         private PersonActionsBuyBaseProductPhase _baseBuyActions;
         private PersonActionsBuyLuxuryProductPhase _luxuryBuyActions;
-        private readonly PersonObservations _observations;
+        private PersonObservations _observations;
+
+        public int Month;
         
-        public bool maskActions = true;
         public bool maskBaseBuyActions = false;
         public bool maskLuxuryBuyActions = false;
         public bool maskJobActions = false;
@@ -71,9 +74,11 @@ namespace Models.Agents
 
         const int doNothing = 16;
         
-        public PersonAgent(string parentAId, string parentBId, PersonObservations observations,
+        public void Init(string parentAId, string parentBId, PersonObservations observations,
             PersonController controller, PersonRewardController rewardController)
         {
+            var parameters = gameObject.GetComponent<BehaviorParameters>();
+            parameters.BehaviorName = "Economy";
             _observations = observations;
             _controller = controller;
             _rewardController = rewardController;
@@ -145,13 +150,12 @@ namespace Models.Agents
                 actionMask.SetActionEnabled(0, luxBuyLimitLow, false);
                 actionMask.SetActionEnabled(0, luxBuyNothing, false);
             }
-            
-            
         }
         
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
             var decision= actionBuffers.DiscreteActions[0];
+            Debug.Log("Action: " + decision);
 
             switch (decision)
             {
@@ -214,6 +218,7 @@ namespace Models.Agents
                     break;
                 }
             }
+            UpdateReward(decision);
             UpdateMasking(decision);
         }
 
@@ -231,12 +236,29 @@ namespace Models.Agents
                     maskJobActions = true;
                     break;
             }
-
-            
+        }
+        
+        private void UpdateReward(int decision)
+        {
+            switch (decision)
+            {
+                case <= baseBuyNothing:
+                    AddReward(_observations.BaseBuyReward);
+                    break;
+                case <= luxBuyNothing:
+                    AddReward(_observations.LuxuryBuyReward);
+                    break;
+                case <= jobNoChange:
+                    AddReward(_observations.JobReward);
+                    break;
+            }
         }
 
-        public void ResetMasking()
+        public void ResetMasking(int month)
         {
+            Month = month;
+            AddReward(_controller.GetCombinedReward());
+            _observations.MonthlyExpenses = 0;
             if (maskJobActions && maskBaseBuyActions && maskLuxuryBuyActions)
             {
                 maskJobActions = false;
