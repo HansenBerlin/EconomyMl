@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Enums;
 using Models.Population;
+using UnityEngine;
 
 namespace Controller
 {
-
-
-
-    public class JobMarketController
+    public class JobMarketController : MonoBehaviour
     {
         private readonly List<JobModel> _openJobPositions = new();
 

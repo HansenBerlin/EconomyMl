@@ -15,20 +15,14 @@ namespace Controller
 
 
 
-    public class PersonController : MonoBehaviour
+    public class PersonController
     {
-        private readonly PoliciesWrapper _policies;
+        //private PoliciesWrapper _policies;
         private IPersonBase _person;
-        private readonly ActionsFactory _factory;
+        //private ActionsFactory _factory;
         private PersonObservations _observations;
         private PersonRewardController _rewardController;
-
-
-        public PersonController(PoliciesWrapper policies, ActionsFactory factory)
-        {
-            _policies = policies;
-            _factory = factory;
-        }
+       
 
         public void Setup(IPersonBase person, PersonObservations observations, PersonRewardController rewardController)
         {

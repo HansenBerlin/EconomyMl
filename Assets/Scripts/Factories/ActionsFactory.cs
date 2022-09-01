@@ -5,19 +5,20 @@ using Enums;
 using Models.Market;
 using Models.Observations;
 using Settings;
+using UnityEngine;
 
 namespace Factories
 {
 
 
 
-    public class ActionsFactory
+    public class ActionsFactory : MonoBehaviour
     {
-        private readonly JobMarketController _jobMarketController;
-        private readonly PopulationController _populationController;
-        private readonly ICountryEconomyMarketsModel _market;
+        private JobMarketController _jobMarketController;
+        private PopulationController _populationController;
+        private ICountryEconomyMarketsModel _market;
 
-        public ActionsFactory(JobMarketController jobMarketController, PopulationController populationController,
+        public void Init(JobMarketController jobMarketController, PopulationController populationController,
             ICountryEconomyMarketsModel market)
         {
             _jobMarketController = jobMarketController;

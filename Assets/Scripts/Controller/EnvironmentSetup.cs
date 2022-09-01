@@ -23,6 +23,7 @@ namespace Controller
         public bool isTraining;
         public int simulateYears = 1;
         public int initPopulation = 1000;
+        public GameObject jobMarketController;
         public GameObject environmentSettings;
         public GameObject popFactory;
         public GameObject policyWrapperGo;
@@ -52,7 +53,7 @@ namespace Controller
             statsRepository.AddGovernmentDataset(govData);
             var populationPropabilityController = new PopulationPropabilityController(popDataModel);
             var populationData = new PopulationDataRepository();
-            var workerController = new JobMarketController();
+            var workerController = jobMarketController.GetComponent<JobMarketController>();
             var initialPopulation = populationFactory.CreateInitialPopulation();
             _population.AddRange(initialPopulation);
             var productMarkets = ProductionFactory.CreateMarkets(statsRepository, envSettings);
