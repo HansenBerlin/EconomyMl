@@ -285,6 +285,7 @@ namespace Models.Business
 
             if (changeProductionCapabilities > 0)
             {
+                maxSalary *= 100;
                 var additionalWorkers = Workers.Count * changeProductionCapabilities;
                 if (additionalWorkers <= 0) return;
                 var openPositions = JobPositionFactory.Create((int) additionalWorkers, maxSalary, Id, Workers, TypeProduced);

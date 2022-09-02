@@ -19,7 +19,8 @@ namespace Factories
         private StatisticalDataRepository _stats;
         private GovernmentController _government;
         private EnvironmentModel _environment;
-        public GameObject businessPrefab;
+        public GameObject privateBusinessPrefab;
+        public GameObject publicServicePrefab;
 
         public void Init(ICountryEconomy countryEconomyMarkets, EnvironmentModel environment,
             StatisticalDataRepository stats, GovernmentController government)
@@ -41,13 +42,13 @@ namespace Factories
             _stats.AddCompanyDataset(dataRepo);
             if (typeProduced == ProductType.FederalService)
             {
-                var go =Instantiate(businessPrefab);
+                var go =Instantiate(publicServicePrefab);
                 business = go.GetComponent<PublicServiceAgent>();
                 business.Init(_countryEconomyMarkets, controller, policy, _government, dataRepo, jobMarket);
             }
             else
             {
-                var go =Instantiate(businessPrefab);
+                var go =Instantiate(privateBusinessPrefab);
                 business = go.GetComponent<PrivateCompanyAgent>();
                 business.Init(_countryEconomyMarkets, controller, policy, _government, dataRepo, jobMarket);
             }
