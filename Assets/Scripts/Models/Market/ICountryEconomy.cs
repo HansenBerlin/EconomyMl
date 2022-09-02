@@ -11,14 +11,13 @@ namespace Models.Market
 
     public interface ICountryEconomy
     {
-        void AddBusiness(ICompanyModel privateCompany);
+        void AddBusiness(CompanyBaseAgent privateCompany);
         void AddProduct(ProductController product);
 
         ReceiptModel Buy(ProductRequestModel buyRequest);
         decimal AveragePrice(ProductType type);
         decimal AveragePrice(ProductType type, string ownId);
         decimal TotalSupply(ProductType type);
-        decimal EstimatedMonthlyDemand(ProductType forProduct);
         decimal MarketShare(ProductType type, string productId);
         void ResetProductMarkets();
         void ReportDemand(long count, ProductType type);

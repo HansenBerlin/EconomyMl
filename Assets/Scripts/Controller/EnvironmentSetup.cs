@@ -29,15 +29,15 @@ namespace Controller
         public GameObject environmentSettings;
         public GameObject popFactory;
         public GameObject policyWrapperGo;
-
         public GameObject popDataTemplate;
+        public GameObject buisnessFactoryGo;
 
         //public GameObject propabilityController;
         private EnvironmentModel envSettings;
         private GovernmentController governmentController;
         private PopulationController populationController;
         private ICountryEconomy countryEconomyMarket;
-        private List<ICompanyModel> businesses;
+        private List<CompanyBaseAgent> businesses;
         private PoliciesWrapper _policies;
         private readonly List<PersonAgent> _population = new();
         private readonly System.Random _rng = StatisticalDistributionController.Rng;
@@ -52,6 +52,7 @@ namespace Controller
             var popDataModel = popDataTemplate.GetComponent<PopulationDataTemplateModel>();
             var populationFactory = popFactory.GetComponent<PopulationFactory>();
             var jobMarketController = jobMarketControllerGo.GetComponent<JobMarketController>();
+            var businessFactory = buisnessFactoryGo.GetComponent<BusinessFactory>();
 
             var govData = new GovernmentDataRepository("GER");
             statsRepository.AddGovernmentDataset(govData);
@@ -61,17 +62,17 @@ namespace Controller
             populationModel = new PopulationModel(_population, populationData, envSettings);
             var government = new GovernmentModel(_policies.FederalPolicies, govData);
             governmentController = new GovernmentController(government, populationModel);
-            populationController = new PopulationController(envSettings, populationModel, jobMarketController,
-                populationFactory, populationPropabilityController);
-            countryEconomyMarket = new CountryEconomy(productMarkets, jobMarketController, populationModel,
-                governmentController);
+            populationController = new PopulationController(envSettings, populationModel, jobMarketController, populationFactory, populationPropabilityController);
+            var bankingMarkets = new BankingMarkets();
+            var bank = new BankAgent();
+            bankingMarkets.AddBank(bank);
+            countryEconomyMarket = new CountryEconomy(productMarkets, jobMarketController, populationModel, governmentController, bankingMarkets);
             var actionsFactory = new ActionsFactory(jobMarketController, countryEconomyMarket);
             populationFactory.Init(actionsFactory, jobMarketController, _policies, populationPropabilityController);
             var initialPopulation = populationFactory.CreateInitialPopulation();
             _population.AddRange(initialPopulation);
 
-            var businessFactory =
-                new BusinessFactory(countryEconomyMarket, envSettings, statsRepository, governmentController);
+            businessFactory.Init(countryEconomyMarket, envSettings, statsRepository, governmentController);
 
             var fossilePolicy = new CompanyResourcePolicy(2200, 2200, 50, 10000000, 200000);
             var basePolicy = new CompanyResourcePolicy(2300, 2300, 100, 10000000, 50000);
@@ -138,24 +139,17 @@ namespace Controller
             //int day = 1;
             foreach (var business in businesses.Where(b => b.TypeProduced == ProductType.FossileEnergy))
             {
-                business.ActionProduce();
+                business.MakeDecision(CompanyActionPhase.Produce);
             }
 
-            envSettings.Day = 1;
-            while (envSettings.Day <= 30)
+            foreach (var business in businesses.OrderBy(_ => _rng.Next()))
             {
-                foreach (var business in businesses.OrderBy(_ => _rng.Next()))
+                if (business.TypeProduced == ProductType.FossileEnergy)
                 {
-                    if (business.TypeProduced == ProductType.FossileEnergy)
-                    {
-                        continue;
-                    }
-
-                    business.ActionBuyEnergy(31 - envSettings.Day);
-                    //business.DailyBookkeeping();
+                    continue;
                 }
 
-                envSettings.Day++;
+                business.MakeDecision(CompanyActionPhase.BuyResources);
             }
 
             foreach (var business in businesses
@@ -163,42 +157,34 @@ namespace Controller
                              is not (ProductType.FossileEnergy or ProductType.LuxuryProduct
                              or ProductType.FederalService)))
             {
-                business.ActionProduce();
+                business.MakeDecision(CompanyActionPhase.Produce);
+
             }
 
-            envSettings.Day = 1;
-            while (envSettings.Day <= 30)
+            foreach (var business in businesses.OrderBy(_ => _rng.Next()))
             {
-                foreach (var business in businesses.OrderBy(_ => _rng.Next()))
+                if (business.TypeProduced != ProductType.LuxuryProduct &&
+                    business.TypeProduced != ProductType.FederalService)
                 {
-                    if (business.TypeProduced != ProductType.LuxuryProduct &&
-                        business.TypeProduced != ProductType.FederalService)
-                    {
-                        continue;
-                    }
-
-                    business.ActionBuyResources(31 - envSettings.Day);
-                    //business.DailyBookkeeping();
+                    continue;
                 }
 
-                envSettings.Day++;
+                business.MakeDecision(CompanyActionPhase.BuyResources);
             }
 
             foreach (var business in businesses.Where(business =>
                          business.TypeProduced is ProductType.LuxuryProduct or ProductType.FederalService))
             {
-                business.ActionProduce();
+                business.MakeDecision(CompanyActionPhase.Produce);
             }
 
-            //academy.EnvironmentStep();
             populationController.MonthlyUpdatePopulation(countryEconomyMarket, envSettings.Month);
 
 
             foreach (var business in businesses.OrderBy(_ => _rng.Next()))
             {
-                //business.ActionInvestInEfficiency();
+                business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
                 business.MonthlyBookkeeping();
-                //business.UpdateWorkforce();
             }
 
             governmentController.PayoutUnemployed();
@@ -207,11 +193,18 @@ namespace Controller
             if (envSettings.Month % 12 == 0)
             {
                 populationController.YearlyUpdatePopulation();
+                foreach (var business in businesses.OrderBy(_ => _rng.Next()))
+                {
+                    business.MakeDecision(CompanyActionPhase.AdaptCapital);
+                    business.EndYear();
+                }
             }
 
             foreach (var business in businesses.OrderBy(_ => _rng.Next()))
             {
-                business.Reset(envSettings.Month);
+                business.UpdateStats(envSettings.Month);
+                business.AddRewards();
+                business.MakeDecision(CompanyActionPhase.AdaptPrice);
             }
 
             countryEconomyMarket.ResetProductMarkets();

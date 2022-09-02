@@ -17,7 +17,7 @@ namespace Models.Market
         public string Id = Guid.NewGuid().ToString();
 
         private readonly List<ProductMarketModel> _productMarkets = new();
-        private readonly List<ICompanyModel> _businesses = new();
+        private readonly List<CompanyBaseAgent> _businesses = new();
         private readonly JobMarketController _jobMarket;
         private readonly BankingMarkets _bankingMarkets;
         private readonly PopulationModel _populationModel;
@@ -39,7 +39,7 @@ namespace Models.Market
             _government = government;
         }
 
-        public void AddBusiness(ICompanyModel privateCompany)
+        public void AddBusiness(CompanyBaseAgent privateCompany)
         {
             _businesses.Add(privateCompany);
         }
@@ -135,35 +135,6 @@ namespace Models.Market
         {
             ProductMarketModel productMarket = FindMatchingMarket(type);
             return productMarket.TotalSupply;
-        }
-
-        public decimal EstimatedMonthlyDemand(ProductType forProduct)
-        {
-            long estDemand = 0;
-            foreach (var b in _businesses)
-            {
-                if (b.EnergyTypeNeeded == forProduct)
-                {
-                    estDemand += b.EstimatedEnergyDemand;
-                }
-
-                if (b.ResourceTypeNeeded == forProduct)
-                {
-                    estDemand += b.EstimatedResourceDemand;
-                }
-            }
-
-            if (forProduct is ProductType.BaseProduct)
-            {
-                estDemand += (long) (_populationModel.PopulationCount * 1.6 * 30);
-            }
-
-            if (forProduct is ProductType.LuxuryProduct)
-            {
-                estDemand += (long) (_populationModel.PopulationCount * 1.2);
-            }
-
-            return estDemand;
         }
 
         public decimal MarketShare(ProductType type, string productId)

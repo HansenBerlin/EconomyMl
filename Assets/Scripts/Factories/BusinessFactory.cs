@@ -6,20 +6,22 @@ using Models.Meta;
 using Policies;
 using Repositories;
 using Settings;
+using UnityEngine;
 
 namespace Factories
 {
 
 
 
-    public class BusinessFactory
+    public class BusinessFactory : MonoBehaviour
     {
-        private readonly ICountryEconomy _countryEconomyMarkets;
-        private readonly StatisticalDataRepository _stats;
-        private readonly GovernmentController _government;
-        private readonly EnvironmentModel _environment;
+        private ICountryEconomy _countryEconomyMarkets;
+        private StatisticalDataRepository _stats;
+        private GovernmentController _government;
+        private EnvironmentModel _environment;
+        public GameObject businessPrefab;
 
-        public BusinessFactory(ICountryEconomy countryEconomyMarkets, EnvironmentModel environment,
+        public void Init(ICountryEconomy countryEconomyMarkets, EnvironmentModel environment,
             StatisticalDataRepository stats, GovernmentController government)
         {
             _countryEconomyMarkets = countryEconomyMarkets;
@@ -28,10 +30,10 @@ namespace Factories
             _government = government;
         }
 
-        public ICompanyModel Create(ProductType typeProduced, CompanyResourcePolicy policy,
+        public CompanyBaseAgent Create(ProductType typeProduced, CompanyResourcePolicy policy,
             JobMarketController jobMarket)
         {
-            ICompanyModel business;
+            CompanyBaseAgent business;
             var model = ProductionFactory.CreateProductModel(typeProduced, _stats, _environment);
             var controller = ProductionFactory.CreateProductController(model);
             string id = IdGenerator.Create(_environment.Month, _environment.CountryName, typeProduced);
@@ -39,13 +41,15 @@ namespace Factories
             _stats.AddCompanyDataset(dataRepo);
             if (typeProduced == ProductType.FederalService)
             {
-                business = new PublicService(_countryEconomyMarkets, controller, policy, _government, dataRepo,
-                    jobMarket);
+                var go =Instantiate(businessPrefab);
+                business = go.GetComponent<PublicServiceAgent>();
+                business.Init(_countryEconomyMarkets, controller, policy, _government, dataRepo, jobMarket);
             }
             else
             {
-                business = new PrivateCompany(_countryEconomyMarkets, controller, policy, _government, dataRepo,
-                    jobMarket);
+                var go =Instantiate(businessPrefab);
+                business = go.GetComponent<PrivateCompanyAgent>();
+                business.Init(_countryEconomyMarkets, controller, policy, _government, dataRepo, jobMarket);
             }
 
             _countryEconomyMarkets.AddBusiness(business);

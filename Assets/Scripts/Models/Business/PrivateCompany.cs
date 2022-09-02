@@ -118,6 +118,8 @@ namespace Models.Business
             MissingResourceDemand += maxBuyAmount;
         }
 
+        
+
         public override void ActionBuyEnergy(int daysLeft)
         {
             if (ObservationTotalEnergyDemandPerMonth <= 0) return;

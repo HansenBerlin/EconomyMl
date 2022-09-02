@@ -17,17 +17,17 @@ namespace Models.Business
 
 
 
-    public abstract class CompanyBaseAgent : Agent, ICompanyBase
+    public abstract class CompanyBaseAgent : Agent
     {
         public string Id { get; } = Guid.NewGuid().ToString();
 
         protected decimal Balance;
-        protected readonly GovernmentController Government;
-        private readonly CompanyDataRepository Data;
-        protected readonly IProductionTemplate Production;
-        protected readonly ICountryEconomy CountryEconomyMarkets;
-        protected readonly ProductController ProductController;
-        protected readonly CompanyResourcePolicy _policy;
+        protected GovernmentController Government;
+        protected CompanyDataRepository Data;
+        protected IProductionTemplate Production;
+        protected ICountryEconomy CountryEconomyMarkets;
+        protected ProductController ProductController;
+        protected CompanyResourcePolicy _policy;
         public ProductType TypeProduced => Production.TypeProduced;
         public ProductType ResourceTypeNeeded => Production.ResourceTypeNeeded;
         public ProductType EnergyTypeNeeded => Production.EnergyTypeNeeded;
@@ -53,24 +53,25 @@ namespace Models.Business
         protected decimal ProfitTaxPaidInMonth;
         protected decimal ProfitAfterTaxesInMonth;
         protected decimal CashflowIn;
-        protected decimal CashflowOut => TotalCostBeforeTaxes + ProfitTaxPaidInMonth + UpgradeEffiencyCosts;
+        protected decimal CashflowOut => TotalCostBeforeTaxes + ProfitTaxPaidInMonth;
         protected decimal UpgradeEffiencyCosts;
         protected int MissingResourceDemand;
         protected decimal FixedPerProductCosts => _unitsProducedInMonth * Production.BaseCostPerPieceProduced;
         protected decimal CapacityUsed => _unitsProducedInMonth / ObsProductionCapacityByWorkers;
 
         protected decimal TotalCostBeforeTaxes =>
-            FixedPerProductCosts + _lastWorkerPayments + LastProdCostsInMonthForRessourcesAndEnergy;
+            FixedPerProductCosts + _lastWorkerPayments + LastProdCostsInMonthForRessourcesAndEnergy + LoanPayments;
 
+        protected decimal LoanPayments;
         protected decimal Cpp => _unitsProducedInMonth != 0
             ? TotalCostBeforeTaxes / _unitsProducedInMonth
             : ProductController.Price * 0.8M;
 
-        protected readonly JobMarketController JobMarket;
+        protected JobMarketController JobMarket;
         //protected readonly List<JobModel> OpenJobPositions = new();
 
 
-        protected CompanyBaseAgent(ICountryEconomy countryEconomyMarkets, ProductController productController,
+        public void Init(ICountryEconomy countryEconomyMarkets, ProductController productController,
             CompanyResourcePolicy policy,
             GovernmentController government, CompanyDataRepository data, JobMarketController jobMarket)
         {
@@ -90,7 +91,9 @@ namespace Models.Business
 
         private decimal lastCpp = 0;
 
-        public void Reset(int month)
+        public abstract void AddRewards();
+
+        public void UpdateStats(int month)
         {
             if (Cpp > lastCpp * 1.5M)
                 Console.WriteLine(month);
@@ -101,15 +104,12 @@ namespace Models.Business
             Data.MoneyOutStat.Add((double) CashflowOut);
             Data.MoneyInStat.Add((double) CashflowIn);
             ProductController.Update(EpisodeCut.Month, Cpp, CapacityUsed);
-            _unitsProducedInMonth = 0;
-            LastProdCostsInMonthForRessourcesAndEnergy = 0;
-            _lastWorkerPayments = 0;
-            ProfitTaxPaidInMonth = 0;
-            ProfitAfterTaxesInMonth = 0;
-            UpgradeEffiencyCosts = 0;
-            MissingResourceDemand = 0;
-            CashflowIn = 0;
+            
         }
+
+        public abstract void MakeDecision(CompanyActionPhase phase);
+        public abstract void EndYear();
+
 
         public bool IsRemoved()
         {

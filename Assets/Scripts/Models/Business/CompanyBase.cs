@@ -54,8 +54,8 @@ namespace Models.Business
         protected decimal ObserveTotalWorkers => Workers.Count + 1;
 
         protected decimal LastProdCostsInMonthForRessourcesAndEnergy;
-        private decimal _lastWorkerPayments;
-        private long _unitsProducedInMonth;
+        protected decimal _lastWorkerPayments;
+        protected long _unitsProducedInMonth;
         protected decimal ProfitTaxPaidInMonth;
         protected decimal ProfitAfterTaxesInMonth;
         protected decimal CashflowIn;

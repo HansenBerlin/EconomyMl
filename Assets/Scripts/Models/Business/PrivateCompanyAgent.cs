@@ -42,11 +42,33 @@ namespace Models.Business
             ObservationAveragePriceResource * Production.ResourceNeededPerPiece;
 
         private CompanyActionPhase currentActionPhase;
-        public void MakeDecision(CompanyActionPhase phase)
+        public override void MakeDecision(CompanyActionPhase phase)
         {
             currentActionPhase = phase;
             RequestDecision();
+        }
 
+        public override void EndYear()
+        {
+            EndEpisode();
+        }
+
+        public override void AddRewards()
+        {
+            AddReward((float)ProductController.ObsProductionTrend);
+            AddReward((float)ProductController.ObsProfitTrend);
+            AddReward((float)ProductController.ObsProfitTrend);
+            float capitalReward = Balance < 0 ? -1 : 1;
+            AddReward(capitalReward);
+            _unitsProducedInMonth = 0;
+            LastProdCostsInMonthForRessourcesAndEnergy = 0;
+            _lastWorkerPayments = 0;
+            ProfitTaxPaidInMonth = 0;
+            ProfitAfterTaxesInMonth = 0;
+            UpgradeEffiencyCosts = 0;
+            MissingResourceDemand = 0;
+            CashflowIn = 0;
+            LoanPayments = 0;
         }
         
         public override void CollectObservations(VectorSensor sensor)
@@ -102,6 +124,7 @@ namespace Models.Business
             else if (currentActionPhase == CompanyActionPhase.Produce)
             {
                 ActionProduce(maxProduction);
+                AddReward((float)CapacityUsed);
             }
             
             if (currentActionPhase == CompanyActionPhase.BuyResources)
@@ -280,6 +303,10 @@ namespace Models.Business
         {
             PayWorkers();
 
+            foreach (var loan in _loans)
+            {
+                LoanPayments += loan.MakeMonthlyPayment();
+            }
             decimal profit = ProductController.Profit - TotalCostBeforeTaxes - UpgradeEffiencyCosts;
             ProfitTaxPaidInMonth = Government.PayProfitTax(profit);
             ProfitAfterTaxesInMonth = profit - ProfitTaxPaidInMonth;
@@ -301,13 +328,6 @@ namespace Models.Business
             Data.MoneyOutStat.Add((double)(TotalCostBeforeTaxes + ProfitTaxPaidInMonth + UpgradeEffiencyCosts));
             Data.MoneyInStat.Add((double)(income));
         }*/
-
-
-        public PrivateCompanyAgent(ICountryEconomy countryEconomyMarkets, ProductController productController,
-            CompanyResourcePolicy policy, GovernmentController government, CompanyDataRepository data,
-            JobMarketController jobMarket) : base(countryEconomyMarkets, productController, policy, government, data,
-            jobMarket)
-        {
-        }
+        
     }
 }
