@@ -4,9 +4,6 @@ using System.Linq;
 using Enums;
 using ScottPlot;
 using ScottPlot.Statistics;
-using UnityEngine.UIElements;
-using Common = Unity.Burst.Intrinsics.Common;
-using Tools = UnityEditor.Tools;
 
 namespace Factories
 {

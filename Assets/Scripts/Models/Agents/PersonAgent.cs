@@ -9,12 +9,9 @@ using Factories;
 using Models.Meta;
 using Models.Observations;
 using Models.Population;
-using Settings;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Policies;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Models.Agents

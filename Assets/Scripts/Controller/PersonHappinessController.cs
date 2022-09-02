@@ -1,5 +1,4 @@
 ﻿using Models.Agents;
-using Models.Population;
 
 namespace Controller
 {

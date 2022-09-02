@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Controller;
+﻿using Controller;
 using Enums;
-using Models.Population;
 using Settings;
-using UnityEngine;
 
 namespace Models.Observations
 {

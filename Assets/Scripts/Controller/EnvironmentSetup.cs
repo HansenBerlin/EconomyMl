@@ -1,8 +1,6 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using Enums;
 using Factories;
 using Models.Agents;
@@ -12,11 +10,9 @@ using Models.Meta;
 using Models.Population;
 using Policies;
 using Repositories;
-using ScottPlot;
 using Settings;
 using Unity.MLAgents;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Controller
 {
@@ -24,14 +20,18 @@ namespace Controller
     {
         //public int Month { get; set; }
         public bool isTraining;
-        public int simulateYears = 1;
+        public int simulateYears;
+
         public int year = 1;
+
         //public int initPopulation = 1000;
         public GameObject jobMarketControllerGo;
         public GameObject environmentSettings;
         public GameObject popFactory;
         public GameObject policyWrapperGo;
+
         public GameObject popDataTemplate;
+
         //public GameObject propabilityController;
         private EnvironmentModel envSettings;
         private GovernmentController governmentController;
@@ -84,7 +84,8 @@ namespace Controller
             var baseProductCompany = businessFactory.Create(ProductType.BaseProduct, basePolicy, jobMarketController);
             var intermediateProductCompany =
                 businessFactory.Create(ProductType.IntermediateProduct, interPolicy, jobMarketController);
-            var luxuryProductCompany = businessFactory.Create(ProductType.LuxuryProduct, luxPolicy, jobMarketController);
+            var luxuryProductCompany =
+                businessFactory.Create(ProductType.LuxuryProduct, luxPolicy, jobMarketController);
             var federalServices = businessFactory.Create(ProductType.FederalService, fedPolicy, jobMarketController);
 
             businesses = new()
@@ -100,11 +101,9 @@ namespace Controller
         public void Start()
         {
             academy = Academy.Instance;
-            //Academy.Instance.AutomaticSteppingEnabled = false;
-            UpdateBusinesses();
         }
 
-        public void FixedUpdate()
+        public void Update()
         {
             if (envSettings.Year > simulateYears)
             {
@@ -112,7 +111,7 @@ namespace Controller
             }
             else
             {
-                UpdateBusinesses();
+                StartCoroutine(UpdateBusinesses());
             }
         }
 
@@ -121,101 +120,101 @@ namespace Controller
         public int stepCountTotal;
         public int episodeCount;
 
-        private void UpdateBusinesses()
+        IEnumerator UpdateBusinesses()
         {
-
             year = envSettings.Year;
-                //Thread.Sleep(1000);
-                //Academy.Instance.EnvironmentStep();
-                stepCountEpisode = academy.StepCount;
-                stepCountTotal = academy.TotalStepCount;
-                episodeCount = academy.EpisodeCount;
-                envSettings.Month++;
-                //xAxisFull.Add(i);
-                populationController.SetupMonth();
+            //Thread.Sleep(1000);
+            //Academy.Instance.EnvironmentStep();
+            stepCountEpisode = academy.StepCount;
+            stepCountTotal = academy.TotalStepCount;
+            episodeCount = academy.EpisodeCount;
+            envSettings.Month++;
+            //xAxisFull.Add(i);
+            populationController.SetupMonth();
 
 
-                //int day = 1;
-                foreach (var business in businesses.Where(b => b.TypeProduced == ProductType.FossileEnergy))
-                {
-                    business.ActionProduce();
-                }
+            //int day = 1;
+            foreach (var business in businesses.Where(b => b.TypeProduced == ProductType.FossileEnergy))
+            {
+                business.ActionProduce();
+            }
 
-                envSettings.Day = 1;
-                while (envSettings.Day <= 30)
-                {
-                    foreach (var business in businesses.OrderBy(_ => _rng.Next()))
-                    {
-                        if (business.TypeProduced == ProductType.FossileEnergy)
-                        {
-                            continue;
-                        }
-
-                        business.ActionBuyEnergy(31 - envSettings.Day);
-                        //business.DailyBookkeeping();
-                    }
-
-                    envSettings.Day++;
-                }
-
-                foreach (var business in businesses
-                             .Where(business => business.TypeProduced
-                                 is not (ProductType.FossileEnergy or ProductType.LuxuryProduct
-                                 or ProductType.FederalService)))
-                {
-                    business.ActionProduce();
-                }
-
-                envSettings.Day = 1;
-                while (envSettings.Day <= 30)
-                {
-                    foreach (var business in businesses.OrderBy(_ => _rng.Next()))
-                    {
-                        if (business.TypeProduced != ProductType.LuxuryProduct &&
-                            business.TypeProduced != ProductType.FederalService)
-                        {
-                            continue;
-                        }
-
-                        business.ActionBuyResources(31 - envSettings.Day);
-                        //business.DailyBookkeeping();
-                    }
-
-                    envSettings.Day++;
-                }
-
-                foreach (var business in businesses.Where(business =>
-                             business.TypeProduced is ProductType.LuxuryProduct or ProductType.FederalService))
-                {
-                    business.ActionProduce();
-                }
-
-                //academy.EnvironmentStep();
-                populationController.MonthlyUpdatePopulation(countryEconomyMarket, envSettings.Month);
-
-
+            envSettings.Day = 1;
+            while (envSettings.Day <= 30)
+            {
                 foreach (var business in businesses.OrderBy(_ => _rng.Next()))
                 {
-                    //business.ActionInvestInEfficiency();
-                    business.MonthlyBookkeeping();
-                    //business.UpdateWorkforce();
+                    if (business.TypeProduced == ProductType.FossileEnergy)
+                    {
+                        continue;
+                    }
+
+                    business.ActionBuyEnergy(31 - envSettings.Day);
+                    //business.DailyBookkeeping();
                 }
 
-                governmentController.PayoutUnemployed();
-                governmentController.PayoutRetired();
+                envSettings.Day++;
+            }
 
-                if (envSettings.Month % 12 == 0)
-                {
-                    populationController.YearlyUpdatePopulation();
-                }
+            foreach (var business in businesses
+                         .Where(business => business.TypeProduced
+                             is not (ProductType.FossileEnergy or ProductType.LuxuryProduct
+                             or ProductType.FederalService)))
+            {
+                business.ActionProduce();
+            }
 
+            envSettings.Day = 1;
+            while (envSettings.Day <= 30)
+            {
                 foreach (var business in businesses.OrderBy(_ => _rng.Next()))
                 {
-                    business.Reset(envSettings.Month);
+                    if (business.TypeProduced != ProductType.LuxuryProduct &&
+                        business.TypeProduced != ProductType.FederalService)
+                    {
+                        continue;
+                    }
+
+                    business.ActionBuyResources(31 - envSettings.Day);
+                    //business.DailyBookkeeping();
                 }
 
-                countryEconomyMarket.ResetProductMarkets();
-                governmentController.EndMonth();
+                envSettings.Day++;
+            }
+
+            foreach (var business in businesses.Where(business =>
+                         business.TypeProduced is ProductType.LuxuryProduct or ProductType.FederalService))
+            {
+                business.ActionProduce();
+            }
+
+            //academy.EnvironmentStep();
+            populationController.MonthlyUpdatePopulation(countryEconomyMarket, envSettings.Month);
+
+
+            foreach (var business in businesses.OrderBy(_ => _rng.Next()))
+            {
+                //business.ActionInvestInEfficiency();
+                business.MonthlyBookkeeping();
+                //business.UpdateWorkforce();
+            }
+
+            governmentController.PayoutUnemployed();
+            governmentController.PayoutRetired();
+
+            if (envSettings.Month % 12 == 0)
+            {
+                populationController.YearlyUpdatePopulation();
+            }
+
+            foreach (var business in businesses.OrderBy(_ => _rng.Next()))
+            {
+                business.Reset(envSettings.Month);
+            }
+
+            countryEconomyMarket.ResetProductMarkets();
+            governmentController.EndMonth();
+            return null;
         }
 
 

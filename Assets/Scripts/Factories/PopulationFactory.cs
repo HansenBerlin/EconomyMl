@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Controller;
-using Controller.Rewards;
 using Models.Agents;
 using Models.Observations;
-using Models.Population;
 using Settings;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Factories
 {

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Models.Agents;
-using Models.Population;
 
 namespace Models.Meta
 {

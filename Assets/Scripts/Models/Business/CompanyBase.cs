@@ -6,7 +6,6 @@ using Enums;
 using Factories;
 using Models.Agents;
 using Models.Market;
-using Models.Population;
 using Models.Production;
 using Policies;
 using Repositories;

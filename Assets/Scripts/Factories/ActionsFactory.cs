@@ -1,11 +1,8 @@
 ﻿using Controller;
 using Controller.Actions;
-using Controller.Rewards;
 using Enums;
 using Models.Market;
-using Models.Observations;
 using Settings;
-using UnityEngine;
 
 namespace Factories
 {

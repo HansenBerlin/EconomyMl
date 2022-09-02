@@ -1,6 +1,5 @@
 ﻿using Enums;
 using Models.Observations;
-using UnityEngine;
 
 namespace Controller.Rewards
 {
