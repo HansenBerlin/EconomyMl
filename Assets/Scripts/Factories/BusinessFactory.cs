@@ -14,12 +14,12 @@ namespace Factories
 
     public class BusinessFactory
     {
-        private readonly ICountryEconomyMarketsModel _countryEconomyMarkets;
+        private readonly ICountryEconomy _countryEconomyMarkets;
         private readonly StatisticalDataRepository _stats;
         private readonly GovernmentController _government;
         private readonly EnvironmentModel _environment;
 
-        public BusinessFactory(ICountryEconomyMarketsModel countryEconomyMarkets, EnvironmentModel environment,
+        public BusinessFactory(ICountryEconomy countryEconomyMarkets, EnvironmentModel environment,
             StatisticalDataRepository stats, GovernmentController government)
         {
             _countryEconomyMarkets = countryEconomyMarkets;

@@ -36,7 +36,7 @@ namespace Controller
         private EnvironmentModel envSettings;
         private GovernmentController governmentController;
         private PopulationController populationController;
-        private ICountryEconomyMarketsModel countryEconomyMarket;
+        private ICountryEconomy countryEconomyMarket;
         private List<ICompanyModel> businesses;
         private PoliciesWrapper _policies;
         private readonly List<PersonAgent> _population = new();
@@ -63,7 +63,7 @@ namespace Controller
             governmentController = new GovernmentController(government, populationModel);
             populationController = new PopulationController(envSettings, populationModel, jobMarketController,
                 populationFactory, populationPropabilityController);
-            countryEconomyMarket = new CountryEconomyMarketsModel(productMarkets, jobMarketController, populationModel,
+            countryEconomyMarket = new CountryEconomy(productMarkets, jobMarketController, populationModel,
                 governmentController);
             var actionsFactory = new ActionsFactory(jobMarketController, countryEconomyMarket);
             populationFactory.Init(actionsFactory, jobMarketController, _policies, populationPropabilityController);

@@ -1,6 +1,7 @@
 ﻿using Controller.Rewards;
 using Enums;
 using Models.Observations;
+using UnityEngine;
 
 namespace Controller.Actions
 {
@@ -19,7 +20,7 @@ namespace Controller.Actions
             _jobMarket = jobMarket;
         }
 
-        public void SearchForNewJobFromEmployedWithSlightlyIncreasedDemandedSalary(PersonObservations observations, PersonRewardController rewardController, PersonController personController, decimal desiredSalary)
+        public void SearchForNewJob(PersonObservations observations, PersonRewardController rewardController, PersonController personController, decimal desiredSalary)
         {
             decimal salary = observations.MonthlyIncome;
             decimal newSalary = UpdateJob(desiredSalary, salary, personController);
@@ -46,12 +47,20 @@ namespace Controller.Actions
             decimal salary = observations.MonthlyIncome;
             personController.QuitJob();
             decimal salaryAfter = observations.MonthlyIncome;
+            if (salary < 500)
+            {
+                Debug.Log("QUIT " + salary);
+            }
             rewardController.RewardForJobChange(salary, salaryAfter, isUnemployed, false, observations);
         }
 
         public void DoNothing(PersonObservations observations, PersonRewardController rewardController)
         {
             bool isUnemployed = observations.JobStatus == JobStatus.Unemployed;
+            if (observations.MonthlyIncome < 500)
+            {
+                Debug.Log("SKIP " + observations.MonthlyIncome);
+            }
             rewardController.RewardForJobChange(observations.MonthlyIncome, observations.MonthlyIncome, isUnemployed,
                 true, observations);
 

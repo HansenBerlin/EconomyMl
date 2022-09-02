@@ -8,13 +8,8 @@ using Repositories;
 
 namespace Models.Business
 {
-
-
-
     public class PublicService : CompanyBase
     {
-
-
         public override void ActionBuyResources(int daysLeft)
         {
             if (ObservationTotalResourceDemandPerMonth <= 0) return;
@@ -124,7 +119,7 @@ namespace Models.Business
             }
         }
 
-        public PublicService(ICountryEconomyMarketsModel countryEconomyMarkets, ProductController productController,
+        public PublicService(ICountryEconomy countryEconomyMarkets, ProductController productController,
             CompanyResourcePolicy policy, GovernmentController government, CompanyDataRepository data,
             JobMarketController jobMarket) : base(countryEconomyMarkets, productController, policy, government, data,
             jobMarket)

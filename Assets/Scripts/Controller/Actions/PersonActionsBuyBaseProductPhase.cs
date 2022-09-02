@@ -13,9 +13,9 @@ namespace Controller.Actions
     public class PersonActionsBuyBaseProductPhase : IPersonAction
     {
         private readonly PersonResourceDemandSettings _settings;
-        private readonly ICountryEconomyMarketsModel _market;
+        private readonly ICountryEconomy _market;
 
-        public PersonActionsBuyBaseProductPhase(PersonResourceDemandSettings settings, ICountryEconomyMarketsModel market)
+        public PersonActionsBuyBaseProductPhase(PersonResourceDemandSettings settings, ICountryEconomy market)
         {
             _settings = settings;
             _market = market;

@@ -271,7 +271,7 @@ namespace Models.Business
         }*/
 
 
-        public PrivateCompany(ICountryEconomyMarketsModel countryEconomyMarkets, ProductController productController,
+        public PrivateCompany(ICountryEconomy countryEconomyMarkets, ProductController productController,
             CompanyResourcePolicy policy, GovernmentController government, CompanyDataRepository data,
             JobMarketController jobMarket) : base(countryEconomyMarkets, productController, policy, government, data,
             jobMarket)

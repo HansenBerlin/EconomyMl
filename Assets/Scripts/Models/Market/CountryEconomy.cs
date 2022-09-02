@@ -4,6 +4,7 @@ using System.Linq;
 using Controller;
 using Enums;
 using Models.Business;
+using Models.Finance;
 using Models.Population;
 
 namespace Models.Market
@@ -11,20 +12,21 @@ namespace Models.Market
 
 
 
-    public class CountryEconomyMarketsModel : ICountryEconomyMarketsModel
+    public class CountryEconomy : ICountryEconomy
     {
         public string Id = Guid.NewGuid().ToString();
 
         private readonly List<ProductMarketModel> _productMarkets = new();
         private readonly List<ICompanyModel> _businesses = new();
         private readonly JobMarketController _jobMarket;
+        private readonly BankingMarkets _bankingMarkets;
         private readonly PopulationModel _populationModel;
         private readonly GovernmentController _government;
         private int _fossileEnergyLeft = 100000;
         public double WorkerAverageIncome = 0;
 
-        public CountryEconomyMarketsModel(List<ProductMarketModel> productMarkets, JobMarketController jobMarket,
-            PopulationModel populationModel, GovernmentController government)
+        public CountryEconomy(List<ProductMarketModel> productMarkets, JobMarketController jobMarket,
+            PopulationModel populationModel, GovernmentController government, BankingMarkets bankingMarkets)
         {
             foreach (var m in productMarkets)
             {
@@ -40,6 +42,11 @@ namespace Models.Market
         public void AddBusiness(ICompanyModel privateCompany)
         {
             _businesses.Add(privateCompany);
+        }
+
+        public LoanModel GetLoan(decimal amount, CreditRating rating)
+        {
+            return _bankingMarkets.FindCheapestPossibleLoan(amount, rating);
         }
 
         public void AddProduct(ProductController product)

@@ -47,7 +47,7 @@ namespace Controller
             }
         }
 
-        private void RemoveOpenJobPositions(int count, string forCompanyId)
+        public void RemoveOpenJobPositions(int count, string forCompanyId)
         {
             for (int i = count - 1; i >= 0; i--)
             {

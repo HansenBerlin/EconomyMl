@@ -10,9 +10,9 @@ namespace Controller.Actions
     public class PersonActionsBuyLuxuryProductPhase : IPersonAction
     {
         private readonly PersonResourceDemandSettings _settings;
-        private readonly ICountryEconomyMarketsModel _market;
+        private readonly ICountryEconomy _market;
 
-        public PersonActionsBuyLuxuryProductPhase(PersonResourceDemandSettings settings, ICountryEconomyMarketsModel market)
+        public PersonActionsBuyLuxuryProductPhase(PersonResourceDemandSettings settings, ICountryEconomy market)
         {
             _settings = settings;
             _market = market;

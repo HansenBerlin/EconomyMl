@@ -9,22 +9,22 @@ using Models.Market;
 using Models.Production;
 using Policies;
 using Repositories;
+using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 
 namespace Models.Business
 {
-    public abstract class CompanyBase
+
+
+
+    public abstract class CompanyBaseAgent : Agent, ICompanyBase
     {
         public string Id { get; } = Guid.NewGuid().ToString();
 
         protected decimal Balance;
         protected readonly GovernmentController Government;
-
         private readonly CompanyDataRepository Data;
-
-        //protected readonly List<IPersonBase> Workers = new();
         protected readonly IProductionTemplate Production;
-
-        //protected ProductController ProductController { get; }
         protected readonly ICountryEconomy CountryEconomyMarkets;
         protected readonly ProductController ProductController;
         protected readonly CompanyResourcePolicy _policy;
@@ -32,34 +32,28 @@ namespace Models.Business
         public ProductType ResourceTypeNeeded => Production.ResourceTypeNeeded;
         public ProductType EnergyTypeNeeded => Production.EnergyTypeNeeded;
         protected List<PersonAgent> Workers { get; } = new();
-        public long EstimatedEnergyDemand => (long) (Production.EnergyNeededPerPiece * ObsProductionCapacityByWorkers);
-
-        public long EstimatedResourceDemand =>
-            (long) (Production.ResourceNeededPerPiece * ObsProductionCapacityByWorkers);
-
-        private decimal ObsProductionCapacityByWorkers =>
-            Production.UnitsPerWorker * ObserveTotalWorkers * Production.WorkerEfficiencyMultiplier;
-
-        private decimal ObservationPossibleProductionByResource => Production.ResourceNeededPerPiece > 0
-            ? Production.AvailableProductionResources / Production.ResourceNeededPerPiece
+        
+        protected int ObsProductionCapacityByWorkers => (int)(Production.UnitsPerWorker * ObserveTotalWorkers);
+        protected int ObservationPossibleProductionByResource => Production.ResourceNeededPerPiece > 0
+            ? (int)(Production.AvailableProductionResources / Production.ResourceNeededPerPiece)
+            : ObsProductionCapacityByWorkers;
+        protected int ObservationPossibleProductionByEnergy => Production.EnergyNeededPerPiece > 0
+            ? (int)(Production.AvailableProductionEnergy / Production.EnergyNeededPerPiece)
             : ObsProductionCapacityByWorkers;
 
-        private decimal ObservationPossibleProductionByEnergy => Production.EnergyNeededPerPiece > 0
-            ? Production.AvailableProductionEnergy / Production.EnergyNeededPerPiece
-            : ObsProductionCapacityByWorkers;
-
-        protected decimal ObservationTotalResourceDemandPerMonth => CalculateDemandForMonthlyProduction("r");
-        protected decimal ObservationTotalEnergyDemandPerMonth => CalculateDemandForMonthlyProduction("e");
+        protected int PossibleProduction => ObservationPossibleProductionByEnergy >= ObservationPossibleProductionByResource
+            ? ObservationPossibleProductionByResource
+            : ObservationPossibleProductionByEnergy;
 
         protected decimal ObserveTotalWorkers => Workers.Count + 1;
 
         protected decimal LastProdCostsInMonthForRessourcesAndEnergy;
-        private decimal _lastWorkerPayments;
-        private long _unitsProducedInMonth;
+        protected decimal _lastWorkerPayments;
+        protected long _unitsProducedInMonth;
         protected decimal ProfitTaxPaidInMonth;
         protected decimal ProfitAfterTaxesInMonth;
         protected decimal CashflowIn;
-        private decimal CashflowOut => TotalCostBeforeTaxes + ProfitTaxPaidInMonth + UpgradeEffiencyCosts;
+        protected decimal CashflowOut => TotalCostBeforeTaxes + ProfitTaxPaidInMonth + UpgradeEffiencyCosts;
         protected decimal UpgradeEffiencyCosts;
         protected int MissingResourceDemand;
         protected decimal FixedPerProductCosts => _unitsProducedInMonth * Production.BaseCostPerPieceProduced;
@@ -76,7 +70,7 @@ namespace Models.Business
         //protected readonly List<JobModel> OpenJobPositions = new();
 
 
-        protected CompanyBase(ICountryEconomy countryEconomyMarkets, ProductController productController,
+        protected CompanyBaseAgent(ICountryEconomy countryEconomyMarkets, ProductController productController,
             CompanyResourcePolicy policy,
             GovernmentController government, CompanyDataRepository data, JobMarketController jobMarket)
         {
@@ -140,7 +134,6 @@ namespace Models.Business
             }
         }
 
-        public abstract void ActionInvestInEfficiency();
 
         private decimal CalculateDemandForMonthlyProduction(string type)
         {
@@ -162,28 +155,13 @@ namespace Models.Business
             }
         }
 
-        public abstract void ActionBuyResources(int daysLeft);
+        public abstract void ActionBuyResources(decimal maxSpendings, int resourcesDemanded);
 
-        public abstract void ActionBuyEnergy(int daysLeft);
+        public abstract void ActionBuyEnergy(decimal maxSpendings, int energyDemanded);
+        public abstract void ActionProduce(int percentProduction);
 
 
-
-
-        public void ActionProduce()
-        {
-            decimal unitsProduced = ObservationPossibleProductionByEnergy >= ObservationPossibleProductionByResource
-                ? ObservationPossibleProductionByResource
-                : ObservationPossibleProductionByEnergy;
-
-            int finalProduction = (int) (unitsProduced * Production.MachineEfficiencyMultiplier);
-            ProductController.AddNew(finalProduction);
-            _unitsProducedInMonth += finalProduction;
-
-            CountryEconomyMarkets.ReportProduction(finalProduction, TypeProduced);
-
-            Production.AvailableProductionEnergy -= (int)(unitsProduced * Production.EnergyNeededPerPiece);
-            Production.AvailableProductionResources -= (int)(unitsProduced * Production.ResourceNeededPerPiece);
-        }
+        
 
 
         public void QuarterlyUpdate()
@@ -192,7 +170,7 @@ namespace Models.Business
         }
 
 
-        public abstract void ActionAdaptProductionCapacity();
+        public abstract void ActionAdaptProductionCapacity(float changeProductionCapabilities, int maxSalary);
 
 
 
@@ -220,7 +198,7 @@ namespace Models.Business
 
 
         public abstract void MonthlyBookkeeping();
-        public abstract void ActionAdaptPrices();
+        public abstract void ActionAdaptPrices(float newPriceMultiplier);
 
     }
 }

@@ -12,9 +12,9 @@ namespace Factories
     public class ActionsFactory
     {
         private readonly JobMarketController _jobMarketController;
-        private readonly ICountryEconomyMarketsModel _market;
+        private readonly ICountryEconomy _market;
 
-        public ActionsFactory (JobMarketController jobMarketController, ICountryEconomyMarketsModel market)
+        public ActionsFactory (JobMarketController jobMarketController, ICountryEconomy market)
         {
             _jobMarketController = jobMarketController;
             _market = market;

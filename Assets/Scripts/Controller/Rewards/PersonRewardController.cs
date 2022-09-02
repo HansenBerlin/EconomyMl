@@ -1,5 +1,6 @@
 ﻿using Enums;
 using Models.Observations;
+using UnityEngine;
 
 namespace Controller.Rewards
 {
@@ -18,6 +19,10 @@ namespace Controller.Rewards
         {
             minC = value < minC ? value : minC;
             maxC = value > maxC ? value : maxC;
+            if (maxC - minC == 0)
+            {
+                return 0;
+            }
             float norm = 2 * ((value - minC) / (maxC - minC)) - 1;
             return norm;
         }
@@ -26,6 +31,10 @@ namespace Controller.Rewards
         {
             minJ = value < minJ ? value : minJ;
             maxJ = value > maxJ ? value : maxJ;
+            if (maxJ - minJ == 0)
+            {
+                return 0;
+            }
             float norm = 2 * ((value - minJ) / (maxJ - minJ)) - 1;
             return norm;
         }
@@ -34,6 +43,10 @@ namespace Controller.Rewards
         {
             minB = value < minB ? value : minB;
             maxB = value > maxB ? value : maxB;
+            if (maxB - minB == 0)
+            {
+                return 0;
+            }
             float norm = 2 * ((value - minB) / (maxB - minB)) - 1;
             return norm;
         }
@@ -42,6 +55,10 @@ namespace Controller.Rewards
         {
             minL = value < minL ? value : minL;
             maxL = value > maxL ? value : maxL;
+            if (maxL - minL == 0)
+            {
+                return 0;
+            }
             float norm = 2 * ((value - minL) / (maxL - minL)) - 1;
             return norm;
         }
@@ -71,7 +88,13 @@ namespace Controller.Rewards
         {
             var demandFactor = demanded - amountBought == 0 ? 1F : 0F;
             var overBoughFactor = observations.Capital < 0 ? -1F : 0F;
-            observations.LuxuryBuyReward = NormalizeLux(demandFactor + overBoughFactor);
+            var val = NormalizeLux(demandFactor + overBoughFactor);
+            if (float.IsInfinity(val) || float.IsNaN(val))
+            {
+                Debug.Log("asd");
+            }
+
+            observations.LuxuryBuyReward = val;
         }
 
         public void RewardForJobChange(decimal salaryBefore, decimal salaryAfter, bool isUnemployed, bool isDecisionSkipped, PersonObservations observations)
@@ -80,6 +103,7 @@ namespace Controller.Rewards
             {
                 observations.JobReward = -0.2F;
             }
+            
             if (salaryBefore > salaryAfter)
             {
                 if (isUnemployed)

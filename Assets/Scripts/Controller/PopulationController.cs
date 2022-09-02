@@ -33,7 +33,7 @@ namespace Controller
             _propabilityController = propabilityController;
         }
 
-        public void DailyUpdatePopulation(ICountryEconomyMarketsModel countryEconomyMarkets, int dayOfMonth)
+        public void DailyUpdatePopulation(ICountryEconomy countryEconomyMarkets, int dayOfMonth)
         {
             var rng = StatisticalDistributionController.Rng;
 
@@ -55,7 +55,7 @@ namespace Controller
         
         
 
-        public void MonthlyUpdatePopulation(ICountryEconomyMarketsModel countryEconomyMarkets, int month)
+        public void MonthlyUpdatePopulation(ICountryEconomy countryEconomyMarkets, int month)
         {
             var rng = StatisticalDistributionController.Rng;
 

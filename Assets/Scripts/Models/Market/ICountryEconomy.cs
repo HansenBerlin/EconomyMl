@@ -2,13 +2,14 @@
 using Controller;
 using Enums;
 using Models.Business;
+using Models.Finance;
 
 namespace Models.Market
 {
 
 
 
-    public interface ICountryEconomyMarketsModel
+    public interface ICountryEconomy
     {
         void AddBusiness(ICompanyModel privateCompany);
         void AddProduct(ProductController product);
@@ -23,5 +24,6 @@ namespace Models.Market
         void ReportDemand(long count, ProductType type);
         void ReportProduction(long count, ProductType type);
         List<ProductType> FindMostDemandedByTrend();
+        LoanModel GetLoan(decimal amount, CreditRating rating);
     }
 }

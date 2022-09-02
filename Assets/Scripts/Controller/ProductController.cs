@@ -23,6 +23,7 @@ namespace Controller
 
 
 
+
         public string Id = Guid.NewGuid().ToString();
 
         public ProductType Type { get; set; }
