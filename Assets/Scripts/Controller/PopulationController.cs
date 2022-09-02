@@ -42,6 +42,18 @@ namespace Controller
                 //person.ActionBuyDailyStuff(countryEconomyMarkets, dayOfMonth);
             }
         }
+        
+        public void Setup()
+        {
+            var rng = StatisticalDistributionController.Rng;
+
+            foreach (var person in _populationModel.AgeRangeAdult.OrderBy(_ => rng.Next()))
+            {
+                person.SetupWorkState(_jobController);
+            }
+        }
+        
+        
 
         public void MonthlyUpdatePopulation(ICountryEconomyMarketsModel countryEconomyMarkets, int month)
         {

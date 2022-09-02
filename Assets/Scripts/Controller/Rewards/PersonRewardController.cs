@@ -51,27 +51,27 @@ namespace Controller.Rewards
             var capitalFactor = observations.Capital > 0 ? 100F : -200F;
             var capitalFactor2 = observations.Capital > 100000 ? 1000F : 0F;
             float expenseFactor = (float)(observations.MonthlyIncome - observations.MonthlyExpenses);
-            var jobFactor = observations.JobStatus != JobStatus.Unemployed ? 1000F : -500F;
+            var jobFactor = observations.JobStatus == JobStatus.Unemployed ? -200F : observations.JobStatus == JobStatus.Employed ? 500F : 0;
             var baseDemandFulfilled = observations.UnsatisfiedBaseDemand * -10;
-            var luxury = observations.LuxuryProducts < 100 ? observations.LuxuryProducts * 100 : 100;
+            var luxury = observations.LuxuryProducts < 100 ? observations.LuxuryProducts * 10 : 1000;
             observations.JobReward = 0;
             observations.BaseBuyReward = 0;
             observations.LuxuryBuyReward = 0;
             observations.CapitalReward = 0;
-            return NormalizeCombined(capitalFactor + capitalFactor2 + jobFactor + expenseFactor + baseDemandFulfilled + luxury);
+            var val = NormalizeCombined(capitalFactor + capitalFactor2 + jobFactor + expenseFactor + baseDemandFulfilled + luxury);
+            return val;
         }
         
         public void RewardForBaseProductSatisfaction(int amountBought, int demanded, PersonObservations observations)
         {
-            observations.BaseBuyReward = NormalizeBase(demanded - amountBought == 0 ? 0.2F : -0.1F);
+            observations.BaseBuyReward = NormalizeBase(demanded - amountBought == 0 ? 0.5F : -0.5F);
         }
         
         public void RewardForLuxuryProductSatisfaction(int amountBought, int demanded, PersonObservations observations)
         {
-            var demandFactor = demanded - amountBought == 0 ? 0.1F : 0F;
-            var amountFactor = amountBought * 0.5F / (observations.LuxuryProducts + 1);
-            var overBoughFactor = observations.Capital < 0 ? -0.2F : 0.05F;
-            observations.LuxuryBuyReward = NormalizeLux(demandFactor + amountFactor + overBoughFactor);
+            var demandFactor = demanded - amountBought == 0 ? 1F : 0F;
+            var overBoughFactor = observations.Capital < 0 ? -1F : 0F;
+            observations.LuxuryBuyReward = NormalizeLux(demandFactor + overBoughFactor);
         }
 
         public void RewardForJobChange(decimal salaryBefore, decimal salaryAfter, bool isUnemployed, bool isDecisionSkipped, PersonObservations observations)
@@ -79,10 +79,6 @@ namespace Controller.Rewards
             if (isDecisionSkipped && isUnemployed)
             {
                 observations.JobReward = -0.2F;
-            }
-            if (isDecisionSkipped && isUnemployed == false)
-            {
-                observations.JobReward = -0.01F;
             }
             if (salaryBefore > salaryAfter)
             {

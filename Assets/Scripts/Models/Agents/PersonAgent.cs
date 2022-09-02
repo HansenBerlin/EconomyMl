@@ -49,7 +49,7 @@ namespace Models.Agents
         public AgeStatus AgeStatus => _observations.AgeStatus;
         public JobModel Job { get; set; }
 
-        private PersonActionsJobPhase _jobActions;
+        private PersonActionsJobPhaseFree _jobActions;
         private PersonActionsBuyBaseProductPhase _baseBuyActions;
         private PersonActionsBuyLuxuryProductPhase _luxuryBuyActions;
 
@@ -91,7 +91,7 @@ namespace Models.Agents
             _controller.Setup(this);
             _rewardController = new PersonRewardController();
             var actions = _controller.InitActions();
-            _jobActions = actions[0] as PersonActionsJobPhase;
+            _jobActions = actions[0] as PersonActionsJobPhaseFree;
             _baseBuyActions = actions[1] as PersonActionsBuyBaseProductPhase;
             _luxuryBuyActions = actions[2] as PersonActionsBuyLuxuryProductPhase;
             StaysChildless = StatisticalDistributionController.CreateRandom(0, 10) == 1;
@@ -211,6 +211,14 @@ namespace Models.Agents
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
             if (Death != DeathReason.HasNotDied) return;
+            if (Month % 12 == 0)
+            {
+                float reward = _rewardController.CombinedReward(_observations);
+                AddReward(reward);
+                //EndEpisode();
+                EndEpisode();
+                return;
+            }
 
             var jobDecision= actionBuffers.DiscreteActions[0];
             var baseBuyDecision= actionBuffers.DiscreteActions[1];
@@ -240,6 +248,7 @@ namespace Models.Agents
                     _jobActions.DoNothing(_observations, _rewardController);
                     break;
             }
+            AddReward(_observations.JobReward);
             
             switch (baseBuyDecision)
             {
@@ -256,6 +265,7 @@ namespace Models.Agents
                     AddReward(-0.01F);
                     break;
             }
+            AddReward(_observations.BaseBuyReward);
             
             switch (luxBuyDecision)
             {
@@ -272,22 +282,13 @@ namespace Models.Agents
                     AddReward(-0.01F);
                     break;
             }
-
-            AddReward(_observations.BaseBuyReward);
-            Debug.Log($"Reward for base action {baseBuyDecision} " + _observations.BaseBuyReward);
-            
             AddReward(_observations.LuxuryBuyReward);
-            Debug.Log($"Reward for lux action {luxBuyDecision} " + _observations.LuxuryBuyReward);
-            
-            AddReward(_observations.JobReward);
-            Debug.Log($"Reward for job action {jobDecision} " + _observations.JobReward);
-            
+
             _observations.JobReward = 0;
             _observations.BaseBuyReward = 0;
             _observations.LuxuryBuyReward = 0;
             _observations.CapitalReward = 0;
             _observations.MonthlyExpenses = 0;
-            //_observations.UnsatisfiedBaseDemand = 0;
         }
 
         public void RequestMonthlyDecisions(int month, decimal averageIncome)
@@ -305,12 +306,9 @@ namespace Models.Agents
         {
             if (Death != DeathReason.HasNotDied) return;
 
-            float reward = _rewardController.CombinedReward(_observations);
-            Debug.Log($"Yearly reward in month {Month} " + reward);
-            AddReward(reward);
+            //Debug.Log($"Yearly reward in month {Month} " + reward);
             _controller.UpdateAgent(avgIncome, tempPop, factory, probController);
-            //EndEpisode();
-            EndEpisode();
+            RequestDecision();
             _observations.UnsatisfiedBaseDemand = 0;
 
         }
@@ -339,6 +337,11 @@ namespace Models.Agents
         public decimal Pay()
         {
             return _controller.Pay();
+        }
+        
+        public void SetupWorkState(JobMarketController jobMarket)
+        {
+            _controller.SetupWorkState(jobMarket);
         }
     }
 }

@@ -101,17 +101,19 @@ namespace Controller
         public void Start()
         {
             academy = Academy.Instance;
+            populationController.Setup();
         }
 
         public void Update()
         {
-            if (envSettings.Year > simulateYears)
+            if (envSettings.Year >= simulateYears)
             {
                 Application.Quit();
             }
             else
             {
                 StartCoroutine(UpdateBusinesses());
+                Debug.Log("YEAR " + envSettings.Year + " MONTH " + envSettings.Month);
             }
         }
 
@@ -214,7 +216,8 @@ namespace Controller
 
             countryEconomyMarket.ResetProductMarkets();
             governmentController.EndMonth();
-            return null;
+            yield return new WaitForSeconds(0);
+
         }
 
 

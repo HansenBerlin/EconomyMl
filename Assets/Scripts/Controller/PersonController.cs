@@ -120,6 +120,18 @@ namespace Controller
         }
 
 
+        public void SetupWorkState(JobMarketController jobMarket)
+        {
+            var job = jobMarket.FindAvailableJob(0);
+            if (job.Status == JobPositionStatus.Taken)
+            {
+                job.TakeJob(_person, _observations.DesiredSalary);
+                _observations.JobStatus = JobStatus.Employed;
+                _observations.MonthlyIncome = _observations.DesiredSalary;
+                job.Salary = _observations.DesiredSalary;
+                _person.Job = job;
+            }
+        }
 
         public void UpdateIncome(decimal amount)
         {

@@ -24,7 +24,7 @@ namespace Factories
         {
             if (type == PersonActionType.JobDecision)
             {
-                return new PersonActionsJobPhase(_jobMarketController);
+                return new PersonActionsJobPhaseFree(_jobMarketController);
             }
 
             if (type == PersonActionType.BaseProductBuy)

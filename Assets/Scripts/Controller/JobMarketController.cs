@@ -65,11 +65,6 @@ namespace Controller
             {
 
                 var position = availablePositions[0];
-                if (position.Type == ProductType.FossileEnergy)
-                {
-                    Console.WriteLine();
-                }
-
                 position.Status = JobPositionStatus.Taken;
                 _openJobPositions.Remove(position);
                 return position;
