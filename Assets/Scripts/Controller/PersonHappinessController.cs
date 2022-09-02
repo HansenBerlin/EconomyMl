@@ -1,4 +1,5 @@
-﻿using Models.Population;
+﻿using Models.Agents;
+using Models.Population;
 
 namespace Controller
 {
@@ -7,7 +8,7 @@ namespace Controller
 
     public class PersonHappinessController
     {
-        public void CalculateReward(IPersonBase personBase)
+        public void CalculateReward(PersonAgent personBase)
         {
             // Kapital / Kapitalzuwachs
             // Einkommen / Einkommenszuwachs

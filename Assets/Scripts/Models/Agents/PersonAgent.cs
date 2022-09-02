@@ -9,6 +9,7 @@ using Factories;
 using Models.Meta;
 using Models.Observations;
 using Models.Population;
+using Settings;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
@@ -22,28 +23,32 @@ namespace Models.Agents
 
 
 
-    public class PersonAgent : Agent, IPersonBase
+    public class PersonAgent : Agent
     {
         private PersonController _controller;
         private PersonRewardController _rewardController;
         private PersonObservations _observations;
-        public GameObject _personcontrollerGo;
-        public GameObject _rewardControllerGo;
-        public GameObject _observationsGo;
 
 
+        
+        [field:SerializeField]
         public bool IsDummy { get; protected set; }
+        [field:SerializeField]
         public string Id { get; } = Guid.NewGuid().ToString();
         private string _parentAId;
         private string _parentBId;
         public JobStatus JobStatus => _observations.JobStatus;
-        public int Age { get; } = 20;
+
+        [field: SerializeField] 
+        public int initage;
+        public int Age => _observations.Age;
         public decimal Capital => _observations.Capital;
         public decimal MonthlyIncome => _observations.MonthlyIncome;
         public int UnderageChildrenCount => Children.Count(c => c.AgeStatus == AgeStatus.UnderageChild);
         public bool StaysChildless { get; set; }
+        [field:SerializeField]
         public DeathReason Death { get; set; } = DeathReason.HasNotDied;
-        public List<IPersonBase> Children { get; } = new();
+        public List<PersonAgent> Children { get; } = new();
         public AgeStatus AgeStatus => _observations.AgeStatus;
         public JobModel Job { get; set; }
 
@@ -52,6 +57,7 @@ namespace Models.Agents
         private PersonActionsBuyLuxuryProductPhase _luxuryBuyActions;
 
         public int Month;
+        public int CompletedEps;
         
         public bool maskBaseBuyActions = false;
         public bool maskLuxuryBuyActions = false;
@@ -75,33 +81,43 @@ namespace Models.Agents
         const int luxBuyLimitLow = 1;
         const int luxBuyLimitHigh = 2;
         const int luxBuyNothing = 3;
-        
 
+
+        private bool isInitDone;
         
-        public void Init(string parentAId, string parentBId, decimal initialIncome, decimal initialCapital)
+        public void Init(string parentAId, string parentBId, PersonObservations observations, PersonController controller)
         {
+            initage = observations.Age;
             AddParents(parentAId, parentBId);
-            _observations = _observationsGo.GetComponent<PersonObservations>();
-            _controller = _personcontrollerGo.GetComponent<PersonController>();
-            _rewardController = _rewardControllerGo.GetComponent<PersonRewardController>();
-            _controller.Setup(this, _observations, _rewardController);
+            _observations = observations;
+            _controller = controller;
+            _controller.Setup(this);
+            _rewardController = new PersonRewardController();
             var actions = _controller.InitActions();
             _jobActions = actions[0] as PersonActionsJobPhase;
             _baseBuyActions = actions[1] as PersonActionsBuyBaseProductPhase;
             _luxuryBuyActions = actions[2] as PersonActionsBuyLuxuryProductPhase;
             StaysChildless = StatisticalDistributionController.CreateRandom(0, 10) == 1;
-            _observations.Capital = initialCapital;
-            _observations.DesiredSalary = initialIncome;
+            isInitDone = true;
+            SetupMasking();
         }
 
-        public PersonAgent()
-        {
-        }
-        
         public override void OnEpisodeBegin()
         {
-            if(_observations == null)
-                Debug.Log("");
+            if (isInitDone == false) return;
+            if (Death != DeathReason.HasNotDied) return;
+            CompletedEps = CompletedEpisodes;
+            initage = Age;
+            SetupMasking();
+        }
+
+        public void Kill()
+        {
+            //Destroy(this);
+        }
+
+        private void SetupMasking()
+        {
             _observations.JobReward = 0;
             _observations.BaseBuyReward = 0;
             _observations.LuxuryBuyReward = 0;
@@ -139,8 +155,11 @@ namespace Models.Agents
             }
         }
         
+        
         public override void CollectObservations(VectorSensor sensor)
         {
+            if (Death != DeathReason.HasNotDied) return;
+
             sensor.AddObservation(_observations.Age);
             sensor.AddObservation(_observations.LuxuryProducts);
             sensor.AddObservation(_observations.OpenJobPositions);
@@ -150,6 +169,7 @@ namespace Models.Agents
             sensor.AddObservation((float)_observations.MonthlyIncome);
             sensor.AddObservation((float)_observations.MonthlyExpenses);
             sensor.AddObservation((float)_observations.SatisfactionRate);
+            sensor.AddObservation((float)_observations.AverageIncome);
         }
 
         private void MaskUnemployedJobDecisions(IDiscreteActionMask actionMask)
@@ -203,6 +223,8 @@ namespace Models.Agents
         
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
+            if (Death != DeathReason.HasNotDied) return;
+
             var jobDecision= actionBuffers.DiscreteActions[0];
             var baseBuyDecision= actionBuffers.DiscreteActions[1];
             var luxBuyDecision= actionBuffers.DiscreteActions[2];
@@ -274,8 +296,12 @@ namespace Models.Agents
             Debug.Log($"Reward for job action {jobDecision} " + _observations.JobReward);
         }
 
-        public void RequestJobDecision(int month)
+        public void RequestMonthlyDecisions(int month, decimal averageIncome)
         {
+            if (Death != DeathReason.HasNotDied) return;
+
+            _observations.AverageIncome = averageIncome;
+            Month = month;
             RequestDecision();
             EndEpisode();
         }
@@ -283,7 +309,9 @@ namespace Models.Agents
 
         public void YearlyAgentUpdate(decimal avgIncome, TempPopulationUpdateModel tempPop, PopulationFactory factory, PopulationPropabilityController probController)
         {
-            float reward = _controller.GetCombinedReward();
+            if (Death != DeathReason.HasNotDied) return;
+
+            float reward = _rewardController.CombinedReward(_observations);
             Debug.Log($"Yearly reward in month {Month} " + reward);
             AddReward(reward);
             _controller.UpdateAgent(avgIncome, tempPop, factory, probController);
@@ -295,7 +323,7 @@ namespace Models.Agents
             _observations.Capital += amount;
         }
 
-        public void AddChild(IPersonBase child)
+        public void AddChild(PersonAgent child)
         {
             Children.Add(child);
         }

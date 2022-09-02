@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Enums;
+using Models.Agents;
 using Models.Population;
 
 namespace Factories
@@ -9,7 +10,7 @@ namespace Factories
 
     public static class JobPositionFactory
     {
-        public static List<JobModel> Create(int count, decimal salary, string companyId, List<IPersonBase> workers,
+        public static List<JobModel> Create(int count, decimal salary, string companyId, List<PersonAgent> workers,
             ProductType type)
         {
             List<JobModel> jobs = new();

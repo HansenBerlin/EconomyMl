@@ -4,61 +4,105 @@ using UnityEngine;
 
 namespace Controller.Rewards
 {
-    public class PersonRewardController : MonoBehaviour
+    public class PersonRewardController
     {
-        private readonly PersonObservations _observations;
-
-        public PersonRewardController(PersonObservations observations)
+        private float minC;
+        private float maxC;
+        private float minJ;
+        private float maxJ;
+        private float minB;
+        private float maxB;
+        private float minL;
+        private float maxL;
+        
+        private float NormalizeCombined(float value)
         {
-            _observations = observations;
-        }
-
-        public float CombinedReward()
-        {
-            var capitalFactor = _observations.Capital > 0 ? 0.1F : -0.2F;
-            var expenseFactor = _observations.MonthlyExpenses > _observations.MonthlyIncome ? -0.1F : 0.1F;
-            var jobFactor = _observations.JobStatus != JobStatus.Unemployed ? 0.2F : -0.2F;
-            _observations.JobReward = 0;
-            _observations.BaseBuyReward = 0;
-            _observations.LuxuryBuyReward = 0;
-            _observations.CapitalReward = 0;
-            return capitalFactor + jobFactor + expenseFactor;
+            minC = value < minC ? value : minC;
+            maxC = value > maxC ? value : maxC;
+            float norm = 2 * ((value - minC) / (maxC - minC)) - 1;
+            return norm;
         }
         
-        public void RewardForBaseProductSatisfaction(int amountBought, int demanded)
+        private float NormalizeWork(float value)
         {
-            _observations.BaseBuyReward = demanded - amountBought == 0 ? 0.1F : 0;
+            minJ = value < minJ ? value : minJ;
+            maxJ = value > maxJ ? value : maxJ;
+            float norm = 2 * ((value - minJ) / (maxJ - minJ)) - 1;
+            return norm;
         }
         
-        public void RewardForLuxuryProductSatisfaction(int amountBought, int demanded)
+        private float NormalizeBase(float value)
+        {
+            minB = value < minB ? value : minB;
+            maxB = value > maxB ? value : maxB;
+            float norm = 2 * ((value - minB) / (maxB - minB)) - 1;
+            return norm;
+        }
+        
+        private float NormalizeLux(float value)
+        {
+            minL = value < minL ? value : minL;
+            maxL = value > maxL ? value : maxL;
+            float norm = 2 * ((value - minL) / (maxL - minL)) - 1;
+            return norm;
+        }
+        
+        public float CombinedReward(PersonObservations observations)
+        {
+            var capitalFactor = observations.Capital > 0 ? 100F : -200F;
+            var capitalFactor2 = observations.Capital > 100000 ? 1000F : 0F;
+            float expenseFactor = (float)(observations.MonthlyIncome - observations.MonthlyExpenses);
+            var jobFactor = observations.JobStatus != JobStatus.Unemployed ? 1000F : -500F;
+            var baseDemandFulfilled = observations.UnsatisfiedBaseDemand * -10;
+            var luxury = observations.LuxuryProducts < 100 ? observations.LuxuryProducts * 100 : 100;
+            observations.JobReward = 0;
+            observations.BaseBuyReward = 0;
+            observations.LuxuryBuyReward = 0;
+            observations.CapitalReward = 0;
+            observations.UnsatisfiedBaseDemand = 0;
+            return NormalizeCombined(capitalFactor + capitalFactor2 + jobFactor + expenseFactor + baseDemandFulfilled + luxury);
+        }
+        
+        public void RewardForBaseProductSatisfaction(int amountBought, int demanded, PersonObservations observations)
+        {
+            observations.BaseBuyReward = NormalizeBase(demanded - amountBought == 0 ? 0.2F : -0.1F);
+        }
+        
+        public void RewardForLuxuryProductSatisfaction(int amountBought, int demanded, PersonObservations observations)
         {
             var demandFactor = demanded - amountBought == 0 ? 0.1F : 0F;
-            var amountFactor = amountBought * 0.5F / (_observations.LuxuryProducts + 1);
-            var overBoughFactor = _observations.Capital < 0 ? 0.5F : 0;
-            _observations.LuxuryBuyReward = demandFactor + amountFactor + overBoughFactor;
+            var amountFactor = amountBought * 0.5F / (observations.LuxuryProducts + 1);
+            var overBoughFactor = observations.Capital < 0 ? -0.2F : 0.05F;
+            observations.LuxuryBuyReward = NormalizeLux(demandFactor + amountFactor + overBoughFactor);
         }
 
-        public void RewardForJobChange(decimal salaryBefore, decimal salaryAfter, bool isUnemployed, bool isDecisionSkipped)
+        public void RewardForJobChange(decimal salaryBefore, decimal salaryAfter, bool isUnemployed, bool isDecisionSkipped, PersonObservations observations)
         {
             if (isDecisionSkipped && isUnemployed)
             {
-                _observations.JobReward = -0.1F;
+                observations.JobReward = -0.1F;
             }
             if (isDecisionSkipped && isUnemployed == false)
             {
-                _observations.JobReward = +0.01F;
+                observations.JobReward = -0.01F;
             }
             if (salaryBefore > salaryAfter)
             {
                 if (isUnemployed)
                 {
-                    _observations.JobReward = (float)(salaryAfter / salaryBefore - 1) + 0.1F;
+                    float val = (float) (salaryAfter / salaryBefore - 1) + 0.1F;
+                    observations.JobReward = NormalizeWork(val);
                 }
-                _observations.JobReward = (float)(salaryAfter / salaryBefore - 1);
+                else
+                {
+                    float val = (float)(salaryAfter / salaryBefore - 1);
+                    observations.JobReward = NormalizeWork(val);
+                }
             }
             if (salaryBefore < salaryAfter)
             {
-                _observations.JobReward = (float)(salaryBefore / salaryAfter - 1);
+                float val = (float)(salaryBefore / salaryAfter - 1);
+                observations.JobReward = NormalizeWork(val);
             }
             
         }

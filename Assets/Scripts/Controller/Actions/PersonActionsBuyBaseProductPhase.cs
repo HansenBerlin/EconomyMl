@@ -68,7 +68,7 @@ namespace Controller.Actions
         {
             observations.MonthlyExpenses += receipt.TotalPricePaid;
             observations.Capital -= receipt.AmountBought;
-            rewardController.RewardForBaseProductSatisfaction(receipt.AmountBought, demandLeft);
+            rewardController.RewardForBaseProductSatisfaction(receipt.AmountBought, demandLeft, observations);
             demandLeft -= receipt.AmountBought;
 
             if (demandLeft > 0)

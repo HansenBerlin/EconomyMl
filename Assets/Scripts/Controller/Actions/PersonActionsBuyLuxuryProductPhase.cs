@@ -25,8 +25,7 @@ namespace Controller.Actions
                 maxAmount: demand);
             var receipt = _market.Buy(request);
             
-            rewardController.RewardForLuxuryProductSatisfaction(receipt.AmountBought, demand);
-            UpdateProperties(receipt, demand, observations);
+            UpdateProperties(receipt, demand, observations, rewardController);
         }
 
         public void BuyDemandedLuxuryProductWithIncomeSpendingLimit(PersonObservations observations, int underageChildCount, PersonRewardController rewardController)
@@ -43,8 +42,7 @@ namespace Controller.Actions
 
             }
 
-            rewardController.RewardForLuxuryProductSatisfaction(receipt.AmountBought, demand);
-            UpdateProperties(receipt, demand, observations);
+            UpdateProperties(receipt, demand, observations, rewardController);
         }
 
         public void BuyDemandedBaseProductWithCapitalSpendingLimit(PersonObservations observations, int underageChildCount, PersonRewardController rewardController)
@@ -61,14 +59,14 @@ namespace Controller.Actions
 
             }
 
-            rewardController.RewardForLuxuryProductSatisfaction(receipt.AmountBought, demand);
-            UpdateProperties(receipt, demand, observations);
+            UpdateProperties(receipt, demand, observations, rewardController);
         }
 
-        private void UpdateProperties(ReceiptModel receipt, int demandLeft, PersonObservations observations)
+        private void UpdateProperties(ReceiptModel receipt, int demandLeft, PersonObservations observations, PersonRewardController rewardController)
         {
             observations.MonthlyExpenses += receipt.TotalPricePaid;
             observations.Capital -= receipt.AmountBought;
+            rewardController.RewardForLuxuryProductSatisfaction(receipt.AmountBought, demandLeft, observations);
             demandLeft -= receipt.AmountBought;
 
             if (demandLeft > 0)

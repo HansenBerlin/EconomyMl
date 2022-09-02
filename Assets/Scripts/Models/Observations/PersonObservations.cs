@@ -11,7 +11,7 @@ namespace Models.Observations
 
 
 
-    public class PersonObservations : MonoBehaviour
+    public class PersonObservations
     {
         private readonly PoliciesWrapper _policies;
         private readonly JobMarketController _jobMarket;
@@ -25,6 +25,7 @@ namespace Models.Observations
         public int LuxuryProducts { get; set; }
         public JobStatus JobStatus { get; set; }
         public decimal AverageIncome { get; set; }
+
         public int OpenJobPositions => _jobMarket.OpenJobPositionsCount();
         //private List<IPersonBase> _children;
         //public int UnderageChildrenCount => _children.Count(c => c.AgeStatus == AgeStatus.UnderageChild);

@@ -4,6 +4,7 @@ using Controller.Actions;
 using Controller.Rewards;
 using Enums;
 using Factories;
+using Models.Agents;
 using Models.Meta;
 using Models.Observations;
 using Models.Population;
@@ -17,18 +18,23 @@ namespace Controller
 
     public class PersonController
     {
-        //private PoliciesWrapper _policies;
-        private IPersonBase _person;
-        //private ActionsFactory _factory;
-        private PersonObservations _observations;
-        private PersonRewardController _rewardController;
+        private readonly PoliciesWrapper _policies;
+        private PersonAgent _person;
+        private readonly ActionsFactory _factory;
+        private readonly PersonObservations _observations;
+        //private PersonRewardController _rewardController;
        
 
-        public void Setup(IPersonBase person, PersonObservations observations, PersonRewardController rewardController)
+        public PersonController (PersonObservations observations, PoliciesWrapper policies, ActionsFactory factory)
         {
             _observations = observations;
+            _policies = policies;
+            _factory = factory;
+        }
+        
+        public void Setup(PersonAgent person)
+        {
             _person = person;
-            _rewardController = rewardController;
             _observations.JobStatus = GetInitialJobStatus();
             _observations.MonthlyIncome = InitialIncome();
         }
@@ -42,14 +48,6 @@ namespace Controller
                 _factory.Create(PersonActionType.LuxuryProductBuy)
             };
         }
-
-        public float GetCombinedReward()
-        {
-            return _rewardController.CombinedReward();
-        }
-
-
-
 
         private decimal InitialIncome()
         {
@@ -203,10 +201,11 @@ namespace Controller
                 _person.Death = deathState;
                 tempPop.Died.Add(_person);
                 DistributeWealthToChildren();
+                _person.Kill();
             }
         }
 
-        public void AddChild(IPersonBase child)
+        public void AddChild(PersonAgent child)
         {
             if (_observations.Age - 17 < child.Age)
                 throw new Exception();
@@ -222,7 +221,7 @@ namespace Controller
         }
 
 
-        private void Retire(ICollection<IPersonBase> retiredTemp)
+        private void Retire(ICollection<PersonAgent> retiredTemp)
         {
             if (_observations.JobStatus == JobStatus.Employed)
             {

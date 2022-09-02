@@ -5,6 +5,7 @@ using Controller;
 using Enums;
 using Models.Production;
 using Repositories;
+using Unity.MLAgents;
 
 namespace Models.Market
 {
@@ -297,9 +298,13 @@ namespace Models.Market
                 p.Reset();
             }*/
 
-            _dataRepository.Production.Add(_currentProduction);
-            _dataRepository.Sales.Add(_currentSales);
-            _dataRepository.Demand.Add(_currentUnfullfilledDemand);
+            var statsRecorder = Academy.Instance.StatsRecorder;
+            statsRecorder.Add("PROD/" + Type + "-prd", _currentProduction);
+            statsRecorder.Add("PROD/"+ Type + "-sls", _currentSales);
+            statsRecorder.Add("PROD/" + Type + "-dmd", _currentUnfullfilledDemand);
+            //_dataRepository.Production.Add(_currentProduction);
+            //_dataRepository.Sales.Add(_currentSales);
+            //_dataRepository.Demand.Add(_currentUnfullfilledDemand);
 
             _currentSales = 0;
             _currentProduction = 0;

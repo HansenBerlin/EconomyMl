@@ -10,15 +10,13 @@ namespace Controller.Actions
     public class PersonActionsJobPhase : IPersonAction
     {
         private readonly JobMarketController _jobMarket;
-        private readonly PopulationController _population;
         //private readonly PersonRewardController _rewardController;
         //private readonly PersonObservations _observations;
-        private decimal AverageIncome => -_population.AverageWorkerIncome();
+        //private decimal AverageIncome => -_population.AverageWorkerIncome();
 
-        public PersonActionsJobPhase(JobMarketController jobMarket, PopulationController population)
+        public PersonActionsJobPhase(JobMarketController jobMarket)
         {
             _jobMarket = jobMarket;
-            _population = population;
         }
 
         public void SearchForNewJobFromEmployedWithSlightlyIncreasedDemandedSalary(PersonObservations observations, PersonRewardController rewardController, PersonController personController)
@@ -27,7 +25,7 @@ namespace Controller.Actions
             decimal salary = observations.MonthlyIncome;
             decimal newSalary = UpdateJob(desiredSalary, personController);
 
-            rewardController.RewardForJobChange(salary, newSalary, false, false);
+            rewardController.RewardForJobChange(salary, newSalary, false, false, observations);
 
         }
 
@@ -37,16 +35,16 @@ namespace Controller.Actions
             decimal salary = observations.MonthlyIncome;
             decimal newSalary = UpdateJob(desiredSalary, personController);
 
-            rewardController.RewardForJobChange(salary, newSalary, false, false);
+            rewardController.RewardForJobChange(salary, newSalary, false, false, observations);
         }
 
         public void SearchForNewJobFromUnemployedWithAverageDemandedSalary(PersonObservations observations, PersonRewardController rewardController, PersonController personController)
         {
-            decimal desiredSalary = AverageIncome;
+            decimal desiredSalary = observations.AverageIncome;
             decimal salary = observations.MonthlyIncome;
             decimal newSalary = UpdateJob(desiredSalary, personController);
 
-            rewardController.RewardForJobChange(salary, newSalary, true, false);
+            rewardController.RewardForJobChange(salary, newSalary, true, false, observations);
         }
 
         public void SearchForNewJobFromUnemployedWithMinimumDemandedSalary(PersonObservations observations, PersonRewardController rewardController, PersonController personController)
@@ -55,16 +53,16 @@ namespace Controller.Actions
             decimal salary = observations.MonthlyIncome;
             decimal newSalary = UpdateJob(desiredSalary, personController);
 
-            rewardController.RewardForJobChange(salary, newSalary, true, false);
+            rewardController.RewardForJobChange(salary, newSalary, true, false, observations);
         }
 
         public void SearchForNewJobFromUnemployedWithAboveAverageDemandedSalary(PersonObservations observations, PersonRewardController rewardController, PersonController personController)
         {
-            decimal desiredSalary = AverageIncome * 1.2M;
+            decimal desiredSalary = observations.AverageIncome * 1.2M;
             decimal salary = observations.MonthlyIncome;
             decimal newSalary = UpdateJob(desiredSalary, personController);
 
-            rewardController.RewardForJobChange(salary, newSalary, true, false);
+            rewardController.RewardForJobChange(salary, newSalary, true, false, observations);
         }
 
         private decimal UpdateJob(decimal desiredSalary, PersonController personController)
@@ -84,14 +82,14 @@ namespace Controller.Actions
             decimal salary = observations.MonthlyIncome;
             personController.QuitJob();
             decimal salaryAfter = observations.MonthlyIncome;
-            rewardController.RewardForJobChange(salary, salaryAfter, isUnemployed, false);
+            rewardController.RewardForJobChange(salary, salaryAfter, isUnemployed, false, observations);
         }
 
         public void DoNothing(PersonObservations observations, PersonRewardController rewardController)
         {
-            bool isUnemployed = (observations.JobStatus != JobStatus.Employed && observations.JobStatus != JobStatus.Retired);
+            bool isUnemployed = observations.JobStatus == JobStatus.Unemployed;
             rewardController.RewardForJobChange(observations.MonthlyIncome, observations.MonthlyIncome, isUnemployed,
-                true);
+                true, observations);
 
         }
     }

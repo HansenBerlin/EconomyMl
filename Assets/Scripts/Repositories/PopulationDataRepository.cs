@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Enums;
+using Models.Agents;
 using Models.Population;
 
 namespace Repositories
@@ -12,9 +13,9 @@ namespace Repositories
     {
         public readonly Dictionary<int, List<double>> PopulationAgeData = new();
         public readonly Dictionary<int, List<double>> ChildPerPersonCountData = new();
-        private readonly Dictionary<int, List<IPersonBase>> _populationData = new();
+        private readonly Dictionary<int, List<PersonAgent>> _populationData = new();
 
-        public void AddNewPersonsDataset(int year, List<IPersonBase> values)
+        public void AddNewPersonsDataset(int year, List<PersonAgent> values)
         {
             _populationData.Add(year, values);
             PopulationAgeData.Add(year, values.Select(p => (double) p.Age).ToList());
@@ -89,9 +90,9 @@ namespace Repositories
             plt.SaveFig(path);
         }*/
 
-        private List<double> GetChildCountInAdultPopulation(List<IPersonBase> pop)
+        private List<double> GetChildCountInAdultPopulation(List<PersonAgent> pop)
         {
-            List<IPersonBase> searchInPersons = pop
+            List<PersonAgent> searchInPersons = pop
                 .Where(p => p.AgeStatus > AgeStatus.UnderageChild).ToList();
 
             double[] values = new double[4];

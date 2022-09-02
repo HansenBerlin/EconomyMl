@@ -2,6 +2,7 @@
 using System.Linq;
 using Enums;
 using Factories;
+using Models.Agents;
 using Models.Market;
 using Models.Meta;
 using Models.Population;
@@ -51,18 +52,18 @@ namespace Controller
                 //person.ActionBuyMonthlyStuff(countryEconomyMarkets);
                 //person.ActionRethinkJobSituation(_jobController);
                 //person.UpdateExpenses();
-                person.RequestJobDecision(month);
+                person.RequestMonthlyDecisions(month, AverageWorkerIncome());
             }
         }
 
-        private decimal AverageIncome(IReadOnlyCollection<IPersonBase> searchIn)
+        private decimal AverageIncome(IReadOnlyCollection<PersonAgent> searchIn)
         {
             double totalIncome = searchIn.Sum(w => (double) w.MonthlyIncome);
             var rt = searchIn.Count > 0 ? totalIncome / searchIn.Count : 0;
             return (decimal) rt;
         }
 
-        public decimal AverageWorkerIncome()
+        private decimal AverageWorkerIncome()
         {
             var searchIn = _populationModel.Population.Where(p => p.JobStatus == JobStatus.Employed).ToList();
             double totalIncome = searchIn.Sum(w => (double) w.MonthlyIncome);

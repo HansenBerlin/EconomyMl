@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Enums;
+using Models.Agents;
 
 namespace Models.Population
 {
@@ -12,14 +13,14 @@ namespace Models.Population
         public string Id = Guid.NewGuid().ToString();
         public string CompanyId { get; }
         public decimal Salary { get; set; }
-        private readonly List<IPersonBase> _employees;
+        private readonly List<PersonAgent> _employees;
 
         public JobPositionStatus Status { get; set; }
 
         //private readonly List<JobModel> _openPositions;
         public ProductType Type { get; }
 
-        public JobModel(decimal salary, List<IPersonBase> employees, string companyId, ProductType type)
+        public JobModel(decimal salary, List<PersonAgent> employees, string companyId, ProductType type)
         {
             //_openPositions = openJobs;
             Salary = salary;
@@ -35,7 +36,7 @@ namespace Models.Population
         }
 
 
-        public void TakeJob(IPersonBase worker, decimal desiredSalary)
+        public void TakeJob(PersonAgent worker, decimal desiredSalary)
         {
             if (_employees.Contains(worker))
             {
@@ -53,7 +54,7 @@ namespace Models.Population
             Status = JobPositionStatus.NotAvailable;
         }
 
-        public void QuitJob(IPersonBase worker)
+        public void QuitJob(PersonAgent worker)
         {
             if (_employees.Contains(worker) == false)
             {

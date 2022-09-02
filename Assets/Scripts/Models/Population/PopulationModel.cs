@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Enums;
+using Models.Agents;
 using Models.Meta;
 using Repositories;
+using Unity.MLAgents;
 
 namespace Models.Population
 {
@@ -11,18 +13,18 @@ namespace Models.Population
 
     public class PopulationModel
     {
-        private List<IPersonBase> EmployedWorkers => Population.Where(p => p.JobStatus <= JobStatus.Employed).ToList();
+        private List<PersonAgent> EmployedWorkers => Population.Where(p => p.JobStatus <= JobStatus.Employed).ToList();
 
-        public List<IPersonBase> UnemployedWorkers =>
+        public List<PersonAgent> UnemployedWorkers =>
             Population.Where(p => p.JobStatus <= JobStatus.Unemployed).ToList();
 
-        private List<IPersonBase> AgeRangeChildren =>
+        private List<PersonAgent> AgeRangeChildren =>
             Population.Where(p => p.AgeStatus <= AgeStatus.UnderageChild).ToList();
 
-        private List<IPersonBase> AgeRangeWorker => Population.Where(p => p.AgeStatus == AgeStatus.WorkerAge).ToList();
-        public List<IPersonBase> AgeRangeRetired => Population.Where(p => p.AgeStatus == AgeStatus.RetiredAge).ToList();
-        public List<IPersonBase> AgeRangeAdult => Population.Where(p => p.AgeStatus > AgeStatus.UnderageChild).ToList();
-        public List<IPersonBase> Population { get; }
+        private List<PersonAgent> AgeRangeWorker => Population.Where(p => p.AgeStatus == AgeStatus.WorkerAge).ToList();
+        public List<PersonAgent> AgeRangeRetired => Population.Where(p => p.AgeStatus == AgeStatus.RetiredAge).ToList();
+        public List<PersonAgent> AgeRangeAdult => Population.Where(p => p.AgeStatus > AgeStatus.UnderageChild).ToList();
+        public List<PersonAgent> Population { get; }
         public int PopulationCount => Population.Count;
 
 
@@ -59,7 +61,7 @@ namespace Models.Population
         private readonly PopulationDataRepository _populationData;
 
 
-        public PopulationModel(List<IPersonBase> initialPopulation, PopulationDataRepository populationData,
+        public PopulationModel(List<PersonAgent> initialPopulation, PopulationDataRepository populationData,
             EnvironmentModel env)
         {
             Population = initialPopulation;
@@ -69,17 +71,20 @@ namespace Models.Population
 
         public void UpdateData()
         {
+            var statsRecorder = Academy.Instance.StatsRecorder;
+
             double statAgeSum = 0;
             double statCapitalSum = 0;
             double statUnderageChildrenAdultsSum = 0;
             double statParentsOfUnderageCount = 0;
             double statParentsOfUnderageAgeSum = 0;
 
-            AverageIncomeAdultAge.Add((double) AverageIncome(AgeRangeAdult));
-            AverageIncomeWorkerAge.Add((double) AverageIncome(AgeRangeWorker));
-            AverageIncomeRetiredAge.Add((double) AverageIncome(AgeRangeRetired));
-            AverageIncomeEmployed.Add((double) AverageIncome(EmployedWorkers));
-            AverageIncomeUnemployed.Add((double) AverageIncome(UnemployedWorkers));
+            //AverageIncomeAdultAge.Add((double) AverageIncome(AgeRangeAdult));
+            //AverageIncomeWorkerAge.Add((double) AverageIncome(AgeRangeWorker));
+            //AverageIncomeRetiredAge.Add((double) AverageIncome(AgeRangeRetired));
+            //AverageIncomeEmployed.Add((double) AverageIncome(EmployedWorkers));
+            //AverageIncomeUnemployed.Add((double) AverageIncome(UnemployedWorkers));
+            statsRecorder.Add("POP/INCOME AVG WORKER", (float)AverageIncome(AgeRangeWorker));
 
             foreach (var person in Population)
             {
@@ -125,14 +130,19 @@ namespace Models.Population
             DiedPercentageStat.Add(statDiedTotal / statTotalPopulation * 100);
             //AverageSkillLevel.Add(statSkillSum / statTotalPopulation);
 
+
             double employmentRate = (double) EmployedWorkers.Count / (EmployedWorkers.Count + UnemployedWorkers.Count) *
                                     100;
 
-            EmploymentRate.Add(employmentRate);
+            statsRecorder.Add("POP/TOTAL", (float)statTotalPopulation);
+            statsRecorder.Add("POP/AVG AGE", (float)(statAgeSum / statTotalPopulation));
+            statsRecorder.Add("POP/AVG CAPITAL", (float)(statCapitalSum / statTotalPopulation));
+            statsRecorder.Add("POP/EMPL RATE", (float)employmentRate);
+            //EmploymentRate.Add(employmentRate);
 
         }
 
-        private decimal AverageIncome(IReadOnlyCollection<IPersonBase> searchIn)
+        private decimal AverageIncome(IReadOnlyCollection<PersonAgent> searchIn)
         {
             double totalIncome = searchIn.Sum(w => (double) w.MonthlyIncome);
             var rt = searchIn.Count > 0 ? totalIncome / searchIn.Count : 0;

@@ -4,6 +4,7 @@ using System.Linq;
 using Controller;
 using Enums;
 using Factories;
+using Models.Agents;
 using Models.Market;
 using Models.Population;
 using Models.Production;
@@ -34,7 +35,7 @@ namespace Models.Business
         public ProductType TypeProduced => Production.TypeProduced;
         public ProductType ResourceTypeNeeded => Production.ResourceTypeNeeded;
         public ProductType EnergyTypeNeeded => Production.EnergyTypeNeeded;
-        protected List<IPersonBase> Workers { get; } = new();
+        protected List<PersonAgent> Workers { get; } = new();
         public long EstimatedEnergyDemand => (long) (Production.EnergyNeededPerPiece * ObsProductionCapacityByWorkers);
 
         public long EstimatedResourceDemand =>

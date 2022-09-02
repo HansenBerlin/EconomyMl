@@ -12,17 +12,14 @@ namespace Factories
 
 
 
-    public class ActionsFactory : MonoBehaviour
+    public class ActionsFactory
     {
-        private JobMarketController _jobMarketController;
-        private PopulationController _populationController;
-        private ICountryEconomyMarketsModel _market;
+        private readonly JobMarketController _jobMarketController;
+        private readonly ICountryEconomyMarketsModel _market;
 
-        public void Init(JobMarketController jobMarketController, PopulationController populationController,
-            ICountryEconomyMarketsModel market)
+        public ActionsFactory (JobMarketController jobMarketController, ICountryEconomyMarketsModel market)
         {
             _jobMarketController = jobMarketController;
-            _populationController = populationController;
             _market = market;
         }
 
@@ -30,7 +27,7 @@ namespace Factories
         {
             if (type == PersonActionType.JobDecision)
             {
-                return new PersonActionsJobPhase(_jobMarketController, _populationController);
+                return new PersonActionsJobPhase(_jobMarketController);
             }
 
             if (type == PersonActionType.BaseProductBuy)

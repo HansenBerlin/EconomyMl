@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Enums;
 using Factories;
+using Models.Agents;
 using Models.Business;
 using Models.Market;
 using Models.Meta;
@@ -28,15 +29,15 @@ namespace Controller
         public GameObject popFactory;
         public GameObject policyWrapperGo;
         public GameObject popDataTemplate;
+        public GameObject propabilityController;
         private EnvironmentModel envSettings;
         private GovernmentController governmentController;
         private PopulationController populationController;
         private ICountryEconomyMarketsModel countryEconomyMarket;
         private List<ICompanyModel> businesses;
         private PoliciesWrapper _policies;
-        private List<IPersonBase> _population = new();
-        private System.Random _rng = StatisticalDistributionController.Rng;
-        private bool isInitDone = false;
+        private readonly List<PersonAgent> _population = new();
+        private readonly System.Random _rng = StatisticalDistributionController.Rng;
         private PopulationModel populationModel;
         private StatisticalDataRepository statsRepository;
 
@@ -45,23 +46,23 @@ namespace Controller
             statsRepository = new StatisticalDataRepository();
             envSettings = environmentSettings.GetComponent<EnvironmentModel>();
             _policies = policyWrapperGo.GetComponent<PoliciesWrapper>();
-            _policies = policyWrapperGo.GetComponent<PoliciesWrapper>();
             var popDataModel = popDataTemplate.GetComponent<PopulationDataTemplateModel>();
             var populationFactory = popFactory.GetComponent<PopulationFactory>();
             
             var govData = new GovernmentDataRepository("GER");
             statsRepository.AddGovernmentDataset(govData);
-            var populationPropabilityController = new PopulationPropabilityController(popDataModel);
+            var populationPropabilityController = propabilityController.GetComponent<PopulationPropabilityController>();
             var populationData = new PopulationDataRepository();
             var workerController = jobMarketController.GetComponent<JobMarketController>();
-            var initialPopulation = populationFactory.CreateInitialPopulation();
-            _population.AddRange(initialPopulation);
             var productMarkets = ProductionFactory.CreateMarkets(statsRepository, envSettings);
             populationModel = new PopulationModel(_population, populationData, envSettings);
             var government = new GovernmentModel(_policies.FederalPolicies, govData);
             governmentController = new GovernmentController(government, populationModel);
             populationController = new PopulationController(envSettings, populationModel, workerController, populationFactory, populationPropabilityController);
             countryEconomyMarket = new CountryEconomyMarketsModel(productMarkets, workerController, populationModel, governmentController);
+            var actionsFactory = new ActionsFactory(workerController, countryEconomyMarket);
+            var initialPopulation = populationFactory.CreateInitialPopulation(actionsFactory);
+            _population.AddRange(initialPopulation);
 
             var businessFactory =
                 new BusinessFactory(countryEconomyMarket, envSettings, statsRepository, governmentController);
@@ -79,6 +80,7 @@ namespace Controller
                 businessFactory.Create(ProductType.IntermediateProduct, interPolicy, workerController);
             var luxuryProductCompany = businessFactory.Create(ProductType.LuxuryProduct, luxPolicy, workerController);
             var federalServices = businessFactory.Create(ProductType.FederalService, fedPolicy, workerController);
+            
             businesses = new()
             {
                 fossileEnergyCompany,
@@ -91,10 +93,10 @@ namespace Controller
 
         public void Update()
         {
-            if (envSettings.Month > 120 && isTraining == false)
+            if (envSettings.Month > 120)
             {
-                //CreateCharts();
-                Application.Quit();
+                //var charts = new ChartsModel(statsRepository, populationModel);
+                //charts.CreateAll();
             }
 
             UpdateBusinesses();
