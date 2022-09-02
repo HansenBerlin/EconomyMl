@@ -7,16 +7,16 @@ namespace Controller
 
 
 
-    public class PopulationPropabilityController : MonoBehaviour
+    public class PopulationPropabilityController
     {
-        public GameObject DataTemplateModel;
+        //public GameObject DataTemplateModel;
         private PopulationDataTemplateModel _dataTemplate;
         public List<int> AgeDistribution { get; private set; }
         private List<double> _qualificationDistribution;
 
-        public void Awake()
+        public PopulationPropabilityController(PopulationDataTemplateModel dataTemplate)
         {
-            _dataTemplate = DataTemplateModel.GetComponent<PopulationDataTemplateModel>();
+            _dataTemplate = dataTemplate;
             AgeDistribution = _dataTemplate.CreateAgeDistributionTemplate();
             _qualificationDistribution = _dataTemplate.CreateQualificationStructure();
         }

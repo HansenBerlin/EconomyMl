@@ -25,16 +25,14 @@ namespace Factories
         private JobMarketController _jobMarketController;
         
         public GameObject personAgentPrefab;
-        public GameObject propabilityController; 
-        public GameObject policiesWrapper; 
-        public GameObject jobMarketController; 
-
-
-        public void Awake()
+        
+        
+        public void Init(ActionsFactory factory, JobMarketController jobMarketController, PoliciesWrapper policies, PopulationPropabilityController propabilityController)
         {
-            _jobMarketController = jobMarketController.GetComponent<JobMarketController>();
-            _policies = policiesWrapper.GetComponent<PoliciesWrapper>();
-            _propabilityController = propabilityController.GetComponent<PopulationPropabilityController>();
+            _actionsFactory = factory;
+            _jobMarketController = jobMarketController;
+            _policies = policies;
+            _propabilityController = propabilityController;
             _distributionOfAges = _propabilityController.AgeDistribution;
         }
 
@@ -49,9 +47,8 @@ namespace Factories
             };
         }
 
-        public List<PersonAgent> CreateInitialPopulation(ActionsFactory factory)
+        public List<PersonAgent> CreateInitialPopulation()
         {
-            _actionsFactory = factory;
             List<PersonAgent> persons = new();
             List<PersonAgent>[] buckets = CreateBuckets();
 

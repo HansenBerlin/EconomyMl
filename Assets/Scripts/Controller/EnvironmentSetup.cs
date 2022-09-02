@@ -27,12 +27,12 @@ namespace Controller
         public int simulateYears = 1;
         public int year = 1;
         //public int initPopulation = 1000;
-        public GameObject jobMarketController;
+        public GameObject jobMarketControllerGo;
         public GameObject environmentSettings;
         public GameObject popFactory;
         public GameObject policyWrapperGo;
         public GameObject popDataTemplate;
-        public GameObject propabilityController;
+        //public GameObject propabilityController;
         private EnvironmentModel envSettings;
         private GovernmentController governmentController;
         private PopulationController populationController;
@@ -51,22 +51,23 @@ namespace Controller
             _policies = policyWrapperGo.GetComponent<PoliciesWrapper>();
             var popDataModel = popDataTemplate.GetComponent<PopulationDataTemplateModel>();
             var populationFactory = popFactory.GetComponent<PopulationFactory>();
+            var jobMarketController = jobMarketControllerGo.GetComponent<JobMarketController>();
 
             var govData = new GovernmentDataRepository("GER");
             statsRepository.AddGovernmentDataset(govData);
-            var populationPropabilityController = propabilityController.GetComponent<PopulationPropabilityController>();
+            var populationPropabilityController = new PopulationPropabilityController(popDataModel);
             var populationData = new PopulationDataRepository();
-            var workerController = jobMarketController.GetComponent<JobMarketController>();
             var productMarkets = ProductionFactory.CreateMarkets(statsRepository, envSettings);
             populationModel = new PopulationModel(_population, populationData, envSettings);
             var government = new GovernmentModel(_policies.FederalPolicies, govData);
             governmentController = new GovernmentController(government, populationModel);
-            populationController = new PopulationController(envSettings, populationModel, workerController,
+            populationController = new PopulationController(envSettings, populationModel, jobMarketController,
                 populationFactory, populationPropabilityController);
-            countryEconomyMarket = new CountryEconomyMarketsModel(productMarkets, workerController, populationModel,
+            countryEconomyMarket = new CountryEconomyMarketsModel(productMarkets, jobMarketController, populationModel,
                 governmentController);
-            var actionsFactory = new ActionsFactory(workerController, countryEconomyMarket);
-            var initialPopulation = populationFactory.CreateInitialPopulation(actionsFactory);
+            var actionsFactory = new ActionsFactory(jobMarketController, countryEconomyMarket);
+            populationFactory.Init(actionsFactory, jobMarketController, _policies, populationPropabilityController);
+            var initialPopulation = populationFactory.CreateInitialPopulation();
             _population.AddRange(initialPopulation);
 
             var businessFactory =
@@ -79,12 +80,12 @@ namespace Controller
             var fedPolicy = new CompanyResourcePolicy(2300, 2300, 60, 10000000, 0);
 
             var fossileEnergyCompany =
-                businessFactory.Create(ProductType.FossileEnergy, fossilePolicy, workerController);
-            var baseProductCompany = businessFactory.Create(ProductType.BaseProduct, basePolicy, workerController);
+                businessFactory.Create(ProductType.FossileEnergy, fossilePolicy, jobMarketController);
+            var baseProductCompany = businessFactory.Create(ProductType.BaseProduct, basePolicy, jobMarketController);
             var intermediateProductCompany =
-                businessFactory.Create(ProductType.IntermediateProduct, interPolicy, workerController);
-            var luxuryProductCompany = businessFactory.Create(ProductType.LuxuryProduct, luxPolicy, workerController);
-            var federalServices = businessFactory.Create(ProductType.FederalService, fedPolicy, workerController);
+                businessFactory.Create(ProductType.IntermediateProduct, interPolicy, jobMarketController);
+            var luxuryProductCompany = businessFactory.Create(ProductType.LuxuryProduct, luxPolicy, jobMarketController);
+            var federalServices = businessFactory.Create(ProductType.FederalService, fedPolicy, jobMarketController);
 
             businesses = new()
             {
@@ -103,14 +104,16 @@ namespace Controller
             UpdateBusinesses();
         }
 
-        public void Update()
+        public void FixedUpdate()
         {
-            if (envSettings.Month > 120)
+            if (envSettings.Year > simulateYears)
             {
-                //var charts = new ChartsModel(statsRepository, populationModel);
-                //charts.CreateAll();
+                Application.Quit();
             }
-
+            else
+            {
+                UpdateBusinesses();
+            }
         }
 
         private Academy academy;
@@ -121,10 +124,7 @@ namespace Controller
         private void UpdateBusinesses()
         {
 
-            //populationController.MonthlyUpdatePopulation(countryEconomyMarket, envSettings.Month);
-            for (int i = 0; i < simulateYears * 12; i++)
-            {
-                year = envSettings.Year;
+            year = envSettings.Year;
                 //Thread.Sleep(1000);
                 //Academy.Instance.EnvironmentStep();
                 stepCountEpisode = academy.StepCount;
@@ -216,7 +216,6 @@ namespace Controller
 
                 countryEconomyMarket.ResetProductMarkets();
                 governmentController.EndMonth();
-            }
         }
 
 
