@@ -80,12 +80,8 @@ namespace Factories
                 childLeft.AddParents("dead", "dead");
                 persons.Add(childLeft);
             }
-
-            var sumage = persons.Sum(x => x.Age);
-            var ages = sumage / persons.Count;
-
+            
             return persons;
-
         }
 
         public PersonAgent FindPersonWithinValueRange(int low, int high, List<PersonAgent> valuesToSearchIn,

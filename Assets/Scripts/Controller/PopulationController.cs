@@ -47,12 +47,24 @@ namespace Controller
         {
             var rng = StatisticalDistributionController.Rng;
 
-            foreach (var person in _populationModel.AgeRangeAdult.OrderBy(_ => rng.Next()))
+            foreach (var person in _populationModel.Population.OrderBy(_ => rng.Next()))
             {
                 //person.ActionBuyMonthlyStuff(countryEconomyMarkets);
                 //person.ActionRethinkJobSituation(_jobController);
                 //person.UpdateExpenses();
                 person.RequestMonthlyDecisions(month, AverageWorkerIncome());
+            }
+        }
+        
+        public void SetupMonth()
+        {
+
+            foreach (var person in _populationModel.Population)
+            {
+                //person.ActionBuyMonthlyStuff(countryEconomyMarkets);
+                //person.ActionRethinkJobSituation(_jobController);
+                //person.UpdateExpenses();
+                person.InitMonth();
             }
         }
 

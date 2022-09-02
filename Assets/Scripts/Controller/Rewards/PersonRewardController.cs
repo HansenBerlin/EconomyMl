@@ -59,7 +59,6 @@ namespace Controller.Rewards
             observations.BaseBuyReward = 0;
             observations.LuxuryBuyReward = 0;
             observations.CapitalReward = 0;
-            observations.UnsatisfiedBaseDemand = 0;
             return NormalizeCombined(capitalFactor + capitalFactor2 + jobFactor + expenseFactor + baseDemandFulfilled + luxury);
         }
         
@@ -80,7 +79,7 @@ namespace Controller.Rewards
         {
             if (isDecisionSkipped && isUnemployed)
             {
-                observations.JobReward = -0.1F;
+                observations.JobReward = -0.2F;
             }
             if (isDecisionSkipped && isUnemployed == false)
             {
@@ -90,7 +89,7 @@ namespace Controller.Rewards
             {
                 if (isUnemployed)
                 {
-                    float val = (float) (salaryAfter / salaryBefore - 1) + 0.1F;
+                    float val = (float) (salaryAfter / salaryBefore - 1) + 0.2F;
                     observations.JobReward = NormalizeWork(val);
                 }
                 else
@@ -101,7 +100,7 @@ namespace Controller.Rewards
             }
             if (salaryBefore < salaryAfter)
             {
-                float val = (float)(salaryBefore / salaryAfter - 1);
+                float val = (float)(salaryAfter / salaryBefore - 1);
                 observations.JobReward = NormalizeWork(val);
             }
             

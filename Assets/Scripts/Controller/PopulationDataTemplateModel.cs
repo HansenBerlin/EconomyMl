@@ -20,7 +20,8 @@ namespace Controller
         {
             List<int> distribution = new();
             if (_type != DemographyType.IndustrialCountrySociety) return distribution;
-            double[] distributionPerDecade = {9.1, 9.3, 11.8, 12.8, 12.6, 16.2, 12.4, 9.3, 3.7, 2.7};
+            //double[] distributionPerDecade = {9.1, 9.3, 11.8, 12.8, 12.6, 16.2, 12.4, 9.3, 3.7, 2.7};
+            double[] distributionPerDecade = {0, 0, 0, 100, 0, 0, 0, 0, 0, 0};
             for (int i = 0; i < distributionPerDecade.Length; i++)
             {
                 int paritalCount = (int) (_initialPopulationCount * distributionPerDecade[i] / 100);

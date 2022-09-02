@@ -102,13 +102,10 @@ namespace Models.Agents
             SetupMasking();
         }
 
-        public override void OnEpisodeBegin()
+        public void InitMonth()
         {
-            if (isInitDone == false) return;
-            if (Death != DeathReason.HasNotDied) return;
             CompletedEps = CompletedEpisodes;
             initage = Age;
-            SetupMasking();
         }
 
         public void Kill()
@@ -118,13 +115,6 @@ namespace Models.Agents
 
         private void SetupMasking()
         {
-            _observations.JobReward = 0;
-            _observations.BaseBuyReward = 0;
-            _observations.LuxuryBuyReward = 0;
-            _observations.CapitalReward = 0;
-            _observations.MonthlyExpenses = 0;
-            _observations.UnsatisfiedBaseDemand = 0;
-            
             if (_observations.AgeStatus == AgeStatus.UnderageChild)
             {
                 maskBaseBuyActions = true;
@@ -294,18 +284,25 @@ namespace Models.Agents
             
             AddReward(_observations.JobReward);
             Debug.Log($"Reward for job action {jobDecision} " + _observations.JobReward);
+            
+            _observations.JobReward = 0;
+            _observations.BaseBuyReward = 0;
+            _observations.LuxuryBuyReward = 0;
+            _observations.CapitalReward = 0;
+            _observations.MonthlyExpenses = 0;
+            //_observations.UnsatisfiedBaseDemand = 0;
         }
 
         public void RequestMonthlyDecisions(int month, decimal averageIncome)
         {
+            Month = month;
             if (Death != DeathReason.HasNotDied) return;
 
             _observations.AverageIncome = averageIncome;
-            Month = month;
+            SetupMasking();
             RequestDecision();
-            EndEpisode();
+            Academy.Instance.EnvironmentStep();
         }
-        
 
         public void YearlyAgentUpdate(decimal avgIncome, TempPopulationUpdateModel tempPop, PopulationFactory factory, PopulationPropabilityController probController)
         {
@@ -315,7 +312,10 @@ namespace Models.Agents
             Debug.Log($"Yearly reward in month {Month} " + reward);
             AddReward(reward);
             _controller.UpdateAgent(avgIncome, tempPop, factory, probController);
+            //EndEpisode();
             EndEpisode();
+            _observations.UnsatisfiedBaseDemand = 0;
+
         }
 
         public void UpdateCapital(decimal amount)

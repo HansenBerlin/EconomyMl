@@ -23,7 +23,7 @@ namespace Controller.Actions
         {
             decimal desiredSalary = observations.MonthlyIncome * 1.1M;
             decimal salary = observations.MonthlyIncome;
-            decimal newSalary = UpdateJob(desiredSalary, personController);
+            decimal newSalary = UpdateJob(desiredSalary, salary, personController);
 
             rewardController.RewardForJobChange(salary, newSalary, false, false, observations);
 
@@ -33,7 +33,7 @@ namespace Controller.Actions
         {
             decimal desiredSalary = observations.MonthlyIncome * 1.5M;
             decimal salary = observations.MonthlyIncome;
-            decimal newSalary = UpdateJob(desiredSalary, personController);
+            decimal newSalary = UpdateJob(desiredSalary, salary, personController);
 
             rewardController.RewardForJobChange(salary, newSalary, false, false, observations);
         }
@@ -42,7 +42,7 @@ namespace Controller.Actions
         {
             decimal desiredSalary = observations.AverageIncome;
             decimal salary = observations.MonthlyIncome;
-            decimal newSalary = UpdateJob(desiredSalary, personController);
+            decimal newSalary = UpdateJob(desiredSalary, salary, personController);
 
             rewardController.RewardForJobChange(salary, newSalary, true, false, observations);
         }
@@ -51,7 +51,7 @@ namespace Controller.Actions
         {
             decimal desiredSalary = observations.MonthlyIncome * 1.05M;
             decimal salary = observations.MonthlyIncome;
-            decimal newSalary = UpdateJob(desiredSalary, personController);
+            decimal newSalary = UpdateJob(desiredSalary, salary, personController);
 
             rewardController.RewardForJobChange(salary, newSalary, true, false, observations);
         }
@@ -60,20 +60,22 @@ namespace Controller.Actions
         {
             decimal desiredSalary = observations.AverageIncome * 1.2M;
             decimal salary = observations.MonthlyIncome;
-            decimal newSalary = UpdateJob(desiredSalary, personController);
+            decimal newSalary = UpdateJob(desiredSalary, salary, personController);
 
             rewardController.RewardForJobChange(salary, newSalary, true, false, observations);
         }
 
-        private decimal UpdateJob(decimal desiredSalary, PersonController personController)
+        private decimal UpdateJob(decimal desiredSalary, decimal salary, PersonController personController)
         {
             var job = _jobMarket.FindAvailableJob(desiredSalary);
             if (job.Status == JobPositionStatus.Taken)
             {
                 personController.UpdateNewJob(job);
+                return job.Salary;
             }
 
-            return job.Salary;
+            return salary;
+
         }
 
         public void QuitJobAndStayUnemployed(PersonObservations observations, PersonRewardController rewardController, PersonController personController)
