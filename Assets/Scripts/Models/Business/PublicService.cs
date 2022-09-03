@@ -13,7 +13,7 @@ namespace Models.Business
         public override void ActionBuyResources(int daysLeft)
         {
             if (ObservationTotalResourceDemandPerMonth <= 0) return;
-            int maxBuyAmount = (int) ObservationTotalResourceDemandPerMonth / daysLeft;
+            long maxBuyAmount = (int) ObservationTotalResourceDemandPerMonth / daysLeft;
             switch (maxBuyAmount)
             {
                 case 0:
@@ -41,7 +41,7 @@ namespace Models.Business
         public override void ActionBuyEnergy(int daysLeft)
         {
             if (ObservationTotalEnergyDemandPerMonth <= 0) return;
-            int maxBuyAmount = (int) ObservationTotalEnergyDemandPerMonth / daysLeft;
+            long maxBuyAmount = (int) ObservationTotalEnergyDemandPerMonth / daysLeft;
 
             switch (maxBuyAmount)
             {

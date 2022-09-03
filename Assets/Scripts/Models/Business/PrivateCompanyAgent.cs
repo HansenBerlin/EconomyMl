@@ -8,8 +8,10 @@ using Models.Finance;
 using Models.Market;
 using Policies;
 using Repositories;
+using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
+using UnityEngine;
 
 namespace Models.Business
 {
@@ -46,17 +48,24 @@ namespace Models.Business
         {
             currentActionPhase = phase;
             RequestDecision();
+            Academy.Instance.EnvironmentStep();
+
         }
 
         public override void EndYear()
         {
+            AddReward((float)ProductController.ObsProductionTrend);
+            AddReward((float)ProductController.ObsSalesTrend);
+            AddReward((float)ProductController.ObsProfitTrend);
+            float capitalReward = Balance < 0 ? -1 : 1;
+            AddReward(capitalReward);
             EndEpisode();
         }
 
         public override void AddRewards()
         {
             AddReward((float)ProductController.ObsProductionTrend);
-            AddReward((float)ProductController.ObsProfitTrend);
+            AddReward((float)ProductController.ObsSalesTrend);
             AddReward((float)ProductController.ObsProfitTrend);
             float capitalReward = Balance < 0 ? -1 : 1;
             AddReward(capitalReward);
@@ -78,21 +87,21 @@ namespace Models.Business
             // durchschn Marktpreis Resourcen
             // durchschn Makrtpreis Produkt
             // verkäufe, Demand, produktion
-            // verfügbare resourcen
-            sensor.AddObservation(ObsProductionCapacityByWorkers);
-            sensor.AddObservation(ObservationPossibleProductionByResource);
-            sensor.AddObservation(ObservationPossibleProductionByEnergy);
-            sensor.AddObservation(PossibleProduction);
-            sensor.AddObservation((float)LastProdCostsInMonthForRessourcesAndEnergy);
-            sensor.AddObservation((float)CashflowIn);
-            sensor.AddObservation((float)CashflowOut);
-            sensor.AddObservation((float)Cpp);
+            // verfügbare resourcen 
+            sensor.AddObservation(Workers.Count);
+            sensor.AddObservation((long)Balance);
+            sensor.AddObservation(ProductController.TotalSupply);
+            sensor.AddObservation(ProductController.SalesThisMonth);
             sensor.AddObservation((float)ProductController.Price);
-            sensor.AddObservation((float)CapacityUsed);
-            var marketSupply = CountryEconomyMarkets.TotalSupply(TypeProduced);
+            sensor.AddObservation((float)ProductController.QuarterlyProductionAverage);
+            sensor.AddObservation((float)ProductController.QuarterlySalesAverage);
+            sensor.AddObservation((float)ProductController.QuarterlySupplyAverage);
+            sensor.AddObservation(Production.AvailableProductionEnergy);
+            sensor.AddObservation(Production.AvailableProductionResources);
+            /*var marketSupply = CountryEconomyMarkets.TotalSupply(TypeProduced);
             var marketShare = CountryEconomyMarkets.MarketShare(TypeProduced, ProductController.Id);
             sensor.AddObservation((float)marketShare);
-            sensor.AddObservation((float)marketSupply);
+            sensor.AddObservation((float)marketSupply);*/
         }
 
 
@@ -100,63 +109,81 @@ namespace Models.Business
         
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
-            var requestCredit = actionBuffers.DiscreteActions[0];
-            var maxProduction = actionBuffers.DiscreteActions[1];
-            var setSalary = actionBuffers.DiscreteActions[2]; // 1-100
+            var requestCredit = actionBuffers.DiscreteActions[0] + 1;
+            var maxProduction = actionBuffers.DiscreteActions[1] + 1;
+            var setSalary = actionBuffers.DiscreteActions[2] + 1; // 1-100
             var adaptPrice = actionBuffers.ContinuousActions[0];
             var buyResourcesFromBalance = actionBuffers.ContinuousActions[1];
             var adaptWorkForce = actionBuffers.ContinuousActions[2];
 
-            if (currentActionPhase != CompanyActionPhase.Produce && currentActionPhase != CompanyActionPhase.AdaptPrice)
+            try
             {
-                decimal creditSum = Balance < 0 ? Balance * -1 * requestCredit : Balance * requestCredit;
-                var loan = CountryEconomyMarkets.GetLoan(creditSum, CreditRating.A);
-                if (loan.IsDeclined == false)
+                if (currentActionPhase != CompanyActionPhase.Produce && currentActionPhase != CompanyActionPhase.AdaptPrice && _loans.Count < 3)
                 {
-                    _loans.Add(loan);
-                    Balance += loan.TotalSumLeft;
+                    try
+                    {
+                        decimal creditSum = Balance < 0 ? Balance * -1 * requestCredit : Balance * requestCredit;
+                        var loan = CountryEconomyMarkets.GetLoan(creditSum, CreditRating.A);
+                        if (loan.IsDeclined == false)
+                        {
+                            _loans.Add(loan);
+                            Balance += loan.TotalSumLeft;
+                        }
+
+                    }
+                    catch (OverflowException e)
+                    {
+                        Debug.Log("ex" + requestCredit);
+                    }
                 }
+                else if (currentActionPhase == CompanyActionPhase.AdaptPrice)
+                {
+                    ActionAdaptPrices(adaptPrice);
+                }
+                else if (currentActionPhase == CompanyActionPhase.Produce)
+                {
+                    ActionProduce(maxProduction);
+                    AddReward((float)CapacityUsed);
+                }
+            
+                if (currentActionPhase == CompanyActionPhase.BuyResources)
+                {
+                    if (buyResourcesFromBalance < 0)
+                    {
+                        AddReward(-0.1f);
+                    }
+                    else if (EnergyTypeNeeded != ProductType.None && ResourceTypeNeeded != ProductType.None)
+                    {
+                        ActionBuyNeededProductionResources((decimal)buyResourcesFromBalance);
+                    }
+                }
+
+                if (currentActionPhase == CompanyActionPhase.AdaptWorkerCapacity)
+                {
+                    if (adaptWorkForce < 0)
+                    {
+                        AddReward(-0.1f);
+                    }
+                    else
+                    {
+                        ActionAdaptProductionCapacity(adaptWorkForce, setSalary);
+                    }
+                }
+
             }
-            else if (currentActionPhase == CompanyActionPhase.AdaptPrice)
+            catch (OverflowException e)
             {
-                ActionAdaptPrices(adaptPrice);
-            }
-            else if (currentActionPhase == CompanyActionPhase.Produce)
-            {
-                ActionProduce(maxProduction);
-                AddReward((float)CapacityUsed);
+                Console.WriteLine(e);
+                
             }
             
-            if (currentActionPhase == CompanyActionPhase.BuyResources)
-            {
-                if (buyResourcesFromBalance < 0)
-                {
-                    AddReward(-0.1f);
-                }
-                else if (EnergyTypeNeeded != ProductType.None && ResourceTypeNeeded != ProductType.None)
-                {
-                    ActionBuyNeededProductionResources((decimal)buyResourcesFromBalance);
-                }
-            }
-
-            if (currentActionPhase == CompanyActionPhase.AdaptWorkerCapacity)
-            {
-                if (adaptWorkForce < 0)
-                {
-                    AddReward(-0.1f);
-                }
-                else
-                {
-                    ActionAdaptProductionCapacity(adaptWorkForce, setSalary);
-                }
-            }
         }
 
 
         public override void ActionProduce(int productionPercentage)
         {
             var maxUnitsProduced = PossibleProduction;
-            int finalProduction = (int) (maxUnitsProduced * productionPercentage) / 100;
+            int finalProduction = maxUnitsProduced * productionPercentage / 100;
             ProductController.AddNew(finalProduction);
             _unitsProducedInMonth += finalProduction;
 
@@ -207,25 +234,41 @@ namespace Models.Business
         public void ActionBuyNeededProductionResources(decimal maxSpendings)
         {
             decimal maxSpendinsTotal = Balance * maxSpendings;
-            decimal resourceSplit = Production.ResourceNeededPerPiece / (Production.ResourceNeededPerPiece + Production.EnergyNeededPerPiece);
-            decimal energySplit = Production.EnergyNeededPerPiece / (Production.ResourceNeededPerPiece + Production.EnergyNeededPerPiece);
-            decimal maxResourceSpendings = resourceSplit * maxSpendinsTotal;
-            decimal maxEnergySpendings = energySplit * maxSpendinsTotal;
-            int resourcesDemanded = (int)(maxResourceSpendings / CountryEconomyMarkets.AveragePrice(ResourceTypeNeeded));
-            int energyDemanded = (int)(maxEnergySpendings / CountryEconomyMarkets.AveragePrice(EnergyTypeNeeded));
             
             if (Production.ResourceTypeNeeded != ProductType.None)
             {
-                ActionBuyResources(maxResourceSpendings, resourcesDemanded);
+                try
+                {
+                    decimal resourceSplit = Production.ResourceNeededPerPiece / (Production.ResourceNeededPerPiece + Production.EnergyNeededPerPiece);
+                    decimal maxResourceSpendings = resourceSplit * maxSpendinsTotal;
+                    int resourcesDemanded = (int)(maxResourceSpendings / CountryEconomyMarkets.AveragePrice(ResourceTypeNeeded));
+                    ActionBuyResources(maxResourceSpendings, resourcesDemanded);
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             }
             if (Production.EnergyTypeNeeded != ProductType.None)
             {
-                ActionBuyResources(maxEnergySpendings, energyDemanded);
+                try
+                {
+                    decimal energySplit = Production.EnergyNeededPerPiece / (Production.ResourceNeededPerPiece + Production.EnergyNeededPerPiece);
+                    decimal maxEnergySpendings = energySplit * maxSpendinsTotal;
+                    int energyDemanded = (int)(maxEnergySpendings / CountryEconomyMarkets.AveragePrice(EnergyTypeNeeded));
+                    ActionBuyEnergy(maxEnergySpendings, energyDemanded);
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             }
             
         }
 
-        public override void ActionBuyResources(decimal maxSpendings, int resourcesDemanded)
+        public override void ActionBuyResources(decimal maxSpendings, long resourcesDemanded)
         {
             var requestBuyResource = new ProductRequestModel(ResourceTypeNeeded,
                 ProductRequestSearchType.MaxSpendable, totalSpendable: maxSpendings);
@@ -241,7 +284,7 @@ namespace Models.Business
             }
         }
         
-        public override void ActionBuyEnergy(decimal maxSpendings, int energyDemanded)
+        public override void ActionBuyEnergy(decimal maxSpendings, long energyDemanded)
         {
             var requestBuyResource = new ProductRequestModel(EnergyTypeNeeded,
                 ProductRequestSearchType.MaxSpendable, totalSpendable: maxSpendings);
@@ -266,9 +309,13 @@ namespace Models.Business
             // 1 = verdoppeln
             decimal change = (decimal)(1 + newPriceMultiplier);
             var oldP = ProductController.Price;
-            var newP = ProductController.Price * change;
+            if (change > 0)
+            {
+                var newP = ProductController.Price * change;
+                ProductController.UpdatePrice(newP);
+                
+            }
 
-            ProductController.UpdatePrice(newP);
         }
 
         public override void ActionAdaptProductionCapacity(float changeProductionCapabilities, int maxSalary)
@@ -304,10 +351,19 @@ namespace Models.Business
         {
             PayWorkers();
 
-            foreach (var loan in _loans)
+            for (int i = _loans.Count - 1; i >= 0; i--)
             {
-                LoanPayments += loan.MakeMonthlyPayment();
+                var loan = _loans[i];
+                var payment = loan.MakeMonthlyPayment();
+                if (payment == 0)
+                {
+                    _loans.Remove(loan);
+                }
+
+                LoanPayments += payment;
+                
             }
+            
             decimal profit = ProductController.Profit - TotalCostBeforeTaxes - UpgradeEffiencyCosts;
             ProfitTaxPaidInMonth = Government.PayProfitTax(profit);
             ProfitAfterTaxesInMonth = profit - ProfitTaxPaidInMonth;

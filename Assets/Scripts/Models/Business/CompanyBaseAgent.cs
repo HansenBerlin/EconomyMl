@@ -27,7 +27,7 @@ namespace Models.Business
         protected IProductionTemplate Production;
         protected ICountryEconomy CountryEconomyMarkets;
         protected ProductController ProductController;
-        protected CompanyResourcePolicy _policy;
+        //protected CompanyResourcePolicy _policy;
         public ProductType TypeProduced => Production.TypeProduced;
         public ProductType ResourceTypeNeeded => Production.ResourceTypeNeeded;
         public ProductType EnergyTypeNeeded => Production.EnergyTypeNeeded;
@@ -57,7 +57,7 @@ namespace Models.Business
         protected decimal UpgradeEffiencyCosts;
         protected int MissingResourceDemand;
         protected decimal FixedPerProductCosts => _unitsProducedInMonth * Production.BaseCostPerPieceProduced;
-        protected decimal CapacityUsed => _unitsProducedInMonth / ObsProductionCapacityByWorkers;
+        protected decimal CapacityUsed => (decimal)_unitsProducedInMonth / ObsProductionCapacityByWorkers;
 
         protected decimal TotalCostBeforeTaxes =>
             FixedPerProductCosts + _lastWorkerPayments + LastProdCostsInMonthForRessourcesAndEnergy + LoanPayments;
@@ -81,7 +81,7 @@ namespace Models.Business
             Data = data;
             JobMarket = jobMarket;
             ProductController = productController;
-            _policy = policy;
+            //_policy = policy;
             Production = productController.Template;
             ProductController.AddNew(policy.InitialResources);
             countryEconomyMarkets.ReportProduction(policy.InitialResources, TypeProduced);
@@ -95,8 +95,6 @@ namespace Models.Business
 
         public void UpdateStats(int month)
         {
-            if (Cpp > lastCpp * 1.5M)
-                Console.WriteLine(month);
             lastCpp = Cpp;
             Data.BalanceStats.Add((double) Balance);
             Data.TotalProduced.Add(_unitsProducedInMonth);
@@ -104,6 +102,14 @@ namespace Models.Business
             Data.MoneyOutStat.Add((double) CashflowOut);
             Data.MoneyInStat.Add((double) CashflowIn);
             ProductController.Update(EpisodeCut.Month, Cpp, CapacityUsed);
+            
+            Academy.Instance.StatsRecorder.Add("CPP/" + TypeProduced, (float)Cpp);
+            Academy.Instance.StatsRecorder.Add("PRICE/" + TypeProduced, (float)ProductController.Price);
+            Academy.Instance.StatsRecorder.Add("BALANCE/" + TypeProduced, (float)Balance);
+            Academy.Instance.StatsRecorder.Add("WORKERS/" + TypeProduced, Workers.Count);
+            Academy.Instance.StatsRecorder.Add("MONEYOUT/" + TypeProduced, (float)CashflowOut);
+            Academy.Instance.StatsRecorder.Add("MONEYIN/" + TypeProduced, (float)CashflowIn);
+            Academy.Instance.StatsRecorder.Add("CAPACITY/" + TypeProduced, (float)CapacityUsed);
             
         }
 
@@ -155,9 +161,9 @@ namespace Models.Business
             }
         }
 
-        public abstract void ActionBuyResources(decimal maxSpendings, int resourcesDemanded);
+        public abstract void ActionBuyResources(decimal maxSpendings, long resourcesDemanded);
 
-        public abstract void ActionBuyEnergy(decimal maxSpendings, int energyDemanded);
+        public abstract void ActionBuyEnergy(decimal maxSpendings, long energyDemanded);
         public abstract void ActionProduce(int percentProduction);
 
 

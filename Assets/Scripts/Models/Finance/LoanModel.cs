@@ -11,7 +11,7 @@ namespace Models.Finance
         private BankAgent _bank;
         public bool IsDeclined { get; }
 
-        public LoanModel(BankAgent bank, float interestRate, int runsForMonth, long totalSumLeft)
+        public LoanModel(BankAgent bank, float interestRate, int runsForMonth, decimal totalSumLeft)
         {
             TotalSumLeft = totalSumLeft;
             MonthLeft = runsForMonth;
@@ -28,6 +28,7 @@ namespace Models.Finance
         {
             if (MonthLeft == 0)
             {
+                _bank.RemoveCredit(this);
                 return 0;
             }
 

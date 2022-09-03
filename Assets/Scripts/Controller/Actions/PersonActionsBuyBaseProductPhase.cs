@@ -64,7 +64,7 @@ namespace Controller.Actions
             UpdateProperties(receipt, demand, observations, rewardController);
         }
 
-        private void UpdateProperties(ReceiptModel receipt, int demandLeft, PersonObservations observations, PersonRewardController rewardController)
+        private void UpdateProperties(ReceiptModel receipt, long demandLeft, PersonObservations observations, PersonRewardController rewardController)
         {
             observations.MonthlyExpenses += receipt.TotalPricePaid;
             observations.Capital -= receipt.AmountBought;

@@ -79,12 +79,12 @@ namespace Controller.Rewards
             return val;
         }
         
-        public void RewardForBaseProductSatisfaction(int amountBought, int demanded, PersonObservations observations)
+        public void RewardForBaseProductSatisfaction(long amountBought, long demanded, PersonObservations observations)
         {
             observations.BaseBuyReward = NormalizeBase(demanded - amountBought == 0 ? 0.5F : -0.5F);
         }
         
-        public void RewardForLuxuryProductSatisfaction(int amountBought, int demanded, PersonObservations observations)
+        public void RewardForLuxuryProductSatisfaction(long amountBought, long demanded, PersonObservations observations)
         {
             var demandFactor = demanded - amountBought == 0 ? 1F : 0F;
             var overBoughFactor = observations.Capital < 0 ? -1F : 0F;

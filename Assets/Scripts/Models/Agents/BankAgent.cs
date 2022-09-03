@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Models.Finance;
 
 namespace Models.Agents
@@ -6,12 +7,20 @@ namespace Models.Agents
     public class BankAgent 
     {
         public float InterestRate { get; }
-        private long _capital = 100000000000;
+        private decimal _capital = 100000;
         private List<LoanModel> _loans = new();
 
         public void PayCredit(decimal sum)
         {
-            _capital += (long)sum;
+            try
+            {
+                _capital += sum;
+
+            }
+            catch (OverflowException e)
+            {
+                Console.WriteLine(e);
+            }
         }
         
         public void RemoveCredit(LoanModel loan)
@@ -21,7 +30,7 @@ namespace Models.Agents
 
         public LoanModel RequestLoan(decimal amount)
         {
-            var loan = new LoanModel(this, InterestRate, 12, (long)amount);
+            var loan = new LoanModel(this, InterestRate, 12, amount);
             _loans.Add(loan);
             return loan;
         }

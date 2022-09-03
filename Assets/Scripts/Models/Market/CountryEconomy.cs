@@ -37,6 +37,7 @@ namespace Models.Market
             _jobMarket = jobMarket;
             _populationModel = populationModel;
             _government = government;
+            _bankingMarkets = bankingMarkets;
         }
 
         public void AddBusiness(CompanyBaseAgent privateCompany)
@@ -83,7 +84,6 @@ namespace Models.Market
             ReceiptModel receipt = new ReceiptModel();
             if (buyRequest.TotalSpendable < 0)
             {
-                throw new Exception();
                 return receipt;
             }
 

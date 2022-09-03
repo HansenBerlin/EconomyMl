@@ -10,8 +10,8 @@ namespace Models.Production
         public ProductType TypeProduced { get; set; }
         public ProductType ResourceTypeNeeded { get; set; }
         public ProductType EnergyTypeNeeded { get; set; }
-        public int AvailableProductionResources { get; set; }
-        public int AvailableProductionEnergy { get; set; }
+        public long AvailableProductionResources { get; set; }
+        public long AvailableProductionEnergy { get; set; }
         public decimal EnergyNeededPerPiece { get; set; }
         public decimal ResourceNeededPerPiece { get; set; }
         public decimal BaseCostPerPieceProduced { get; set; }

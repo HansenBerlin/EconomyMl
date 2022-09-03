@@ -45,6 +45,10 @@ namespace Controller.Actions
         {
             bool isUnemployed = observations.JobStatus == JobStatus.Employed;
             decimal salary = observations.MonthlyIncome;
+            if (salary < 500)
+            {
+                Debug.Log("QUIT " + salary);
+            }
             personController.QuitJob();
             decimal salaryAfter = observations.MonthlyIncome;
             if (salary < 500)

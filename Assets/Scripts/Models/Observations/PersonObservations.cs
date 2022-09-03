@@ -18,7 +18,7 @@ namespace Models.Observations
         public decimal DesiredSalary { get; set; }
         public decimal SatisfactionRate { get; set; }
         public int UnsatisfiedBaseDemand { get; set; }
-        public int LuxuryProducts { get; set; }
+        public long LuxuryProducts { get; set; }
         public JobStatus JobStatus { get; set; }
         public decimal AverageIncome { get; set; }
 

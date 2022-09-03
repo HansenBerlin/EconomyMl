@@ -4,6 +4,7 @@ using Enums;
 using Models.Market;
 using Models.Observations;
 using Settings;
+using UnityEngine;
 
 namespace Controller.Actions
 {
@@ -45,7 +46,7 @@ namespace Controller.Actions
             UpdateProperties(receipt, demand, observations, rewardController);
         }
 
-        public void BuyDemandedBaseProductWithCapitalSpendingLimit(PersonObservations observations, int underageChildCount, PersonRewardController rewardController)
+        public void BuyDemandedLuxuryProductWithCapitalSpendingLimit(PersonObservations observations, int underageChildCount, PersonRewardController rewardController)
         {
             int demand = GetDemand(observations, underageChildCount);
             decimal maxSpendable = observations.Capital;
@@ -62,7 +63,7 @@ namespace Controller.Actions
             UpdateProperties(receipt, demand, observations, rewardController);
         }
 
-        private void UpdateProperties(ReceiptModel receipt, int demandLeft, PersonObservations observations, PersonRewardController rewardController)
+        private void UpdateProperties(ReceiptModel receipt, long demandLeft, PersonObservations observations, PersonRewardController rewardController)
         {
             observations.MonthlyExpenses += receipt.TotalPricePaid;
             observations.Capital -= receipt.AmountBought;
@@ -79,11 +80,19 @@ namespace Controller.Actions
 
         private int GetDemand(PersonObservations observations, int underageChildCount)
         {
+            if (underageChildCount > 1000 || underageChildCount < 0)
+            {
+                Debug.Log("");
+            }
             float personDemand = observations.AgeStatus == AgeStatus.RetiredAge
                 ? _settings.DemandRetired
                 : _settings.DemandWorkerAge;
             float childDemand = underageChildCount * _settings.DemandChild;
             int demand = (int) Math.Ceiling(personDemand + childDemand);
+            if (demand > 1000 || underageChildCount < 0)
+            {
+                Debug.Log("");
+            }
             return demand;
         }
 

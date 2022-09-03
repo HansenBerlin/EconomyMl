@@ -5,7 +5,7 @@
 
     public class ReceiptModel
     {
-        public int AmountBought { get; set; } = 0;
+        public long AmountBought { get; set; } = 0;
         public decimal TotalPricePaid { get; set; } = 0;
     }
 }

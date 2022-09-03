@@ -121,7 +121,7 @@ namespace Models.Market
         public ReceiptModel BuyMaxProductsForMaxAmountSpended(ProductRequestModel buyRequest)
         {
             decimal moneyAmount = buyRequest.TotalSpendable;
-            int maxAmount = buyRequest.MaxAmount;
+            long maxAmount = buyRequest.MaxAmount;
             int demandAlreadyRequestedDueTooHighPrice = 0;
             List<ProductController> productsToRequestMissingSupply = new();
             var matchingProducts = _productsAvailable.OrderBy(x => x.Price).ToList();
@@ -130,7 +130,7 @@ namespace Models.Market
             {
                 var tempReciept = p.BuyFor(moneyAmount, maxAmount);
                 decimal moneyPaid = tempReciept.TotalPricePaid;
-                int amountBought = tempReciept.AmountBought;
+                long amountBought = tempReciept.AmountBought;
                 receipt.AmountBought += tempReciept.AmountBought;
                 receipt.TotalPricePaid += moneyPaid;
                 maxAmount -= amountBought;
@@ -174,7 +174,7 @@ namespace Models.Market
             long total = 0;
             foreach (var product in _productsAvailable)
             {
-                total += (int) product.TotalSupply;
+                total += (long) product.TotalSupply;
             }
 
             return total;
@@ -185,7 +185,7 @@ namespace Models.Market
         public ReceiptModel BuyMaxProductsForMaxPricePerPiece(ProductRequestModel buyRequest)
         {
             decimal maxPrice = buyRequest.MaxPrice;
-            int amount = buyRequest.MaxAmount;
+            long amount = buyRequest.MaxAmount;
             //int amountToRequestDemandDueToMissingSupply = 0;
             int demandAlreadyRequestedDueTooHighPrice = 0;
             List<ProductController> productsToRequestMissingSupply = new();
@@ -196,7 +196,7 @@ namespace Models.Market
             foreach (var p in matchingProducts)
             {
                 var tempReciept = p.BuyMaxAmount(amount, maxPrice);
-                int amountBought = tempReciept.AmountBought;
+                long amountBought = tempReciept.AmountBought;
                 receipt.AmountBought += amountBought;
                 receipt.TotalPricePaid += tempReciept.TotalPricePaid;
                 if (amountBought < amount)
@@ -239,7 +239,7 @@ namespace Models.Market
 
         public ReceiptModel BuyMaxProducts(ProductRequestModel buyRequest)
         {
-            int amount = buyRequest.MaxAmount;
+            long amount = buyRequest.MaxAmount;
             var matchingProducts = _productsAvailable.OrderBy(x => x.Price).ToList();
 
             ReceiptModel receipt = new ReceiptModel();
@@ -248,7 +248,7 @@ namespace Models.Market
                 if (amount < 0)
                     throw new Exception();
                 var tempReciept = p.BuyMaxAmount(amount);
-                int amountBought = tempReciept.AmountBought;
+                long amountBought = tempReciept.AmountBought;
                 receipt.AmountBought += amountBought;
                 receipt.TotalPricePaid += tempReciept.TotalPricePaid;
                 if (amountBought < amount)

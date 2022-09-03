@@ -62,11 +62,13 @@ namespace Controller
             populationModel = new PopulationModel(_population, populationData, envSettings);
             var government = new GovernmentModel(_policies.FederalPolicies, govData);
             governmentController = new GovernmentController(government, populationModel);
-            populationController = new PopulationController(envSettings, populationModel, jobMarketController, populationFactory, populationPropabilityController);
+            populationController = new PopulationController(envSettings, populationModel, jobMarketController,
+                populationFactory, populationPropabilityController);
             var bankingMarkets = new BankingMarkets();
             var bank = new BankAgent();
             bankingMarkets.AddBank(bank);
-            countryEconomyMarket = new CountryEconomy(productMarkets, jobMarketController, populationModel, governmentController, bankingMarkets);
+            countryEconomyMarket = new CountryEconomy(productMarkets, jobMarketController, populationModel,
+                governmentController, bankingMarkets);
             var actionsFactory = new ActionsFactory(jobMarketController, countryEconomyMarket);
             populationFactory.Init(actionsFactory, jobMarketController, _policies, populationPropabilityController);
             var initialPopulation = populationFactory.CreateInitialPopulation();
@@ -74,36 +76,38 @@ namespace Controller
 
             businessFactory.Init(countryEconomyMarket, envSettings, statsRepository, governmentController);
 
-            var fossilePolicy = new CompanyResourcePolicy(2200, 2200, 50, 10000000, 200000);
-            var basePolicy = new CompanyResourcePolicy(2300, 2300, 100, 10000000, 50000);
-            var interPolicy = new CompanyResourcePolicy(2400, 2400, 180, 10000000, 1000);
-            var luxPolicy = new CompanyResourcePolicy(2600, 2600, 40, 10000000, 100);
+            var fossilePolicy = new CompanyResourcePolicy(2200, 2200, 5, 100000, 20000);
+            var basePolicy = new CompanyResourcePolicy(2300, 2300, 10, 100000, 5000);
+            var interPolicy = new CompanyResourcePolicy(2400, 2400, 10, 100000, 100);
+            var luxPolicy = new CompanyResourcePolicy(2600, 2600, 5, 100000, 100);
+
             var fedPolicy = new CompanyResourcePolicy(2300, 2300, 60, 10000000, 0);
 
-            var fossileEnergyCompany =
-                businessFactory.Create(ProductType.FossileEnergy, fossilePolicy, jobMarketController);
-            var baseProductCompany = businessFactory.Create(ProductType.BaseProduct, basePolicy, jobMarketController);
-            var intermediateProductCompany =
-                businessFactory.Create(ProductType.IntermediateProduct, interPolicy, jobMarketController);
-            var luxuryProductCompany =
-                businessFactory.Create(ProductType.LuxuryProduct, luxPolicy, jobMarketController);
-            var federalServices = businessFactory.Create(ProductType.FederalService, fedPolicy, jobMarketController);
-
-            businesses = new()
+            businesses = new List<CompanyBaseAgent>();
+            for (int i = 0; i < 10; i++)
             {
-                fossileEnergyCompany,
-                baseProductCompany,
-                intermediateProductCompany,
-                luxuryProductCompany,
-                federalServices
-            };
+                var fossileEnergyCompany = businessFactory.Create(ProductType.FossileEnergy, fossilePolicy, jobMarketController);
+                var baseProductCompany = businessFactory.Create(ProductType.BaseProduct, basePolicy, jobMarketController);
+                var intermediateProductCompany = businessFactory.Create(ProductType.IntermediateProduct, interPolicy, jobMarketController);
+                var luxuryProductCompany = businessFactory.Create(ProductType.LuxuryProduct, luxPolicy, jobMarketController);
+                businesses.Add(fossileEnergyCompany);
+                businesses.Add(fossileEnergyCompany);
+                businesses.Add(baseProductCompany);
+                businesses.Add(intermediateProductCompany);
+                businesses.Add(luxuryProductCompany);
+            }
+
+            var federalServices = businessFactory.Create(ProductType.FederalService, fedPolicy, jobMarketController);
+            businesses.Add(federalServices);
         }
+
 
         public void Start()
         {
             academy = Academy.Instance;
             populationController.Setup();
         }
+
 
         public void Update()
         {
@@ -158,7 +162,6 @@ namespace Controller
                              or ProductType.FederalService)))
             {
                 business.MakeDecision(CompanyActionPhase.Produce);
-
             }
 
             foreach (var business in businesses.OrderBy(_ => _rng.Next()))
@@ -210,7 +213,6 @@ namespace Controller
             countryEconomyMarket.ResetProductMarkets();
             governmentController.EndMonth();
             yield return new WaitForSeconds(0);
-
         }
 
 

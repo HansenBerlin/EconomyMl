@@ -263,7 +263,7 @@ namespace Models.Agents
                         _luxuryBuyActions.BuyDemandedLuxuryProductWithIncomeSpendingLimit(_observations, Children.Count, _rewardController);
                         break;
                     case luxBuyLimitHigh:
-                        _luxuryBuyActions.BuyDemandedBaseProductWithCapitalSpendingLimit(_observations, Children.Count, _rewardController);
+                        _luxuryBuyActions.BuyDemandedLuxuryProductWithCapitalSpendingLimit(_observations, Children.Count, _rewardController);
                         break;
                     case luxBuyNothing:
                         AddReward(-0.01F);

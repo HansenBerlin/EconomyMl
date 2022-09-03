@@ -161,11 +161,11 @@ namespace Controller
             }
         }
 
-        public ReceiptModel BuyMaxAmount(int amount, decimal maxPrice)
+        public ReceiptModel BuyMaxAmount(long amount, decimal maxPrice)
         {
             if (amount > _productData.TotalSupply)
             {
-                amount = (int) _productData.TotalSupply;
+                amount = (long) _productData.TotalSupply;
             }
 
             if (_productData.Price > maxPrice)
@@ -191,11 +191,11 @@ namespace Controller
             };
         }
 
-        public ReceiptModel BuyMaxAmount(int amount)
+        public ReceiptModel BuyMaxAmount(long amount)
         {
             if (amount > _productData.TotalSupply)
             {
-                amount = (int) _productData.TotalSupply;
+                amount = (long) _productData.TotalSupply;
             }
 
             if (amount < 0)
@@ -220,10 +220,10 @@ namespace Controller
         public ReceiptModel BuyFor(decimal maxMoney)
         {
 
-            int buy = (int) (maxMoney / _productData.Price);
+            long buy = (long) (maxMoney / _productData.Price);
             if (buy > _productData.TotalSupply)
             {
-                buy = (int) _productData.TotalSupply;
+                buy = (long) _productData.TotalSupply;
             }
 
             if (buy < 0)
@@ -245,9 +245,9 @@ namespace Controller
             };
         }
 
-        public ReceiptModel BuyFor(decimal maxMoney, int amount)
+        public ReceiptModel BuyFor(decimal maxMoney, long amount)
         {
-            int buy = (int) (maxMoney / _productData.Price);
+            long buy = (long) (maxMoney / _productData.Price);
             if (buy > _productData.TotalSupply && amount > _productData.TotalSupply)
             {
                 buy = buy > amount ? amount : buy;
@@ -260,7 +260,7 @@ namespace Controller
 
             if (_productData.TotalSupply < buy)
             {
-                buy = (int) _productData.TotalSupply;
+                buy = (long) _productData.TotalSupply;
             }
 
             if (buy < 0)
