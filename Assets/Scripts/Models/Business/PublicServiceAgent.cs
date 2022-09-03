@@ -56,25 +56,13 @@ namespace Models.Business
 
         public override void CollectObservations(VectorSensor sensor)
         {
-            //if (Death != DeathReason.HasNotDied) return;
-
-            // durchschn Marktpreis Resourcen
-            // durchschn Makrtpreis Produkt
-            // verkäufe, Demand, produktion
-            // verfügbare resourcen
             sensor.AddObservation(Workers.Count);
             sensor.AddObservation((long)Balance);
             sensor.AddObservation(ProductController.TotalSupply);
-            sensor.AddObservation((float)ProductController.Price);
             sensor.AddObservation(Production.AvailableProductionEnergy);
             sensor.AddObservation(Production.AvailableProductionResources);
-            sensor.AddObservation((float) ProductController.Profit);
-            sensor.AddObservation((float) ProductController.ProfitLastMonth);
-            sensor.AddObservation(ProductController.SalesThisMonth);
-            sensor.AddObservation(ProductController.SalesLastMonth);
             sensor.AddObservation(ProductController.ProductionThisMonth);
             sensor.AddObservation(ProductController.ProductionLastMonth);
-
         }
 
 
@@ -82,43 +70,9 @@ namespace Models.Business
         
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
-            var requestCredit = actionBuffers.DiscreteActions[0] + 1;
-            var maxProduction = actionBuffers.DiscreteActions[1] + 1;
-            var setSalary = actionBuffers.DiscreteActions[2] + 1; // 1-100
-            var adaptPrice = actionBuffers.ContinuousActions[0];
-            var buyResourcesFromBalance = actionBuffers.ContinuousActions[1];
-            var adaptWorkForce = actionBuffers.ContinuousActions[2];
+            var adaptWorkForce = actionBuffers.ContinuousActions[0];
 
-            
-            
-            if (currentActionPhase == CompanyActionPhase.Produce)
-            {
-                ActionProduce(maxProduction);
-            }
-            
-            if (currentActionPhase == CompanyActionPhase.BuyResources)
-            {
-                if (buyResourcesFromBalance < 0)
-                {
-                    AddReward(-0.1f);
-                }
-                else if (EnergyTypeNeeded != ProductType.None && ResourceTypeNeeded != ProductType.None)
-                {
-                    ActionBuyNeededProductionResources((decimal)buyResourcesFromBalance);
-                }
-            }
-
-            if (currentActionPhase == CompanyActionPhase.AdaptWorkerCapacity)
-            {
-                if (adaptWorkForce < 0)
-                {
-                    AddReward(-0.1f);
-                }
-                else
-                {
-                    ActionAdaptProductionCapacity(adaptWorkForce, setSalary);
-                }
-            }
+            ActionAdaptProductionCapacity(adaptWorkForce, 0);
         }
 
 
@@ -218,7 +172,7 @@ namespace Models.Business
         public override void ActionBuyResources(decimal maxSpendings, long resourcesDemanded)
         {
             var requestBuyResource = new ProductRequestModel(ResourceTypeNeeded,
-                ProductRequestSearchType.MaxSpendable, totalSpendable: maxSpendings);
+                ProductRequestSearchType.MaxAmount, maxAmount: resourcesDemanded);
 
             var productReceipt = CountryEconomyMarkets.Buy(requestBuyResource);
             Production.AvailableProductionResources += productReceipt.AmountBought;
@@ -234,7 +188,7 @@ namespace Models.Business
         public override void ActionBuyEnergy(decimal maxSpendings, long energyDemanded)
         {
             var requestBuyResource = new ProductRequestModel(EnergyTypeNeeded,
-                ProductRequestSearchType.MaxSpendable, totalSpendable: maxSpendings);
+                ProductRequestSearchType.MaxAmount, maxAmount: energyDemanded);
 
             var productReceipt = CountryEconomyMarkets.Buy(requestBuyResource);
             Production.AvailableProductionEnergy += productReceipt.AmountBought;
@@ -250,15 +204,7 @@ namespace Models.Business
 
         public override void ActionAdaptPrices(float newPriceMultiplier)
         {
-            // -0.2 = auf 80% senken 1 + -0.2 = 0,8
-            // -0.7 = auf 30% senken 1 + -0,7 = 0.3
-            // 0.4 = auf 140% heben 1 + 0,4
-            // 1 = verdoppeln
-            decimal change = (decimal)(1 + newPriceMultiplier);
-            var oldP = ProductController.Price;
-            var newP = ProductController.Price * change;
-
-            ProductController.UpdatePrice(newP);
+            
         }
 
         public override void ActionAdaptProductionCapacity(float changeProductionCapabilities, int maxSalary)
@@ -273,19 +219,19 @@ namespace Models.Business
                 WorkerAdaptionController.CalculateCapacityModifier(CapacityUsed);*/
 
 
-            if (changeProductionCapabilities > 0)
+            var workersNeeded = Government.RecalculateFederalWorkerDemand();
+            if (workersNeeded > Workers.Count)
             {
-                AddReward(0.1F);
-                maxSalary *= 100;
-                var additionalWorkers = Workers.Count * changeProductionCapabilities;
+                maxSalary = (int)Government.GetMaxFederalWorkerPayment();
+                var additionalWorkers = workersNeeded - Workers.Count;
                 if (additionalWorkers <= 0) return;
                 var openPositions = JobPositionFactory.Create((int) additionalWorkers, maxSalary, Id, Workers, TypeProduced);
                 JobMarket.AdaptSalaryForLeftopenPositions(maxSalary, Id);
                 JobMarket.AddOpenJobPositions(openPositions, (int) additionalWorkers, Id);
             }
-            else if (changeProductionCapabilities < 0)
+            else if (workersNeeded < Workers.Count)
             {
-                int fireWorkers = (int)(Workers.Count * changeProductionCapabilities * -1);
+                int fireWorkers = Workers.Count - workersNeeded;
                 FireWorkers(fireWorkers);
                 JobMarket.RemoveOpenJobPositions(fireWorkers, Id);
             }
@@ -293,11 +239,9 @@ namespace Models.Business
         
         public override void AddRewards()
         {
-            AddReward((float)ProductController.ObsProductionTrend);
-            AddReward((float)ProductController.ObsSalesTrend);
-            AddReward((float)ProductController.ObsProfitTrend);
-            float capitalReward = Balance < 0 ? -1 : 1;
-            AddReward(capitalReward);
+            float productionReward = ProductController.ProductionThisMonth > ProductController.ProductionLastMonth ? 0.5f : -0.5f;
+            float capitalReward = Balance < 0 ? -0.5f : 0.5f;
+            AddReward(capitalReward + productionReward);
             _unitsProducedInMonth = 0;
             LastProdCostsInMonthForRessourcesAndEnergy = 0;
             _lastWorkerPayments = 0;

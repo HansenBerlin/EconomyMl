@@ -31,6 +31,9 @@ namespace Models.Market
         private long _currentSales;
         private long _currentUnfullfilledDemand;
         private long _currentProduction;
+        private long _lastSales;
+        private long _lastUnfullfilledDemand;
+        private long _lastProduction;
 
 
         public decimal ObserveInflationRate = 0;
@@ -59,14 +62,20 @@ namespace Models.Market
         public decimal GetMarketShare(string productId)
         {
             var product = _productsAvailable.FirstOrDefault(p => p.Id == productId);
+            long salesThis = 0;
             if (_productsAvailable.Count == 1 && product != null)
             {
                 return 1;
             }
+            if (_productsAvailable.Count > 1 && product != null)
+            {
+                salesThis = product.SalesLastMonth;
+            }
 
-            //decimal marketShare = _totalBought != 0 ? product.SalesAverageAllTime / _totalBought : 0;
-            // TODO wieder rein?
-            return 0;
+            long allSales = _productsAvailable.Sum(p => p.SalesLastMonth);
+
+            decimal marketShare = allSales > 0 ? salesThis / allSales : 0;
+            return marketShare;
         }
 
         public decimal GetLastQuarterDemandTrend()
@@ -293,10 +302,6 @@ namespace Models.Market
 
         public void Reset()
         {
-            /*foreach (var p in _productsAvailable)
-            {
-                p.Reset();
-            }*/
 
             var statsRecorder = Academy.Instance.StatsRecorder;
             statsRecorder.Add("PROD/" + Type + "-prd", _currentProduction);
@@ -306,6 +311,9 @@ namespace Models.Market
             //_dataRepository.Sales.Add(_currentSales);
             //_dataRepository.Demand.Add(_currentUnfullfilledDemand);
 
+            _lastSales = _currentSales;
+            _lastProduction = _currentProduction;
+            _lastUnfullfilledDemand = _currentUnfullfilledDemand;
             _currentSales = 0;
             _currentProduction = 0;
             _currentUnfullfilledDemand = 0;
@@ -324,6 +332,11 @@ namespace Models.Market
             }
 
             AveragePrice = count == 0 ? _defaultPrice : aggregates.Sum() / count;
+        }
+
+        public long GetTotalUnfullfilledDemand()
+        {
+            return _lastUnfullfilledDemand;
         }
     }
 }

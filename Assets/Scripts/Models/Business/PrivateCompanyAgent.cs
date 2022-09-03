@@ -47,16 +47,16 @@ namespace Models.Business
         public override void MakeDecision(CompanyActionPhase phase)
         {
             currentActionPhase = phase;
-            //RequestDecision();
+            RequestDecision();
             Academy.Instance.EnvironmentStep();
 
         }
 
         public override void EndYear()
         {
-            AddReward((float)ProductController.ObsProductionTrend);
-            AddReward((float)ProductController.ObsSalesTrend);
-            AddReward((float)ProductController.ObsProfitTrend);
+            //AddReward((float)ProductController.ObsProductionTrend);
+            //AddReward((float)ProductController.ObsSalesTrend);
+            //AddReward((float)ProductController.ObsProfitTrend);
             float capitalReward = Balance < 0 ? -1 : 1;
             AddReward(capitalReward);
             EndEpisode();
@@ -97,6 +97,10 @@ namespace Models.Business
             sensor.AddObservation(ProductController.SalesLastMonth);
             sensor.AddObservation(ProductController.ProductionThisMonth);
             sensor.AddObservation(ProductController.ProductionLastMonth);
+            var totalDemand = CountryEconomyMarkets.GetTotalUnfulfilledDemand(TypeProduced);
+            var marketShare = CountryEconomyMarkets.MarketShare(TypeProduced, ProductController.Id);
+            sensor.AddObservation(totalDemand);
+            sensor.AddObservation((float)marketShare);
         }
 
 
@@ -104,34 +108,31 @@ namespace Models.Business
         
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
-            var requestCredit = actionBuffers.DiscreteActions[0] + 1;
-            var maxProduction = actionBuffers.DiscreteActions[1] + 1;
+            var requestCredit = actionBuffers.DiscreteActions[0];
             var setSalary = actionBuffers.DiscreteActions[2] + 1; // 1-100
+            var maxProduction = actionBuffers.DiscreteActions[3] + 1; // 1 - 2 (50%, 100%)
             var adaptPrice = actionBuffers.ContinuousActions[0];
-            var buyResourcesFromBalance = actionBuffers.ContinuousActions[1];
+            var buyResourcesFromBalance = (actionBuffers.ContinuousActions[1] + 2) / 3;  // yw 33 und 100%
             var adaptWorkForce = actionBuffers.ContinuousActions[2];
 
             try
             {
                 if (currentActionPhase != CompanyActionPhase.Produce && currentActionPhase != CompanyActionPhase.AdaptPrice)
                 {
-                    try
+                    if (_loans.Sum(x => x.TotalSumLeft) < 1000000 && requestCredit > 0)
                     {
-                        if (_loans.Sum(x => x.TotalSumLeft) < 1000000)
+                        decimal creditSum = Balance < 0 ? Balance * -1 * requestCredit : Balance * requestCredit;
+                        creditSum = creditSum < 1000 ? 1000 : creditSum;
+                        var loan = CountryEconomyMarkets.GetLoan(creditSum, CreditRating.A);
+                        if (loan.IsDeclined == false)
                         {
-                            decimal creditSum = Balance < 0 ? Balance * -1 * requestCredit : Balance * requestCredit;
-                            creditSum = creditSum < 1000 ? 1000 : creditSum;
-                            var loan = CountryEconomyMarkets.GetLoan(creditSum, CreditRating.A);
-                            if (loan.IsDeclined == false)
-                            {
-                                _loans.Add(loan);
-                                Balance += loan.TotalSumLeft;
-                            }
+                            _loans.Add(loan);
+                            Balance += loan.TotalSumLeft;
                         }
                     }
-                    catch (OverflowException e)
+                    else
                     {
-                        Debug.Log("ex" + requestCredit);
+                        AddReward(0.05f);
                     }
                 }
                 else if (currentActionPhase == CompanyActionPhase.AdaptPrice)
@@ -146,14 +147,7 @@ namespace Models.Business
             
                 if (currentActionPhase == CompanyActionPhase.BuyResources)
                 {
-                    if (buyResourcesFromBalance < 0)
-                    {
-                        AddReward(-0.1f);
-                    }
-                    else
-                    {
-                        ActionBuyNeededProductionResources((decimal)buyResourcesFromBalance);
-                    }
+                    ActionBuyNeededProductionResources((decimal)buyResourcesFromBalance);
                 }
 
                 if (currentActionPhase == CompanyActionPhase.AdaptWorkerCapacity)
@@ -178,7 +172,7 @@ namespace Models.Business
         public override void ActionProduce(int productionPercentage)
         {
             var maxUnitsProduced = PossibleProduction;
-            int finalProduction = maxUnitsProduced;
+            int finalProduction = productionPercentage == 1 ? maxUnitsProduced / 2 : maxUnitsProduced;
             //int finalProduction = maxUnitsProduced * productionPercentage / 10;
             ProductController.AddNew(finalProduction);
             _unitsProducedInMonth += finalProduction;
@@ -267,7 +261,7 @@ namespace Models.Business
         public override void ActionBuyResources(decimal maxSpendings, long resourcesDemanded)
         {
             var requestBuyResource = new ProductRequestModel(ResourceTypeNeeded,
-                ProductRequestSearchType.MaxSpendable, totalSpendable: maxSpendings);
+                ProductRequestSearchType.MaxAmountWithSpendingLimit, totalSpendable: maxSpendings, maxAmount:resourcesDemanded);
 
             var productReceipt = CountryEconomyMarkets.Buy(requestBuyResource);
             Production.AvailableProductionResources += productReceipt.AmountBought;
@@ -283,7 +277,7 @@ namespace Models.Business
         public override void ActionBuyEnergy(decimal maxSpendings, long energyDemanded)
         {
             var requestBuyResource = new ProductRequestModel(EnergyTypeNeeded,
-                ProductRequestSearchType.MaxSpendable, totalSpendable: maxSpendings);
+                ProductRequestSearchType.MaxAmountWithSpendingLimit, totalSpendable: maxSpendings, maxAmount:energyDemanded);
 
             var productReceipt = CountryEconomyMarkets.Buy(requestBuyResource);
             Production.AvailableProductionEnergy += productReceipt.AmountBought;
@@ -303,13 +297,13 @@ namespace Models.Business
             // -0.7 = auf 30% senken 1 + -0,7 = 0.3
             // 0.4 = auf 140% heben 1 + 0,4
             // 1 = verdoppeln
+            newPriceMultiplier /= 10;
             decimal change = (decimal)(1 + newPriceMultiplier);
             var oldP = ProductController.Price;
             if (change > 0)
             {
                 var newP = ProductController.Price * change;
                 ProductController.UpdatePrice(newP);
-                
             }
 
         }

@@ -143,6 +143,13 @@ namespace Models.Market
             return productMarket.GetMarketShare(productId);
         }
 
+        public long GetTotalUnfulfilledDemand(ProductType type)
+        {
+            long demandTotal;
+            ProductMarketModel productMarket = FindMatchingMarket(type);
+            return productMarket.GetTotalUnfullfilledDemand();
+        }
+
         public void ReportDemand(long count, ProductType type)
         {
             ProductMarketModel productMarket = FindMatchingMarket(type);

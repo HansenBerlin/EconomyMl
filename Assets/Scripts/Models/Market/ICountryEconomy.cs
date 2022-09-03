@@ -20,6 +20,7 @@ namespace Models.Market
         decimal TotalSupply(ProductType type);
         decimal MarketShare(ProductType type, string productId);
         void ResetProductMarkets();
+        long GetTotalUnfulfilledDemand(ProductType type);
         void ReportDemand(long count, ProductType type);
         void ReportProduction(long count, ProductType type);
         List<ProductType> FindMostDemandedByTrend();

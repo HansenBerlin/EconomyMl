@@ -84,7 +84,7 @@ namespace Controller
             var fedPolicy = new CompanyResourcePolicy(2300, 2300, 60, 10000000, 0);
 
             businesses = new List<CompanyBaseAgent>();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 1; i++)
             {
                 var fossileEnergyCompany = businessFactory.Create(ProductType.FossileEnergy, fossilePolicy, jobMarketController);
                 var baseProductCompany = businessFactory.Create(ProductType.BaseProduct, basePolicy, jobMarketController);
