@@ -135,7 +135,7 @@ namespace Controller
 
         public void RemoveJobWhenFired()
         {
-            _observations.DesiredSalary = _observations.Salary * 0.99M;
+            //_observations.DesiredSalary = _observations.Salary * 0.99M;
             _observations.Salary = ReducedIncome(_observations.Salary);
             _person.Job.QuitJob(_person);
             _observations.JobStatus = JobStatus.Unemployed;
@@ -151,7 +151,7 @@ namespace Controller
             newJob.TakeJob(_person, _observations.DesiredSalary);
             _observations.JobStatus = JobStatus.Employed;
             _observations.Salary = newJob.Salary;
-            _observations.DesiredSalary = newJob.Salary;
+            //_observations.DesiredSalary = newJob.Salary;
             _person.Job = newJob;
         }
 

@@ -44,8 +44,19 @@ namespace Models.Business
         public override void MakeDecision(CompanyActionPhase phase)
         {
             currentActionPhase = phase;
-            RequestDecision();
-            Academy.Instance.EnvironmentStep();
+            if (phase == CompanyActionPhase.Produce)
+            {
+                ActionProduce(0);
+            }
+            else if (phase == CompanyActionPhase.BuyResources)
+            {
+                ActionBuyNeededProductionResources(0);
+            }
+            else if(phase == CompanyActionPhase.AdaptWorkerCapacity)
+            {
+                RequestDecision();
+                Academy.Instance.EnvironmentStep();
+            }
 
         }
 
@@ -78,6 +89,7 @@ namespace Models.Business
             var adaptWorkForce = actionBuffers.ContinuousActions[0];
 
             ActionAdaptProductionCapacity(adaptWorkForce, 0);
+            
         }
 
 
@@ -224,7 +236,11 @@ namespace Models.Business
                 WorkerAdaptionController.CalculateCapacityModifier(CapacityUsed);*/
 
 
-            var workersNeeded = Government.RecalculateFederalWorkerDemand();
+            if (_month > 24)
+            {
+                Debug.Log("");
+            }
+            var workersNeeded = Government.RecalculateFederalWorkerDemand() / Production.UnitsPerWorker;
             if (workersNeeded > Workers.Count)
             {
                 maxSalary = (int)Government.GetMaxFederalWorkerPayment();
@@ -236,7 +252,7 @@ namespace Models.Business
             }
             else if (workersNeeded < Workers.Count)
             {
-                int fireWorkers = Workers.Count - workersNeeded;
+                int fireWorkers = Workers.Count - (int)workersNeeded;
                 FireWorkers(fireWorkers);
                 JobMarket.RemoveOpenJobPositions(fireWorkers, Id);
             }

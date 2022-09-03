@@ -57,7 +57,6 @@ namespace Models.Business
             Academy.Instance.StatsRecorder.Add("YEAR/PROD-TREND" + TypeProduced, (float)ProductController.ObsProductionTrend);
             Academy.Instance.StatsRecorder.Add("YEAR/PROFIT-TREND" + TypeProduced, (float)ProductController.ObsProfitTrend);
             Academy.Instance.StatsRecorder.Add("YEAR/SALESTREND" + TypeProduced, (float)ProductController.ObsSalesTrend);
-            Academy.Instance.StatsRecorder.Add("YEAR/CAPITALTREND" + TypeProduced, (float)(Balance - BalanceLastYear));
             
             currentActionPhase = phase;
             float capitalReward = Balance < BalanceLastYear ? -0.5f : 0.5f;
@@ -92,6 +91,10 @@ namespace Models.Business
         
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
+            if (_month > 240)
+            {
+                Debug.Log("");
+            }
             var requestCredit = actionBuffers.DiscreteActions[0];
             var setSalary = actionBuffers.DiscreteActions[1] + 1; // 1-100
             var maxProduction = actionBuffers.DiscreteActions[2] + 1; // 1 - 2 (50%, 100%)
@@ -119,11 +122,11 @@ namespace Models.Business
                         AddReward(0.05f);
                     }
                 }
-                else if (currentActionPhase == CompanyActionPhase.AdaptPrice)
+                if (currentActionPhase == CompanyActionPhase.AdaptPrice)
                 {
                     ActionAdaptPrices(adaptPrice);
                 }
-                else if (currentActionPhase == CompanyActionPhase.Produce)
+                if (currentActionPhase == CompanyActionPhase.Produce)
                 {
                     ActionProduce(maxProduction);
                     //AddReward((float)CapacityUsed);
@@ -300,8 +303,9 @@ namespace Models.Business
 
             if (changeProductionCapabilities > 0)
             {
-                maxSalary *= 100;
+                maxSalary *= 1000;
                 var additionalWorkers = Math.Ceiling(Workers.Count * changeProductionCapabilities);
+                additionalWorkers = Workers.Count < 10 ? 10 : additionalWorkers;
                 if (additionalWorkers <= 0) return;
                 var openPositions = JobPositionFactory.Create((int) additionalWorkers, maxSalary, Id, Workers, TypeProduced);
                 JobMarket.AdaptSalaryForLeftopenPositions(maxSalary, Id);
@@ -310,7 +314,10 @@ namespace Models.Business
             else if (changeProductionCapabilities < 0)
             {
                 int fireWorkers = (int)Math.Ceiling(Workers.Count * changeProductionCapabilities * -1);
-                FireWorkers(fireWorkers);
+                if (Workers.Count > 3)
+                {
+                    FireWorkers(fireWorkers);
+                }
             }
         }
 
@@ -329,6 +336,11 @@ namespace Models.Business
 
                 LoanPayments += payment;
                 
+            }
+
+            if (Workers.Count == 0 && LoanPayments > 0)
+            {
+                Debug.Log("");
             }
             
             decimal profit = ProductController.Profit - TotalCostBeforeTaxes - UpgradeEffiencyCosts;

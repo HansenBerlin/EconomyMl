@@ -42,7 +42,7 @@ namespace Factories
                 production.BaseCostPerPieceProduced = 0.5M;
                 production.WorkerEfficiencyMultiplier = 1;
                 production.MachineEfficiencyMultiplier = 1;
-                production.AvailableProductionEnergy = 30000;
+                production.AvailableProductionEnergy = 1000;
                 production.AvailableProductionResources = 0;
                 //production.Product = CreateProduct(type, stats, env);
             }
@@ -57,7 +57,7 @@ namespace Factories
                 production.BaseCostPerPieceProduced = 2;
                 production.WorkerEfficiencyMultiplier = 1;
                 production.MachineEfficiencyMultiplier = 1;
-                production.AvailableProductionEnergy = 175000;
+                production.AvailableProductionEnergy = 10000;
                 production.AvailableProductionResources = 0;
                 //production.Product = CreateProduct(type, stats, env);
             }
@@ -72,8 +72,8 @@ namespace Factories
                 production.BaseCostPerPieceProduced = 5;
                 production.WorkerEfficiencyMultiplier = 1;
                 production.MachineEfficiencyMultiplier = 1;
-                production.AvailableProductionEnergy = 7500;
-                production.AvailableProductionResources = 7500;
+                production.AvailableProductionEnergy = 100;
+                production.AvailableProductionResources = 100;
                 //production.Product = CreateProduct(type, stats, env);
             }
             else if (type == ProductType.FederalService)
@@ -85,8 +85,8 @@ namespace Factories
                 production.EnergyTypeNeeded = ProductType.FossileEnergy;
                 production.UnitsPerWorker = 100;
                 production.BaseCostPerPieceProduced = 2;
-                production.WorkerEfficiencyMultiplier = 10000;
-                production.MachineEfficiencyMultiplier = 10000;
+                production.WorkerEfficiencyMultiplier = 5000;
+                production.MachineEfficiencyMultiplier = 5000;
                 //production.Product = CreateProduct(type, stats, env);
             }
 

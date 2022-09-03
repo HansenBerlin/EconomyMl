@@ -76,15 +76,15 @@ namespace Controller
 
             businessFactory.Init(countryEconomyMarket, envSettings, statsRepository, governmentController);
 
-            var fossilePolicy = new CompanyResourcePolicy(2200, 2200, 150, 100000, 200000);
-            var basePolicy = new CompanyResourcePolicy(2300, 2300, 200, 100000, 50000);
-            var interPolicy = new CompanyResourcePolicy(2400, 2400, 100, 100000, 10000);
-            var luxPolicy = new CompanyResourcePolicy(2600, 2600, 50, 100000, 1000);
+            var fossilePolicy = new CompanyResourcePolicy(2200, 2200, 150, 100000, 20000);
+            var basePolicy = new CompanyResourcePolicy(2300, 2300, 200, 100000, 5000);
+            var interPolicy = new CompanyResourcePolicy(2400, 2400, 100, 100000, 1000);
+            var luxPolicy = new CompanyResourcePolicy(2600, 2600, 50, 100000, 100);
 
             var fedPolicy = new CompanyResourcePolicy(2300, 2300, 100, 10000000, 0);
 
             businesses = new List<CompanyBaseAgent>();
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 10; i++)
             {
                 var fossileEnergyCompany = businessFactory.Create(ProductType.FossileEnergy, fossilePolicy, jobMarketController);
                 var baseProductCompany = businessFactory.Create(ProductType.BaseProduct, basePolicy, jobMarketController);
@@ -153,11 +153,12 @@ namespace Controller
             foreach (var business in businesses)
             {
                 business.MakeDecision(CompanyActionPhase.Produce);
-                business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
                 business.MonthlyBookkeeping();
+                business.MakeDecision(CompanyActionPhase.AdaptPrice);
+                business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
             }
 
-            governmentController.PayoutUnemployed();
+            //governmentController.PayoutUnemployed();
             governmentController.PayoutRetired();
 
             if (envSettings.Month % 12 == 0)
@@ -173,7 +174,6 @@ namespace Controller
             foreach (var business in businesses)
             {
                 business.UpdateStats(envSettings.Month);
-                //business.MakeDecision(CompanyActionPhase.AdaptPrice);
             }
 
             countryEconomyMarket.ResetProductMarkets();

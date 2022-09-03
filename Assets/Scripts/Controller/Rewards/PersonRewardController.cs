@@ -73,7 +73,7 @@ namespace Controller.Rewards
             float luxury = observations.LuxuryProducts > 12 ? 0.2f : observations.LuxuryProducts > 0 ? 0.1f : -0.05f;
             
             var val = NormalizeCombined(capitalFactor + capitalFactor2 + jobFactor + expenseFactor + baseDemandFulfilled + luxury +
-                                        observations.JobReward + observations.BaseBuyReward + observations.LuxuryBuyReward);
+                                        observations.JobReward / 12 + observations.BaseBuyReward / 12 + observations.LuxuryBuyReward / 12);
             return val;
         }
         
@@ -87,7 +87,6 @@ namespace Controller.Rewards
             var demandFactor = demanded - amountBought == 0 ? 1F : 0F;
             var overBoughFactor = observations.Capital < 0 ? -1F : 0F;
             var val = NormalizeLux(demandFactor + overBoughFactor);
-            if (float.IsInfinity(val) || float.IsNaN(val))
             observations.LuxuryBuyReward += val;
         }
 

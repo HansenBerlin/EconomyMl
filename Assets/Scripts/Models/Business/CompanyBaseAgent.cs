@@ -72,8 +72,7 @@ namespace Models.Business
 
 
         public void Init(ICountryEconomy countryEconomyMarkets, ProductController productController,
-            CompanyResourcePolicy policy,
-            GovernmentController government, CompanyDataRepository data, JobMarketController jobMarket)
+            CompanyResourcePolicy policy, GovernmentController government, CompanyDataRepository data, JobMarketController jobMarket)
         {
             CountryEconomyMarkets = countryEconomyMarkets;
             Balance = policy.InitialBalance;
@@ -91,9 +90,11 @@ namespace Models.Business
         }
 
         private decimal lastCpp = 0;
+        protected int _month;
         
         public void UpdateStats(int month)
         {
+            _month = month;
             lastCpp = Cpp;
             Data.BalanceStats.Add((double) Balance);
             Data.TotalProduced.Add(_unitsProducedInMonth);
@@ -102,13 +103,7 @@ namespace Models.Business
             Data.MoneyInStat.Add((double) CashflowIn);
             ProductController.Update(EpisodeCut.Month, Cpp, CapacityUsed);
             
-            Academy.Instance.StatsRecorder.Add("CPP/" + TypeProduced, (float)Cpp);
-            Academy.Instance.StatsRecorder.Add("PRICE/" + TypeProduced, (float)ProductController.Price);
-            Academy.Instance.StatsRecorder.Add("BALANCE/" + TypeProduced, (float)Balance);
-            Academy.Instance.StatsRecorder.Add("WORKERS/" + TypeProduced, Workers.Count);
-            Academy.Instance.StatsRecorder.Add("MONEYOUT/" + TypeProduced, (float)CashflowOut);
-            Academy.Instance.StatsRecorder.Add("MONEYIN/" + TypeProduced, (float)CashflowIn);
-            Academy.Instance.StatsRecorder.Add("CAPACITY/" + TypeProduced, (float)CapacityUsed);
+            
             
             _unitsProducedInMonth = 0;
             LastProdCostsInMonthForRessourcesAndEnergy = 0;

@@ -49,9 +49,17 @@ namespace Controller
 
         public void RemoveOpenJobPositions(int count, string forCompanyId)
         {
-            for (int i = count - 1; i >= 0; i--)
+            try
             {
-                _openJobPositions.Where(x => x.CompanyId == forCompanyId).ToList().RemoveAt(0);
+                for (int i = count - 1; i >= 0; i--)
+                {
+                    _openJobPositions.Where(x => x.CompanyId == forCompanyId).ToList().RemoveAt(0);
+                }
+
+            }
+            catch (ArgumentException e)
+            {
+                Debug.LogWarning(e.Message);
             }
         }
 

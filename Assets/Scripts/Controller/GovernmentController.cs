@@ -85,5 +85,6 @@ namespace Controller
             var rn = StatisticalDistributionController.CreateRandom(0, 49);
             return rn == 1;
         }
+        
     }
 }

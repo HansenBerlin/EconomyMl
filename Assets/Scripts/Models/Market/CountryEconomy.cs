@@ -169,6 +169,14 @@ namespace Models.Market
                 m.Reset();
             }
         }
+        
+        public void ReportStats(ProductType type, int workers, long capital, long moneyIn, long moneyOut,
+            long production, long sales, long price, long cpp)
+        {
+            
+        }
+        
+        
 
     }
 }

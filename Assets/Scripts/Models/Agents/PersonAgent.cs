@@ -215,8 +215,8 @@ namespace Models.Agents
             if (Death != DeathReason.HasNotDied) return;
             
 
-            var desiredSalaryDecision = actionBuffers.DiscreteActions[0];
-            int desiredSalary = desiredSalaryDecision * 100;
+            var desiredSalaryDecision = actionBuffers.DiscreteActions[0] + 1;
+            int desiredSalary = desiredSalaryDecision * 1000;
             var jobDecision= actionBuffers.DiscreteActions[1];
             var baseBuyDecision= actionBuffers.DiscreteActions[2];
             var luxBuyDecision= actionBuffers.DiscreteActions[3];

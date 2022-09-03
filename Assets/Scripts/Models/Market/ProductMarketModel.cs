@@ -289,6 +289,48 @@ namespace Models.Market
             CurrentUnfulfilledDemand += amount;
             CurrentUnfulfilledDemand /= dayOfMonthDivisor;
         }*/
+        
+        public void ReportStats(int workers, long capital, long moneyIn, long moneyOut,
+            long production, long sales, long price, long cpp)
+        {
+            _workers += workers;
+            _capital += capital;
+            _moneyIn += moneyIn;
+            _moneyOut += moneyOut;
+            _production += production;
+            _sales += sales;
+            _price += price;
+            _cpp += cpp;
+        }
+
+        public void WriteAndResetStats()
+        {
+            Academy.Instance.StatsRecorder.Add("workers/" + Type, (float)_workers / 10);
+            Academy.Instance.StatsRecorder.Add("capital/" + Type, (float)_capital / 10);
+            Academy.Instance.StatsRecorder.Add("moneyin/" + Type, (float)_moneyIn / 10);
+            Academy.Instance.StatsRecorder.Add("moneyout/" + Type, (float)_moneyOut / 10);
+            Academy.Instance.StatsRecorder.Add("production/" + Type, (float)_production / 10);
+            Academy.Instance.StatsRecorder.Add("sales/" + Type, (float)_sales / 10);
+            Academy.Instance.StatsRecorder.Add("price/" + Type, (float)_price / 10);
+            Academy.Instance.StatsRecorder.Add("cpp/" + Type, (float)_cpp / 10);
+            _workers = 0;
+            _capital = 0;
+            _moneyIn = 0;
+            _moneyOut = 0;
+            _production = 0;
+            _sales = 0;
+            _price = 0;
+            _cpp = 0;
+        }
+
+        private int _workers;
+        private long _capital;
+        private long _moneyIn;
+        private long _moneyOut;
+        private long _production;
+        private long _sales;
+        private long _price;
+        private long _cpp;
 
         public void ReportProduction(long amount)
         {
@@ -303,14 +345,15 @@ namespace Models.Market
         public void Reset()
         {
 
-            var statsRecorder = Academy.Instance.StatsRecorder;
-            statsRecorder.Add("PROD/" + Type + "-prd", _currentProduction);
-            statsRecorder.Add("PROD/"+ Type + "-sls", _currentSales);
-            statsRecorder.Add("PROD/" + Type + "-dmd", _currentUnfullfilledDemand);
+            //var statsRecorder = Academy.Instance.StatsRecorder;
+            //statsRecorder.Add("PROD/" + Type + "-prd", _currentProduction);
+            //statsRecorder.Add("PROD/"+ Type + "-sls", _currentSales);
+            //statsRecorder.Add("PROD/" + Type + "-dmd", _currentUnfullfilledDemand);
             //_dataRepository.Production.Add(_currentProduction);
             //_dataRepository.Sales.Add(_currentSales);
             //_dataRepository.Demand.Add(_currentUnfullfilledDemand);
 
+            WriteAndResetStats();
             _lastSales = _currentSales;
             _lastProduction = _currentProduction;
             _lastUnfullfilledDemand = _currentUnfullfilledDemand;

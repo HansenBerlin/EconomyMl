@@ -98,7 +98,7 @@ namespace Controller
         public void YearlyUpdatePopulation()
         {
             var range = Enumerable.Range(0, _populationModel.PopulationCount).ToList();
-            var avgIncome = AverageIncome(_populationModel.AgeRangeAdult);
+            var avgIncome = AverageWorkerIncome();
             var tempChanges = new TempPopulationUpdateModel(_populationModel.Population);
             while (range.Count > 0)
             {

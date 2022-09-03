@@ -42,8 +42,7 @@ namespace Models.Meta
             _data.RetiredCosts.Add((double) RetirementPaymentsInMonth);
             _data.UnemployedCosts.Add((double) UnemployedPaymentsInMonth);
             _data.TotalIncome.Add((double) (ConsumerTaxInMonth + IncomeTaxInMonth + ProfitTaxInMonth));
-            _data.TotalExpenses.Add((double) (PublicServicePaymentsInMonth + RetirementPaymentsInMonth +
-                                              UnemployedPaymentsInMonth));
+            _data.TotalExpenses.Add((double) (PublicServicePaymentsInMonth + RetirementPaymentsInMonth + UnemployedPaymentsInMonth));
         }
 
         public void Reset()
