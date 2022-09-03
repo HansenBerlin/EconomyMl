@@ -52,8 +52,9 @@ namespace Models.Business
 
         }
 
-        public override void EndYear()
+        public override void EndYear(CompanyActionPhase phase)
         {
+            currentActionPhase = phase;
             //AddReward((float)ProductController.ObsProductionTrend);
             //AddReward((float)ProductController.ObsSalesTrend);
             //AddReward((float)ProductController.ObsProfitTrend);
@@ -109,8 +110,8 @@ namespace Models.Business
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
             var requestCredit = actionBuffers.DiscreteActions[0];
-            var setSalary = actionBuffers.DiscreteActions[2] + 1; // 1-100
-            var maxProduction = actionBuffers.DiscreteActions[3] + 1; // 1 - 2 (50%, 100%)
+            var setSalary = actionBuffers.DiscreteActions[1] + 1; // 1-100
+            var maxProduction = actionBuffers.DiscreteActions[2] + 1; // 1 - 2 (50%, 100%)
             var adaptPrice = actionBuffers.ContinuousActions[0];
             var buyResourcesFromBalance = (actionBuffers.ContinuousActions[1] + 2) / 3;  // yw 33 und 100%
             var adaptWorkForce = actionBuffers.ContinuousActions[2];

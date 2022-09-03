@@ -114,7 +114,7 @@ namespace Models.Business
         }
 
         public abstract void MakeDecision(CompanyActionPhase phase);
-        public abstract void EndYear();
+        public abstract void EndYear(CompanyActionPhase phase);
 
 
         public bool IsRemoved()

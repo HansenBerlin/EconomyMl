@@ -49,8 +49,9 @@ namespace Models.Business
 
         }
 
-        public override void EndYear()
+        public override void EndYear(CompanyActionPhase phase)
         {
+            currentActionPhase = phase;
             EndEpisode();
         }
 

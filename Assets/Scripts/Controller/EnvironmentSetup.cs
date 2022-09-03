@@ -141,43 +141,11 @@ namespace Controller
 
 
             //int day = 1;
-            foreach (var business in businesses.Where(b => b.TypeProduced == ProductType.FossileEnergy))
-            {
-                business.MakeDecision(CompanyActionPhase.Produce);
-            }
-
+            
             foreach (var business in businesses.OrderBy(_ => _rng.Next()))
             {
-                if (business.TypeProduced == ProductType.FossileEnergy)
-                {
-                    continue;
-                }
-
+                business.MakeDecision(CompanyActionPhase.AdaptCapital);
                 business.MakeDecision(CompanyActionPhase.BuyResources);
-            }
-
-            foreach (var business in businesses
-                         .Where(business => business.TypeProduced
-                             is not (ProductType.FossileEnergy or ProductType.LuxuryProduct
-                             or ProductType.FederalService)))
-            {
-                business.MakeDecision(CompanyActionPhase.Produce);
-            }
-
-            foreach (var business in businesses.OrderBy(_ => _rng.Next()))
-            {
-                if (business.TypeProduced != ProductType.LuxuryProduct &&
-                    business.TypeProduced != ProductType.FederalService)
-                {
-                    continue;
-                }
-
-                business.MakeDecision(CompanyActionPhase.BuyResources);
-            }
-
-            foreach (var business in businesses.Where(business =>
-                         business.TypeProduced is ProductType.LuxuryProduct or ProductType.FederalService))
-            {
                 business.MakeDecision(CompanyActionPhase.Produce);
             }
 
@@ -198,8 +166,8 @@ namespace Controller
                 populationController.YearlyUpdatePopulation();
                 foreach (var business in businesses.OrderBy(_ => _rng.Next()))
                 {
-                    business.MakeDecision(CompanyActionPhase.AdaptCapital);
-                    business.EndYear();
+                    business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
+                    business.EndYear(CompanyActionPhase.AdaptCapital);
                 }
             }
 
@@ -207,7 +175,7 @@ namespace Controller
             {
                 business.UpdateStats(envSettings.Month);
                 business.AddRewards();
-                business.MakeDecision(CompanyActionPhase.AdaptPrice);
+                //business.MakeDecision(CompanyActionPhase.AdaptPrice);
             }
 
             countryEconomyMarket.ResetProductMarkets();
