@@ -4,9 +4,9 @@ using Models.Finance;
 
 namespace Models.Agents
 {
-    public class BankAgent 
+    public class BankAgent
     {
-        public float InterestRate { get; }
+        public float InterestRate { get; } = 0.05F;
         private decimal _capital = 100000;
         private List<LoanModel> _loans = new();
 

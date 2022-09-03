@@ -65,13 +65,16 @@ namespace Models.Business
             sensor.AddObservation(Workers.Count);
             sensor.AddObservation((long)Balance);
             sensor.AddObservation(ProductController.TotalSupply);
-            sensor.AddObservation(ProductController.SalesThisMonth);
             sensor.AddObservation((float)ProductController.Price);
-            sensor.AddObservation((float)ProductController.QuarterlyProductionAverage);
-            sensor.AddObservation((float)ProductController.QuarterlySalesAverage);
-            sensor.AddObservation((float)ProductController.QuarterlySupplyAverage);
             sensor.AddObservation(Production.AvailableProductionEnergy);
             sensor.AddObservation(Production.AvailableProductionResources);
+            sensor.AddObservation((float) ProductController.Profit);
+            sensor.AddObservation((float) ProductController.ProfitLastMonth);
+            sensor.AddObservation(ProductController.SalesThisMonth);
+            sensor.AddObservation(ProductController.SalesLastMonth);
+            sensor.AddObservation(ProductController.ProductionThisMonth);
+            sensor.AddObservation(ProductController.ProductionLastMonth);
+
         }
 
 
@@ -122,7 +125,8 @@ namespace Models.Business
         public override void ActionProduce(int productionPercentage)
         {
             var maxUnitsProduced = PossibleProduction;
-            int finalProduction = (int) (maxUnitsProduced * productionPercentage) / 100;
+            //int finalProduction = (int) (maxUnitsProduced * productionPercentage) / 10;
+            int finalProduction = maxUnitsProduced;
             ProductController.AddNew(finalProduction);
             _unitsProducedInMonth += finalProduction;
 
@@ -180,7 +184,9 @@ namespace Models.Business
                 {
                     decimal resourceSplit = Production.ResourceNeededPerPiece / (Production.ResourceNeededPerPiece + Production.EnergyNeededPerPiece);
                     decimal maxResourceSpendings = resourceSplit * maxSpendinsTotal;
-                    int resourcesDemanded = (int)(maxResourceSpendings / CountryEconomyMarkets.AveragePrice(ResourceTypeNeeded));
+                    //int resourcesDemanded = (int)(maxResourceSpendings / CountryEconomyMarkets.AveragePrice(ResourceTypeNeeded));                    int resourcesDemanded = (int)CalculateDemandForMonthlyProduction("r");
+                    int resourcesDemanded = (int)CalculateDemandForMonthlyProduction("r");
+
                     ActionBuyResources(maxResourceSpendings, resourcesDemanded);
 
                 }
@@ -195,7 +201,9 @@ namespace Models.Business
                 {
                     decimal energySplit = Production.EnergyNeededPerPiece / (Production.ResourceNeededPerPiece + Production.EnergyNeededPerPiece);
                     decimal maxEnergySpendings = energySplit * maxSpendinsTotal;
-                    int energyDemanded = (int)(maxEnergySpendings / CountryEconomyMarkets.AveragePrice(EnergyTypeNeeded));
+                    //int energyDemanded = (int)(maxEnergySpendings / CountryEconomyMarkets.AveragePrice(EnergyTypeNeeded));
+                    int energyDemanded = (int)CalculateDemandForMonthlyProduction("e");
+
                     ActionBuyEnergy(maxEnergySpendings, energyDemanded);
 
                 }
@@ -267,6 +275,7 @@ namespace Models.Business
 
             if (changeProductionCapabilities > 0)
             {
+                AddReward(0.1F);
                 maxSalary *= 100;
                 var additionalWorkers = Workers.Count * changeProductionCapabilities;
                 if (additionalWorkers <= 0) return;

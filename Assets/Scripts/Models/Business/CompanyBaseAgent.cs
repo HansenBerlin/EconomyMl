@@ -141,7 +141,7 @@ namespace Models.Business
         }
 
 
-        private decimal CalculateDemandForMonthlyProduction(string type)
+        public decimal CalculateDemandForMonthlyProduction(string type)
         {
             if (type == "r")
             {

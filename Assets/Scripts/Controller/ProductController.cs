@@ -32,10 +32,14 @@ namespace Controller
         public decimal Price { get; private set; }
         public decimal Cpp => _productData.CostPerPiece;
         public decimal Profit => _productData.ProfitThisMonth;
+        public decimal ProfitLastMonth => _productData.LastProfit;
 
         public long TotalSupply => _productData.TotalSupply;
 
         public long SalesThisMonth => _productData.SalesThisMonth;
+        public long SalesLastMonth => _productData.LastSales;
+        public long ProductionThisMonth => _productData.ProductionThisMonth;
+        public long ProductionLastMonth => _productData.LastProd;
 
         public decimal QuarterlySupplyAverage =>
             (_productData.SupplyQuarterlyCurrent + _productData.SupplyQuarterlyLast) / (QuarterMonth + 3);
