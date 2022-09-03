@@ -41,6 +41,8 @@ namespace Controller
         public long ProductionThisMonth => _productData.ProductionThisMonth;
         public long ProductionLastMonth => _productData.LastProd;
 
+        
+
         public decimal QuarterlySupplyAverage =>
             (_productData.SupplyQuarterlyCurrent + _productData.SupplyQuarterlyLast) / (QuarterMonth + 3);
 

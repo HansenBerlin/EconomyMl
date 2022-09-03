@@ -65,23 +65,21 @@ namespace Controller.Rewards
         
         public float CombinedReward(PersonObservations observations)
         {
-            var capitalFactor = observations.Capital > 0 ? 100F : -200F;
-            var capitalFactor2 = observations.Capital > 100000 ? 1000F : 0F;
-            float expenseFactor = (float)(observations.MonthlyIncome - observations.MonthlyExpenses);
-            var jobFactor = observations.JobStatus == JobStatus.Unemployed ? -200F : observations.JobStatus == JobStatus.Employed ? 500F : 0;
-            var baseDemandFulfilled = observations.UnsatisfiedBaseDemand * -10;
-            var luxury = observations.LuxuryProducts < 100 ? observations.LuxuryProducts * 10 : 1000;
-            observations.JobReward = 0;
-            observations.BaseBuyReward = 0;
-            observations.LuxuryBuyReward = 0;
-            observations.CapitalReward = 0;
-            var val = NormalizeCombined(capitalFactor + capitalFactor2 + jobFactor + expenseFactor + baseDemandFulfilled + luxury);
+            var capitalFactor = observations.Capital > 0 ? 0.5f : -0.5F;
+            var capitalFactor2 = observations.Capital > 100000 ? 0.5F : 0F;
+            float expenseFactor = (float)(observations.MonthlyExpensesAccumulatedForYear > - observations.MonthlyIncomeAccumulatedForYear ? -0.5 : 0.5);
+            var jobFactor = observations.JobStatus == JobStatus.Unemployed ? -0.2F : observations.JobStatus == JobStatus.Employed ? 0.4F : 0;
+            float baseDemandFulfilled = observations.UnsatisfiedBaseDemand > 180 ? -0.5f : observations.UnsatisfiedBaseDemand > 0 ? - 0.2f : 0.5f;
+            float luxury = observations.LuxuryProducts > 12 ? 0.2f : observations.LuxuryProducts > 0 ? 0.1f : -0.05f;
+            
+            var val = NormalizeCombined(capitalFactor + capitalFactor2 + jobFactor + expenseFactor + baseDemandFulfilled + luxury +
+                                        observations.JobReward + observations.BaseBuyReward + observations.LuxuryBuyReward);
             return val;
         }
         
         public void RewardForBaseProductSatisfaction(long amountBought, long demanded, PersonObservations observations)
         {
-            observations.BaseBuyReward = NormalizeBase(demanded - amountBought == 0 ? 0.5F : -0.5F);
+            observations.BaseBuyReward += NormalizeBase(demanded - amountBought == 0 ? 0.5F : -0.5F);
         }
         
         public void RewardForLuxuryProductSatisfaction(long amountBought, long demanded, PersonObservations observations)
@@ -90,18 +88,14 @@ namespace Controller.Rewards
             var overBoughFactor = observations.Capital < 0 ? -1F : 0F;
             var val = NormalizeLux(demandFactor + overBoughFactor);
             if (float.IsInfinity(val) || float.IsNaN(val))
-            {
-                Debug.Log("asd");
-            }
-
-            observations.LuxuryBuyReward = val;
+            observations.LuxuryBuyReward += val;
         }
 
         public void RewardForJobChange(decimal salaryBefore, decimal salaryAfter, bool isUnemployed, bool isDecisionSkipped, PersonObservations observations)
         {
             if (isDecisionSkipped && isUnemployed)
             {
-                observations.JobReward = -0.2F;
+                observations.JobReward += -0.5F;
             }
             
             if (salaryBefore > salaryAfter)
@@ -109,18 +103,18 @@ namespace Controller.Rewards
                 if (isUnemployed)
                 {
                     float val = (float) (salaryAfter / salaryBefore - 1) + 0.2F;
-                    observations.JobReward = NormalizeWork(val);
+                    observations.JobReward += NormalizeWork(val);
                 }
                 else
                 {
                     float val = (float)(salaryAfter / salaryBefore - 1);
-                    observations.JobReward = NormalizeWork(val);
+                    observations.JobReward += NormalizeWork(val);
                 }
             }
             if (salaryBefore < salaryAfter)
             {
                 float val = (float)(salaryAfter / salaryBefore - 1);
-                observations.JobReward = NormalizeWork(val);
+                observations.JobReward += NormalizeWork(val);
             }
             
         }

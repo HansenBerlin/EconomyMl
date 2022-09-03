@@ -41,7 +41,7 @@ namespace Models.Agents
         public int initage;
         public int Age => _observations.Age;
         public decimal Capital => _observations.Capital;
-        public decimal MonthlyIncome => _observations.MonthlyIncome;
+        public decimal MonthlyIncome => _observations.Salary;
         public int UnderageChildrenCount => Children.Count(c => c.AgeStatus == AgeStatus.UnderageChild);
         public bool StaysChildless { get; set; }
         [field:SerializeField]
@@ -150,15 +150,16 @@ namespace Models.Agents
         {
             //if (Death != DeathReason.HasNotDied) return;
 
-            sensor.AddObservation(_observations.Age);
+            //sensor.AddObservation(_observations.Age);
             sensor.AddObservation(_observations.LuxuryProducts);
             sensor.AddObservation(_observations.OpenJobPositions);
             sensor.AddObservation(_observations.UnsatisfiedBaseDemand);
             sensor.AddObservation((float)_observations.Capital);
             sensor.AddObservation((float)_observations.DesiredSalary);
-            sensor.AddObservation((float)_observations.MonthlyIncome);
-            sensor.AddObservation((float)_observations.MonthlyExpenses);
-            sensor.AddObservation((float)_observations.SatisfactionRate);
+            sensor.AddObservation((float)_observations.Salary);
+            sensor.AddObservation((float)_observations.MonthlyExpensesAccumulatedForYear);
+            sensor.AddObservation((float)_observations.MonthlyIncomeAccumulatedForYear);
+            //sensor.AddObservation((float)_observations.SatisfactionRate);
             sensor.AddObservation((float)_observations.AverageIncome);
             sensor.AddObservation((int)_observations.JobStatus);
             sensor.AddObservation((int)_observations.AgeStatus);
@@ -212,18 +213,7 @@ namespace Models.Agents
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
             if (Death != DeathReason.HasNotDied) return;
-            if (Month % 12 == 0)
-            {
-                float reward = _rewardController.CombinedReward(_observations);
-                if (float.IsNaN(reward) || float.IsInfinity(reward))
-                {
-                    throw new Exception($"{Month} invalid value on main reward");
-                }
-                AddReward(reward);
-                //EndEpisode();
-                EndEpisode();
-                return;
-            }
+            
 
             var desiredSalaryDecision = actionBuffers.DiscreteActions[0];
             int desiredSalary = desiredSalaryDecision * 100;
@@ -252,7 +242,6 @@ namespace Models.Agents
                 {
                     throw new Exception($"{Month} invalid value on base reward");
                 }
-                AddReward(_observations.BaseBuyReward);
                 
                 switch (luxBuyDecision)
                 {
@@ -273,11 +262,10 @@ namespace Models.Agents
                 {
                     throw new Exception($"{Month} invalid value on lux reward");
                 }
-                AddReward(_observations.LuxuryBuyReward);
             }
             else
             {
-                AddReward(0.05F);
+                AddReward(0.01F);
             }
 
 
@@ -299,18 +287,13 @@ namespace Models.Agents
                 {
                     throw new Exception($"{Month} invalid value on job reward");
                 }
-                AddReward(_observations.JobReward);
             }
             else
             {
-                AddReward(0.05F);
+                AddReward(0.01F);
             }
 
-            _observations.JobReward = 0;
-            _observations.BaseBuyReward = 0;
-            _observations.LuxuryBuyReward = 0;
-            _observations.CapitalReward = 0;
-            _observations.MonthlyExpenses = 0;
+            
         }
 
         public void RequestMonthlyDecisions(int month, decimal averageIncome)
@@ -329,9 +312,22 @@ namespace Models.Agents
             if (Death != DeathReason.HasNotDied) return;
 
             //Debug.Log($"Yearly reward in month {Month} " + reward);
+            float reward = _rewardController.CombinedReward(_observations);
+            if (float.IsNaN(reward) || float.IsInfinity(reward))
+            {
+                throw new Exception($"{Month} invalid value on main reward");
+            }
+            AddReward(reward);
+            //EndEpisode();
+            EndEpisode();
             _controller.UpdateAgent(avgIncome, tempPop, factory, probController);
-            RequestDecision();
             _observations.UnsatisfiedBaseDemand = 0;
+            _observations.JobReward = 0;
+            _observations.BaseBuyReward = 0;
+            _observations.LuxuryBuyReward = 0;
+            _observations.MonthlyExpensesAccumulatedForYear = 0;
+            _observations.MonthlyIncomeAccumulatedForYear = 0;
+            _observations.LuxuryProducts = 0;
 
         }
 

@@ -76,12 +76,12 @@ namespace Controller
 
             businessFactory.Init(countryEconomyMarket, envSettings, statsRepository, governmentController);
 
-            var fossilePolicy = new CompanyResourcePolicy(2200, 2200, 5, 100000, 20000);
-            var basePolicy = new CompanyResourcePolicy(2300, 2300, 10, 100000, 5000);
-            var interPolicy = new CompanyResourcePolicy(2400, 2400, 10, 100000, 100);
-            var luxPolicy = new CompanyResourcePolicy(2600, 2600, 5, 100000, 100);
+            var fossilePolicy = new CompanyResourcePolicy(2200, 2200, 150, 100000, 200000);
+            var basePolicy = new CompanyResourcePolicy(2300, 2300, 200, 100000, 50000);
+            var interPolicy = new CompanyResourcePolicy(2400, 2400, 100, 100000, 10000);
+            var luxPolicy = new CompanyResourcePolicy(2600, 2600, 50, 100000, 1000);
 
-            var fedPolicy = new CompanyResourcePolicy(2300, 2300, 60, 10000000, 0);
+            var fedPolicy = new CompanyResourcePolicy(2300, 2300, 100, 10000000, 0);
 
             businesses = new List<CompanyBaseAgent>();
             for (int i = 0; i < 1; i++)
@@ -90,7 +90,6 @@ namespace Controller
                 var baseProductCompany = businessFactory.Create(ProductType.BaseProduct, basePolicy, jobMarketController);
                 var intermediateProductCompany = businessFactory.Create(ProductType.IntermediateProduct, interPolicy, jobMarketController);
                 var luxuryProductCompany = businessFactory.Create(ProductType.LuxuryProduct, luxPolicy, jobMarketController);
-                businesses.Add(fossileEnergyCompany);
                 businesses.Add(fossileEnergyCompany);
                 businesses.Add(baseProductCompany);
                 businesses.Add(intermediateProductCompany);
@@ -142,18 +141,18 @@ namespace Controller
 
             //int day = 1;
             
-            foreach (var business in businesses.OrderBy(_ => _rng.Next()))
+            foreach (var business in businesses)
             {
-                business.MakeDecision(CompanyActionPhase.AdaptCapital);
+                //business.MakeDecision(CompanyActionPhase.AdaptCapital);
                 business.MakeDecision(CompanyActionPhase.BuyResources);
-                business.MakeDecision(CompanyActionPhase.Produce);
             }
 
             populationController.MonthlyUpdatePopulation(countryEconomyMarket, envSettings.Month);
 
 
-            foreach (var business in businesses.OrderBy(_ => _rng.Next()))
+            foreach (var business in businesses)
             {
+                business.MakeDecision(CompanyActionPhase.Produce);
                 business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
                 business.MonthlyBookkeeping();
             }
@@ -164,121 +163,22 @@ namespace Controller
             if (envSettings.Month % 12 == 0)
             {
                 populationController.YearlyUpdatePopulation();
-                foreach (var business in businesses.OrderBy(_ => _rng.Next()))
+                foreach (var business in businesses)
                 {
                     business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
                     business.EndYear(CompanyActionPhase.AdaptCapital);
                 }
             }
 
-            foreach (var business in businesses.OrderBy(_ => _rng.Next()))
+            foreach (var business in businesses)
             {
                 business.UpdateStats(envSettings.Month);
-                business.AddRewards();
                 //business.MakeDecision(CompanyActionPhase.AdaptPrice);
             }
 
             countryEconomyMarket.ResetProductMarkets();
             governmentController.EndMonth();
-            yield return new WaitForSeconds(0);
+            yield return new WaitForFixedUpdate();
         }
-
-
-        /*private void CreateCharts()
-        {
-            ChartFactory.CreateScatter(
-                new[]
-                {
-                    populationModel.AllTimePopulationTrendStat, populationModel.AllTimeChildrenStat,
-                    populationModel.AllTimeDeathStat, populationModel.TotalPopulationTrend
-                },
-                ChartType.Population, "PopulationTrend",
-                new[] {"trned", "born", "died", "total"});
-
-
-            ChartFactory.CreateScatter(
-                new[]
-                {
-                    populationModel.EmploymentRate
-                },
-                ChartType.Economy, "EmploymentRate", yLimitMin: 0, yLimitMax: 100
-            );
-
-
-            ChartFactory.CreateScatter(
-                new[]
-                {
-                    populationModel.AverageIncomeEmployed, populationModel.AverageIncomeUnemployed,
-                    populationModel.AverageIncomeWorkerAge, populationModel.AverageIncomeAdultAge,
-                    populationModel.AverageIncomeRetiredAge
-                },
-                ChartType.Economy, "average-income",
-                new[]
-                {
-                    "employed", "unemployed", "workerage", "all adults", "retired"
-                });
-
-            List<Plot> pricePlots = new();
-            List<Plot> productionPlots = new();
-            foreach ((string? key, var values) in statsRepository.ProductData)
-            {
-                var prodPlot = ChartFactory.CreateScatterPlot(
-                    new[]
-                    {
-                        values.ProductionTrend, values.SalesTrend, values.SupplyTrend, values.ProfitTrend,
-                        values.PriceTrend
-                    },
-                    ChartType.Businesses, "production-trends-" + key,
-                    new[]
-                    {
-                        "production", "sales", "supply", "profit", "price"
-                    }, isLogScale: true);
-                productionPlots.Add(prodPlot);
-
-                var plot = ChartFactory.CreateScatterPlot(
-                    new[]
-                    {
-                        values.PriceTotal, values.CppTotal
-                    },
-                    ChartType.Businesses, key,
-                    new[]
-                    {
-                        "price", "cpp"
-                    });
-                pricePlots.Add(plot);
-            }
-
-            ChartFactory.Multiplot(pricePlots, "product-price-total", ChartType.Businesses);
-            ChartFactory.Multiplot(productionPlots, "product-trends", ChartType.Businesses);
-
-            List<Plot> governmentFinancials = new();
-            foreach ((string? key, var values) in statsRepository.GovernmentData)
-            {
-                var plot = ChartFactory.CreateScatterPlot(
-                    new[]
-                    {
-                        values.ConsumerTaxes, values.IncomeTaxes, values.ProfitTaxes, values.TotalIncome
-                    },
-                    ChartType.Government, "income-" + key,
-                    new[]
-                    {
-                        "consumer tax", "income tax", "profit tax", "total"
-                    });
-                var plot2 = ChartFactory.CreateScatterPlot(
-                    new[]
-                    {
-                        values.UnemployedCosts, values.RetiredCosts, values.PublicServiceCosts, values.TotalExpenses
-                    },
-                    ChartType.Government, "expenses-" + key,
-                    new[]
-                    {
-                        "unemployed", "retired", "public services", "total"
-                    });
-                governmentFinancials.Add(plot);
-                governmentFinancials.Add(plot2);
-            }
-
-            ChartFactory.Multiplot(governmentFinancials, "gov-financials", ChartType.Government);
-        }*/
     }
 }

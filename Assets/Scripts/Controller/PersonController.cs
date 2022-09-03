@@ -34,7 +34,7 @@ namespace Controller
         {
             _person = person;
             _observations.JobStatus = GetInitialJobStatus();
-            _observations.MonthlyIncome = InitialIncome();
+            _observations.Salary = InitialIncome();
         }
 
         public List<IPersonAction> InitActions()
@@ -127,26 +127,16 @@ namespace Controller
             {
                 job.TakeJob(_person, _observations.DesiredSalary);
                 _observations.JobStatus = JobStatus.Employed;
-                _observations.MonthlyIncome = _observations.DesiredSalary;
+                _observations.Salary = _observations.DesiredSalary;
                 job.Salary = _observations.DesiredSalary;
                 _person.Job = job;
             }
         }
 
-        public void UpdateIncome(decimal amount)
-        {
-            _observations.MonthlyIncome += amount;
-        }
-
-        public void UpdateExpenses(decimal amount)
-        {
-            _observations.MonthlyExpenses += amount;
-        }
-
         public void RemoveJobWhenFired()
         {
-            _observations.DesiredSalary = _observations.MonthlyIncome * 0.99M;
-            _observations.MonthlyIncome = ReducedIncome(_observations.MonthlyIncome);
+            _observations.DesiredSalary = _observations.Salary * 0.99M;
+            _observations.Salary = ReducedIncome(_observations.Salary);
             _person.Job.QuitJob(_person);
             _observations.JobStatus = JobStatus.Unemployed;
         }
@@ -160,7 +150,7 @@ namespace Controller
 
             newJob.TakeJob(_person, _observations.DesiredSalary);
             _observations.JobStatus = JobStatus.Employed;
-            _observations.MonthlyIncome = newJob.Salary;
+            _observations.Salary = newJob.Salary;
             _observations.DesiredSalary = newJob.Salary;
             _person.Job = newJob;
         }
@@ -170,8 +160,8 @@ namespace Controller
             if (_observations.JobStatus == JobStatus.Employed)
             {
                 _person.Job.QuitJob(_person);
-                _observations.MonthlyIncome = ReducedIncome(_observations.MonthlyIncome);
-                _observations.DesiredSalary = _observations.MonthlyIncome;
+                _observations.Salary = ReducedIncome(_observations.Salary);
+                _observations.DesiredSalary = _observations.Salary;
                 _observations.JobStatus = JobStatus.Unemployed;
             }
         }
@@ -226,8 +216,9 @@ namespace Controller
 
         public decimal Pay()
         {
-            _observations.Capital += _observations.MonthlyIncome;
-            return _observations.MonthlyIncome;
+            _observations.Capital += _observations.Salary;
+            _observations.MonthlyIncomeAccumulatedForYear += _observations.Salary;
+            return _observations.Salary;
         }
 
 
@@ -240,23 +231,16 @@ namespace Controller
             }
 
             _observations.JobStatus = JobStatus.Retired;
-            _observations.MonthlyIncome *= 0.67M;
+            _observations.Salary *= 0.67M;
             _observations.AgeStatus = AgeStatus.RetiredAge;
             retiredTemp.Add(_person);
         }
-
-        public void ResetExpenses()
-        {
-            _observations.MonthlyExpenses = 0;
-        }
-
-
-
+        
         private void TurnAdult(decimal avgIncome)
         {
             _observations.DesiredSalary = avgIncome * 0.7M;
             _observations.JobStatus = JobStatus.Unemployed;
-            _observations.MonthlyIncome = (decimal)_policies.federalUnemployedPaymentPolicies.UnemployedSupportMin;
+            _observations.Salary = (decimal)_policies.federalUnemployedPaymentPolicies.UnemployedSupportMin;
         }
 
 

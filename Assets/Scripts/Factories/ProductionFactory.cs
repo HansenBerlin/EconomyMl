@@ -27,6 +27,8 @@ namespace Factories
                 production.BaseCostPerPieceProduced = 0.1M;
                 production.WorkerEfficiencyMultiplier = 1;
                 production.MachineEfficiencyMultiplier = 1;
+                production.AvailableProductionEnergy = 0;
+                production.AvailableProductionResources = 0;
                 //production.Product = CreateProduct(type, stats, env);
             }
             else if (type == ProductType.BaseProduct)
@@ -40,6 +42,8 @@ namespace Factories
                 production.BaseCostPerPieceProduced = 0.5M;
                 production.WorkerEfficiencyMultiplier = 1;
                 production.MachineEfficiencyMultiplier = 1;
+                production.AvailableProductionEnergy = 30000;
+                production.AvailableProductionResources = 0;
                 //production.Product = CreateProduct(type, stats, env);
             }
             else if (type == ProductType.IntermediateProduct)
@@ -53,6 +57,8 @@ namespace Factories
                 production.BaseCostPerPieceProduced = 2;
                 production.WorkerEfficiencyMultiplier = 1;
                 production.MachineEfficiencyMultiplier = 1;
+                production.AvailableProductionEnergy = 175000;
+                production.AvailableProductionResources = 0;
                 //production.Product = CreateProduct(type, stats, env);
             }
             else if (type == ProductType.LuxuryProduct)
@@ -66,6 +72,8 @@ namespace Factories
                 production.BaseCostPerPieceProduced = 5;
                 production.WorkerEfficiencyMultiplier = 1;
                 production.MachineEfficiencyMultiplier = 1;
+                production.AvailableProductionEnergy = 7500;
+                production.AvailableProductionResources = 7500;
                 //production.Product = CreateProduct(type, stats, env);
             }
             else if (type == ProductType.FederalService)
@@ -77,8 +85,8 @@ namespace Factories
                 production.EnergyTypeNeeded = ProductType.FossileEnergy;
                 production.UnitsPerWorker = 100;
                 production.BaseCostPerPieceProduced = 2;
-                production.WorkerEfficiencyMultiplier = 1;
-                production.MachineEfficiencyMultiplier = 1;
+                production.WorkerEfficiencyMultiplier = 10000;
+                production.MachineEfficiencyMultiplier = 10000;
                 //production.Product = CreateProduct(type, stats, env);
             }
 
@@ -129,8 +137,7 @@ namespace Factories
             {
                 ProductType.FossileEnergy => new ProductController(ProductType.FossileEnergy, model, template),
                 ProductType.BaseProduct => new ProductController(ProductType.BaseProduct, model, template),
-                ProductType.IntermediateProduct => new ProductController(ProductType.IntermediateProduct, model,
-                    template),
+                ProductType.IntermediateProduct => new ProductController(ProductType.IntermediateProduct, model, template),
                 ProductType.LuxuryProduct => new ProductController(ProductType.LuxuryProduct, model, template),
                 ProductType.FederalService => new ProductController(ProductType.FederalService, model, template),
                 _ => new ProductController(ProductType.None, model, template)

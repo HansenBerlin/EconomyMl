@@ -13,11 +13,12 @@ namespace Models.Observations
         private readonly JobMarketController _jobMarket;
 
         public decimal Capital { get; set; }
-        public decimal MonthlyIncome { get; set; }
-        public decimal MonthlyExpenses { get; set; }
+        public decimal Salary { get; set; }
+        public decimal MonthlyExpensesAccumulatedForYear { get; set; }
+        public decimal MonthlyIncomeAccumulatedForYear { get; set; }
         public decimal DesiredSalary { get; set; }
         public decimal SatisfactionRate { get; set; }
-        public int UnsatisfiedBaseDemand { get; set; }
+        public long UnsatisfiedBaseDemand { get; set; }
         public long LuxuryProducts { get; set; }
         public JobStatus JobStatus { get; set; }
         public decimal AverageIncome { get; set; }
@@ -33,9 +34,7 @@ namespace Models.Observations
         public float JobReward;
         public float BaseBuyReward;
         public float LuxuryBuyReward;
-        public float CapitalReward;
 
-        
 
         public AgeStatus AgeStatus
         {

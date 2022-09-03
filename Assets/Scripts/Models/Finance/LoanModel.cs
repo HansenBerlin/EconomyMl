@@ -33,7 +33,7 @@ namespace Models.Finance
             }
 
             decimal monthlySum = TotalSumLeft / MonthLeft;
-            decimal monthlyInterest = monthlySum + monthlySum * (decimal)YearlyInterestRate / 12;
+            decimal monthlyInterest = monthlySum * ((decimal)YearlyInterestRate / 12);
             decimal payment = monthlyInterest + monthlySum;
             TotalSumLeft -= monthlySum;
             MonthLeft--;

@@ -54,36 +54,19 @@ namespace Models.Business
 
         public override void EndYear(CompanyActionPhase phase)
         {
+            Academy.Instance.StatsRecorder.Add("YEAR/PROD-TREND" + TypeProduced, (float)ProductController.ObsProductionTrend);
+            Academy.Instance.StatsRecorder.Add("YEAR/PROFIT-TREND" + TypeProduced, (float)ProductController.ObsProfitTrend);
+            Academy.Instance.StatsRecorder.Add("YEAR/SALESTREND" + TypeProduced, (float)ProductController.ObsSalesTrend);
+            Academy.Instance.StatsRecorder.Add("YEAR/CAPITALTREND" + TypeProduced, (float)(Balance - BalanceLastYear));
+            
             currentActionPhase = phase;
-            //AddReward((float)ProductController.ObsProductionTrend);
-            //AddReward((float)ProductController.ObsSalesTrend);
-            //AddReward((float)ProductController.ObsProfitTrend);
-            float capitalReward = Balance < 0 ? -1 : 1;
-            AddReward(capitalReward);
+            float capitalReward = Balance < BalanceLastYear ? -0.5f : 0.5f;
+            float rewardTrends = Normalize((float)ProductController.ObsProductionTrend + ((float)ProductController.ObsSalesTrend +(float)ProductController.ObsProfitTrend));
+            AddReward(capitalReward + rewardTrends / 2);
+            BalanceLastYear = Balance;
             EndEpisode();
         }
 
-        public override void AddRewards()
-        {
-            //AddReward((float)ProductController.ObsProductionTrend);
-            //AddReward((float)ProductController.ObsSalesTrend);
-            //AddReward((float)ProductController.ObsProfitTrend);
-            float profitReward = ProductController.Profit > ProductController.ProfitLastMonth ? 0.25f : -0.25f;
-            float salesReward = ProductController.SalesThisMonth > ProductController.SalesLastMonth ? 0.25f : -0.25f;
-            float productionReward = ProductController.ProductionThisMonth > ProductController.ProductionLastMonth ? 0.25f : -0.25f;
-            float capitalReward = Balance < 0 ? -0.25f : 0.25f;
-            AddReward(capitalReward + profitReward + salesReward + productionReward);
-            _unitsProducedInMonth = 0;
-            LastProdCostsInMonthForRessourcesAndEnergy = 0;
-            _lastWorkerPayments = 0;
-            ProfitTaxPaidInMonth = 0;
-            ProfitAfterTaxesInMonth = 0;
-            UpgradeEffiencyCosts = 0;
-            MissingResourceDemand = 0;
-            CashflowIn = 0;
-            LoanPayments = 0;
-        }
-        
         public override void CollectObservations(VectorSensor sensor)
         {
             sensor.AddObservation(Workers.Count);
@@ -161,12 +144,6 @@ namespace Models.Business
             {
                 Console.WriteLine(e);
             }
-
-            if (_loans.Count == 0)
-            {
-                AddReward(0.1f);
-            }
-            
         }
 
 
@@ -298,8 +275,8 @@ namespace Models.Business
             // -0.7 = auf 30% senken 1 + -0,7 = 0.3
             // 0.4 = auf 140% heben 1 + 0,4
             // 1 = verdoppeln
-            newPriceMultiplier /= 10;
             decimal change = (decimal)(1 + newPriceMultiplier);
+            change = change < 0.8M ? 0.8M : change > 1.2M ? 1.2M : change;
             var oldP = ProductController.Price;
             if (change > 0)
             {
@@ -323,7 +300,6 @@ namespace Models.Business
 
             if (changeProductionCapabilities > 0)
             {
-                AddReward(0.1F);
                 maxSalary *= 100;
                 var additionalWorkers = Math.Ceiling(Workers.Count * changeProductionCapabilities);
                 if (additionalWorkers <= 0) return;
@@ -335,7 +311,6 @@ namespace Models.Business
             {
                 int fireWorkers = (int)Math.Ceiling(Workers.Count * changeProductionCapabilities * -1);
                 FireWorkers(fireWorkers);
-                AddReward(-0.1f);
             }
         }
 
@@ -359,7 +334,7 @@ namespace Models.Business
             decimal profit = ProductController.Profit - TotalCostBeforeTaxes - UpgradeEffiencyCosts;
             ProfitTaxPaidInMonth = Government.PayProfitTax(profit);
             ProfitAfterTaxesInMonth = profit - ProfitTaxPaidInMonth;
-            Balance -= FixedPerProductCosts + ProfitTaxPaidInMonth;
+            Balance -= FixedPerProductBaseCosts + ProfitTaxPaidInMonth + LoanPayments;
             Balance += ProductController.Profit;
             CashflowIn = ProductController.Profit;
         }

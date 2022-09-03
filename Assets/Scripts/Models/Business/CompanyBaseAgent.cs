@@ -22,6 +22,7 @@ namespace Models.Business
         public string Id { get; } = Guid.NewGuid().ToString();
 
         protected decimal Balance;
+        protected decimal BalanceLastYear;
         protected GovernmentController Government;
         protected CompanyDataRepository Data;
         protected IProductionTemplate Production;
@@ -56,16 +57,15 @@ namespace Models.Business
         protected decimal CashflowOut => TotalCostBeforeTaxes + ProfitTaxPaidInMonth;
         protected decimal UpgradeEffiencyCosts;
         protected int MissingResourceDemand;
-        protected decimal FixedPerProductCosts => _unitsProducedInMonth * Production.BaseCostPerPieceProduced;
+        protected decimal FixedPerProductBaseCosts => _unitsProducedInMonth * Production.BaseCostPerPieceProduced;
         protected decimal CapacityUsed => (decimal)_unitsProducedInMonth / ObsProductionCapacityByWorkers;
 
-        protected decimal TotalCostBeforeTaxes =>
-            FixedPerProductCosts + _lastWorkerPayments + LastProdCostsInMonthForRessourcesAndEnergy + LoanPayments;
+        protected decimal TotalCostBeforeTaxes => FixedPerProductBaseCosts + _lastWorkerPayments + LastProdCostsInMonthForRessourcesAndEnergy + LoanPayments;
 
         protected decimal LoanPayments;
         protected decimal Cpp => _unitsProducedInMonth != 0
             ? TotalCostBeforeTaxes / _unitsProducedInMonth
-            : ProductController.Price * 0.8M;
+            : ProductController.Price;
 
         protected JobMarketController JobMarket;
         //protected readonly List<JobModel> OpenJobPositions = new();
@@ -77,6 +77,7 @@ namespace Models.Business
         {
             CountryEconomyMarkets = countryEconomyMarkets;
             Balance = policy.InitialBalance;
+            BalanceLastYear = Balance;
             Government = government;
             Data = data;
             JobMarket = jobMarket;
@@ -90,9 +91,7 @@ namespace Models.Business
         }
 
         private decimal lastCpp = 0;
-
-        public abstract void AddRewards();
-
+        
         public void UpdateStats(int month)
         {
             lastCpp = Cpp;
@@ -110,6 +109,16 @@ namespace Models.Business
             Academy.Instance.StatsRecorder.Add("MONEYOUT/" + TypeProduced, (float)CashflowOut);
             Academy.Instance.StatsRecorder.Add("MONEYIN/" + TypeProduced, (float)CashflowIn);
             Academy.Instance.StatsRecorder.Add("CAPACITY/" + TypeProduced, (float)CapacityUsed);
+            
+            _unitsProducedInMonth = 0;
+            LastProdCostsInMonthForRessourcesAndEnergy = 0;
+            _lastWorkerPayments = 0;
+            ProfitTaxPaidInMonth = 0;
+            ProfitAfterTaxesInMonth = 0;
+            UpgradeEffiencyCosts = 0;
+            MissingResourceDemand = 0;
+            CashflowIn = 0;
+            LoanPayments = 0;
             
         }
 
@@ -189,13 +198,28 @@ namespace Models.Business
             return Workers.Sum(w => w.MonthlyIncome);
         }
 
+        private float minC;
+        private float maxC;
+        
+        protected float Normalize(float value)
+        {
+            minC = value < minC ? value : minC;
+            maxC = value > maxC ? value : maxC;
+            if (maxC - minC == 0)
+            {
+                return 0;
+            }
+            float norm = 2 * ((value - minC) / (maxC - minC)) - 1;
+            return norm;
+        }
+
 
 
         protected void PayWorkers()
         {
             foreach (var w in Workers)
             {
-                decimal paid = w.MonthlyIncome;
+                decimal paid = w.Pay();
                 decimal incomeTax = Government.PayIncomeTax(paid);
                 Balance -= paid + incomeTax;
                 _lastWorkerPayments += paid + incomeTax;

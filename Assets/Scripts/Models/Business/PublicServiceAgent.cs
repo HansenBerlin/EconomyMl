@@ -52,6 +52,10 @@ namespace Models.Business
         public override void EndYear(CompanyActionPhase phase)
         {
             currentActionPhase = phase;
+            float capitalReward = Balance < BalanceLastYear ? -0.5f : 0.5f;
+            float rewardTrends = Normalize((float)ProductController.ObsProductionTrend);
+            AddReward(capitalReward + rewardTrends / 2);
+            BalanceLastYear = Balance;
             EndEpisode();
         }
 
@@ -237,22 +241,6 @@ namespace Models.Business
                 JobMarket.RemoveOpenJobPositions(fireWorkers, Id);
             }
         }
-        
-        public override void AddRewards()
-        {
-            float productionReward = ProductController.ProductionThisMonth > ProductController.ProductionLastMonth ? 0.5f : -0.5f;
-            float capitalReward = Balance < 0 ? -0.5f : 0.5f;
-            AddReward(capitalReward + productionReward);
-            _unitsProducedInMonth = 0;
-            LastProdCostsInMonthForRessourcesAndEnergy = 0;
-            _lastWorkerPayments = 0;
-            ProfitTaxPaidInMonth = 0;
-            ProfitAfterTaxesInMonth = 0;
-            UpgradeEffiencyCosts = 0;
-            MissingResourceDemand = 0;
-            CashflowIn = 0;
-            LoanPayments = 0;
-        }
 
         public override void MonthlyBookkeeping()
         {
@@ -260,7 +248,7 @@ namespace Models.Business
             decimal profit = ProductController.Profit - TotalCostBeforeTaxes - UpgradeEffiencyCosts;
             ProfitTaxPaidInMonth = Government.PayProfitTax(profit);
             ProfitAfterTaxesInMonth = profit - ProfitTaxPaidInMonth;
-            Balance -= FixedPerProductCosts + ProfitTaxPaidInMonth;
+            Balance -= FixedPerProductBaseCosts + ProfitTaxPaidInMonth;
             Balance += ProductController.Profit;
             CashflowIn = ProductController.Profit;
         }

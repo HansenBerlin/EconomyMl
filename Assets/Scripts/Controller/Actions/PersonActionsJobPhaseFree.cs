@@ -22,7 +22,7 @@ namespace Controller.Actions
 
         public void SearchForNewJob(PersonObservations observations, PersonRewardController rewardController, PersonController personController, decimal desiredSalary)
         {
-            decimal salary = observations.MonthlyIncome;
+            decimal salary = observations.Salary;
             decimal newSalary = UpdateJob(desiredSalary, salary, personController);
 
             rewardController.RewardForJobChange(salary, newSalary, false, false, observations);
@@ -44,28 +44,16 @@ namespace Controller.Actions
         public void QuitJobAndStayUnemployed(PersonObservations observations, PersonRewardController rewardController, PersonController personController)
         {
             bool isUnemployed = observations.JobStatus == JobStatus.Employed;
-            decimal salary = observations.MonthlyIncome;
-            if (salary < 500)
-            {
-                Debug.Log("QUIT " + salary);
-            }
+            decimal salary = observations.Salary;
             personController.QuitJob();
-            decimal salaryAfter = observations.MonthlyIncome;
-            if (salary < 500)
-            {
-                Debug.Log("QUIT " + salary);
-            }
+            decimal salaryAfter = observations.Salary;
             rewardController.RewardForJobChange(salary, salaryAfter, isUnemployed, false, observations);
         }
 
         public void DoNothing(PersonObservations observations, PersonRewardController rewardController)
         {
             bool isUnemployed = observations.JobStatus == JobStatus.Unemployed;
-            if (observations.MonthlyIncome < 500)
-            {
-                Debug.Log("SKIP " + observations.MonthlyIncome);
-            }
-            rewardController.RewardForJobChange(observations.MonthlyIncome, observations.MonthlyIncome, isUnemployed,
+            rewardController.RewardForJobChange(observations.Salary, observations.Salary, isUnemployed,
                 true, observations);
 
         }

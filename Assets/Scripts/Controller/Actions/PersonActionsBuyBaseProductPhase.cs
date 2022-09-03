@@ -33,7 +33,7 @@ namespace Controller.Actions
         public void BuyDemandedBaseResourcesWithIncomeSpendingLimit(PersonObservations observations, int underageChildCount, PersonRewardController rewardController)
         {
             int demand = GetDemand(observations, underageChildCount);
-            decimal maxSpendable = observations.MonthlyIncome;
+            decimal maxSpendable = observations.Salary;
             ReceiptModel receipt = new ReceiptModel();
             if (maxSpendable > 0)
             {
@@ -66,7 +66,7 @@ namespace Controller.Actions
 
         private void UpdateProperties(ReceiptModel receipt, long demandLeft, PersonObservations observations, PersonRewardController rewardController)
         {
-            observations.MonthlyExpenses += receipt.TotalPricePaid;
+            observations.MonthlyExpensesAccumulatedForYear += receipt.TotalPricePaid;
             observations.Capital -= receipt.AmountBought;
             rewardController.RewardForBaseProductSatisfaction(receipt.AmountBought, demandLeft, observations);
             demandLeft -= receipt.AmountBought;
@@ -74,6 +74,7 @@ namespace Controller.Actions
             if (demandLeft > 0)
             {
                 _market.ReportDemand(demandLeft, ProductType.BaseProduct);
+                observations.UnsatisfiedBaseDemand += demandLeft;
             }
         }
 

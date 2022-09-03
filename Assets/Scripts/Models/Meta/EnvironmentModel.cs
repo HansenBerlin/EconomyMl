@@ -8,8 +8,7 @@ namespace Models.Meta
 
     public class EnvironmentModel : MonoBehaviour
     {
-        [field:SerializeField]
-        public int Month { get; set; }
+        [field: SerializeField] public int Month { get; set; } = 1;
         
         public int Day { get; set; }
         
@@ -17,18 +16,6 @@ namespace Models.Meta
         
         [field:SerializeField]
         public string CountryName { get; private set; }
-
-        /*public EnvironmentModel(string countryName, int month)
-        {
-            CountryName = countryName;
-            Month = month;
-        }*/
-        
-        /*public void Init(string countryName, int month)
-        {
-            CountryName = countryName;
-            Month = month;
-        }*/
 
     }
 }
