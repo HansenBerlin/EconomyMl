@@ -102,6 +102,8 @@ namespace Models.Business
             Data.MoneyOutStat.Add((double) CashflowOut);
             Data.MoneyInStat.Add((double) CashflowIn);
             ProductController.Update(EpisodeCut.Month, Cpp, CapacityUsed);
+
+            
             
             
             

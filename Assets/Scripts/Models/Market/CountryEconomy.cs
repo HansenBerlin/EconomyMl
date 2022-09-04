@@ -170,10 +170,12 @@ namespace Models.Market
             }
         }
         
-        public void ReportStats(ProductType type, int workers, long capital, long moneyIn, long moneyOut,
-            long production, long sales, long price, long cpp)
+        public void ReportStats(ProductType type, int workers, float capital, float moneyIn, float moneyOut,
+            long production, long sales, float price, float cpp)
         {
             
+            ProductMarketModel productMarket = FindMatchingMarket(type);
+            productMarket.ReportStats(workers, capital, moneyIn, moneyOut, production, sales, price, cpp);
         }
         
         

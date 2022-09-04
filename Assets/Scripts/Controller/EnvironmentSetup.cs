@@ -76,10 +76,10 @@ namespace Controller
 
             businessFactory.Init(countryEconomyMarket, envSettings, statsRepository, governmentController);
 
-            var fossilePolicy = new CompanyResourcePolicy(2200, 2200, 150, 100000, 20000);
-            var basePolicy = new CompanyResourcePolicy(2300, 2300, 200, 100000, 5000);
-            var interPolicy = new CompanyResourcePolicy(2400, 2400, 100, 100000, 1000);
-            var luxPolicy = new CompanyResourcePolicy(2600, 2600, 50, 100000, 100);
+            var fossilePolicy = new CompanyResourcePolicy(2200, 2200, 15, 100000, 20000);
+            var basePolicy = new CompanyResourcePolicy(2300, 2300, 20, 100000, 5000);
+            var interPolicy = new CompanyResourcePolicy(2400, 2400, 10, 100000, 1000);
+            var luxPolicy = new CompanyResourcePolicy(2600, 2600, 5, 100000, 100);
 
             var fedPolicy = new CompanyResourcePolicy(2300, 2300, 100, 10000000, 0);
 
@@ -158,7 +158,7 @@ namespace Controller
                 business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
             }
 
-            //governmentController.PayoutUnemployed();
+            governmentController.PayoutUnemployed();
             governmentController.PayoutRetired();
 
             if (envSettings.Month % 12 == 0)

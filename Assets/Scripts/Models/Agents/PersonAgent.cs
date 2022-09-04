@@ -274,13 +274,28 @@ namespace Models.Agents
                 switch (jobDecision)
                 {
                     case jobQuit:
+                        if (_observations.Salary > _observations.AverageIncome)
+                        {
+                            AddReward(-0.5f);
+                        }
                         _jobActions.QuitJobAndStayUnemployed(_observations, _rewardController, _controller);
+                        
                         break;
                     case jobNew:
+                        var oldSalary = _observations.Salary;
+                        _observations.DesiredSalary = desiredSalary;
                         _jobActions.SearchForNewJob(_observations, _rewardController, _controller, desiredSalary);
+                        if (_observations.Salary > oldSalary * 1.1M)
+                        {
+                            AddReward(0.5f);
+                        }
                         break;
                     case jobNoChange:
                         _jobActions.DoNothing(_observations, _rewardController);
+                        if (_observations.JobStatus == JobStatus.Unemployed && _observations.AgeStatus == AgeStatus.WorkerAge)
+                        {
+                            AddReward(-0.1f);
+                        }
                         break;
                 }
                 if (float.IsNaN(_observations.JobReward) || float.IsInfinity(_observations.JobReward))

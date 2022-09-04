@@ -183,7 +183,7 @@ namespace Models.Market
             long total = 0;
             foreach (var product in _productsAvailable)
             {
-                total += (long) product.TotalSupply;
+                total += product.TotalSupply;
             }
 
             return total;
@@ -290,8 +290,8 @@ namespace Models.Market
             CurrentUnfulfilledDemand /= dayOfMonthDivisor;
         }*/
         
-        public void ReportStats(int workers, long capital, long moneyIn, long moneyOut,
-            long production, long sales, long price, long cpp)
+        public void ReportStats(int workers, float capital, float moneyIn, float moneyOut,
+            long production, long sales, float price, float cpp)
         {
             _workers += workers;
             _capital += capital;
@@ -306,13 +306,13 @@ namespace Models.Market
         public void WriteAndResetStats()
         {
             Academy.Instance.StatsRecorder.Add("workers/" + Type, (float)_workers / 10);
-            Academy.Instance.StatsRecorder.Add("capital/" + Type, (float)_capital / 10);
-            Academy.Instance.StatsRecorder.Add("moneyin/" + Type, (float)_moneyIn / 10);
-            Academy.Instance.StatsRecorder.Add("moneyout/" + Type, (float)_moneyOut / 10);
+            Academy.Instance.StatsRecorder.Add("capital/" + Type, _capital / 10);
+            Academy.Instance.StatsRecorder.Add("moneyin/" + Type, _moneyIn / 10);
+            Academy.Instance.StatsRecorder.Add("moneyout/" + Type, _moneyOut / 10);
             Academy.Instance.StatsRecorder.Add("production/" + Type, (float)_production / 10);
             Academy.Instance.StatsRecorder.Add("sales/" + Type, (float)_sales / 10);
-            Academy.Instance.StatsRecorder.Add("price/" + Type, (float)_price / 10);
-            Academy.Instance.StatsRecorder.Add("cpp/" + Type, (float)_cpp / 10);
+            Academy.Instance.StatsRecorder.Add("price/" + Type, _price / 10);
+            Academy.Instance.StatsRecorder.Add("cpp/" + Type, _cpp / 10);
             _workers = 0;
             _capital = 0;
             _moneyIn = 0;
@@ -324,13 +324,13 @@ namespace Models.Market
         }
 
         private int _workers;
-        private long _capital;
-        private long _moneyIn;
-        private long _moneyOut;
+        private float _capital;
+        private float _moneyIn;
+        private float _moneyOut;
         private long _production;
         private long _sales;
-        private long _price;
-        private long _cpp;
+        private float _price;
+        private float _cpp;
 
         public void ReportProduction(long amount)
         {

@@ -26,8 +26,8 @@ namespace Models.Market
         List<ProductType> FindMostDemandedByTrend();
         LoanModel GetLoan(decimal amount, CreditRating rating);
 
-        public void ReportStats(ProductType type, int workers, long capital, long moneyIn, long moneyOut,
-            long production, long sales, long price, long cpp)
+        public void ReportStats(ProductType type, int workers, float capital, float moneyIn, float moneyOut,
+            long production, long sales, float price, float cpp)
         {
             
         }

@@ -349,6 +349,9 @@ namespace Models.Business
             Balance -= FixedPerProductBaseCosts + ProfitTaxPaidInMonth + LoanPayments;
             Balance += ProductController.Profit;
             CashflowIn = ProductController.Profit;
+            CountryEconomyMarkets.ReportStats(TypeProduced, Workers.Count, (float)Balance, (float)CashflowIn, (float)CashflowOut, 
+                ProductController.ProductionThisMonth, ProductController.SalesThisMonth, (float)ProductController.Price, (float)Cpp);
+
         }
 
         /*protected override void UpdateStats(decimal income)
