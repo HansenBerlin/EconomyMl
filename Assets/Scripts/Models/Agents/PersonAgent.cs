@@ -213,10 +213,8 @@ namespace Models.Agents
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
             if (Death != DeathReason.HasNotDied) return;
-            
-
             var desiredSalaryDecision = actionBuffers.DiscreteActions[0] + 1;
-            int desiredSalary = desiredSalaryDecision * 1000;
+            int desiredSalary = (int)_observations.LastMonthExpenses * desiredSalaryDecision;
             var jobDecision= actionBuffers.DiscreteActions[1];
             var baseBuyDecision= actionBuffers.DiscreteActions[2];
             var luxBuyDecision= actionBuffers.DiscreteActions[3];
@@ -317,6 +315,8 @@ namespace Models.Agents
             if (Death != DeathReason.HasNotDied) return;
 
             _observations.AverageIncome = averageIncome;
+            _observations.LastMonthExpenses = _observations.ThisMonthExpenses;
+            _observations.ThisMonthExpenses = 0;
             SetupMasking();
             RequestDecision();
             Academy.Instance.EnvironmentStep();

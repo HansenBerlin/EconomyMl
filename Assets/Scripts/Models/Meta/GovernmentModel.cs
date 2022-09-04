@@ -1,5 +1,6 @@
 ﻿using Repositories;
 using Settings;
+using Unity.MLAgents;
 
 namespace Models.Meta
 {
@@ -8,14 +9,14 @@ namespace Models.Meta
 
     public class GovernmentModel
     {
-        private readonly FederalServicesPolicy _policy;
+        public readonly FederalServicesPolicy _policy;
         private decimal Gdp;
         public float IncomeTaxRate => _policy.IncomeTaxRate;
         public float ProfitTaxRate => _policy.ProfitTaxRate;
         public float ConsumerTaxRate => _policy.ConsumerTaxRate;
         public float WorkerSalary => _policy.FederalWorkerSalary;
         public decimal ServiceUnitsNeededPerPop => _policy.ServiceUnitsPerPersonInPopulation;
-        public decimal Capital { get; set; }
+        public decimal Capital { get; set; } = 50000000;
         public decimal RetirementFundCapital { get; set; }
         public decimal PublicServicePaymentsInMonth { get; set; }
         public decimal RetirementPaymentsInMonth { get; set; }
@@ -23,6 +24,7 @@ namespace Models.Meta
         public decimal IncomeTaxInMonth { get; set; }
         public decimal ProfitTaxInMonth { get; set; }
         public decimal ConsumerTaxInMonth { get; set; }
+        public decimal LastBalance = 50000000;
 
         private readonly GovernmentDataRepository _data;
 
@@ -38,6 +40,10 @@ namespace Models.Meta
             _data.ConsumerTaxes.Add((double) ConsumerTaxInMonth);
             _data.IncomeTaxes.Add((double) IncomeTaxInMonth);
             _data.ProfitTaxes.Add((double) ProfitTaxInMonth);
+            Academy.Instance.StatsRecorder.Add("GOV/capital", (float)Capital);
+            Academy.Instance.StatsRecorder.Add("GOV/consumertax", (float)ConsumerTaxInMonth);
+            Academy.Instance.StatsRecorder.Add("GOV/incometax", (float)IncomeTaxInMonth);
+            Academy.Instance.StatsRecorder.Add("GOV/profittax", (float)ProfitTaxInMonth);
             _data.PublicServiceCosts.Add((double) PublicServicePaymentsInMonth);
             _data.RetiredCosts.Add((double) RetirementPaymentsInMonth);
             _data.UnemployedCosts.Add((double) UnemployedPaymentsInMonth);
@@ -47,6 +53,7 @@ namespace Models.Meta
 
         public void Reset()
         {
+            LastBalance = Capital;
             ConsumerTaxInMonth = 0;
             ProfitTaxInMonth = 0;
             IncomeTaxInMonth = 0;

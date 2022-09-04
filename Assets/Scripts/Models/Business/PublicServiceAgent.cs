@@ -261,12 +261,10 @@ namespace Models.Business
         public override void MonthlyBookkeeping()
         {
             PayWorkers();
-            decimal profit = ProductController.Profit - TotalCostBeforeTaxes - UpgradeEffiencyCosts;
-            ProfitTaxPaidInMonth = Government.PayProfitTax(profit);
-            ProfitAfterTaxesInMonth = profit - ProfitTaxPaidInMonth;
-            Balance -= FixedPerProductBaseCosts + ProfitTaxPaidInMonth;
-            Balance += ProductController.Profit;
-            CashflowIn = ProductController.Profit;
+            decimal profit = Government.GetFederalMoneyForService(FixedPerProductBaseCosts + LoanPayments);
+            Balance -= FixedPerProductBaseCosts;
+            Balance += profit;
+            CashflowIn = profit;
         }
 
         /*protected override void UpdateStats(decimal income)

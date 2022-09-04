@@ -22,6 +22,8 @@ namespace Models.Observations
         public long LuxuryProducts { get; set; }
         public JobStatus JobStatus { get; set; }
         public decimal AverageIncome { get; set; }
+        public decimal ThisMonthExpenses { get; set; }
+        public decimal LastMonthExpenses { get; set; }
 
         public int OpenJobPositions => _jobMarket.OpenJobPositionsCount();
         //private List<IPersonBase> _children;

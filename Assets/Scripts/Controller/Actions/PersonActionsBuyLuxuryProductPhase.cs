@@ -22,8 +22,8 @@ namespace Controller.Actions
         public void BuyExactAmountOfDemandedLuxuryProduct(PersonObservations observations, int underageChildCount, PersonRewardController rewardController)
         {
             int demand = GetDemand(observations, underageChildCount);
-            var request = new ProductRequestModel(ProductType.LuxuryProduct, ProductRequestSearchType.MaxAmount,
-                maxAmount: demand);
+            var request = new ProductRequestModel(ProductType.LuxuryProduct, ProductRequestSearchType.MaxAmountWithSpendingLimit,
+                maxAmount: demand, totalSpendable:observations.Capital);
             var receipt = _market.Buy(request);
             
             UpdateProperties(receipt, demand, observations, rewardController);

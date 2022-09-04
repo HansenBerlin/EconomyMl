@@ -44,6 +44,20 @@ namespace Controller
 
         public void EndMonth()
         {
+            if (_government.LastBalance > _government.Capital)
+            {
+                _government._policy.ProfitTaxRate *= 1.05f;
+                _government._policy.ConsumerTaxRate *= 1.01f;
+                _government._policy.IncomeTaxRate *= 1.1f;
+                _government._policy.FederalWorkerSalary *= 0.95f;
+            }
+            else if (_government.Capital > _government.LastBalance * 1.1M)
+            {
+                _government._policy.ProfitTaxRate *= 0.97f;
+                _government._policy.ConsumerTaxRate *= 0.99f;
+                _government._policy.IncomeTaxRate *= 0.95f;
+                _government._policy.FederalWorkerSalary *= 1.03f;
+            }
             _government.UpdateData();
             _government.Reset();
         }

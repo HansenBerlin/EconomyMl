@@ -24,8 +24,8 @@ namespace Controller.Actions
         public void BuyExactAmountOfDemandedBaseResources(PersonObservations observations, int underageChildCount, PersonRewardController rewardController)
         {
             int demand = GetDemand(observations, underageChildCount);
-            var request = new ProductRequestModel(ProductType.BaseProduct, ProductRequestSearchType.MaxAmount,
-                maxAmount: demand);
+            var request = new ProductRequestModel(ProductType.BaseProduct, ProductRequestSearchType.MaxAmountWithSpendingLimit,
+                maxAmount: demand, totalSpendable:observations.Capital);
             var receipt = _market.Buy(request);
             UpdateProperties(receipt, demand, observations, rewardController);
         }
@@ -67,6 +67,7 @@ namespace Controller.Actions
         private void UpdateProperties(ReceiptModel receipt, long demandLeft, PersonObservations observations, PersonRewardController rewardController)
         {
             observations.MonthlyExpensesAccumulatedForYear += receipt.TotalPricePaid;
+            observations.ThisMonthExpenses += receipt.TotalPricePaid;
             observations.Capital -= receipt.AmountBought;
             rewardController.RewardForBaseProductSatisfaction(receipt.AmountBought, demandLeft, observations);
             demandLeft -= receipt.AmountBought;
