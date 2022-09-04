@@ -99,7 +99,7 @@ namespace Models.Business
             //int finalProduction = (int) (maxUnitsProduced * productionPercentage) / 10;
             int finalProduction = maxUnitsProduced;
             ProductController.AddNew(finalProduction);
-            _unitsProducedInMonth += finalProduction;
+            UnitsProducedInMonth += finalProduction;
 
             CountryEconomyMarkets.ReportProduction(finalProduction, TypeProduced);
 

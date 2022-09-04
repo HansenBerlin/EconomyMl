@@ -26,11 +26,11 @@ namespace Controller
 
         public void Reset(PersonObservations observations)
         {
-            observations.Capital = Capital;
-            observations.Salary = Salary;
+            observations.Capital = Capital / 2;
+            observations.Salary = Salary / 2;
             observations.DesiredSalary = DesiredSalary;
-            observations.JobStatus = JobStatus;
-            observations.Age = Age;
+            observations.JobStatus = JobStatus.Unemployed;
+            //observations.Age = Age;
             observations.JobReward = 0;
             observations.LuxuryProducts = 0;
             observations.BaseBuyReward = 0;

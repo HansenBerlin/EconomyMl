@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Enums;
 using Models.Agents;
+using UnityEngine;
 
 namespace Models.Population
 {
@@ -56,12 +57,16 @@ namespace Models.Population
 
         public void QuitJob(PersonAgent worker)
         {
-            if (_employees.Contains(worker) == false)
+            if (_employees.Contains(worker))
             {
-                throw new Exception();
+                _employees.Remove(worker);
+                //throw new Exception();
+            }
+            else
+            {
+                Debug.LogWarning("Worker should be in collection when quitting job but was not found");
             }
 
-            _employees.Remove(worker);
         }
     }
 }

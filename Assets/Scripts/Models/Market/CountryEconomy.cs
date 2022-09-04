@@ -54,7 +54,7 @@ namespace Models.Market
 
         public LoanModel GetLoan(decimal amount, CreditRating rating)
         {
-            return _bankingMarkets.FindCheapestPossibleLoan(amount, rating);
+            return _bankingMarkets.FindLoan(amount, rating);
         }
 
         public void AddProduct(ProductController product)

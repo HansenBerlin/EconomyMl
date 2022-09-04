@@ -82,19 +82,17 @@ namespace Models.Business
             sensor.AddObservation(ProductController.ProductionLastMonth);
             var totalDemand = CountryEconomyMarkets.GetTotalUnfulfilledDemand(TypeProduced);
             var marketShare = CountryEconomyMarkets.MarketShare(TypeProduced, ProductController.Id);
+            var loans = _loans.Sum(x => x.TotalSumLeft);
             sensor.AddObservation(totalDemand);
             sensor.AddObservation((float)marketShare);
+            sensor.AddObservation((float)loans);
         }
 
 
-        private List<LoanModel> _loans = new();
+        private readonly List<LoanModel> _loans = new();
         
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
-            if (_month > 240)
-            {
-                Debug.Log("");
-            }
             var requestCredit = actionBuffers.DiscreteActions[0];
             var setSalary = actionBuffers.DiscreteActions[1] + 1; // 1-100
             var maxProduction = actionBuffers.DiscreteActions[2] + 1; // 1 - 2 (50%, 100%)
@@ -106,11 +104,11 @@ namespace Models.Business
             {
                 if (currentActionPhase != CompanyActionPhase.Produce && currentActionPhase != CompanyActionPhase.AdaptPrice)
                 {
-                    if (_loans.Sum(x => x.TotalSumLeft) < 1000000 && requestCredit > 0)
+                    if (_loans.Sum(x => x.TotalSumLeft) < 10000000 && requestCredit > 0)
                     {
                         decimal creditSum = Balance < 0 ? Balance * -1 * requestCredit : Balance * requestCredit;
                         creditSum = creditSum < 1000 ? 1000 : creditSum;
-                        var loan = CountryEconomyMarkets.GetLoan(creditSum, CreditRating.A);
+                        var loan = CountryEconomyMarkets.GetLoan(creditSum, CurrentRating);
                         if (loan.IsDeclined == false)
                         {
                             _loans.Add(loan);
@@ -156,7 +154,7 @@ namespace Models.Business
             int finalProduction = productionPercentage == 1 ? maxUnitsProduced / 2 : maxUnitsProduced;
             //int finalProduction = maxUnitsProduced * productionPercentage / 10;
             ProductController.AddNew(finalProduction);
-            _unitsProducedInMonth += finalProduction;
+            UnitsProducedInMonth += finalProduction;
 
             CountryEconomyMarkets.ReportProduction(finalProduction, TypeProduced);
 
@@ -324,6 +322,9 @@ namespace Models.Business
         public override void MonthlyBookkeeping()
         {
             PayWorkers();
+            var sumLoansTaken = _loans.Sum(x => x.TotalSumLeft);
+            CurrentRating = RatingController.Calculate(Balance, ProductController.ObsProfitTrend, sumLoansTaken,
+                ProductController.ProfitLastMonth, CurrentRating);
 
             for (int i = _loans.Count - 1; i >= 0; i--)
             {
@@ -348,6 +349,10 @@ namespace Models.Business
             ProfitAfterTaxesInMonth = profit - ProfitTaxPaidInMonth;
             Balance -= FixedPerProductBaseCosts + ProfitTaxPaidInMonth + LoanPayments;
             Balance += ProductController.Profit;
+            if (Balance > BalanceLastYear)
+            {
+                AddReward(0.05f);
+            }
             CashflowIn = ProductController.Profit;
             CountryEconomyMarkets.ReportStats(TypeProduced, Workers.Count, (float)Balance, (float)CashflowIn, (float)CashflowOut, 
                 ProductController.ProductionThisMonth, ProductController.SalesThisMonth, (float)ProductController.Price, (float)Cpp);

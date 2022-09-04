@@ -171,7 +171,7 @@ namespace Controller
         {
             if (amount > _productData.TotalSupply)
             {
-                amount = (long) _productData.TotalSupply;
+                amount = _productData.TotalSupply;
             }
 
             if (_productData.Price > maxPrice)
@@ -201,7 +201,7 @@ namespace Controller
         {
             if (amount > _productData.TotalSupply)
             {
-                amount = (long) _productData.TotalSupply;
+                amount = _productData.TotalSupply;
             }
 
             if (amount < 0)
@@ -229,7 +229,7 @@ namespace Controller
             long buy = (long) (maxMoney / _productData.Price);
             if (buy > _productData.TotalSupply)
             {
-                buy = (long) _productData.TotalSupply;
+                buy = _productData.TotalSupply;
             }
 
             if (buy < 0)
@@ -266,7 +266,7 @@ namespace Controller
 
             if (_productData.TotalSupply < buy)
             {
-                buy = (long) _productData.TotalSupply;
+                buy = _productData.TotalSupply;
             }
 
             if (buy < 0)

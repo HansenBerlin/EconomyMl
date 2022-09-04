@@ -19,6 +19,7 @@ namespace Models.Business
 
     public abstract class CompanyBaseAgent : Agent
     {
+        protected CreditRating CurrentRating { get; set; } = CreditRating.A;
         public string Id { get; } = Guid.NewGuid().ToString();
 
         protected decimal Balance;
@@ -49,22 +50,22 @@ namespace Models.Business
         protected decimal ObserveTotalWorkers => Workers.Count + 1;
 
         protected decimal LastProdCostsInMonthForRessourcesAndEnergy;
-        protected decimal _lastWorkerPayments;
-        protected long _unitsProducedInMonth;
+        private decimal _lastWorkerPayments;
+        protected long UnitsProducedInMonth;
         protected decimal ProfitTaxPaidInMonth;
         protected decimal ProfitAfterTaxesInMonth;
         protected decimal CashflowIn;
         protected decimal CashflowOut => TotalCostBeforeTaxes + ProfitTaxPaidInMonth;
         protected decimal UpgradeEffiencyCosts;
-        protected int MissingResourceDemand;
-        protected decimal FixedPerProductBaseCosts => _unitsProducedInMonth * Production.BaseCostPerPieceProduced;
-        protected decimal CapacityUsed => (decimal)_unitsProducedInMonth / ObsProductionCapacityByWorkers;
+        private int _missingResourceDemand;
+        protected decimal FixedPerProductBaseCosts => UnitsProducedInMonth * Production.BaseCostPerPieceProduced;
+        private decimal CapacityUsed => (decimal)UnitsProducedInMonth / ObsProductionCapacityByWorkers;
 
         protected decimal TotalCostBeforeTaxes => FixedPerProductBaseCosts + _lastWorkerPayments + LastProdCostsInMonthForRessourcesAndEnergy + LoanPayments;
 
         protected decimal LoanPayments;
-        protected decimal Cpp => _unitsProducedInMonth != 0
-            ? TotalCostBeforeTaxes / _unitsProducedInMonth
+        protected decimal Cpp => UnitsProducedInMonth != 0
+            ? TotalCostBeforeTaxes / UnitsProducedInMonth
             : ProductController.Price;
 
         protected JobMarketController JobMarket;
@@ -97,7 +98,7 @@ namespace Models.Business
             _month = month;
             lastCpp = Cpp;
             Data.BalanceStats.Add((double) Balance);
-            Data.TotalProduced.Add(_unitsProducedInMonth);
+            Data.TotalProduced.Add(UnitsProducedInMonth);
             Data.WorkersStat.Add(Workers.Count);
             Data.MoneyOutStat.Add((double) CashflowOut);
             Data.MoneyInStat.Add((double) CashflowIn);
@@ -107,13 +108,13 @@ namespace Models.Business
             
             
             
-            _unitsProducedInMonth = 0;
+            UnitsProducedInMonth = 0;
             LastProdCostsInMonthForRessourcesAndEnergy = 0;
             _lastWorkerPayments = 0;
             ProfitTaxPaidInMonth = 0;
             ProfitAfterTaxesInMonth = 0;
             UpgradeEffiencyCosts = 0;
-            MissingResourceDemand = 0;
+            _missingResourceDemand = 0;
             CashflowIn = 0;
             LoanPayments = 0;
             
@@ -129,11 +130,11 @@ namespace Models.Business
             {
                 return false;
             }
-            if (Balance + ProductController.Profit < 0)
+            else if (Balance + ProductController.Profit < 0)
             {
                 JobMarket.RemoveOpenJobPositions(0, Id, true);
                 FireWorkers(Workers.Count);
-                AddReward(-2);
+                SetReward(-1);
                 EndEpisode();
                 CountryEconomyMarkets.RemoveBusiness(this, ProductController.Id);
                 return true;
@@ -144,13 +145,15 @@ namespace Models.Business
 
         protected void FireWorkers(int count)
         {
-            int keep = Workers.Count - count;
+            int keep = Workers.Count < count ? 0 : Workers.Count - count;
             while (Workers.Count > keep)
             {
                 var w = Workers[0];
                 w.Fire();
-                if (--count <= 0)
+                if (count-- <= 0)
+                {
                     break;
+                }
             }
         }
 

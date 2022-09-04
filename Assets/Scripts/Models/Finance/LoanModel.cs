@@ -37,8 +37,15 @@ namespace Models.Finance
             decimal payment = monthlyInterest + monthlySum;
             TotalSumLeft -= monthlySum;
             MonthLeft--;
-            _bank.PayCredit(payment);
+            _bank.PaybackCredit(payment);
             return payment;
         }
+
+        public void RemoveFromBank()
+        {
+            _bank.RemoveCredit(this);
+        }
+        
+        
     }
 }

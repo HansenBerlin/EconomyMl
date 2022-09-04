@@ -111,21 +111,21 @@ namespace Controller.Rewards
             
             if (salaryBefore > salaryAfter)
             {
-                if (isUnemployed)
+                float reward = (float)(salaryAfter / salaryBefore - 1);
+                reward += isUnemployed ? 2f : 0; 
+                observations.JobReward += NormalizeWork(reward);
+            }
+            if (salaryBefore < salaryAfter)
+            {
+                if (salaryBefore == 0 && salaryAfter > 0)
                 {
-                    float val = (float) (salaryAfter / salaryBefore - 1) + 0.2F;
-                    observations.JobReward += NormalizeWork(val);
+                    observations.JobReward += 0.05f;
                 }
                 else
                 {
                     float val = (float)(salaryAfter / salaryBefore - 1);
-                    observations.JobReward += NormalizeWork(val);
+                    observations.JobReward += val;
                 }
-            }
-            if (salaryBefore < salaryAfter)
-            {
-                float val = (float)(salaryAfter / salaryBefore - 1);
-                observations.JobReward += NormalizeWork(val);
             }
             
         }

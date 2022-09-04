@@ -332,16 +332,17 @@ namespace Models.Agents
             //Debug.Log($"Yearly reward in month {Month} " + reward);
             if ((_observations.MonthlyExpensesAccumulatedForYear >
                 _observations.MonthlyIncomeAccumulatedForYear + _observations.Capital + 100000)
-                || _observations.UnsatisfiedBaseDemand / 2 > _baseBuyActions.GetDemand(_observations, Children.Count) * 12)
+                || _observations.UnsatisfiedBaseDemand > _baseBuyActions.GetDemand(_observations, Children.Count) * 6)
             {
-                AddReward(-3);
+                _controller.QuitJob();
                 _respawner.Reset(_observations);
+                SetReward(-1);
                 EndEpisode();
             }
             else
             {
                 float reward = _rewardController.CombinedReward(_observations);
-                AddReward(reward + 0.1f);
+                AddReward(reward);
             }
             _controller.UpdateAgent(avgIncome, tempPop, factory, probController);
             _observations.UnsatisfiedBaseDemand = 0;

@@ -124,7 +124,7 @@ namespace Models.Production
                 Stats.CppTrend.Add((double) data[7]);
 
                 Stats.PriceTotal.Add((double) Price);
-                Stats.SupplyTotal.Add((double) TotalSupply);
+                Stats.SupplyTotal.Add(TotalSupply);
                 Stats.ProducedTotal.Add(ProductionThisMonth);
                 Stats.SalesTotal.Add(SalesThisMonth);
                 Stats.ProfitTotal.Add((double) ProfitThisMonth);

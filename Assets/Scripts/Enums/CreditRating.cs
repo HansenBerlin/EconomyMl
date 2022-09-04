@@ -2,10 +2,12 @@
 {
     public enum CreditRating
     {
-        A,
-        B,
         C,
-        D,
-        E
+        B,
+        BB,
+        BBB,
+        A,
+        AA,
+        AAA
     }
 }
