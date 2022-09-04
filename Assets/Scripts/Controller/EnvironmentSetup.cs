@@ -43,6 +43,7 @@ namespace Controller
         private readonly System.Random _rng = StatisticalDistributionController.Rng;
         private PopulationModel populationModel;
         private StatisticalDataRepository statsRepository;
+        private BusinessRespawnController _businessRespawner;
 
         public void Awake()
         {
@@ -75,28 +76,24 @@ namespace Controller
             _population.AddRange(initialPopulation);
 
             businessFactory.Init(countryEconomyMarket, envSettings, statsRepository, governmentController);
+            _businessRespawner = new BusinessRespawnController(businessFactory, jobMarketController, businesses);
 
-            var fossilePolicy = new CompanyResourcePolicy(2200, 2200, 15, 100000, 20000);
-            var basePolicy = new CompanyResourcePolicy(2300, 2300, 20, 100000, 5000);
-            var interPolicy = new CompanyResourcePolicy(2400, 2400, 10, 100000, 1000);
-            var luxPolicy = new CompanyResourcePolicy(2600, 2600, 5, 100000, 100);
-
-            var fedPolicy = new CompanyResourcePolicy(2300, 2300, 100, 10000000, 0);
+            
 
             businesses = new List<CompanyBaseAgent>();
             for (int i = 0; i < 10; i++)
             {
-                var fossileEnergyCompany = businessFactory.Create(ProductType.FossileEnergy, fossilePolicy, jobMarketController);
-                var baseProductCompany = businessFactory.Create(ProductType.BaseProduct, basePolicy, jobMarketController);
-                var intermediateProductCompany = businessFactory.Create(ProductType.IntermediateProduct, interPolicy, jobMarketController);
-                var luxuryProductCompany = businessFactory.Create(ProductType.LuxuryProduct, luxPolicy, jobMarketController);
+                var fossileEnergyCompany = businessFactory.Create(ProductType.FossileEnergy, jobMarketController);
+                var baseProductCompany = businessFactory.Create(ProductType.BaseProduct, jobMarketController);
+                var intermediateProductCompany = businessFactory.Create(ProductType.IntermediateProduct, jobMarketController);
+                var luxuryProductCompany = businessFactory.Create(ProductType.LuxuryProduct, jobMarketController);
                 businesses.Add(fossileEnergyCompany);
                 businesses.Add(baseProductCompany);
                 businesses.Add(intermediateProductCompany);
                 businesses.Add(luxuryProductCompany);
             }
 
-            var federalServices = businessFactory.Create(ProductType.FederalService, fedPolicy, jobMarketController);
+            var federalServices = businessFactory.Create(ProductType.FederalService, jobMarketController);
             businesses.Add(federalServices);
         }
 
@@ -154,9 +151,20 @@ namespace Controller
             {
                 business.MakeDecision(CompanyActionPhase.Produce);
                 business.MonthlyBookkeeping();
+            }
+
+            for (int i = businesses.Count - 1; i >= 0; i--)
+            {
+                var business = businesses[i];
+                if (business.IsRemoved())
+                {
+                    _businessRespawner.Respawn(business);
+                }
                 business.MakeDecision(CompanyActionPhase.AdaptPrice);
                 business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
+
             }
+            
 
             governmentController.PayoutUnemployed();
             governmentController.PayoutRetired();

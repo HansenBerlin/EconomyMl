@@ -58,6 +58,13 @@ namespace Models.Market
             _productsAvailable.Add(product);
             UpdateProperties();
         }
+        
+        public void RemoveProduct(string id)
+        {
+            var product = _productsAvailable.First(x => x.Id == id);
+            _productsAvailable.Remove(product);
+            UpdateProperties();
+        }
 
         public decimal GetMarketShare(string productId)
         {

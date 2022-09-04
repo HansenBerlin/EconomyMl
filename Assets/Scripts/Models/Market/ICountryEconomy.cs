@@ -12,6 +12,7 @@ namespace Models.Market
     public interface ICountryEconomy
     {
         void AddBusiness(CompanyBaseAgent privateCompany);
+        void RemoveBusiness(CompanyBaseAgent privateCompany, string productId);
         void AddProduct(ProductController product);
 
         ReceiptModel Buy(ProductRequestModel buyRequest);
@@ -26,11 +27,8 @@ namespace Models.Market
         List<ProductType> FindMostDemandedByTrend();
         LoanModel GetLoan(decimal amount, CreditRating rating);
 
-        public void ReportStats(ProductType type, int workers, float capital, float moneyIn, float moneyOut,
-            long production, long sales, float price, float cpp)
-        {
-            
-        }
+        void ReportStats(ProductType type, int workers, float capital, float moneyIn, float moneyOut,
+            long production, long sales, float price, float cpp);
 
     }
 }

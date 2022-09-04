@@ -67,7 +67,7 @@ namespace Models.Business
             float rewardTrends = Normalize((float)ProductController.ObsProductionTrend);
             AddReward(capitalReward + rewardTrends / 2);
             BalanceLastYear = Balance;
-            EndEpisode();
+            //EndEpisode();
         }
 
         public override void CollectObservations(VectorSensor sensor)
@@ -254,7 +254,7 @@ namespace Models.Business
             {
                 int fireWorkers = Workers.Count - (int)workersNeeded;
                 FireWorkers(fireWorkers);
-                JobMarket.RemoveOpenJobPositions(fireWorkers, Id);
+                JobMarket.RemoveOpenJobPositions(fireWorkers, Id, false);
             }
         }
 

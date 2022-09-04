@@ -63,7 +63,7 @@ namespace Models.Business
             float rewardTrends = Normalize((float)ProductController.ObsProductionTrend + ((float)ProductController.ObsSalesTrend +(float)ProductController.ObsProfitTrend));
             AddReward(capitalReward + rewardTrends / 2);
             BalanceLastYear = Balance;
-            EndEpisode();
+            //EndEpisode();
         }
 
         public override void CollectObservations(VectorSensor sensor)

@@ -14,6 +14,18 @@ namespace Controller.Rewards
         private float maxB;
         private float minL;
         private float maxL;
+
+        public void Reset()
+        {
+            minC = 0;
+            maxC = 0;
+            minJ = 0;
+            maxJ = 0;
+            minB = 0;
+            maxB = 0;
+            minL = 0;
+            maxL = 0;
+        }
         
         private float NormalizeCombined(float value)
         {

@@ -91,7 +91,7 @@ namespace Models.Business
 
         private decimal lastCpp = 0;
         protected int _month;
-        
+
         public void UpdateStats(int month)
         {
             _month = month;
@@ -125,9 +125,17 @@ namespace Models.Business
 
         public bool IsRemoved()
         {
+            if (TypeProduced == ProductType.FederalService)
+            {
+                return false;
+            }
             if (Balance + ProductController.Profit < 0)
             {
+                JobMarket.RemoveOpenJobPositions(0, Id, true);
                 FireWorkers(Workers.Count);
+                AddReward(-2);
+                EndEpisode();
+                CountryEconomyMarkets.RemoveBusiness(this, ProductController.Id);
                 return true;
             }
 

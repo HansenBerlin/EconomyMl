@@ -43,17 +43,25 @@ namespace Controller
             }
             else if (maxTotalPositions < countCurrent)
             {
-                RemoveOpenJobPositions(countCurrent - maxTotalPositions, companyId);
+                RemoveOpenJobPositions(countCurrent - maxTotalPositions, companyId, false);
             }
         }
 
-        public void RemoveOpenJobPositions(int count, string forCompanyId)
+        public void RemoveOpenJobPositions(int count, string forCompanyId, bool removeAll)
         {
             try
             {
-                for (int i = count - 1; i >= 0; i--)
+
+                if (removeAll)
                 {
-                    _openJobPositions.Where(x => x.CompanyId == forCompanyId).ToList().RemoveAt(0);
+                    _openJobPositions.RemoveAll(x => x.CompanyId == forCompanyId);
+                }
+                else
+                {
+                    for (int i = count - 1; i >= 0; i--)
+                    {
+                        _openJobPositions.Where(x => x.CompanyId == forCompanyId).ToList().RemoveAt(0);
+                    }
                 }
 
             }

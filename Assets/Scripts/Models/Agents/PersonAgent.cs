@@ -26,6 +26,7 @@ namespace Models.Agents
         private PersonController _controller;
         private PersonRewardController _rewardController;
         private PersonObservations _observations;
+        private PersonRespawnController _respawner;
 
 
         
@@ -98,6 +99,7 @@ namespace Models.Agents
             _baseBuyActions = actions[1] as PersonActionsBuyBaseProductPhase;
             _luxuryBuyActions = actions[2] as PersonActionsBuyLuxuryProductPhase;
             StaysChildless = StatisticalDistributionController.CreateRandom(0, 10) == 1;
+            _respawner = new PersonRespawnController(observations);
             //isInitDone = true;
             SetupMasking();
         }
@@ -214,7 +216,8 @@ namespace Models.Agents
         {
             if (Death != DeathReason.HasNotDied) return;
             var desiredSalaryDecision = actionBuffers.DiscreteActions[0] + 1;
-            int desiredSalary = (int)_observations.LastMonthExpenses * desiredSalaryDecision;
+            decimal baseM = _observations.LastMonthExpenses > 500 ? _observations.LastMonthExpenses * desiredSalaryDecision : _observations.AverageIncome > 500 ? _observations.AverageIncome : 500;
+            decimal desiredSalary = baseM * desiredSalaryDecision;
             var jobDecision= actionBuffers.DiscreteActions[1];
             var baseBuyDecision= actionBuffers.DiscreteActions[2];
             var luxBuyDecision= actionBuffers.DiscreteActions[3];
@@ -272,10 +275,6 @@ namespace Models.Agents
                 switch (jobDecision)
                 {
                     case jobQuit:
-                        if (_observations.Salary > _observations.AverageIncome)
-                        {
-                            AddReward(-0.5f);
-                        }
                         _jobActions.QuitJobAndStayUnemployed(_observations, _rewardController, _controller);
                         
                         break;
@@ -324,17 +323,25 @@ namespace Models.Agents
 
         public void YearlyAgentUpdate(decimal avgIncome, TempPopulationUpdateModel tempPop, PopulationFactory factory, PopulationPropabilityController probController)
         {
-            if (Death != DeathReason.HasNotDied) return;
+            if (Death != DeathReason.HasNotDied)
+            {
+                AddReward(2);
+                return;
+            }
 
             //Debug.Log($"Yearly reward in month {Month} " + reward);
-            float reward = _rewardController.CombinedReward(_observations);
-            if (float.IsNaN(reward) || float.IsInfinity(reward))
+            if (_observations.MonthlyExpensesAccumulatedForYear >
+                _observations.MonthlyIncomeAccumulatedForYear + _observations.Capital + 100000)
             {
-                throw new Exception($"{Month} invalid value on main reward");
+                AddReward(-5);
+                _respawner.Reset(_observations);
+                EndEpisode();
             }
-            AddReward(reward);
-            //EndEpisode();
-            EndEpisode();
+            else
+            {
+                float reward = _rewardController.CombinedReward(_observations);
+                AddReward(reward + 0.1f);
+            }
             _controller.UpdateAgent(avgIncome, tempPop, factory, probController);
             _observations.UnsatisfiedBaseDemand = 0;
             _observations.JobReward = 0;

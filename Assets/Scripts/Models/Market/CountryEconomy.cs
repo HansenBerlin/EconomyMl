@@ -44,6 +44,13 @@ namespace Models.Market
         {
             _businesses.Add(privateCompany);
         }
+        
+        public void RemoveBusiness(CompanyBaseAgent privateCompany, string productId)
+        {
+            var market = FindMatchingMarket(privateCompany.TypeProduced);
+            market.RemoveProduct(productId);
+            _businesses.Remove(privateCompany);
+        }
 
         public LoanModel GetLoan(decimal amount, CreditRating rating)
         {
