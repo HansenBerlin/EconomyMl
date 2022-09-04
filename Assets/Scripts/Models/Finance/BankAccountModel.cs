@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Enums;
 using Models.Agents;
 
 namespace Models.Finance
 {
-    public class BankAccountBase
+    public class BankAccountModel
     {
         private readonly BankAgent _bank;
         public decimal Savings { get; private set; }
-        private List<LoanModel> Loans = new();
+        private readonly List<LoanModel> Loans = new();
+        public decimal LoansSum => Loans.Sum(x => x.TotalSumLeft);
 
-        public BankAccountBase(decimal deposit, BankAgent bank)
+        public BankAccountModel(decimal deposit, BankAgent bank)
         {
             _bank = bank;
             Savings = deposit;
@@ -28,6 +30,45 @@ namespace Models.Finance
             decimal payments = Savings * (decimal)(negativeRate / 12);
             Savings += payments;
             return payments * -1;
+        }
+
+        public void TryToGetLoan(decimal amount, CreditRating rating)
+        {
+            var loan = _bank.RequestLoan(amount, rating);
+            if (loan.IsDeclined == false)
+            {
+                Loans.Add(loan);
+                Savings += loan.TotalSumLeft;
+            }
+        }
+
+        public decimal MonthlyPaymentForLoans()
+        {
+            decimal totalPaid = 0;
+            for (int i = Loans.Count - 1; i >= 0; i--)
+            {
+                var loan = Loans[i];
+                var paid = loan.MakeMonthlyPayment();
+                totalPaid += paid;
+                Savings -= paid;
+                if (loan.MonthLeft == 0)
+                {
+                    Loans.Remove(loan);
+                }
+            }
+
+            return totalPaid;
+        }
+
+        public void Deposit(decimal sum)
+        {
+            Savings += sum;
+        }
+
+        public decimal Withdraw(decimal sum)
+        {
+            Savings -= sum;
+            return sum;
         }
 
         public decimal CloseAccount()

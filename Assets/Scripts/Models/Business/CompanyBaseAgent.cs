@@ -5,6 +5,7 @@ using Controller;
 using Enums;
 using Factories;
 using Models.Agents;
+using Models.Finance;
 using Models.Market;
 using Models.Production;
 using Policies;
@@ -20,26 +21,30 @@ namespace Models.Business
     public abstract class CompanyBaseAgent : Agent
     {
         protected CreditRating CurrentRating { get; set; } = CreditRating.A;
-        public string Id { get; } = Guid.NewGuid().ToString();
+        protected string Id { get; } = Guid.NewGuid().ToString();
 
-        protected decimal Balance;
+        protected decimal Balance => BankAccount.Savings;
         protected decimal BalanceLastYear;
         protected GovernmentController Government;
-        protected CompanyDataRepository Data;
+        private CompanyDataRepository Data;
         protected IProductionTemplate Production;
         protected ICountryEconomy CountryEconomyMarkets;
         protected ProductController ProductController;
+
+        protected BankAccountModel BankAccount;
         //protected CompanyResourcePolicy _policy;
         public ProductType TypeProduced => Production.TypeProduced;
-        public ProductType ResourceTypeNeeded => Production.ResourceTypeNeeded;
-        public ProductType EnergyTypeNeeded => Production.EnergyTypeNeeded;
+        protected ProductType ResourceTypeNeeded => Production.ResourceTypeNeeded;
+        protected ProductType EnergyTypeNeeded => Production.EnergyTypeNeeded;
         protected List<PersonAgent> Workers { get; } = new();
-        
-        protected int ObsProductionCapacityByWorkers => (int)(Production.UnitsPerWorker * ObserveTotalWorkers);
-        protected int ObservationPossibleProductionByResource => Production.ResourceNeededPerPiece > 0
+
+        private int ObsProductionCapacityByWorkers => (int)(Production.UnitsPerWorker * ObserveTotalWorkers);
+
+        private int ObservationPossibleProductionByResource => Production.ResourceNeededPerPiece > 0
             ? (int)(Production.AvailableProductionResources / Production.ResourceNeededPerPiece)
             : ObsProductionCapacityByWorkers;
-        protected int ObservationPossibleProductionByEnergy => Production.EnergyNeededPerPiece > 0
+
+        private int ObservationPossibleProductionByEnergy => Production.EnergyNeededPerPiece > 0
             ? (int)(Production.AvailableProductionEnergy / Production.EnergyNeededPerPiece)
             : ObsProductionCapacityByWorkers;
 
@@ -57,7 +62,6 @@ namespace Models.Business
         protected decimal CashflowIn;
         protected decimal CashflowOut => TotalCostBeforeTaxes + ProfitTaxPaidInMonth;
         protected decimal UpgradeEffiencyCosts;
-        private int _missingResourceDemand;
         protected decimal FixedPerProductBaseCosts => UnitsProducedInMonth * Production.BaseCostPerPieceProduced;
         private decimal CapacityUsed => (decimal)UnitsProducedInMonth / ObsProductionCapacityByWorkers;
 
@@ -76,7 +80,6 @@ namespace Models.Business
             CompanyResourcePolicy policy, GovernmentController government, CompanyDataRepository data, JobMarketController jobMarket)
         {
             CountryEconomyMarkets = countryEconomyMarkets;
-            Balance = policy.InitialBalance;
             BalanceLastYear = Balance;
             Government = government;
             Data = data;
@@ -88,36 +91,28 @@ namespace Models.Business
             countryEconomyMarkets.ReportProduction(policy.InitialResources, TypeProduced);
             var openPositions = JobPositionFactory.Create(policy.InitialWorkers, policy.MinSalary, Id, Workers, TypeProduced);
             JobMarket.AddOpenJobPositions(openPositions);
+            BankAccount = countryEconomyMarkets.OpenBankAccount(policy.InitialBalance, true);
         }
 
-        private decimal lastCpp = 0;
         protected int _month;
 
         public void UpdateStats(int month)
         {
             _month = month;
-            lastCpp = Cpp;
             Data.BalanceStats.Add((double) Balance);
             Data.TotalProduced.Add(UnitsProducedInMonth);
             Data.WorkersStat.Add(Workers.Count);
             Data.MoneyOutStat.Add((double) CashflowOut);
             Data.MoneyInStat.Add((double) CashflowIn);
             ProductController.Update(EpisodeCut.Month, Cpp, CapacityUsed);
-
-            
-            
-            
-            
             UnitsProducedInMonth = 0;
             LastProdCostsInMonthForRessourcesAndEnergy = 0;
             _lastWorkerPayments = 0;
             ProfitTaxPaidInMonth = 0;
             ProfitAfterTaxesInMonth = 0;
             UpgradeEffiencyCosts = 0;
-            _missingResourceDemand = 0;
             CashflowIn = 0;
             LoanPayments = 0;
-            
         }
 
         public abstract void MakeDecision(CompanyActionPhase phase);
@@ -229,7 +224,7 @@ namespace Models.Business
             {
                 decimal paid = w.Pay();
                 decimal incomeTax = Government.PayIncomeTax(paid);
-                Balance -= paid + incomeTax;
+                BankAccount.Withdraw(paid + incomeTax);
                 _lastWorkerPayments += paid + incomeTax;
             }
         }

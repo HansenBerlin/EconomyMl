@@ -15,9 +15,6 @@ using UnityEngine;
 
 namespace Models.Business
 {
-
-
-
     public class PrivateCompanyAgent : CompanyBaseAgent
     {
         private decimal ObservationAveragePriceResource => AverageResourcePrice("r");
@@ -82,14 +79,13 @@ namespace Models.Business
             sensor.AddObservation(ProductController.ProductionLastMonth);
             var totalDemand = CountryEconomyMarkets.GetTotalUnfulfilledDemand(TypeProduced);
             var marketShare = CountryEconomyMarkets.MarketShare(TypeProduced, ProductController.Id);
-            var loans = _loans.Sum(x => x.TotalSumLeft);
             sensor.AddObservation(totalDemand);
             sensor.AddObservation((float)marketShare);
-            sensor.AddObservation((float)loans);
+            sensor.AddObservation((float)BankAccount.LoansSum);
         }
 
 
-        private readonly List<LoanModel> _loans = new();
+        //private readonly List<LoanModel> _loans = new();
         
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
@@ -104,16 +100,11 @@ namespace Models.Business
             {
                 if (currentActionPhase != CompanyActionPhase.Produce && currentActionPhase != CompanyActionPhase.AdaptPrice)
                 {
-                    if (_loans.Sum(x => x.TotalSumLeft) < 10000000 && requestCredit > 0)
+                    if (BankAccount.LoansSum < 10000000 && requestCredit > 0)
                     {
                         decimal creditSum = Balance < 0 ? Balance * -1 * requestCredit : Balance * requestCredit;
                         creditSum = creditSum < 1000 ? 1000 : creditSum;
-                        var loan = CountryEconomyMarkets.GetLoan(creditSum, CurrentRating);
-                        if (loan.IsDeclined == false)
-                        {
-                            _loans.Add(loan);
-                            Balance += loan.TotalSumLeft;
-                        }
+                        BankAccount.TryToGetLoan(creditSum, CurrentRating);
                     }
                     else
                     {
@@ -244,7 +235,7 @@ namespace Models.Business
 
             var productReceipt = CountryEconomyMarkets.Buy(requestBuyResource);
             Production.AvailableProductionResources += productReceipt.AmountBought;
-            Balance -= productReceipt.TotalPricePaid;
+            BankAccount.Withdraw(productReceipt.TotalPricePaid);
             LastProdCostsInMonthForRessourcesAndEnergy += productReceipt.TotalPricePaid;
             resourcesDemanded -= productReceipt.AmountBought;
             if (resourcesDemanded > 0)
@@ -260,7 +251,7 @@ namespace Models.Business
 
             var productReceipt = CountryEconomyMarkets.Buy(requestBuyResource);
             Production.AvailableProductionEnergy += productReceipt.AmountBought;
-            Balance -= productReceipt.TotalPricePaid;
+            BankAccount.Withdraw(productReceipt.TotalPricePaid);
             LastProdCostsInMonthForRessourcesAndEnergy += productReceipt.TotalPricePaid;
             energyDemanded -= productReceipt.AmountBought;
             if (energyDemanded > 0)
@@ -322,22 +313,9 @@ namespace Models.Business
         public override void MonthlyBookkeeping()
         {
             PayWorkers();
-            var sumLoansTaken = _loans.Sum(x => x.TotalSumLeft);
-            CurrentRating = RatingController.Calculate(Balance, ProductController.ObsProfitTrend, sumLoansTaken,
+            CurrentRating = RatingController.Calculate(Balance, ProductController.ObsProfitTrend, BankAccount.LoansSum,
                 ProductController.ProfitLastMonth, CurrentRating);
-
-            for (int i = _loans.Count - 1; i >= 0; i--)
-            {
-                var loan = _loans[i];
-                var payment = loan.MakeMonthlyPayment();
-                if (payment == 0)
-                {
-                    _loans.Remove(loan);
-                }
-
-                LoanPayments += payment;
-                
-            }
+            LoanPayments += BankAccount.MonthlyPaymentForLoans();
 
             if (Workers.Count == 0 && LoanPayments > 0)
             {
@@ -347,8 +325,8 @@ namespace Models.Business
             decimal profit = ProductController.Profit - TotalCostBeforeTaxes - UpgradeEffiencyCosts;
             ProfitTaxPaidInMonth = Government.PayProfitTax(profit);
             ProfitAfterTaxesInMonth = profit - ProfitTaxPaidInMonth;
-            Balance -= FixedPerProductBaseCosts + ProfitTaxPaidInMonth + LoanPayments;
-            Balance += ProductController.Profit;
+            BankAccount.Withdraw(FixedPerProductBaseCosts + ProfitTaxPaidInMonth + LoanPayments);
+            BankAccount.Deposit(ProductController.Profit);
             if (Balance > BalanceLastYear)
             {
                 AddReward(0.05f);

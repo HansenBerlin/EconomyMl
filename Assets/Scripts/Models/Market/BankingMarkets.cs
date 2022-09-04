@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Controller;
 using Enums;
 using Models.Agents;
 using Models.Finance;
@@ -15,24 +16,14 @@ namespace Models.Market
             _banks.Add(bank);
         }
 
-        public LoanModel FindLoan(decimal amount, CreditRating rating)
+        public BankAccountModel OpenBankAccount(decimal deposit, bool isSetup)
         {
-            var banks = _banks.OrderBy(b => b.NegativeInterestRate).ToList();
-            if (banks.Count > 0)
+            if (isSetup)
             {
-                var loan = banks[0].RequestLoan(amount, rating);
-                if (loan.IsDeclined == false)
-                {
-                    return loan;
-                }
+                var rn = StatisticalDistributionController.CreateRandom(0, _banks.Count);
+                return _banks[rn].OpenBankAccount(deposit);
             }
-
-            return new LoanModel();
-        }
-
-        public BankAccountBase OpenBankAccount(decimal deposit)
-        {
-            var banks = _banks.OrderBy(b => b.PositiveInterestRate).ToList().First();
+            var banks = _banks.OrderByDescending(b => b.PositiveInterestRate).ToList().First();
             return banks.OpenBankAccount(deposit);
         }
     }

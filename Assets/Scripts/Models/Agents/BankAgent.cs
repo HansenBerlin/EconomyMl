@@ -19,7 +19,7 @@ namespace Models.Agents
         private decimal EquityRatio => TotalAssets / (TotalAssets + TotalLiabilities);
         private decimal _centralBankDeposit = 1000000;
         private readonly List<LoanModel> _loans = new();
-        private readonly List<BankAccountBase> _accounts = new();
+        private readonly List<BankAccountModel> _accounts = new();
         private CentralBankPolicy _policy;
         
         private CreditRating _minimumRatingForCredits;
@@ -42,14 +42,14 @@ namespace Models.Agents
             _loans.Remove(loan);
         }
 
-        public void RemoveAccount(BankAccountBase account)
+        public void RemoveAccount(BankAccountModel account)
         {
             _accounts.Remove(account);
         }
 
-        public BankAccountBase OpenBankAccount(decimal deposit)
+        public BankAccountModel OpenBankAccount(decimal deposit)
         {
-            var account = new BankAccountBase(deposit, this);
+            var account = new BankAccountModel(deposit, this);
             _accounts.Add(account);
             return account;
         }

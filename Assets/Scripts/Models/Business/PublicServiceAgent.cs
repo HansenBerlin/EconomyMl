@@ -193,7 +193,7 @@ namespace Models.Business
 
             var productReceipt = CountryEconomyMarkets.Buy(requestBuyResource);
             Production.AvailableProductionResources += productReceipt.AmountBought;
-            Balance -= productReceipt.TotalPricePaid;
+            BankAccount.Withdraw(productReceipt.TotalPricePaid);
             LastProdCostsInMonthForRessourcesAndEnergy += productReceipt.TotalPricePaid;
             resourcesDemanded -= productReceipt.AmountBought;
             if (resourcesDemanded > 0)
@@ -209,7 +209,7 @@ namespace Models.Business
 
             var productReceipt = CountryEconomyMarkets.Buy(requestBuyResource);
             Production.AvailableProductionEnergy += productReceipt.AmountBought;
-            Balance -= productReceipt.TotalPricePaid;
+            BankAccount.Withdraw(productReceipt.TotalPricePaid);
             LastProdCostsInMonthForRessourcesAndEnergy += productReceipt.TotalPricePaid;
             energyDemanded -= productReceipt.AmountBought;
             if (energyDemanded > 0)
@@ -262,8 +262,8 @@ namespace Models.Business
         {
             PayWorkers();
             decimal profit = Government.GetFederalMoneyForService(FixedPerProductBaseCosts + LoanPayments);
-            Balance -= FixedPerProductBaseCosts;
-            Balance += profit;
+            BankAccount.Withdraw(FixedPerProductBaseCosts);
+            BankAccount.Deposit(profit);
             CashflowIn = profit;
         }
 

@@ -6,7 +6,8 @@ namespace Factories
 {
     public class BankFactory : MonoBehaviour
     {
-        private CentralBankPolicy _policy;
+        private readonly CentralBankPolicy _policy;
+        private readonly CentralBankAgent _centralBank;
         public GameObject BankAgentPrefab;
         
         public BankFactory(CentralBankPolicy policy)
@@ -18,7 +19,7 @@ namespace Factories
         public BankAgent Create()
         {
             var bank = BankAgentPrefab.GetComponent<BankAgent>();
-            bank.Init(_policy);
+            bank.Init(_policy, _centralBank);
             return bank;
         }
     }

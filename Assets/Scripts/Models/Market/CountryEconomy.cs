@@ -52,9 +52,9 @@ namespace Models.Market
             _businesses.Remove(privateCompany);
         }
 
-        public LoanModel GetLoan(decimal amount, CreditRating rating)
+        public BankAccountModel OpenBankAccount(decimal amount, bool isSetup)
         {
-            return _bankingMarkets.FindLoan(amount, rating);
+            return _bankingMarkets.OpenBankAccount(amount, isSetup);
         }
 
         public void AddProduct(ProductController product)
@@ -124,19 +124,7 @@ namespace Models.Market
             var productMarket = FindMatchingMarket(type);
             return productMarket.AveragePrice;
         }
-
-        public decimal GetProductSupplyAndSalesTrend(ProductType type)
-        {
-
-            var productMarket = FindMatchingMarket(type);
-            return productMarket.AveragePrice;
-        }
-
-        public decimal AveragePrice(ProductType type, string ownId)
-        {
-            var productMarket = FindMatchingMarket(type);
-            return productMarket.AveragePrice;
-        }
+        
 
         public decimal TotalSupply(ProductType type)
         {
