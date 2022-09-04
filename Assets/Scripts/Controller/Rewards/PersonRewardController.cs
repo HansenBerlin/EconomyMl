@@ -81,7 +81,7 @@ namespace Controller.Rewards
             var capitalFactor2 = observations.Capital > 100000 ? 0.5F : 0F;
             float expenseFactor = (float)(observations.MonthlyExpensesAccumulatedForYear > - observations.MonthlyIncomeAccumulatedForYear ? -0.5 : 0.5);
             var jobFactor = observations.JobStatus == JobStatus.Unemployed ? -0.2F : observations.JobStatus == JobStatus.Employed ? 0.4F : 0;
-            float baseDemandFulfilled = observations.UnsatisfiedBaseDemand > 180 ? -0.5f : observations.UnsatisfiedBaseDemand > 0 ? - 0.2f : 0.5f;
+            float baseDemandFulfilled = observations.UnsatisfiedBaseDemand > 0 ? - 0.2f : 0.5f;
             float luxury = observations.LuxuryProducts > 12 ? 0.2f : observations.LuxuryProducts > 0 ? 0.1f : -0.05f;
             
             var val = NormalizeCombined(capitalFactor + capitalFactor2 + jobFactor + expenseFactor + baseDemandFulfilled + luxury +

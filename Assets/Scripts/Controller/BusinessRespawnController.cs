@@ -13,19 +13,16 @@ namespace Controller
         
         private BusinessFactory _factory;
         private JobMarketController _jobMarket;
-        private List<CompanyBaseAgent> _companys;
 
-        public BusinessRespawnController(BusinessFactory factory, JobMarketController jobMarket, List<CompanyBaseAgent> companys)
+        public BusinessRespawnController(BusinessFactory factory, JobMarketController jobMarket)
         {
             _factory = factory;
             _jobMarket = jobMarket;
-            _companys = companys;
         }
-        public void Respawn(CompanyBaseAgent oldBusiness)
+        public CompanyBaseAgent Respawn(CompanyBaseAgent oldBusiness)
         {
-            _companys.Remove(oldBusiness);
             var business = _factory.Create(oldBusiness.TypeProduced, _jobMarket);
-            _companys.Add(business);
+            return business;
         }
 
         

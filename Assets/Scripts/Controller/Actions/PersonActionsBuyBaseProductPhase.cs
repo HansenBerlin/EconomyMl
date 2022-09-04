@@ -79,7 +79,7 @@ namespace Controller.Actions
             }
         }
 
-        private int GetDemand(PersonObservations observations, int childCount)
+        public int GetDemand(PersonObservations observations, int childCount)
         {
             float personDemand = observations.AgeStatus == AgeStatus.RetiredAge
                 ? _settings.DemandRetired

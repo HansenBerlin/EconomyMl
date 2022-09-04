@@ -76,7 +76,7 @@ namespace Controller
             _population.AddRange(initialPopulation);
 
             businessFactory.Init(countryEconomyMarket, envSettings, statsRepository, governmentController);
-            _businessRespawner = new BusinessRespawnController(businessFactory, jobMarketController, businesses);
+            _businessRespawner = new BusinessRespawnController(businessFactory, jobMarketController);
 
             
 
@@ -158,10 +158,16 @@ namespace Controller
                 var business = businesses[i];
                 if (business.IsRemoved())
                 {
-                    _businessRespawner.Respawn(business);
+                    var newBusiness = _businessRespawner.Respawn(business);
+                    businesses.Add(newBusiness);
+                    businesses.Remove(business);
+                    i--;
                 }
-                business.MakeDecision(CompanyActionPhase.AdaptPrice);
-                business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
+                else
+                {
+                    business.MakeDecision(CompanyActionPhase.AdaptPrice);
+                    business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
+                }
 
             }
             

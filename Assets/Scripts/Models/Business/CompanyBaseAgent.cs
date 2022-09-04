@@ -86,7 +86,7 @@ namespace Models.Business
             ProductController.AddNew(policy.InitialResources);
             countryEconomyMarkets.ReportProduction(policy.InitialResources, TypeProduced);
             var openPositions = JobPositionFactory.Create(policy.InitialWorkers, policy.MinSalary, Id, Workers, TypeProduced);
-            jobMarket.AddOpenJobPositions(openPositions);
+            JobMarket.AddOpenJobPositions(openPositions);
         }
 
         private decimal lastCpp = 0;

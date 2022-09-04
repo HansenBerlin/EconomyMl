@@ -330,10 +330,11 @@ namespace Models.Agents
             }
 
             //Debug.Log($"Yearly reward in month {Month} " + reward);
-            if (_observations.MonthlyExpensesAccumulatedForYear >
+            if ((_observations.MonthlyExpensesAccumulatedForYear >
                 _observations.MonthlyIncomeAccumulatedForYear + _observations.Capital + 100000)
+                || _observations.UnsatisfiedBaseDemand / 2 > _baseBuyActions.GetDemand(_observations, Children.Count) * 12)
             {
-                AddReward(-5);
+                AddReward(-3);
                 _respawner.Reset(_observations);
                 EndEpisode();
             }
