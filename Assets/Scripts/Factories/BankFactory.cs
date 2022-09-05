@@ -6,13 +6,14 @@ namespace Factories
 {
     public class BankFactory : MonoBehaviour
     {
-        private readonly CentralBankPolicy _policy;
-        private readonly CentralBankAgent _centralBank;
+        private CentralBankPolicy _policy;
+        private CentralBankAgent _centralBank;
         public GameObject BankAgentPrefab;
         
-        public BankFactory(CentralBankPolicy policy)
+        public void Init(CentralBankPolicy policy, CentralBankAgent centralBank)
         {
             _policy = policy;
+            _centralBank = centralBank;
 
         }
 

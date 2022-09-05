@@ -50,13 +50,13 @@ namespace Factories
             {
                 var go =Instantiate(publicServicePrefab);
                 business = go.GetComponent<PublicServiceAgent>();
-                business.Init(_countryEconomyMarkets, controller, policy, _government, dataRepo, jobMarket);
+                business.Init(_countryEconomyMarkets, controller, policy, _government, dataRepo, jobMarket, new NormalizationController());
             }
             else
             {
                 var go =Instantiate(privateBusinessPrefab);
                 business = go.GetComponent<PrivateCompanyAgent>();
-                business.Init(_countryEconomyMarkets, controller, policy, _government, dataRepo, jobMarket);
+                business.Init(_countryEconomyMarkets, controller, policy, _government, dataRepo, jobMarket, new NormalizationController());
             }
 
             _countryEconomyMarkets.AddBusiness(business);

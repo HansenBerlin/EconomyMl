@@ -7,33 +7,40 @@ using Settings;
 
 namespace Controller.Actions
 {
-
-
-
     public class PersonActionsBuyBaseProductPhase : IPersonAction
     {
         private readonly PersonResourceDemandSettings _settings;
         private readonly ICountryEconomy _market;
+        private PersonObservations _observations;
+        private PersonRewardController _rewardController;
+        private PersonController _controller;
 
         public PersonActionsBuyBaseProductPhase(PersonResourceDemandSettings settings, ICountryEconomy market)
         {
             _settings = settings;
             _market = market;
         }
-
-        public void BuyExactAmountOfDemandedBaseResources(PersonObservations observations, int underageChildCount, PersonRewardController rewardController)
+        
+        public void Init(PersonObservations observations, PersonRewardController rewardController, PersonController controller)
         {
-            int demand = GetDemand(observations, underageChildCount);
+            _observations = observations;
+            _rewardController = rewardController;
+            _controller = controller;
+        }
+
+        public void BuyExactAmountOfDemandedBaseResources(int underageChildCount)
+        {
+            int demand = GetDemand(underageChildCount);
             var request = new ProductRequestModel(ProductType.BaseProduct, ProductRequestSearchType.MaxAmountWithSpendingLimit,
-                maxAmount: demand, totalSpendable:observations.Capital);
+                maxAmount: demand, totalSpendable:_observations.Capital);
             var receipt = _market.Buy(request);
-            UpdateProperties(receipt, demand, observations, rewardController);
+            UpdateProperties(receipt, demand);
         }
 
-        public void BuyDemandedBaseResourcesWithIncomeSpendingLimit(PersonObservations observations, int underageChildCount, PersonRewardController rewardController)
+        public void BuyDemandedBaseResourcesWithIncomeSpendingLimit(int underageChildCount)
         {
-            int demand = GetDemand(observations, underageChildCount);
-            decimal maxSpendable = observations.Salary;
+            int demand = GetDemand(underageChildCount);
+            decimal maxSpendable = _observations.Salary;
             ReceiptModel receipt = new ReceiptModel();
             if (maxSpendable > 0)
             {
@@ -44,13 +51,13 @@ namespace Controller.Actions
 
             }
 
-            UpdateProperties(receipt, demand, observations, rewardController);
+            UpdateProperties(receipt, demand);
         }
 
-        public void BuyDemandedBaseResourcesWithCapitalSpendingLimit(PersonObservations observations, int underAgeChildCount, PersonRewardController rewardController)
+        public void BuyDemandedBaseResourcesWithCapitalSpendingLimit(int underAgeChildCount)
         {
-            int demand = GetDemand(observations, underAgeChildCount);
-            decimal maxSpendable = observations.Capital;
+            int demand = GetDemand(underAgeChildCount);
+            decimal maxSpendable = _observations.Capital;
             ReceiptModel receipt = new ReceiptModel();
             if (maxSpendable > 0)
             {
@@ -61,34 +68,32 @@ namespace Controller.Actions
 
             }
 
-            UpdateProperties(receipt, demand, observations, rewardController);
+            UpdateProperties(receipt, demand);
         }
 
-        private void UpdateProperties(ReceiptModel receipt, long demandLeft, PersonObservations observations, PersonRewardController rewardController)
+        private void UpdateProperties(ReceiptModel receipt, long demandLeft)
         {
-            observations.MonthlyExpensesAccumulatedForYear += receipt.TotalPricePaid;
-            observations.ThisMonthExpenses += receipt.TotalPricePaid;
-            observations.Capital -= receipt.AmountBought;
-            rewardController.RewardForBaseProductSatisfaction(receipt.AmountBought, demandLeft, observations);
+            _observations.MonthlyExpensesAccumulatedForYear += receipt.TotalPricePaid;
+            _observations.ThisMonthExpenses += receipt.TotalPricePaid;
+            _controller.PayBill(receipt.TotalPricePaid);
+            _rewardController.RewardForBaseProductSatisfaction(receipt.AmountBought, demandLeft, _observations);
             demandLeft -= receipt.AmountBought;
 
             if (demandLeft > 0)
             {
                 _market.ReportDemand(demandLeft, ProductType.BaseProduct);
-                observations.UnsatisfiedBaseDemand += demandLeft;
+                _observations.UnsatisfiedBaseDemand += demandLeft;
             }
         }
 
-        public int GetDemand(PersonObservations observations, int childCount)
+        public int GetDemand(int childCount)
         {
-            float personDemand = observations.AgeStatus == AgeStatus.RetiredAge
+            float personDemand = _observations.AgeStatus == AgeStatus.RetiredAge
                 ? _settings.DemandRetired
                 : _settings.DemandWorkerAge;
             float childDemand = childCount * _settings.DemandChild;
             int demand = (int) Math.Ceiling(personDemand + childDemand);
             return demand;
         }
-
-
     }
 }

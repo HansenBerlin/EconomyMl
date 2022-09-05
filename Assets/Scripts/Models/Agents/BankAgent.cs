@@ -15,15 +15,15 @@ namespace Models.Agents
         private decimal TotalAssets => _loans.Sum(x => x.TotalSumLeft) + _centralBankDeposit;
         private decimal TotalLiabilities => _accounts.Sum(x => x.Savings);
         public float PositiveInterestRate { get; private set; } = 0.05F;
-        public float NegativeInterestRate { get; private set;} = 0.05F;
+        private float NegativeInterestRate { get; set;} = 0.05F;
         private decimal EquityRatio => TotalAssets / (TotalAssets + TotalLiabilities);
         private decimal _centralBankDeposit = 1000000;
         private readonly List<LoanModel> _loans = new();
         private readonly List<BankAccountModel> _accounts = new();
         private CentralBankPolicy _policy;
         
-        private CreditRating _minimumRatingForCredits;
-        private int _lengthInMonthForNewCredits;
+        private CreditRating _minimumRatingForCredits = CreditRating.A;
+        private int _lengthInMonthForNewCredits = 12;
         private CentralBankAgent _centralBank;
 
         public void Init(CentralBankPolicy policy, CentralBankAgent centralBankAgent)

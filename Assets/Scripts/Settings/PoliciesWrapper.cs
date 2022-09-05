@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Policies;
+using UnityEngine;
 
 namespace Settings
 {
@@ -11,11 +12,13 @@ namespace Settings
         public EducationBoundaryPolicy EducationBoundaries { get; private set;}
         public FederalUnemployedPaymentPolicy federalUnemployedPaymentPolicies { get; private set; }
         public FederalServicesPolicy FederalPolicies { get; private set; }
+        public CentralBankPolicy CentralBankPolicies { get; private set; }
 
         public GameObject AgeBoundaryPolicyGo;
         public GameObject EducationBoundaryPolicyGo;
         public GameObject WorkerPolicyGo;
         public GameObject FederalServicesPolicyGo;
+        public GameObject CentralBankPolicyGo;
 
         public void Awake()
         {
@@ -23,6 +26,7 @@ namespace Settings
             EducationBoundaries = EducationBoundaryPolicyGo.GetComponent<EducationBoundaryPolicy>();
             federalUnemployedPaymentPolicies = WorkerPolicyGo.GetComponent<FederalUnemployedPaymentPolicy>();
             FederalPolicies = FederalServicesPolicyGo.GetComponent<FederalServicesPolicy>();
+            CentralBankPolicies = CentralBankPolicyGo.GetComponent<CentralBankPolicy>();
         }
     }
 }

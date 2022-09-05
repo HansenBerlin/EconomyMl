@@ -2,6 +2,7 @@
 using System.Linq;
 using Controller;
 using Models.Agents;
+using Models.Market;
 using Models.Observations;
 using Settings;
 using UnityEngine;
@@ -19,17 +20,20 @@ namespace Factories
         private List<int> _distributionOfAges;
         private ActionsFactory _actionsFactory;
         private JobMarketController _jobMarketController;
+        private ICountryEconomy _markets;
         
         public GameObject personAgentPrefab;
         
         
-        public void Init(ActionsFactory factory, JobMarketController jobMarketController, PoliciesWrapper policies, PopulationPropabilityController propabilityController)
+        public void Init(ActionsFactory factory, JobMarketController jobMarketController, PoliciesWrapper policies, 
+            PopulationPropabilityController propabilityController, ICountryEconomy markets)
         {
             _actionsFactory = factory;
             _jobMarketController = jobMarketController;
             _policies = policies;
             _propabilityController = propabilityController;
             _distributionOfAges = _propabilityController.AgeDistribution;
+            _markets = markets;
         }
 
         private int FindMatchingGenerationBucketIndex(int age)
@@ -203,8 +207,9 @@ namespace Factories
             //Console.WriteLine(income);
             decimal capital = financialData[1];
 
-            var observations = new PersonObservations(age, income, capital, _policies, _jobMarketController);
-            var controller = new PersonController(observations, _policies, _actionsFactory);
+            var bankAccount = _markets.OpenBankAccount(capital, true);
+            var observations = new PersonObservations(age, income, bankAccount, _policies, _jobMarketController, new NormalizationController());
+            var controller = new PersonController(observations, _policies, _actionsFactory, _markets);
             var go = Instantiate(personAgentPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             PersonAgent person = go.GetComponent<PersonAgent>();
             person.Init(parentAId, parentBId, observations, controller);
@@ -213,8 +218,9 @@ namespace Factories
 
         public PersonAgent CreateChild(int age, string parentAId, string parentBId)
         {
-            var observations = new PersonObservations(age, 0, 0, _policies, _jobMarketController);
-            var controller = new PersonController(observations, _policies, _actionsFactory);
+            var bankAccount = _markets.OpenBankAccount(0, true);
+            var observations = new PersonObservations(age, 0, bankAccount, _policies, _jobMarketController, new NormalizationController());
+            var controller = new PersonController(observations, _policies, _actionsFactory, _markets);
             var go = Instantiate(personAgentPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             PersonAgent person = go.GetComponent<PersonAgent>();
             person.Init(parentAId, parentBId, observations, controller);

@@ -5,7 +5,7 @@ namespace Controller
 {
     public class PersonRespawnController
     {
-        private decimal Capital { get; set; }
+        public decimal Capital { get; set; }
         private decimal Salary { get; set; }
 
         private decimal DesiredSalary { get; set; }
@@ -26,7 +26,7 @@ namespace Controller
 
         public void Reset(PersonObservations observations)
         {
-            observations.Capital = Capital / 2;
+            //observations.Capital = Capital / 2;
             observations.Salary = Salary / 2;
             observations.DesiredSalary = DesiredSalary;
             observations.JobStatus = JobStatus.Unemployed;

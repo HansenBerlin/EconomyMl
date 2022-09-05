@@ -65,23 +65,20 @@ namespace Models.Business
 
         public override void CollectObservations(VectorSensor sensor)
         {
-            sensor.AddObservation(Workers.Count);
-            sensor.AddObservation((long)Balance);
-            sensor.AddObservation(ProductController.TotalSupply);
-            sensor.AddObservation((float)ProductController.Price);
-            sensor.AddObservation(Production.AvailableProductionEnergy);
-            sensor.AddObservation(Production.AvailableProductionResources);
-            sensor.AddObservation((float) ProductController.Profit);
-            sensor.AddObservation((float) ProductController.ProfitLastMonth);
-            sensor.AddObservation(ProductController.SalesThisMonth);
-            sensor.AddObservation(ProductController.SalesLastMonth);
-            sensor.AddObservation(ProductController.ProductionThisMonth);
-            sensor.AddObservation(ProductController.ProductionLastMonth);
-            var totalDemand = CountryEconomyMarkets.GetTotalUnfulfilledDemand(TypeProduced);
-            var marketShare = CountryEconomyMarkets.MarketShare(TypeProduced, ProductController.Id);
-            sensor.AddObservation(totalDemand);
-            sensor.AddObservation((float)marketShare);
-            sensor.AddObservation((float)BankAccount.LoansSum);
+            sensor.AddObservation(NormCtr.Normalize(nameof(Workers), Workers.Count));
+            sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.TotalSupply), ProductController.TotalSupply));
+            sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.Price), (float)ProductController.Price));
+            sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.Profit), (float)ProductController.Profit));
+            sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.ProfitLastMonth), (float)ProductController.ProfitLastMonth));
+            sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.SalesLastMonth), ProductController.SalesLastMonth));
+            sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.SalesThisMonth), ProductController.SalesThisMonth));
+            sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.ProductionThisMonth), ProductController.ProductionThisMonth));
+            sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.ProductionLastMonth), ProductController.ProductionLastMonth));
+            sensor.AddObservation(NormCtr.Normalize(nameof(Production.AvailableProductionEnergy), Production.AvailableProductionEnergy));
+            sensor.AddObservation(NormCtr.Normalize(nameof(Production.AvailableProductionResources), Production.AvailableProductionResources));
+            sensor.AddObservation(NormCtr.Normalize(nameof(TotalDemand), TotalDemand));
+            sensor.AddObservation(NormCtr.Normalize(nameof(MarketShare), (float)MarketShare));
+            sensor.AddObservation(NormCtr.Normalize(nameof(BankAccount.LoansSum), (float)BankAccount.LoansSum));
         }
 
 
@@ -139,7 +136,7 @@ namespace Models.Business
         }
 
 
-        public override void ActionProduce(int productionPercentage)
+        public void ActionProduce(int productionPercentage)
         {
             var maxUnitsProduced = PossibleProduction;
             int finalProduction = productionPercentage == 1 ? maxUnitsProduced / 2 : maxUnitsProduced;
@@ -228,7 +225,7 @@ namespace Models.Business
             
         }
 
-        public override void ActionBuyResources(decimal maxSpendings, long resourcesDemanded)
+        public void ActionBuyResources(decimal maxSpendings, long resourcesDemanded)
         {
             var requestBuyResource = new ProductRequestModel(ResourceTypeNeeded,
                 ProductRequestSearchType.MaxAmountWithSpendingLimit, totalSpendable: maxSpendings, maxAmount:resourcesDemanded);
@@ -244,7 +241,7 @@ namespace Models.Business
             }
         }
         
-        public override void ActionBuyEnergy(decimal maxSpendings, long energyDemanded)
+        public void ActionBuyEnergy(decimal maxSpendings, long energyDemanded)
         {
             var requestBuyResource = new ProductRequestModel(EnergyTypeNeeded,
                 ProductRequestSearchType.MaxAmountWithSpendingLimit, totalSpendable: maxSpendings, maxAmount:energyDemanded);
@@ -278,7 +275,7 @@ namespace Models.Business
 
         }
 
-        public override void ActionAdaptProductionCapacity(float changeProductionCapabilities, int maxSalary)
+        public void ActionAdaptProductionCapacity(float changeProductionCapabilities, int maxSalary)
         {
             /*decimal supply = ProductController.QuarterlySupplyAverage;
             decimal production = ProductController.QuarterlyProductionAverage;

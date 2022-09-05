@@ -4,6 +4,8 @@ using Controller.Actions;
 using Enums;
 using Factories;
 using Models.Agents;
+using Models.Finance;
+using Models.Market;
 using Models.Meta;
 using Models.Observations;
 using Models.Population;
@@ -19,15 +21,16 @@ namespace Controller
         private readonly PoliciesWrapper _policies;
         private PersonAgent _person;
         private readonly ActionsFactory _factory;
+        private readonly ICountryEconomy _market;
         private readonly PersonObservations _observations;
-        //private PersonRewardController _rewardController;
-       
+        private BankAccountModel _bankAccount;
 
-        public PersonController (PersonObservations observations, PoliciesWrapper policies, ActionsFactory factory)
+        public PersonController (PersonObservations observations, PoliciesWrapper policies, ActionsFactory factory, ICountryEconomy market)
         {
             _observations = observations;
             _policies = policies;
             _factory = factory;
+            _market = market;
         }
         
         public void Setup(PersonAgent person)
@@ -35,6 +38,7 @@ namespace Controller
             _person = person;
             _observations.JobStatus = GetInitialJobStatus();
             _observations.Salary = InitialIncome();
+            _bankAccount = _market.OpenBankAccount(_observations.Capital, true);
         }
 
         public List<IPersonAction> InitActions()
@@ -86,10 +90,7 @@ namespace Controller
             int randomDeath = StatisticalDistributionController.CreateRandom(0, 10000);
             if (randomDeath == 0)
             {
-                //person.AgeStatus = AgeStatus.Dead;
-                //tempRemoved.Add(this);
                 return DeathReason.Random;
-                //DistributeWealthToChildren();
             }
 
             bool hasDiedOfAge = controller.IsDead(_observations.Age);
@@ -98,15 +99,7 @@ namespace Controller
             {
                 return DeathReason.HasNotDied;
             }
-            else
-            {
-                //AgeStatus = AgeStatus.Dead;
-                return DeathReason.Age;
-                //DistributeWealthToChildren();
-                //tempRemoved.Add(this);
-            }
-
-
+            return DeathReason.Age;
         }
 
         private void DistributeWealthToChildren()
@@ -117,6 +110,12 @@ namespace Controller
             {
                 child.UpdateCapital(capital / _person.Children.Count);
             }
+        }
+
+        public void ResetBankAccount(decimal newCapital)
+        {
+            _bankAccount.CloseAccount();
+            _market.OpenBankAccount(newCapital, true);
         }
 
 
@@ -135,7 +134,6 @@ namespace Controller
 
         public void RemoveJobWhenFired()
         {
-            //_observations.DesiredSalary = _observations.Salary * 0.99M;
             _observations.Salary = ReducedIncome(_observations.Salary);
             _person.Job.QuitJob(_person);
             _observations.JobStatus = JobStatus.Unemployed;
@@ -151,7 +149,6 @@ namespace Controller
             newJob.TakeJob(_person, _observations.DesiredSalary);
             _observations.JobStatus = JobStatus.Employed;
             _observations.Salary = newJob.Salary;
-            //_observations.DesiredSalary = newJob.Salary;
             _person.Job = newJob;
         }
 
@@ -166,9 +163,9 @@ namespace Controller
             }
         }
 
-        public void EndEpisode()
+        public void AddCapital(decimal sum)
         {
-
+            _bankAccount.Deposit(sum);
         }
 
         public void UpdateAgent(decimal avgIncome, TempPopulationUpdateModel tempPop, PopulationFactory factory,
@@ -201,7 +198,6 @@ namespace Controller
                 _person.Death = deathState;
                 tempPop.Died.Add(_person);
                 DistributeWealthToChildren();
-                _person.Kill();
             }
         }
 
@@ -214,11 +210,16 @@ namespace Controller
 
 
 
-        public decimal Pay()
+        public decimal ReceiveMoney()
         {
-            _observations.Capital += _observations.Salary;
+            _bankAccount.Deposit(_observations.Salary);
             _observations.MonthlyIncomeAccumulatedForYear += _observations.Salary;
             return _observations.Salary;
+        }
+        
+        public void PayBill(decimal amount)
+        {
+            _bankAccount.Withdraw(amount);
         }
 
 

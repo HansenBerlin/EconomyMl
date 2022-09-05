@@ -30,6 +30,7 @@ namespace Models.Business
         protected IProductionTemplate Production;
         protected ICountryEconomy CountryEconomyMarkets;
         protected ProductController ProductController;
+        protected NormalizationController NormCtr;
 
         protected BankAccountModel BankAccount;
         //protected CompanyResourcePolicy _policy;
@@ -37,6 +38,9 @@ namespace Models.Business
         protected ProductType ResourceTypeNeeded => Production.ResourceTypeNeeded;
         protected ProductType EnergyTypeNeeded => Production.EnergyTypeNeeded;
         protected List<PersonAgent> Workers { get; } = new();
+        
+        protected long TotalDemand => CountryEconomyMarkets.GetTotalUnfulfilledDemand(TypeProduced);
+        protected decimal MarketShare => CountryEconomyMarkets.MarketShare(TypeProduced, ProductController.Id);
 
         private int ObsProductionCapacityByWorkers => (int)(Production.UnitsPerWorker * ObserveTotalWorkers);
 
@@ -77,10 +81,11 @@ namespace Models.Business
 
 
         public void Init(ICountryEconomy countryEconomyMarkets, ProductController productController,
-            CompanyResourcePolicy policy, GovernmentController government, CompanyDataRepository data, JobMarketController jobMarket)
+            CompanyResourcePolicy policy, GovernmentController government, CompanyDataRepository data, 
+            JobMarketController jobMarket, NormalizationController normController)
         {
+            NormCtr = normController;
             CountryEconomyMarkets = countryEconomyMarkets;
-            BalanceLastYear = Balance;
             Government = government;
             Data = data;
             JobMarket = jobMarket;
@@ -91,7 +96,27 @@ namespace Models.Business
             countryEconomyMarkets.ReportProduction(policy.InitialResources, TypeProduced);
             var openPositions = JobPositionFactory.Create(policy.InitialWorkers, policy.MinSalary, Id, Workers, TypeProduced);
             JobMarket.AddOpenJobPositions(openPositions);
-            BankAccount = countryEconomyMarkets.OpenBankAccount(policy.InitialBalance, true);
+            BankAccount = countryEconomyMarkets.OpenBankAccount(0, true);
+            BankAccount.TryToGetLoan(policy.InitialBalance, CreditRating.AAA);
+            BalanceLastYear = Balance;
+        }
+
+        private void SetupObservations()
+        {
+            NormCtr.AddNew(nameof(Workers), NormRange.One, Workers.Count);
+            NormCtr.AddNew(nameof(ProductController.TotalSupply), NormRange.One, ProductController.TotalSupply);
+            NormCtr.AddNew(nameof(ProductController.Price), NormRange.One, (float)ProductController.Price);
+            NormCtr.AddNew(nameof(ProductController.Profit), NormRange.Two, (float)ProductController.Profit);
+            NormCtr.AddNew(nameof(ProductController.ProfitLastMonth), NormRange.Two, (float)ProductController.ProfitLastMonth);
+            NormCtr.AddNew(nameof(ProductController.SalesLastMonth), NormRange.One, ProductController.SalesLastMonth);
+            NormCtr.AddNew(nameof(ProductController.SalesThisMonth), NormRange.One, ProductController.SalesThisMonth);
+            NormCtr.AddNew(nameof(ProductController.ProductionThisMonth), NormRange.One, ProductController.ProductionThisMonth);
+            NormCtr.AddNew(nameof(ProductController.ProductionLastMonth), NormRange.One, ProductController.ProductionLastMonth);
+            NormCtr.AddNew(nameof(Production.AvailableProductionEnergy), NormRange.One, Production.AvailableProductionEnergy);
+            NormCtr.AddNew(nameof(Production.AvailableProductionResources), NormRange.One, Production.AvailableProductionResources);
+            NormCtr.AddNew(nameof(TotalDemand), NormRange.One, TotalDemand);
+            NormCtr.AddNew(nameof(MarketShare), NormRange.One, (float)MarketShare);
+            NormCtr.AddNew(nameof(BankAccount.LoansSum), NormRange.One, (float)BankAccount.LoansSum);
         }
 
         protected int _month;
@@ -172,29 +197,7 @@ namespace Models.Business
                 return demand > 0 ? demand : 0;
             }
         }
-
-        public abstract void ActionBuyResources(decimal maxSpendings, long resourcesDemanded);
-
-        public abstract void ActionBuyEnergy(decimal maxSpendings, long energyDemanded);
-        public abstract void ActionProduce(int percentProduction);
-
-
         
-
-
-        public void QuarterlyUpdate()
-        {
-            ProductController.Update(EpisodeCut.Quarter);
-        }
-
-
-        public abstract void ActionAdaptProductionCapacity(float changeProductionCapabilities, int maxSalary);
-
-
-
-
-
-
 
         protected decimal GetWorkforcePayments()
         {

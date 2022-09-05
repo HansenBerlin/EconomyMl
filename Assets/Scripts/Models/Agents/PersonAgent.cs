@@ -6,6 +6,7 @@ using Controller.Actions;
 using Controller.Rewards;
 using Enums;
 using Factories;
+using Models.Market;
 using Models.Meta;
 using Models.Observations;
 using Models.Population;
@@ -25,7 +26,7 @@ namespace Models.Agents
     {
         private PersonController _controller;
         private PersonRewardController _rewardController;
-        private PersonObservations _observations;
+        private PersonObservations _obs;
         private PersonRespawnController _respawner;
 
 
@@ -36,24 +37,28 @@ namespace Models.Agents
         public string Id { get; } = Guid.NewGuid().ToString();
         private string _parentAId;
         private string _parentBId;
-        public JobStatus JobStatus => _observations.JobStatus;
+        public JobStatus JobStatus => _obs.JobStatus;
 
         [field: SerializeField] 
         public int initage;
-        public int Age => _observations.Age;
-        public decimal Capital => _observations.Capital;
-        public decimal MonthlyIncome => _observations.Salary;
+        public int Age => _obs.Age;
+        public decimal Capital => _obs.Capital;
+        public decimal MonthlyIncome => _obs.Salary;
         public int UnderageChildrenCount => Children.Count(c => c.AgeStatus == AgeStatus.UnderageChild);
         public bool StaysChildless { get; set; }
         [field:SerializeField]
         public DeathReason Death { get; set; } = DeathReason.HasNotDied;
         public List<PersonAgent> Children { get; } = new();
-        public AgeStatus AgeStatus => _observations.AgeStatus;
+        public AgeStatus AgeStatus => _obs.AgeStatus;
         public JobModel Job { get; set; }
 
         private PersonActionsJobPhaseFree _jobActions;
         private PersonActionsBuyBaseProductPhase _baseBuyActions;
         private PersonActionsBuyLuxuryProductPhase _luxuryBuyActions;
+
+        private enum JobSt { Unemployed, Retired, Employed, None, LastItem }
+
+        private enum AgeSt { UnderageChild, WorkerAge, RetiredAge, Dead, LastItem }
 
         public int Month;
         public int CompletedEps;
@@ -90,7 +95,7 @@ namespace Models.Agents
         {
             AddParents(parentAId, parentBId);
             initage = observations.Age;
-            _observations = observations;
+            _obs = observations;
             _controller = controller;
             _controller.Setup(this);
             _rewardController = new PersonRewardController();
@@ -100,6 +105,8 @@ namespace Models.Agents
             _luxuryBuyActions = actions[2] as PersonActionsBuyLuxuryProductPhase;
             StaysChildless = StatisticalDistributionController.CreateRandom(0, 10) == 1;
             _respawner = new PersonRespawnController(observations);
+            _baseBuyActions.Init(_obs, _rewardController, _controller);
+            _luxuryBuyActions.Init(_obs, _rewardController, _controller);
             //isInitDone = true;
             SetupMasking();
         }
@@ -110,35 +117,30 @@ namespace Models.Agents
             initage = Age;
         }
 
-        public void Kill()
-        {
-            //Destroy(this);
-        }
-
         private void SetupMasking()
         {
-            if (_observations.AgeStatus == AgeStatus.UnderageChild)
+            if (_obs.AgeStatus == AgeStatus.UnderageChild)
             {
                 maskBaseBuyActions = true;
                 maskLuxuryBuyActions = true;
                 maskUnEmployedJobActions = true;
                 maskAllJobActions = true;
             }
-            if (_observations.AgeStatus == AgeStatus.WorkerAge && _observations.JobStatus == JobStatus.Employed)
+            if (_obs.AgeStatus == AgeStatus.WorkerAge && _obs.JobStatus == JobStatus.Employed)
             {
                 maskBaseBuyActions = false;
                 maskLuxuryBuyActions = false;
                 maskUnEmployedJobActions = false;
                 maskAllJobActions = false;
             }
-            if (_observations.AgeStatus == AgeStatus.WorkerAge && _observations.JobStatus == JobStatus.Unemployed)
+            if (_obs.AgeStatus == AgeStatus.WorkerAge && _obs.JobStatus == JobStatus.Unemployed)
             {
                 maskBaseBuyActions = false;
                 maskLuxuryBuyActions = false;
                 maskUnEmployedJobActions = true;
                 maskAllJobActions = false;
             }
-            if (_observations.AgeStatus == AgeStatus.RetiredAge)
+            if (_obs.AgeStatus == AgeStatus.RetiredAge)
             {
                 maskBaseBuyActions = false;
                 maskLuxuryBuyActions = false;
@@ -146,25 +148,26 @@ namespace Models.Agents
                 maskAllJobActions = true;
             }
         }
-        
-        
+
         public override void CollectObservations(VectorSensor sensor)
         {
-            //if (Death != DeathReason.HasNotDied) return;
-
-            //sensor.AddObservation(_observations.Age);
-            sensor.AddObservation(_observations.LuxuryProducts);
-            sensor.AddObservation(_observations.OpenJobPositions);
-            sensor.AddObservation(_observations.UnsatisfiedBaseDemand);
-            sensor.AddObservation((float)_observations.Capital);
-            sensor.AddObservation((float)_observations.DesiredSalary);
-            sensor.AddObservation((float)_observations.Salary);
-            sensor.AddObservation((float)_observations.MonthlyExpensesAccumulatedForYear);
-            sensor.AddObservation((float)_observations.MonthlyIncomeAccumulatedForYear);
-            //sensor.AddObservation((float)_observations.SatisfactionRate);
-            sensor.AddObservation((float)_observations.AverageIncome);
-            sensor.AddObservation((int)_observations.JobStatus);
-            sensor.AddObservation((int)_observations.AgeStatus);
+            for (int ci = 0; ci < (int)JobSt.LastItem; ci++)
+            {
+                sensor.AddObservation((int)_obs.JobStatus == ci ? 1.0f : 0.0f);
+            }
+            for (int ci = 0; ci < (int)AgeSt.LastItem; ci++)
+            {
+                sensor.AddObservation((int)_obs.AgeStatus == ci ? 1.0f : 0.0f);
+            }
+            sensor.AddObservation(_obs.ObsLuxuryProducts);
+            sensor.AddObservation(_obs.ObsOpenJobPositions);
+            sensor.AddObservation(_obs.ObsUnsatisfiedBaseDemand);
+            sensor.AddObservation(_obs.ObsCapital);
+            sensor.AddObservation(_obs.ObsDesiredSalary);
+            sensor.AddObservation(_obs.ObsSalary);
+            sensor.AddObservation(_obs.ObsMonthlyExpensesAccumulatedForYear);
+            sensor.AddObservation(_obs.ObsMonthlyIncomeAccumulatedForYear);
+            sensor.AddObservation(_obs.ObsAverageIncome);
         }
 
         private void MaskUnEmployedJobDecisions(IDiscreteActionMask actionMask)
@@ -216,30 +219,30 @@ namespace Models.Agents
         {
             if (Death != DeathReason.HasNotDied) return;
             var desiredSalaryDecision = actionBuffers.DiscreteActions[0] + 1;
-            decimal baseM = _observations.LastMonthExpenses > 500 ? _observations.LastMonthExpenses * desiredSalaryDecision : _observations.AverageIncome > 500 ? _observations.AverageIncome : 500;
+            decimal baseM = _obs.LastMonthExpenses > 500 ? _obs.LastMonthExpenses * desiredSalaryDecision : _obs.AverageIncome > 500 ? _obs.AverageIncome : 500;
             decimal desiredSalary = baseM * desiredSalaryDecision;
             var jobDecision= actionBuffers.DiscreteActions[1];
             var baseBuyDecision= actionBuffers.DiscreteActions[2];
             var luxBuyDecision= actionBuffers.DiscreteActions[3];
 
-            if (_observations.AgeStatus != AgeStatus.UnderageChild)
+            if (_obs.AgeStatus != AgeStatus.UnderageChild)
             {
                 switch (baseBuyDecision)
                 {
                     case baseBuxMax:
-                        _baseBuyActions.BuyExactAmountOfDemandedBaseResources(_observations, Children.Count, _rewardController);
+                        _baseBuyActions.BuyExactAmountOfDemandedBaseResources(Children.Count);
                         break;
                     case baseBuyLimitLow:
-                        _baseBuyActions.BuyDemandedBaseResourcesWithIncomeSpendingLimit(_observations, Children.Count, _rewardController);
+                        _baseBuyActions.BuyDemandedBaseResourcesWithIncomeSpendingLimit(Children.Count);
                         break;
                     case baseBuyLimitHigh:
-                        _baseBuyActions.BuyDemandedBaseResourcesWithCapitalSpendingLimit(_observations, Children.Count, _rewardController);
+                        _baseBuyActions.BuyDemandedBaseResourcesWithCapitalSpendingLimit(Children.Count);
                         break;
                     case baseBuyNothing:
                         AddReward(-0.01F);
                         break;
                 }
-                if (float.IsNaN(_observations.BaseBuyReward) || float.IsInfinity(_observations.BaseBuyReward))
+                if (float.IsNaN(_obs.BaseBuyReward) || float.IsInfinity(_obs.BaseBuyReward))
                 {
                     throw new Exception($"{Month} invalid value on base reward");
                 }
@@ -247,19 +250,19 @@ namespace Models.Agents
                 switch (luxBuyDecision)
                 {
                     case luxBuxMax:
-                        _luxuryBuyActions.BuyExactAmountOfDemandedLuxuryProduct(_observations, Children.Count, _rewardController);
+                        _luxuryBuyActions.BuyExactAmountOfDemandedLuxuryProduct(Children.Count);
                         break;
                     case luxBuyLimitLow:
-                        _luxuryBuyActions.BuyDemandedLuxuryProductWithIncomeSpendingLimit(_observations, Children.Count, _rewardController);
+                        _luxuryBuyActions.BuyDemandedLuxuryProductWithIncomeSpendingLimit(Children.Count);
                         break;
                     case luxBuyLimitHigh:
-                        _luxuryBuyActions.BuyDemandedLuxuryProductWithCapitalSpendingLimit(_observations, Children.Count, _rewardController);
+                        _luxuryBuyActions.BuyDemandedLuxuryProductWithCapitalSpendingLimit(Children.Count);
                         break;
                     case luxBuyNothing:
                         AddReward(-0.01F);
                         break;
                 }
-                if (float.IsNaN(_observations.LuxuryBuyReward) || float.IsInfinity(_observations.LuxuryBuyReward))
+                if (float.IsNaN(_obs.LuxuryBuyReward) || float.IsInfinity(_obs.LuxuryBuyReward))
                 {
                     throw new Exception($"{Month} invalid value on lux reward");
                 }
@@ -270,32 +273,32 @@ namespace Models.Agents
             }
 
 
-            if (_observations.AgeStatus == AgeStatus.WorkerAge)
+            if (_obs.AgeStatus == AgeStatus.WorkerAge)
             {
                 switch (jobDecision)
                 {
                     case jobQuit:
-                        _jobActions.QuitJobAndStayUnemployed(_observations, _rewardController, _controller);
+                        _jobActions.QuitJobAndStayUnemployed(_obs, _rewardController, _controller);
                         
                         break;
                     case jobNew:
-                        var oldSalary = _observations.Salary;
-                        _observations.DesiredSalary = desiredSalary;
-                        _jobActions.SearchForNewJob(_observations, _rewardController, _controller, desiredSalary);
-                        if (_observations.Salary > oldSalary * 1.1M)
+                        var oldSalary = _obs.Salary;
+                        _obs.DesiredSalary = desiredSalary;
+                        _jobActions.SearchForNewJob(_obs, _rewardController, _controller, desiredSalary);
+                        if (_obs.Salary > oldSalary * 1.1M)
                         {
                             AddReward(0.5f);
                         }
                         break;
                     case jobNoChange:
-                        _jobActions.DoNothing(_observations, _rewardController);
-                        if (_observations.JobStatus == JobStatus.Unemployed && _observations.AgeStatus == AgeStatus.WorkerAge)
+                        _jobActions.DoNothing(_obs, _rewardController);
+                        if (_obs.JobStatus == JobStatus.Unemployed && _obs.AgeStatus == AgeStatus.WorkerAge)
                         {
                             AddReward(-0.1f);
                         }
                         break;
                 }
-                if (float.IsNaN(_observations.JobReward) || float.IsInfinity(_observations.JobReward))
+                if (float.IsNaN(_obs.JobReward) || float.IsInfinity(_obs.JobReward))
                 {
                     throw new Exception($"{Month} invalid value on job reward");
                 }
@@ -313,9 +316,9 @@ namespace Models.Agents
             Month = month;
             if (Death != DeathReason.HasNotDied) return;
 
-            _observations.AverageIncome = averageIncome;
-            _observations.LastMonthExpenses = _observations.ThisMonthExpenses;
-            _observations.ThisMonthExpenses = 0;
+            _obs.AverageIncome = averageIncome;
+            _obs.LastMonthExpenses = _obs.ThisMonthExpenses;
+            _obs.ThisMonthExpenses = 0;
             SetupMasking();
             RequestDecision();
             Academy.Instance.EnvironmentStep();
@@ -325,39 +328,41 @@ namespace Models.Agents
         {
             if (Death != DeathReason.HasNotDied)
             {
-                AddReward(2);
+                //AddReward(2);
                 return;
             }
 
             //Debug.Log($"Yearly reward in month {Month} " + reward);
-            if ((_observations.MonthlyExpensesAccumulatedForYear >
-                _observations.MonthlyIncomeAccumulatedForYear + _observations.Capital + 100000)
-                || _observations.UnsatisfiedBaseDemand > _baseBuyActions.GetDemand(_observations, Children.Count) * 6)
+            if ((_obs.MonthlyExpensesAccumulatedForYear >
+                _obs.MonthlyIncomeAccumulatedForYear + _obs.Capital + 100000)
+                || _obs.UnsatisfiedBaseDemand > _baseBuyActions.GetDemand(Children.Count) * 6)
             {
                 _controller.QuitJob();
-                _respawner.Reset(_observations);
+                _controller.ResetBankAccount(_respawner.Capital);
+                _respawner.Reset(_obs);
                 SetReward(-1);
                 EndEpisode();
             }
             else
             {
-                float reward = _rewardController.CombinedReward(_observations);
+                float reward = _rewardController.CombinedReward(_obs);
                 AddReward(reward);
             }
             _controller.UpdateAgent(avgIncome, tempPop, factory, probController);
-            _observations.UnsatisfiedBaseDemand = 0;
-            _observations.JobReward = 0;
-            _observations.BaseBuyReward = 0;
-            _observations.LuxuryBuyReward = 0;
-            _observations.MonthlyExpensesAccumulatedForYear = 0;
-            _observations.MonthlyIncomeAccumulatedForYear = 0;
-            _observations.LuxuryProducts = 0;
+            _obs.UnsatisfiedBaseDemand = 0;
+            _obs.JobReward = 0;
+            _obs.BaseBuyReward = 0;
+            _obs.LuxuryBuyReward = 0;
+            _obs.MonthlyExpensesAccumulatedForYear = 0;
+            _obs.MonthlyIncomeAccumulatedForYear = 0;
+            _obs.LuxuryProducts = 0;
 
         }
 
         public void UpdateCapital(decimal amount)
         {
-            _observations.Capital += amount;
+            _controller.AddCapital(amount);
+            //_obs.Capital += amount;
         }
 
         public void AddChild(PersonAgent child)
@@ -378,7 +383,7 @@ namespace Models.Agents
 
         public decimal Pay()
         {
-            return _controller.Pay();
+            return _controller.ReceiveMoney();
         }
         
         public void SetupWorkState(JobMarketController jobMarket)

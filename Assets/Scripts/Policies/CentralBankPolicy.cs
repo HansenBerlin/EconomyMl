@@ -1,8 +1,11 @@
-﻿namespace Policies
+﻿using UnityEngine;
+
+namespace Policies
 {
-    public class CentralBankPolicy
+    public class CentralBankPolicy : MonoBehaviour
     {
-        public float MinimumEquityRate { get; set; }
-        public float LeaseInterestRate { get; set; }
+        public float MinimumEquityRate;
+        public float LeaseInterestRate;
+
     }
 }

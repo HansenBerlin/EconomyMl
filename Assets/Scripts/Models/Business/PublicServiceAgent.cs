@@ -72,13 +72,12 @@ namespace Models.Business
 
         public override void CollectObservations(VectorSensor sensor)
         {
-            sensor.AddObservation(Workers.Count);
-            sensor.AddObservation((long)Balance);
-            sensor.AddObservation(ProductController.TotalSupply);
-            sensor.AddObservation(Production.AvailableProductionEnergy);
-            sensor.AddObservation(Production.AvailableProductionResources);
-            sensor.AddObservation(ProductController.ProductionThisMonth);
-            sensor.AddObservation(ProductController.ProductionLastMonth);
+            sensor.AddObservation(NormCtr.Normalize(nameof(Workers), Workers.Count));
+            sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.TotalSupply), ProductController.TotalSupply));
+            sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.ProductionThisMonth), ProductController.ProductionThisMonth));
+            sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.ProductionLastMonth), ProductController.ProductionLastMonth));
+            sensor.AddObservation(NormCtr.Normalize(nameof(Production.AvailableProductionEnergy), Production.AvailableProductionEnergy));
+            sensor.AddObservation(NormCtr.Normalize(nameof(Production.AvailableProductionResources), Production.AvailableProductionResources));
         }
 
 
@@ -93,7 +92,7 @@ namespace Models.Business
         }
 
 
-        public override void ActionProduce(int productionPercentage)
+        public void ActionProduce(int productionPercentage)
         {
             var maxUnitsProduced = PossibleProduction;
             //int finalProduction = (int) (maxUnitsProduced * productionPercentage) / 10;
@@ -186,7 +185,7 @@ namespace Models.Business
             
         }
 
-        public override void ActionBuyResources(decimal maxSpendings, long resourcesDemanded)
+        public void ActionBuyResources(decimal maxSpendings, long resourcesDemanded)
         {
             var requestBuyResource = new ProductRequestModel(ResourceTypeNeeded,
                 ProductRequestSearchType.MaxAmount, maxAmount: resourcesDemanded);
@@ -202,7 +201,7 @@ namespace Models.Business
             }
         }
         
-        public override void ActionBuyEnergy(decimal maxSpendings, long energyDemanded)
+        public void ActionBuyEnergy(decimal maxSpendings, long energyDemanded)
         {
             var requestBuyResource = new ProductRequestModel(EnergyTypeNeeded,
                 ProductRequestSearchType.MaxAmount, maxAmount: energyDemanded);
@@ -224,22 +223,8 @@ namespace Models.Business
             
         }
 
-        public override void ActionAdaptProductionCapacity(float changeProductionCapabilities, int maxSalary)
+        private void ActionAdaptProductionCapacity(float changeProductionCapabilities, int maxSalary)
         {
-            /*decimal supply = ProductController.QuarterlySupplyAverage;
-            decimal production = ProductController.QuarterlyProductionAverage;
-            decimal sales = ProductController.QuarterlySalesAverage;
-
-            decimal trend = WorkerAdaptionController.CalculateWorkerModifier(supply, production, sales);
-
-            decimal reductionRateCapacityUsed =
-                WorkerAdaptionController.CalculateCapacityModifier(CapacityUsed);*/
-
-
-            if (_month > 24)
-            {
-                Debug.Log("");
-            }
             var workersNeeded = Government.RecalculateFederalWorkerDemand() / Production.UnitsPerWorker;
             if (workersNeeded > Workers.Count)
             {
