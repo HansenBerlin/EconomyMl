@@ -20,7 +20,8 @@ namespace Factories
 
         public BankAgent Create()
         {
-            var bank = BankAgentPrefab.GetComponent<BankAgent>();
+            var go =Instantiate(BankAgentPrefab);
+            var bank = go.GetComponent<BankAgent>();
             bank.Init(_policy, _centralBank, new NormalizationController());
             return bank;
         }

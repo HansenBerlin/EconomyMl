@@ -22,12 +22,13 @@ namespace Controller
         private PersonAgent _person;
         private readonly ActionsFactory _factory;
         private readonly ICountryEconomy _market;
-        private readonly PersonObservations _observations;
+        private readonly PersonObservations _obs;
         private BankAccountModel _bankAccount;
+        private CreditRating _currentRating = CreditRating.A;
 
-        public PersonController (PersonObservations observations, PoliciesWrapper policies, ActionsFactory factory, ICountryEconomy market)
+        public PersonController (PersonObservations obs, PoliciesWrapper policies, ActionsFactory factory, ICountryEconomy market)
         {
-            _observations = observations;
+            _obs = obs;
             _policies = policies;
             _factory = factory;
             _market = market;
@@ -36,9 +37,9 @@ namespace Controller
         public void Setup(PersonAgent person)
         {
             _person = person;
-            _observations.JobStatus = GetInitialJobStatus();
-            _observations.Salary = InitialIncome();
-            _bankAccount = _market.OpenBankAccount(_observations.Capital, true);
+            _obs.JobStatus = GetInitialJobStatus();
+            _obs.Salary = InitialIncome();
+            _bankAccount = _market.OpenBankAccount(_obs.Capital, true);
         }
 
         public List<IPersonAction> InitActions()
@@ -53,10 +54,10 @@ namespace Controller
 
         private decimal InitialIncome()
         {
-            return _observations.JobStatus switch
+            return _obs.JobStatus switch
             {
-                JobStatus.Retired => _observations.DesiredSalary,
-                JobStatus.Unemployed => ReducedIncome(_observations.DesiredSalary),
+                JobStatus.Retired => _obs.DesiredSalary,
+                JobStatus.Unemployed => ReducedIncome(_obs.DesiredSalary),
                 _ => 0
             };
         }
@@ -72,7 +73,7 @@ namespace Controller
 
         private JobStatus GetInitialJobStatus()
         {
-            var age = _observations.Age;
+            var age = _obs.Age;
             var agesPolicy = _policies.AgeBoundaries;
             int schoolAge = _policies.EducationBoundaries.AgeToStartSchool;
             int minYearsInSchool = _policies.EducationBoundaries.MinYearsInSchool;
@@ -93,7 +94,7 @@ namespace Controller
                 return DeathReason.Random;
             }
 
-            bool hasDiedOfAge = controller.IsDead(_observations.Age);
+            bool hasDiedOfAge = controller.IsDead(_obs.Age);
 
             if (!hasDiedOfAge)
             {
@@ -114,7 +115,16 @@ namespace Controller
         public void ResetBankAccount(decimal newCapital)
         {
             _bankAccount.CloseAccount();
-            _market.OpenBankAccount(newCapital, true);
+            _bankAccount = _market.OpenBankAccount(newCapital, true);
+            _obs.BankAccount = _bankAccount;
+        }
+
+        public bool GetLoan(decimal amount)
+        {
+            _currentRating = RatingController.Calculate(_obs.Capital,
+                (decimal)(_obs.ObsMonthlyExpensesAccumulatedForYear - _obs.ObsMonthlyIncomeAccumulatedForYear),
+                _obs.LoansTakenSum, _obs.Salary, _currentRating);
+            return _bankAccount.IsLoanAdded(amount, _currentRating);
         }
 
 
@@ -123,42 +133,42 @@ namespace Controller
             var job = jobMarket.FindAvailableJob(0);
             if (job.Status == JobPositionStatus.Taken)
             {
-                job.TakeJob(_person, _observations.DesiredSalary);
-                _observations.JobStatus = JobStatus.Employed;
-                _observations.Salary = _observations.DesiredSalary;
-                job.Salary = _observations.DesiredSalary;
+                job.TakeJob(_person, _obs.DesiredSalary);
+                _obs.JobStatus = JobStatus.Employed;
+                _obs.Salary = _obs.DesiredSalary;
+                job.Salary = _obs.DesiredSalary;
                 _person.Job = job;
             }
         }
 
         public void RemoveJobWhenFired()
         {
-            _observations.Salary = ReducedIncome(_observations.Salary);
+            _obs.Salary = ReducedIncome(_obs.Salary);
             _person.Job.QuitJob(_person);
-            _observations.JobStatus = JobStatus.Unemployed;
+            _obs.JobStatus = JobStatus.Unemployed;
         }
 
         public void UpdateNewJob(JobModel newJob)
         {
-            if (_observations.JobStatus == JobStatus.Employed)
+            if (_obs.JobStatus == JobStatus.Employed)
             {
                 _person.Job.QuitJob(_person);
             }
 
-            newJob.TakeJob(_person, _observations.DesiredSalary);
-            _observations.JobStatus = JobStatus.Employed;
-            _observations.Salary = newJob.Salary;
+            newJob.TakeJob(_person, _obs.DesiredSalary);
+            _obs.JobStatus = JobStatus.Employed;
+            _obs.Salary = newJob.Salary;
             _person.Job = newJob;
         }
 
         public void QuitJob()
         {
-            if (_observations.JobStatus == JobStatus.Employed)
+            if (_obs.JobStatus == JobStatus.Employed)
             {
                 _person.Job.QuitJob(_person);
-                _observations.Salary = ReducedIncome(_observations.Salary);
-                _observations.DesiredSalary = _observations.Salary;
-                _observations.JobStatus = JobStatus.Unemployed;
+                _obs.Salary = ReducedIncome(_obs.Salary);
+                _obs.DesiredSalary = _obs.Salary;
+                _obs.JobStatus = JobStatus.Unemployed;
             }
         }
 
@@ -170,23 +180,28 @@ namespace Controller
         public void UpdateAgent(decimal avgIncome, TempPopulationUpdateModel tempPop, PopulationFactory factory,
             PopulationPropabilityController probController)
         {
-            _observations.Age++;
-            if (_observations.Age == 18)
+            _obs.Age++;
+            if (_obs.Age == 18)
             {
                 TurnAdult(avgIncome);
             }
 
-            if (_observations.Age is >= 18 and <= 55)
+            if (_obs.Age is >= 18 and <= 55)
             {
                 Reproduce(tempPop, factory);
             }
 
-            if (_observations.Age == 68)
+            if (_obs.AgeStatus == AgeStatus.RetiredAge)
+            {
+                _obs.Salary = _obs.LastSalaryBeforeRetirement * (decimal)_policies.federalUnemployedPaymentPolicies.RetirementSupportRate;
+            }
+
+            if (_obs.Age == 68)
             {
                 Retire(tempPop.Retired);
             }
 
-            if (_observations.Capital < -100000000)
+            if (_obs.Capital < -100000000)
             {
                 // Die
             }
@@ -206,7 +221,7 @@ namespace Controller
 
         public void AddChild(PersonAgent child)
         {
-            if (_observations.Age - 17 < child.Age)
+            if (_obs.Age - 17 < child.Age)
                 throw new Exception();
             _person.Children.Add(child);
         }
@@ -215,9 +230,9 @@ namespace Controller
 
         public decimal ReceiveMoney()
         {
-            _bankAccount.Deposit(_observations.Salary);
-            _observations.MonthlyIncomeAccumulatedForYear += _observations.Salary;
-            return _observations.Salary;
+            _bankAccount.Deposit(_obs.Salary);
+            _obs.MonthlyIncomeAccumulatedForYear += _obs.Salary;
+            return _obs.Salary;
         }
         
         public void PayBill(decimal amount)
@@ -228,23 +243,24 @@ namespace Controller
 
         private void Retire(ICollection<PersonAgent> retiredTemp)
         {
-            if (_observations.JobStatus == JobStatus.Employed)
+            _obs.JobStatus = JobStatus.Retired;
+            _obs.LastSalaryBeforeRetirement = _obs.Salary;
+            _obs.Salary *= (decimal)_policies.federalUnemployedPaymentPolicies.RetirementSupportRate;
+            _obs.AgeStatus = AgeStatus.RetiredAge;
+            
+            if (_obs.JobStatus == JobStatus.Employed)
             {
-                //Job.RemoveWorkerFromCompany();
                 _person.Job.QuitJob(_person);
             }
 
-            _observations.JobStatus = JobStatus.Retired;
-            _observations.Salary *= 0.67M;
-            _observations.AgeStatus = AgeStatus.RetiredAge;
             retiredTemp.Add(_person);
         }
         
         private void TurnAdult(decimal avgIncome)
         {
-            _observations.DesiredSalary = avgIncome * 0.7M;
-            _observations.JobStatus = JobStatus.Unemployed;
-            _observations.Salary = (decimal)_policies.federalUnemployedPaymentPolicies.UnemployedSupportMin;
+            _obs.DesiredSalary = avgIncome * 0.7M;
+            _obs.JobStatus = JobStatus.Unemployed;
+            _obs.Salary = (decimal)_policies.federalUnemployedPaymentPolicies.UnemployedSupportMin;
         }
 
 
@@ -253,7 +269,7 @@ namespace Controller
 
         private void Reproduce(TempPopulationUpdateModel tempPop, PopulationFactory factory)
         {
-            int parentAge = _observations.Age;
+            int parentAge = _obs.Age;
             var children = _person.Children;
             if (GetChild(parentAge, children.Count, _person.StaysChildless) == false) return;
 

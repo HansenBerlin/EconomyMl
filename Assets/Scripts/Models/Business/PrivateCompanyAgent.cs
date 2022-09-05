@@ -102,7 +102,10 @@ namespace Models.Business
                     {
                         decimal creditSum = Balance < 0 ? Balance * -1 * requestCredit : Balance * requestCredit;
                         creditSum = creditSum < 1000 ? 1000 : creditSum;
-                        BankAccount.TryToGetLoan(creditSum, CurrentRating);
+                        if (BankAccount.IsLoanAdded(creditSum, CurrentRating) == false)
+                        {
+                            AddReward(-0.02f);
+                        }
                     }
                     else
                     {
@@ -266,7 +269,7 @@ namespace Models.Business
             // 0.4 = auf 140% heben 1 + 0,4
             // 1 = verdoppeln
             decimal change = (decimal)(1 + newPriceMultiplier);
-            change = change < 0.8M ? 0.8M : change > 1.2M ? 1.2M : change;
+            change = change < 0.5M ? 0.5M : change > 1.5M ? 1.5M : change;
             var oldP = ProductController.Price;
             if (change > 0)
             {
@@ -315,7 +318,7 @@ namespace Models.Business
                 ProductController.ProfitLastMonth, CurrentRating);
             LoanPayments += BankAccount.MonthlyPaymentForLoans();
 
-            if (Workers.Count == 0 && LoanPayments > 0)
+            if (Cpp > ProductController.Price)
             {
                 Debug.Log("");
             }

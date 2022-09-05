@@ -15,6 +15,14 @@ namespace Models.Market
         {
             _banks.Add(bank);
         }
+        
+        public void PayOutInterestForSavings()
+        {
+            foreach (var b in _banks)
+            {
+                b.PayInterst();
+            }
+        }
 
         public BankAccountModel OpenBankAccount(decimal deposit, bool isSetup)
         {

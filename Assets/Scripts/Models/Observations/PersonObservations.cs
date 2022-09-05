@@ -13,16 +13,19 @@ namespace Models.Observations
         private readonly PoliciesWrapper _policies;
         private readonly JobMarketController _jobMarket;
         private readonly NormalizationController _normController;
-        private readonly BankAccountModel _bankAccount;
+        public BankAccountModel BankAccount { get; set; }
         public long LuxuryProducts { get; set; }
         public int OpenJobPositions => _jobMarket.OpenJobPositionsCount();
         public long UnsatisfiedBaseDemand { get; set; }
-        public decimal Capital => _bankAccount.Savings;
+        public decimal Capital => BankAccount.Savings;
         public decimal DesiredSalary { get; set; }
         public decimal Salary { get; set; }
+        public decimal LastSalaryBeforeRetirement { get; set; }
+        public decimal LoansTakenSum => BankAccount.LoansSum;
         public decimal MonthlyExpensesAccumulatedForYear { get; set; }
         public decimal MonthlyIncomeAccumulatedForYear { get; set; }
         public decimal AverageIncome { get; set; }
+        public float ObsLoansSum => _normController.Normalize(nameof(LoansTakenSum), (float)LoansTakenSum);
         public float ObsLuxuryProducts => _normController.Normalize(nameof(LuxuryProducts), LuxuryProducts);
         public float ObsOpenJobPositions  => _normController.Normalize(nameof(OpenJobPositions), OpenJobPositions);
         public float ObsUnsatisfiedBaseDemand  => _normController.Normalize(nameof(UnsatisfiedBaseDemand), UnsatisfiedBaseDemand);
@@ -40,6 +43,7 @@ namespace Models.Observations
         public float JobReward;
         public float BaseBuyReward;
         public float LuxuryBuyReward;
+        public float Happiness = 0;
 
 
         public AgeStatus AgeStatus
@@ -72,7 +76,7 @@ namespace Models.Observations
             _normController = normController;
             _policies = policies;
             _jobMarket = jobMarket;
-            _bankAccount = bankAccount;
+            BankAccount = bankAccount;
             Age = age;
             DesiredSalary = desiredSalary;
             _normController.AddNew(nameof(LuxuryProducts), NormRange.One, LuxuryProducts);
@@ -84,6 +88,7 @@ namespace Models.Observations
             _normController.AddNew(nameof(MonthlyIncomeAccumulatedForYear), NormRange.One, (float)MonthlyIncomeAccumulatedForYear);
             _normController.AddNew(nameof(MonthlyExpensesAccumulatedForYear), NormRange.One, (float)MonthlyExpensesAccumulatedForYear);
             _normController.AddNew(nameof(AverageIncome), NormRange.One, (float)AverageIncome);
+            _normController.AddNew(nameof(LoansTakenSum), NormRange.One, (float)LoansTakenSum);
         }
 
         public float GetSatisfactionRate()

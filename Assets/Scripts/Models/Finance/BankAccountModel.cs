@@ -32,14 +32,17 @@ namespace Models.Finance
             return payments * -1;
         }
 
-        public void TryToGetLoan(decimal amount, CreditRating rating)
+        public bool IsLoanAdded(decimal amount, CreditRating rating)
         {
             var loan = _bank.RequestLoan(amount, rating);
             if (loan.IsDeclined == false)
             {
                 Loans.Add(loan);
                 Savings += loan.TotalSumLeft;
+                return true;
             }
+
+            return false;
         }
 
         public decimal MonthlyPaymentForLoans()

@@ -218,7 +218,7 @@ namespace Factories
 
         public PersonAgent CreateChild(int age, string parentAId, string parentBId)
         {
-            var bankAccount = _markets.OpenBankAccount(0, true);
+            var bankAccount = _markets.OpenBankAccount(10, true);
             var observations = new PersonObservations(age, 0, bankAccount, _policies, _jobMarketController, new NormalizationController());
             var controller = new PersonController(observations, _policies, _actionsFactory, _markets);
             var go = Instantiate(personAgentPrefab, new Vector3(0, 0, 0), Quaternion.identity);

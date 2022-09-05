@@ -7,6 +7,10 @@ namespace Controller
     {
         public static CreditRating Calculate(decimal balance, decimal profitTrend, decimal loansTakenSum, decimal lastMonthProfit, CreditRating currentRating)
         {
+            if (loansTakenSum > balance)
+            {
+                //return CreditRating.C;
+            }
             var balanceFactor = balance < -100000 ? -2 : balance <= 0 ? -1 : balance > 1000000 ? +2 : 1;
             var profitFactor = profitTrend < -0.5M ? -2 : profitTrend <= 0 ? -1 : profitTrend > 0.5M ? 2 : 1;
             var monthlyAvailableCapital = lastMonthProfit - loansTakenSum / 12;

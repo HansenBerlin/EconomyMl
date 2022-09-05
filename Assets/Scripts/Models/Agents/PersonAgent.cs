@@ -43,6 +43,7 @@ namespace Models.Agents
         [field: SerializeField] 
         public int initage;
         public int Age => _obs.Age;
+        public int Happiness => _obs.Age;
         public decimal Capital => _obs.Capital;
         public decimal MonthlyIncome => _obs.Salary;
         public int UnderageChildrenCount => Children.Count(c => c.AgeStatus == AgeStatus.UnderageChild);
@@ -169,6 +170,7 @@ namespace Models.Agents
             sensor.AddObservation(_obs.ObsMonthlyExpensesAccumulatedForYear);
             sensor.AddObservation(_obs.ObsMonthlyIncomeAccumulatedForYear);
             sensor.AddObservation(_obs.ObsAverageIncome);
+            sensor.AddObservation(_obs.ObsLoansSum);
         }
 
         private void MaskUnEmployedJobDecisions(IDiscreteActionMask actionMask)
@@ -225,9 +227,21 @@ namespace Models.Agents
             var jobDecision= actionBuffers.DiscreteActions[1];
             var baseBuyDecision= actionBuffers.DiscreteActions[2];
             var luxBuyDecision= actionBuffers.DiscreteActions[3];
+            var takeLoanDecision = actionBuffers.DiscreteActions[4] * 1000;
 
             if (_obs.AgeStatus != AgeStatus.UnderageChild)
             {
+                if (takeLoanDecision != 0)
+                {
+                    if (_controller.GetLoan(takeLoanDecision) == false)
+                    {
+                        AddReward(-0.05f);
+                    }
+                    else
+                    {
+                        AddReward(0.01f);
+                    }
+                }
                 switch (baseBuyDecision)
                 {
                     case baseBuxMax:
@@ -276,6 +290,7 @@ namespace Models.Agents
 
             if (_obs.AgeStatus == AgeStatus.WorkerAge)
             {
+                var salaryBefore = _obs.Salary;
                 switch (jobDecision)
                 {
                     case jobQuit:
@@ -299,17 +314,18 @@ namespace Models.Agents
                         }
                         break;
                 }
-                if (float.IsNaN(_obs.JobReward) || float.IsInfinity(_obs.JobReward))
-                {
-                    throw new Exception($"{Month} invalid value on job reward");
-                }
-            }
-            else
-            {
-                AddReward(0.01F);
-            }
 
-            
+                var salaryAfter = _obs.Salary;
+                if (salaryAfter > salaryBefore)
+                {
+                    AddReward(0.05f);
+                }
+                if (salaryAfter > _obs.AverageIncome)
+                {
+                    AddReward(0.05f);
+                }
+
+            }
         }
 
         public void RequestMonthlyDecisions(int month, decimal averageIncome)
@@ -327,27 +343,27 @@ namespace Models.Agents
 
         public void YearlyAgentUpdate(decimal avgIncome, TempPopulationUpdateModel tempPop, PopulationFactory factory, PopulationPropabilityController probController)
         {
-            if (Death != DeathReason.HasNotDied)
-            {
-                //AddReward(2);
-                return;
-            }
-
-            //Debug.Log($"Yearly reward in month {Month} " + reward);
-            if ((_obs.MonthlyExpensesAccumulatedForYear >
-                _obs.MonthlyIncomeAccumulatedForYear + _obs.Capital + 100000)
+            Academy.Instance.StatsRecorder.Add("POP/DEMANDMISSING", _obs.UnsatisfiedBaseDemand);
+            Academy.Instance.StatsRecorder.Add("POP/LUX", _obs.LuxuryProducts);
+            Academy.Instance.StatsRecorder.Add("POP/OPENJOBS", _obs.OpenJobPositions);
+            Academy.Instance.StatsRecorder.Add("POP/INCOME", (float)_obs.MonthlyIncomeAccumulatedForYear);
+            Academy.Instance.StatsRecorder.Add("POP/EXPENSES", (float)_obs.MonthlyExpensesAccumulatedForYear);
+            
+            if (_obs.MonthlyExpensesAccumulatedForYear >
+                _obs.MonthlyIncomeAccumulatedForYear + _obs.Capital + 100000
                 || _obs.UnsatisfiedBaseDemand > _baseBuyActions.GetDemand(Children.Count) * 6)
             {
                 _controller.QuitJob();
                 _controller.ResetBankAccount(_respawner.Capital);
                 _respawner.Reset(_obs);
                 SetReward(-1);
+                _obs.Happiness = -1;
                 EndEpisode();
             }
             else
             {
-                float reward = _rewardController.CombinedReward(_obs);
-                AddReward(reward);
+                _obs.Happiness = _rewardController.CombinedReward(_obs);
+                AddReward(_obs.Happiness);
             }
             _controller.UpdateAgent(avgIncome, tempPop, factory, probController);
             _obs.UnsatisfiedBaseDemand = 0;

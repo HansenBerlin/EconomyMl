@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Settings
 {
@@ -8,5 +9,6 @@ namespace Settings
         public float UnemployedSupportRate;
         public float UnemployedSupportMax;
         public float UnemployedSupportMin;
+        [FormerlySerializedAs("RetirementRateSupporRate")] public float RetirementSupportRate;
     }
 }

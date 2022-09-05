@@ -25,7 +25,7 @@ namespace Models.Business
 
         protected decimal Balance => BankAccount.Savings;
         protected decimal BalanceLastYear;
-        protected GovernmentController Government;
+        protected GovernmentAgent Government;
         private CompanyDataRepository Data;
         protected IProductionTemplate Production;
         protected ICountryEconomy CountryEconomyMarkets;
@@ -81,7 +81,7 @@ namespace Models.Business
 
 
         public void Init(ICountryEconomy countryEconomyMarkets, ProductController productController,
-            CompanyResourcePolicy policy, GovernmentController government, CompanyDataRepository data, 
+            CompanyResourcePolicy policy, GovernmentAgent government, CompanyDataRepository data, 
             JobMarketController jobMarket, NormalizationController normController)
         {
             NormCtr = normController;
@@ -96,9 +96,18 @@ namespace Models.Business
             countryEconomyMarkets.ReportProduction(policy.InitialResources, TypeProduced);
             var openPositions = JobPositionFactory.Create(policy.InitialWorkers, policy.MinSalary, Id, Workers, TypeProduced);
             JobMarket.AddOpenJobPositions(openPositions);
-            BankAccount = countryEconomyMarkets.OpenBankAccount(0, true);
-            BankAccount.TryToGetLoan(policy.InitialBalance, CreditRating.AAA);
+            if (TypeProduced != ProductType.FederalService)
+            {
+                BankAccount = countryEconomyMarkets.OpenBankAccount(0, true);
+                BankAccount.IsLoanAdded(policy.InitialBalance, CreditRating.AAA);
+            }
+            else
+            {
+                BankAccount = countryEconomyMarkets.OpenBankAccount(policy.InitialBalance, true);
+            }
             BalanceLastYear = Balance;
+            //CurrentRating = RatingController.Calculate(Balance, ProductController.ObsProfitTrend, BankAccount.LoansSum,
+              //  ProductController.ProfitLastMonth, CurrentRating);
             SetupObservations();
         }
 

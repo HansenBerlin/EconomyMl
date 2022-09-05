@@ -17,7 +17,7 @@ namespace Factories
     {
         private ICountryEconomy _countryEconomyMarkets;
         private StatisticalDataRepository _stats;
-        private GovernmentController _government;
+        private GovernmentAgent _government;
         private EnvironmentModel _environment;
         public GameObject privateBusinessPrefab;
         public GameObject publicServicePrefab;
@@ -29,7 +29,7 @@ namespace Factories
         CompanyResourcePolicy fedPolicy = new CompanyResourcePolicy(2300, 2300, 100, 10000000, 0);
 
         public void Init(ICountryEconomy countryEconomyMarkets, EnvironmentModel environment,
-            StatisticalDataRepository stats, GovernmentController government)
+            StatisticalDataRepository stats, GovernmentAgent government)
         {
             _countryEconomyMarkets = countryEconomyMarkets;
             _environment = environment;

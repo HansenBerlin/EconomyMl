@@ -21,12 +21,12 @@ namespace Models.Market
         private readonly JobMarketController _jobMarket;
         private readonly BankingMarkets _bankingMarkets;
         private readonly PopulationModel _populationModel;
-        private readonly GovernmentController _government;
+        private readonly GovernmentAgent _government;
         private int _fossileEnergyLeft = 100000;
         public double WorkerAverageIncome = 0;
 
         public CountryEconomy(List<ProductMarketModel> productMarkets, JobMarketController jobMarket,
-            PopulationModel populationModel, GovernmentController government, BankingMarkets bankingMarkets)
+            PopulationModel populationModel, GovernmentAgent government, BankingMarkets bankingMarkets)
         {
             foreach (var m in productMarkets)
             {

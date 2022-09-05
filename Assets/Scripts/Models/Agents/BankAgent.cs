@@ -18,7 +18,7 @@ namespace Models.Agents
         public float PositiveInterestRate { get; private set; } = 0.05F;
         private float NegativeInterestRate { get; set;} = 0.05F;
         private float EquityRatio => (float)(TotalAssets / (TotalAssets + TotalLiabilities));
-        private decimal _centralBankDeposit = 30000000;
+        private decimal _centralBankDeposit = 12000000;
         private readonly List<LoanModel> _loans = new();
         private readonly List<BankAccountModel> _accounts = new();
         private CentralBankPolicy _policy;
@@ -49,23 +49,35 @@ namespace Models.Agents
         {
             RequestDecision();
             Academy.Instance.EnvironmentStep();
-
         }
 
         public void AddRewards()
         {
+            float totalReward = 0;
             if (TotalAssets > TotalLiabilities)
             {
-                AddReward(0.1f);
+                totalReward += 0.5f;
             }
             if (EquityRatio >= _policy.MinimumEquityRate)
             {
-                AddReward(0.2f);
+                totalReward += 0.5f;
             }
             else
             {
-                AddReward(-0.2f);
+                totalReward -= 0.5f;
             }
+            AddReward(totalReward);
+            if (totalReward < 0)
+            {
+                EndEpisode();
+            }
+            
+            Academy.Instance.StatsRecorder.Add("BANK/ASSETS", (float)TotalAssets);
+            Academy.Instance.StatsRecorder.Add("BANK/LIABILITIES", (float)TotalLiabilities);
+            Academy.Instance.StatsRecorder.Add("BANK/EQUITYRATIO", (float)EquityRatio);
+            Academy.Instance.StatsRecorder.Add("BANK/FUNDS", (float)_centralBankDeposit);
+            Academy.Instance.StatsRecorder.Add("BANK/INTERESTNEG", (float)NegativeInterestRate);
+            Academy.Instance.StatsRecorder.Add("BANK/INTERESTPOS", (float)PositiveInterestRate);
         }
 
         public void PaybackCredit(decimal sum)

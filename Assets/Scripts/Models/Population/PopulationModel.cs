@@ -35,7 +35,6 @@ namespace Models.Population
 
         public readonly List<double> TotalPopulationTrend = new();
         public readonly List<double> AverageAge = new();
-        public readonly List<double> AverageCapital = new();
         public readonly List<double> AverageIncomeWorkerAge = new();
         public readonly List<double> AverageIncomeRetiredAge = new();
         public readonly List<double> AverageIncomeEmployed = new();
@@ -48,11 +47,13 @@ namespace Models.Population
         public readonly List<double> AllTimeChildrenStat = new();
         public readonly List<double> AllTimePopulationTrendStat = new();
         public readonly List<double> ChildrenStatAdded = new();
-        public readonly List<double> ParentOfUnderagedAverageAge = new();
-        public readonly List<double> AvgUnderageChildrenPerAdult = new();
         public readonly List<double> DiedPercentageStat = new();
         public readonly List<double> BornPercentageStat = new();
         public readonly List<double> EmploymentRate = new();
+        public float LastHappiness { get; private set; }
+        public float LastEmploymentRate { get; private set; }
+        public float LastAvgCapital { get; private set; }
+        public float LastAvgAge { get; private set; }
 
         private double _allTimeDeaths;
         private double _allTimeChildren;
@@ -75,9 +76,8 @@ namespace Models.Population
 
             double statAgeSum = 0;
             double statCapitalSum = 0;
-            double statUnderageChildrenAdultsSum = 0;
-            double statParentsOfUnderageCount = 0;
-            double statParentsOfUnderageAgeSum = 0;
+            double statHappinessSum = 0;
+            
 
             //AverageIncomeAdultAge.Add((double) AverageIncome(AgeRangeAdult));
             //AverageIncomeWorkerAge.Add((double) AverageIncome(AgeRangeWorker));
@@ -90,9 +90,8 @@ namespace Models.Population
             {
                 statAgeSum += person.Age;
                 statCapitalSum += (double) person.Capital;
-                statUnderageChildrenAdultsSum += person.UnderageChildrenCount;
-                statParentsOfUnderageCount += person.UnderageChildrenCount > 0 ? 1 : 0;
-                statParentsOfUnderageAgeSum += person.UnderageChildrenCount > 0 ? person.Age : 0;
+                statHappinessSum += person.Happiness;
+                
 
             }
 
@@ -107,37 +106,26 @@ namespace Models.Population
 
             Population.RemoveAll(p => p.AgeStatus == AgeStatus.Dead);
 
-            /*DeathReasonAge.Add(deathReasonAge);
-            DeathReasonOther.Add(deathReasonOther);
-            DeathReasonStarved.Add(deathReasonStarved);
-            DeathReasonsTotal.Add(deathReasonTotal);
-            DeathAverageAge.Add(statAverageDeathAge);
-            if (deathReasonTotal - deathReasonAge - deathReasonOther - deathReasonStarved != 0)
-                throw new Exception();*/
-
             TotalUnderAgeChildrenTrend.Add(statUnderagedTotal);
             TotalWorkerAgeTrend.Add(statWorkerAgeTotal);
             TotalRetiredAgeTrend.Add(statRetirementAgeTotal);
             TotalPopulationTrend.Add(statTotalPopulation);
-            ParentOfUnderagedAverageAge.Add(statParentsOfUnderageAgeSum / statParentsOfUnderageCount);
             AverageAge.Add(statAgeSum / statTotalPopulation);
-            AverageCapital.Add(statCapitalSum / statTotalPopulation);
             _allTimeDeaths += statDiedTotal;
             AllTimeChildrenStat.Add(_allTimeChildren);
             AllTimeDeathStat.Add(_allTimeDeaths);
-            AvgUnderageChildrenPerAdult.Add(statUnderageChildrenAdultsSum / statParentsOfUnderageCount);
             AllTimePopulationTrendStat.Add(_allTimeChildren - _allTimeDeaths);
             DiedPercentageStat.Add(statDiedTotal / statTotalPopulation * 100);
-            //AverageSkillLevel.Add(statSkillSum / statTotalPopulation);
-
-
-            double employmentRate = (double) EmployedWorkers.Count / (EmployedWorkers.Count + UnemployedWorkers.Count) *
-                                    100;
+            LastEmploymentRate = EmployedWorkers.Count / (EmployedWorkers.Count + UnemployedWorkers.Count) * 100;
+            LastHappiness = (float)statHappinessSum / (float)statTotalPopulation;
+            LastAvgAge = (float)statAgeSum / (float)statTotalPopulation;
+            LastAvgCapital = (float) statCapitalSum / (float) statTotalPopulation;
 
             statsRecorder.Add("POP/TOTAL", (float)statTotalPopulation);
             statsRecorder.Add("POP/AVG AGE", (float)(statAgeSum / statTotalPopulation));
             statsRecorder.Add("POP/AVG CAPITAL", (float)(statCapitalSum / statTotalPopulation));
-            statsRecorder.Add("POP/EMPL RATE", (float)employmentRate);
+            statsRecorder.Add("POP/EMPL RATE", LastEmploymentRate);
+            statsRecorder.Add("POP/HAPPINESS", LastHappiness);
             //EmploymentRate.Add(employmentRate);
 
         }
