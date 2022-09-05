@@ -32,6 +32,7 @@ namespace Controller
         public GameObject popDataTemplate;
         public GameObject buisnessFactoryGo;
         public GameObject bankingFactoryGo;
+        public GameObject gvnAgentPrefab;
 
         private EnvironmentModel _envSettings;
         private GovernmentAgent _governmentAgent;
@@ -63,8 +64,8 @@ namespace Controller
             var productMarkets = ProductionFactory.CreateMarkets(_statsRepository, _envSettings);
             _populationModel = new PopulationModel(_population, populationData, _envSettings);
             var government = new GovernmentModel(_policies, govData);
-            var gvCtr = new GameObject();
-            _governmentAgent = gvCtr.AddComponent<GovernmentAgent>();
+            var gvCtr = Instantiate(gvnAgentPrefab);
+            _governmentAgent = gvCtr.GetComponent<GovernmentAgent>();
             _governmentAgent.Init(government, _populationModel, new NormalizationController());
             _populationController = new PopulationController(_envSettings, _populationModel, jobMarketController,
                 populationFactory, populationPropabilityController);
