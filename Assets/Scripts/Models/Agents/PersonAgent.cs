@@ -13,6 +13,7 @@ using Models.Population;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.Serialization;
 

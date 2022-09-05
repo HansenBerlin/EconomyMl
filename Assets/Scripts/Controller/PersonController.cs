@@ -102,9 +102,8 @@ namespace Controller
             return DeathReason.Age;
         }
 
-        private void DistributeWealthToChildren()
+        private void DistributeWealthToChildren(decimal capital)
         {
-            decimal capital = _observations.Capital;
             if (capital <= 0) return;
             foreach (var child in _person.Children)
             {
@@ -197,7 +196,11 @@ namespace Controller
             {
                 _person.Death = deathState;
                 tempPop.Died.Add(_person);
-                DistributeWealthToChildren();
+                var leftMoney = _bankAccount.CloseAccount();
+                if (leftMoney > 0)
+                {
+                    DistributeWealthToChildren(leftMoney);
+                }
             }
         }
 

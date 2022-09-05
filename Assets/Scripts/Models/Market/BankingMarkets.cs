@@ -26,5 +26,13 @@ namespace Models.Market
             var banks = _banks.OrderByDescending(b => b.PositiveInterestRate).ToList().First();
             return banks.OpenBankAccount(deposit);
         }
+
+        public void AddRewards()
+        {
+            foreach (var b in _banks)
+            {
+                b.AddRewards();
+            }
+        }
     }
 }

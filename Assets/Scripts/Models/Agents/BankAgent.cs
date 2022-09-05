@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Controller;
 using Enums;
 using Models.Finance;
 using Policies;
@@ -16,7 +17,7 @@ namespace Models.Agents
         private decimal TotalLiabilities => _accounts.Sum(x => x.Savings);
         public float PositiveInterestRate { get; private set; } = 0.05F;
         private float NegativeInterestRate { get; set;} = 0.05F;
-        private decimal EquityRatio => TotalAssets / (TotalAssets + TotalLiabilities);
+        private float EquityRatio => (float)(TotalAssets / (TotalAssets + TotalLiabilities));
         private decimal _centralBankDeposit = 1000000;
         private readonly List<LoanModel> _loans = new();
         private readonly List<BankAccountModel> _accounts = new();
@@ -25,11 +26,39 @@ namespace Models.Agents
         private CreditRating _minimumRatingForCredits = CreditRating.A;
         private int _lengthInMonthForNewCredits = 12;
         private CentralBankAgent _centralBank;
+        private NormalizationController _normController;
+        private enum Rt { C, B, BB, BBB, A, AA, AAA, LastItem }
 
-        public void Init(CentralBankPolicy policy, CentralBankAgent centralBankAgent)
+        
+
+        public void Init(CentralBankPolicy policy, CentralBankAgent centralBankAgent, NormalizationController normController)
         {
             _policy = policy;
             _centralBank = centralBankAgent;
+            _normController = normController;
+            _normController.AddNew(nameof(TotalAssets), NormRange.One, (float)TotalAssets);
+            _normController.AddNew(nameof(TotalLiabilities), NormRange.One, (float)TotalLiabilities);
+            _normController.AddNew(nameof(PositiveInterestRate), NormRange.One, PositiveInterestRate);
+            _normController.AddNew(nameof(NegativeInterestRate), NormRange.One, NegativeInterestRate);
+            _normController.AddNew(nameof(_centralBankDeposit), NormRange.One, (float)_centralBankDeposit);
+            _normController.AddNew(nameof(_lengthInMonthForNewCredits), NormRange.One, _lengthInMonthForNewCredits);
+            _normController.AddNew(nameof(EquityRatio), NormRange.One, (float)EquityRatio);
+        }
+
+        public void AddRewards()
+        {
+            if (TotalAssets > TotalLiabilities)
+            {
+                AddReward(0.1f);
+            }
+            if (EquityRatio >= _policy.MinimumEquityRate)
+            {
+                AddReward(0.2f);
+            }
+            else
+            {
+                AddReward(-0.2f);
+            }
         }
 
         public void PaybackCredit(decimal sum)
@@ -85,13 +114,17 @@ namespace Models.Agents
 
         public override void CollectObservations(VectorSensor sensor)
         {
-            sensor.AddObservation((float)TotalAssets);
-            sensor.AddObservation((float)TotalLiabilities);
-            sensor.AddObservation(PositiveInterestRate);
-            sensor.AddObservation(NegativeInterestRate);
-            sensor.AddObservation((float)_centralBankDeposit);
-            sensor.AddObservation((float)_minimumRatingForCredits);
-            sensor.AddObservation(_lengthInMonthForNewCredits);
+            for (int ci = 0; ci < (int)Rt.LastItem; ci++)
+            {
+                sensor.AddObservation((int)_minimumRatingForCredits == ci ? 1.0f : 0.0f);
+            }
+            sensor.AddObservation(_normController.Normalize(nameof(TotalAssets), (float)TotalAssets));
+            sensor.AddObservation(_normController.Normalize(nameof(TotalLiabilities), (float)TotalLiabilities));
+            sensor.AddObservation(_normController.Normalize(nameof(PositiveInterestRate), PositiveInterestRate));
+            sensor.AddObservation(_normController.Normalize(nameof(NegativeInterestRate), NegativeInterestRate));
+            sensor.AddObservation(_normController.Normalize(nameof(_centralBankDeposit), (float)_centralBankDeposit));
+            sensor.AddObservation(_normController.Normalize(nameof(_lengthInMonthForNewCredits), _lengthInMonthForNewCredits));
+            sensor.AddObservation(_normController.Normalize(nameof(EquityRatio), (float)EquityRatio));
         }
 
         public override void OnActionReceived(ActionBuffers actionBuffers)

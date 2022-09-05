@@ -1,4 +1,5 @@
-﻿using Models.Agents;
+﻿using Controller;
+using Models.Agents;
 using Policies;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ namespace Factories
         public BankAgent Create()
         {
             var bank = BankAgentPrefab.GetComponent<BankAgent>();
-            bank.Init(_policy, _centralBank);
+            bank.Init(_policy, _centralBank, new NormalizationController());
             return bank;
         }
     }
