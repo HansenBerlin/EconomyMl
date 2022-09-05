@@ -72,7 +72,7 @@ namespace Models.Business
 
         public override void CollectObservations(VectorSensor sensor)
         {
-            sensor.AddObservation(NormCtr.Normalize(nameof(Workers), Workers.Count));
+            sensor.AddObservation(NormCtr.Normalize(nameof(Workers.Count), Workers.Count));
             sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.TotalSupply), ProductController.TotalSupply));
             sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.ProductionThisMonth), ProductController.ProductionThisMonth));
             sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.ProductionLastMonth), ProductController.ProductionLastMonth));

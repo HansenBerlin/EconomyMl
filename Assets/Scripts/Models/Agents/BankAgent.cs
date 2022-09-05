@@ -18,7 +18,7 @@ namespace Models.Agents
         public float PositiveInterestRate { get; private set; } = 0.05F;
         private float NegativeInterestRate { get; set;} = 0.05F;
         private float EquityRatio => (float)(TotalAssets / (TotalAssets + TotalLiabilities));
-        private decimal _centralBankDeposit = 1000000;
+        private decimal _centralBankDeposit = 30000000;
         private readonly List<LoanModel> _loans = new();
         private readonly List<BankAccountModel> _accounts = new();
         private CentralBankPolicy _policy;
@@ -43,6 +43,13 @@ namespace Models.Agents
             _normController.AddNew(nameof(_centralBankDeposit), NormRange.One, (float)_centralBankDeposit);
             _normController.AddNew(nameof(_lengthInMonthForNewCredits), NormRange.One, _lengthInMonthForNewCredits);
             _normController.AddNew(nameof(EquityRatio), NormRange.One, (float)EquityRatio);
+        }
+        
+        public void MakeDecision()
+        {
+            RequestDecision();
+            Academy.Instance.EnvironmentStep();
+
         }
 
         public void AddRewards()

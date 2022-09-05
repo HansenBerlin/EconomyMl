@@ -34,5 +34,13 @@ namespace Models.Market
                 b.AddRewards();
             }
         }
+        
+        public void Decide()
+        {
+            foreach (var b in _banks)
+            {
+                b.MakeDecision();
+            }
+        }
     }
 }

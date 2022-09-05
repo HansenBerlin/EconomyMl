@@ -65,7 +65,7 @@ namespace Models.Business
 
         public override void CollectObservations(VectorSensor sensor)
         {
-            sensor.AddObservation(NormCtr.Normalize(nameof(Workers), Workers.Count));
+            sensor.AddObservation(NormCtr.Normalize(nameof(Workers.Count), Workers.Count));
             sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.TotalSupply), ProductController.TotalSupply));
             sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.Price), (float)ProductController.Price));
             sensor.AddObservation(NormCtr.Normalize(nameof(ProductController.Profit), (float)ProductController.Profit));
@@ -79,6 +79,7 @@ namespace Models.Business
             sensor.AddObservation(NormCtr.Normalize(nameof(TotalDemand), TotalDemand));
             sensor.AddObservation(NormCtr.Normalize(nameof(MarketShare), (float)MarketShare));
             sensor.AddObservation(NormCtr.Normalize(nameof(BankAccount.LoansSum), (float)BankAccount.LoansSum));
+            sensor.AddObservation(NormCtr.Normalize(nameof(BankAccount.Savings), (float)BankAccount.Savings));
         }
 
 

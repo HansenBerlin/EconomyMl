@@ -99,11 +99,12 @@ namespace Models.Business
             BankAccount = countryEconomyMarkets.OpenBankAccount(0, true);
             BankAccount.TryToGetLoan(policy.InitialBalance, CreditRating.AAA);
             BalanceLastYear = Balance;
+            SetupObservations();
         }
 
         private void SetupObservations()
         {
-            NormCtr.AddNew(nameof(Workers), NormRange.One, Workers.Count);
+            NormCtr.AddNew(nameof(Workers.Count), NormRange.One, Workers.Count);
             NormCtr.AddNew(nameof(ProductController.TotalSupply), NormRange.One, ProductController.TotalSupply);
             NormCtr.AddNew(nameof(ProductController.Price), NormRange.One, (float)ProductController.Price);
             NormCtr.AddNew(nameof(ProductController.Profit), NormRange.Two, (float)ProductController.Profit);
@@ -117,6 +118,7 @@ namespace Models.Business
             NormCtr.AddNew(nameof(TotalDemand), NormRange.One, TotalDemand);
             NormCtr.AddNew(nameof(MarketShare), NormRange.One, (float)MarketShare);
             NormCtr.AddNew(nameof(BankAccount.LoansSum), NormRange.One, (float)BankAccount.LoansSum);
+            NormCtr.AddNew(nameof(BankAccount.Savings), NormRange.Two, (float)BankAccount.Savings);
         }
 
         protected int _month;

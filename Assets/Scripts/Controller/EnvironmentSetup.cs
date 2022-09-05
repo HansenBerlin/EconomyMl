@@ -44,6 +44,7 @@ namespace Controller
         private PopulationModel _populationModel;
         private StatisticalDataRepository _statsRepository;
         private BusinessRespawnController _businessRespawner;
+        private BankingMarkets _bankingMarkets;
 
         public void Awake()
         {
@@ -65,16 +66,16 @@ namespace Controller
             _governmentController = new GovernmentController(government, _populationModel);
             _populationController = new PopulationController(_envSettings, _populationModel, jobMarketController,
                 populationFactory, populationPropabilityController);
-            var bankingMarkets = new BankingMarkets();
+            _bankingMarkets = new BankingMarkets();
             var bankFactory = bankingFactoryGo.GetComponent<BankFactory>();
             var cbAent = new CentralBankAgent();
             bankFactory.Init(_policies.CentralBankPolicies, cbAent);
-            bankingMarkets.AddBank(bankFactory.Create());
-            bankingMarkets.AddBank(bankFactory.Create());
-            bankingMarkets.AddBank(bankFactory.Create());
+            _bankingMarkets.AddBank(bankFactory.Create());
+            _bankingMarkets.AddBank(bankFactory.Create());
+            _bankingMarkets.AddBank(bankFactory.Create());
             
             _countryEconomyMarket = new CountryEconomy(productMarkets, jobMarketController, _populationModel,
-                _governmentController, bankingMarkets);
+                _governmentController, _bankingMarkets);
             var actionsFactory = new ActionsFactory(jobMarketController, _countryEconomyMarket);
             populationFactory.Init(actionsFactory, jobMarketController, _policies, populationPropabilityController, _countryEconomyMarket);
             var initialPopulation = populationFactory.CreateInitialPopulation();
@@ -182,6 +183,7 @@ namespace Controller
 
             if (_envSettings.Month % 12 == 0)
             {
+                _bankingMarkets.AddRewards();
                 _populationController.YearlyUpdatePopulation();
                 foreach (var business in _businesses)
                 {
@@ -189,6 +191,7 @@ namespace Controller
                     business.EndYear(CompanyActionPhase.AdaptCapital);
                 }
             }
+            _bankingMarkets.Decide();
 
             foreach (var business in _businesses)
             {
