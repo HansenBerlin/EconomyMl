@@ -106,91 +106,83 @@ namespace Controller.SetupAndFlowControl
 
         public void Update()
         {
-            if(quit)
-                Application.Quit();
+            if (_envSettings.Month > 120)
+            {
+                UnityEditor.EditorApplication.isPlaying = false;
+            }
+            else
+            {
+                Debug.Log("YEAR " + _envSettings.Year + " MONTH " + _envSettings.Month);
+                StartCoroutine(RunOneYear());
+            }
         }
 
         public void Awake()
         {
-            if (issetup == false)
-            {
-                SetupDependencies();
-                _populationController.Setup();
-                issetup = true;
-            }
+            SetupDependencies();
+            _populationController.Setup();
         }
 
-        IEnumerator Start()
+
+        IEnumerator RunOneYear()
         {
-            for (int m = 0; m < 120; m++)
+            year = _envSettings.Year;
+            _envSettings.Month++;
+            _populationController.SetupMonth();
+
+
+            foreach (var business in _businesses)
+                business.MakeDecision(CompanyActionPhase.BuyResources);
+
+            _populationController.MonthlyUpdatePopulation(_countryEconomyMarket, _envSettings.Month);
+
+
+            foreach (var business in _businesses)
             {
-                for (int i = 0; i < 1; i++)
-                {
-                    Debug.Log("YEAR " + _envSettings.Year + " MONTH " + _envSettings.Month);
-
-                    year = _envSettings.Year;
-                    _envSettings.Month++;
-                    _populationController.SetupMonth();
-                    
-                }
-                
-
-                foreach (var business in _businesses)
-                    business.MakeDecision(CompanyActionPhase.BuyResources);
-
-                _populationController.MonthlyUpdatePopulation(_countryEconomyMarket, _envSettings.Month);
-
-
-                foreach (var business in _businesses)
-                {
-                    business.MakeDecision(CompanyActionPhase.Produce);
-                    business.MonthlyBookkeeping();
-                }
-
-                for (int i = _businesses.Count - 1; i >= 0; i--)
-                {
-                    var business = _businesses[i];
-                    if (business.IsRemoved())
-                    {
-                        var newBusiness = _businessRespawner.Respawn(business);
-                        _businesses.Add(newBusiness);
-                        _businesses.Remove(business);
-                        i--;
-                    }
-                    else
-                    {
-                        business.MakeDecision(CompanyActionPhase.AdaptPrice);
-                        business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
-                    }
-                }
-
-                _governmentAgent.PayoutUnemployed();
-                _governmentAgent.PayoutRetired();
-
-                if (_envSettings.Month % 12 == 0)
-                {
-                    _bankingMarkets.AddRewards();
-                    _populationController.YearlyUpdatePopulation();
-                    foreach (var business in _businesses)
-                    {
-                        business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
-                        business.EndYear(CompanyActionPhase.AdaptCapital);
-                        _governmentAgent.EndYear();
-                    }
-                }
-
-                _governmentAgent.MakeDecision();
-                _bankingMarkets.PayOutInterestForSavings();
-                _bankingMarkets.Decide();
-
-                foreach (var business in _businesses) business.UpdateStats(_envSettings.Month);
-
-                _countryEconomyMarket.ResetProductMarkets();
+                business.MakeDecision(CompanyActionPhase.Produce);
+                business.MonthlyBookkeeping();
             }
 
-            quit = true;
+            for (int i = _businesses.Count - 1; i >= 0; i--)
+            {
+                var business = _businesses[i];
+                if (business.IsRemoved())
+                {
+                    var newBusiness = _businessRespawner.Respawn(business);
+                    _businesses.Add(newBusiness);
+                    _businesses.Remove(business);
+                    i--;
+                }
+                else
+                {
+                    business.MakeDecision(CompanyActionPhase.AdaptPrice);
+                    business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
+                }
+            }
+
+            _governmentAgent.PayoutUnemployed();
+            _governmentAgent.PayoutRetired();
+
+            if (_envSettings.Month % 12 == 0)
+            {
+                _bankingMarkets.AddRewards();
+                _populationController.YearlyUpdatePopulation();
+                foreach (var business in _businesses)
+                {
+                    business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
+                    business.EndYear(CompanyActionPhase.AdaptCapital);
+                    _governmentAgent.EndYear();
+                }
+            }
+
+            _governmentAgent.MakeDecision();
+            _bankingMarkets.PayOutInterestForSavings();
+            _bankingMarkets.Decide();
+
+            foreach (var business in _businesses) business.UpdateStats(_envSettings.Month);
+
+            _countryEconomyMarket.ResetProductMarkets();
             yield break;
-            
         }
     }
 }
