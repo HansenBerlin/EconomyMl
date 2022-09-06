@@ -87,7 +87,6 @@ namespace Models
 
         public long GetTotalUnfulfilledDemand(ProductType type)
         {
-            long demandTotal;
             var productMarket = FindMatchingMarket(type);
             return productMarket.GetTotalUnfullfilledDemand();
         }

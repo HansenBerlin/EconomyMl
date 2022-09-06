@@ -201,7 +201,7 @@ namespace Agents
                 ProductController.ProfitLastMonth, CurrentRating);
             LoanPayments += BankAccount.MonthlyPaymentForLoans();
 
-            if (Cpp > ProductController.Price) Debug.Log("");
+            //if (Cpp > ProductController.Price) Debug.Log("");
 
             decimal profit = ProductController.Profit - TotalCostBeforeTaxes - UpgradeEffiencyCosts;
             ProfitTaxPaidInMonth = Government.PayProfitTax(profit);

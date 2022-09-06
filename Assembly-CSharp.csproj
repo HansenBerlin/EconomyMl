@@ -41,87 +41,87 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\Agents\BankAgent.cs" />
-     <Compile Include="Assets\Scripts\Agents\CentralBankAgent.cs" />
-     <Compile Include="Assets\Scripts\Agents\CompanyBaseAgent.cs" />
-     <Compile Include="Assets\Scripts\Agents\GovernmentAgent.cs" />
-     <Compile Include="Assets\Scripts\Agents\ObservationDataModel.cs" />
-     <Compile Include="Assets\Scripts\Agents\PersonAgent.cs" />
-     <Compile Include="Assets\Scripts\Agents\PersonAgentDiscreteActions.cs" />
-     <Compile Include="Assets\Scripts\Agents\PersonObservations.cs" />
-     <Compile Include="Assets\Scripts\Agents\PrivateCompanyAgent.cs" />
-     <Compile Include="Assets\Scripts\Agents\PublicServiceAgent.cs" />
-     <Compile Include="Assets\Scripts\Controller\Agents\BusinessRespawnController.cs" />
-     <Compile Include="Assets\Scripts\Controller\Agents\PersonBuyAction.cs" />
-     <Compile Include="Assets\Scripts\Controller\Agents\PersonBuyActionBaseProduct.cs" />
-     <Compile Include="Assets\Scripts\Controller\Agents\PersonBuyActionLuxuryProduct.cs" />
-     <Compile Include="Assets\Scripts\Controller\Agents\PersonController.cs" />
-     <Compile Include="Assets\Scripts\Controller\Agents\PersonJobAction.cs" />
-     <Compile Include="Assets\Scripts\Controller\Agents\PersonRespawnController.cs" />
-     <Compile Include="Assets\Scripts\Controller\Agents\PersonRewardController.cs" />
-     <Compile Include="Assets\Scripts\Controller\Agents\RatingController.cs" />
-     <Compile Include="Assets\Scripts\Controller\Data\CollectionNormalizationController.cs" />
-     <Compile Include="Assets\Scripts\Controller\Data\NormalizationController.cs" />
-     <Compile Include="Assets\Scripts\Controller\Data\PopulationPropabilityController.cs" />
-     <Compile Include="Assets\Scripts\Controller\Data\StatisticalDistributionController.cs" />
-     <Compile Include="Assets\Scripts\Controller\RepositoryController\JobMarketController.cs" />
-     <Compile Include="Assets\Scripts\Controller\RepositoryController\PopulationController.cs" />
-     <Compile Include="Assets\Scripts\Controller\RepositoryController\ProductController.cs" />
-     <Compile Include="Assets\Scripts\Controller\SetupAndFlowControl\EnvironmentSetup.cs" />
-     <Compile Include="Assets\Scripts\Factories\PopulationDataTemplateModel.cs" />
-     <Compile Include="Assets\Scripts\Factories\ProductionTemplate.cs" />
-     <Compile Include="Assets\Scripts\Interfaces\ICountryEconomy.cs" />
-     <Compile Include="Assets\Scripts\Interfaces\IPersonAction.cs" />
-     <Compile Include="Assets\Scripts\Interfaces\IProductionTemplate.cs" />
-     <Compile Include="Assets\Scripts\Models\BankAccountModel.cs" />
-     <Compile Include="Assets\Scripts\Models\BankingMarkets.cs" />
-     <Compile Include="Assets\Scripts\Models\CountryEconomy.cs" />
-     <Compile Include="Assets\Scripts\Models\EnvironmentModel.cs" />
-     <Compile Include="Assets\Scripts\Models\GovernmentModel.cs" />
-     <Compile Include="Assets\Scripts\Models\JobModel.cs" />
-     <Compile Include="Assets\Scripts\Models\LoanModel.cs" />
-     <Compile Include="Assets\Scripts\Models\PopulationModel.cs" />
-     <Compile Include="Assets\Scripts\Models\ProductMarketModel.cs" />
-     <Compile Include="Assets\Scripts\Models\ProductModel.cs" />
-     <Compile Include="Assets\Scripts\Models\ProductRequestModel.cs" />
-     <Compile Include="Assets\Scripts\Models\ReceiptModel.cs" />
-     <Compile Include="Assets\Scripts\Models\TempPopulationUpdateModel.cs" />
-     <Compile Include="Assets\Scripts\Policies\AgeBoundaryPolicy.cs" />
-     <Compile Include="Assets\Scripts\Policies\EducationBoundaryPolicy.cs" />
-     <Compile Include="Assets\Scripts\Policies\FederalServicesPolicy.cs" />
-     <Compile Include="Assets\Scripts\Policies\FederalUnemployedPaymentPolicy.cs" />
-     <Compile Include="Assets\Scripts\Policies\PoliciesWrapper.cs" />
      <Compile Include="Assets\Scripts\Repositories\StatisticalDataRepository.cs" />
+     <Compile Include="Assets\Scripts\Controller\Agents\PersonBuyAction.cs" />
+     <Compile Include="Assets\Scripts\Policies\FederalUnemployedPaymentPolicy.cs" />
      <Compile Include="Assets\Scripts\Enums\EpisodeCut.cs" />
      <Compile Include="Assets\Scripts\Enums\JobPositionStatus.cs" />
      <Compile Include="Assets\Scripts\Settings\IdGenerator.cs" />
+     <Compile Include="Assets\Scripts\Controller\Agents\RatingController.cs" />
+     <Compile Include="Assets\Scripts\Models\ProductRequestModel.cs" />
+     <Compile Include="Assets\Scripts\Controller\RepositoryController\ProductController.cs" />
      <Compile Include="Assets\Scripts\Enums\InitialEconomyType.cs" />
+     <Compile Include="Assets\Scripts\Agents\CentralBankAgent.cs" />
      <Compile Include="Assets\Scripts\Repositories\ProductDataRepository.cs" />
      <Compile Include="Assets\Scripts\Enums\DeathReason.cs" />
+     <Compile Include="Assets\Scripts\Controller\SetupAndFlowControl\EnvironmentSetup.cs" />
      <Compile Include="Assets\Scripts\Policies\CentralBankPolicy.cs" />
+     <Compile Include="Assets\Scripts\Policies\EducationBoundaryPolicy.cs" />
+     <Compile Include="Assets\Scripts\Models\JobModel.cs" />
+     <Compile Include="Assets\Scripts\Controller\Agents\PersonBuyActionLuxuryProduct.cs" />
+     <Compile Include="Assets\Scripts\Agents\BankAgent.cs" />
+     <Compile Include="Assets\Scripts\Interfaces\IProductionTemplate.cs" />
+     <Compile Include="Assets\Scripts\Controller\Data\NormalizationController.cs" />
      <Compile Include="Assets\Scripts\Settings\PersonResourceDemandSettings.cs" />
+     <Compile Include="Assets\Scripts\Models\GovernmentModel.cs" />
+     <Compile Include="Assets\Scripts\Controller\Agents\BusinessRespawnController.cs" />
+     <Compile Include="Assets\Scripts\Controller\Agents\PersonJobAction.cs" />
      <Compile Include="Assets\Scripts\Enums\CreditRating.cs" />
+     <Compile Include="Assets\Scripts\Controller\Agents\PersonRewardController.cs" />
+     <Compile Include="Assets\Scripts\Controller\Agents\PersonRespawnController.cs" />
+     <Compile Include="Assets\Scripts\Agents\PublicServiceAgent.cs" />
+     <Compile Include="Assets\Scripts\Interfaces\ICountryEconomy.cs" />
      <Compile Include="Assets\Scripts\Enums\AgeStatus.cs" />
      <Compile Include="Assets\Scripts\Enums\PersonActionType.cs" />
      <Compile Include="Assets\Scripts\Repositories\ProductMarketDataRepository.cs" />
+     <Compile Include="Assets\Scripts\Interfaces\IPersonAction.cs" />
+     <Compile Include="Assets\Scripts\Factories\PopulationDataTemplateModel.cs" />
+     <Compile Include="Assets\Scripts\Agents\ObservationDataModel.cs" />
+     <Compile Include="Assets\Scripts\Models\EnvironmentModel.cs" />
+     <Compile Include="Assets\Scripts\Models\ProductModel.cs" />
+     <Compile Include="Assets\Scripts\Models\BankAccountModel.cs" />
+     <Compile Include="Assets\Scripts\Policies\PoliciesWrapper.cs" />
+     <Compile Include="Assets\Scripts\Agents\GovernmentAgent.cs" />
      <Compile Include="Assets\Scripts\Factories\BusinessFactory.cs" />
      <Compile Include="Assets\Test.cs" />
      <Compile Include="Assets\Scripts\Enums\JobStatus.cs" />
+     <Compile Include="Assets\Scripts\Agents\CompanyBaseAgent.cs" />
+     <Compile Include="Assets\Scripts\Models\TempPopulationUpdateModel.cs" />
      <Compile Include="Assets\Scripts\Repositories\PopulationDataRepository.cs" />
+     <Compile Include="Assets\Scripts\Agents\PersonObservations.cs" />
+     <Compile Include="Assets\Scripts\Controller\RepositoryController\JobMarketController.cs" />
+     <Compile Include="Assets\Scripts\Controller\Data\StatisticalDistributionController.cs" />
+     <Compile Include="Assets\Scripts\Agents\PersonAgent.cs" />
      <Compile Include="Assets\Scripts\Repositories\CompanyDataRepository.cs" />
+     <Compile Include="Assets\Scripts\Models\ProductMarketModel.cs" />
      <Compile Include="Assets\Scripts\Factories\PopulationFactory.cs" />
+     <Compile Include="Assets\Scripts\Factories\ProductionTemplate.cs" />
+     <Compile Include="Assets\Scripts\Controller\Data\PopulationPropabilityController.cs" />
+     <Compile Include="Assets\Scripts\Controller\Agents\PersonBuyActionBaseProduct.cs" />
      <Compile Include="Assets\Scripts\Factories\BankFactory.cs" />
+     <Compile Include="Assets\Scripts\Models\LoanModel.cs" />
+     <Compile Include="Assets\Scripts\Models\CountryEconomy.cs" />
      <Compile Include="Assets\Scripts\Enums\NormRange.cs" />
      <Compile Include="Assets\Scripts\Enums\DemographyType.cs" />
      <Compile Include="Assets\Scripts\Policies\CompanyResourcePolicy.cs" />
+     <Compile Include="Assets\Scripts\Models\BankingMarkets.cs" />
+     <Compile Include="Assets\Scripts\Models\PopulationModel.cs" />
+     <Compile Include="Assets\Scripts\Controller\Agents\PersonController.cs" />
      <Compile Include="Assets\Scripts\Enums\ProductType.cs" />
+     <Compile Include="Assets\Scripts\Policies\FederalServicesPolicy.cs" />
      <Compile Include="Assets\Scripts\Enums\UpdateEpisodeType.cs" />
+     <Compile Include="Assets\Scripts\Models\ReceiptModel.cs" />
      <Compile Include="Assets\Scripts\Factories\JobPositionFactory.cs" />
      <Compile Include="Assets\Scripts\Factories\ProductionFactory.cs" />
      <Compile Include="Assets\Scripts\Factories\ActionsFactory.cs" />
      <Compile Include="Assets\Scripts\Repositories\GovernmentDataRepository.cs" />
+     <Compile Include="Assets\Scripts\Agents\PersonAgentDiscreteActions.cs" />
+     <Compile Include="Assets\Scripts\Policies\AgeBoundaryPolicy.cs" />
      <Compile Include="Assets\Scripts\Enums\ProductRequestSearchType.cs" />
      <Compile Include="Assets\Scripts\Enums\CompanyActionPhase.cs" />
+     <Compile Include="Assets\Scripts\Agents\PrivateCompanyAgent.cs" />
+     <Compile Include="Assets\Scripts\Controller\RepositoryController\PopulationController.cs" />
+     <Compile Include="Assets\Scripts\Controller\Data\CollectionNormalizationController.cs" />
      <None Include="Assets\ML-Agents\Timers\SampleScene_timers.json" />
      <None Include="Assets\Packages\System.Drawing.Common.4.6.1\version.txt" />
      <None Include="Assets\Packages\System.Drawing.Common.4.6.1\useSharedDesignerContext.txt" />
@@ -373,6 +373,9 @@
      <Reference Include="System.IO.Abstractions">
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.ml-agents@2.0.1\Plugins\System.IO.Abstractions.dll</HintPath>
      </Reference>
+     <Reference Include="System.Drawing.Common">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\System.Drawing.Common.4.6.1\lib\netstandard2.0\System.Drawing.Common.dll</HintPath>
+     </Reference>
      <Reference Include="Unity.Burst.Unsafe">
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.burst@1.6.6\Unity.Burst.Unsafe.dll</HintPath>
      </Reference>
@@ -414,9 +417,6 @@
      </Reference>
      <Reference Include="Newtonsoft.Json">
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.nuget.newtonsoft-json@3.0.2\Runtime\Newtonsoft.Json.dll</HintPath>
-     </Reference>
-     <Reference Include="System.Drawing.Common">
-     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\System.Drawing.Common.4.6.1\lib\netstandard2.0\System.Drawing.Common.dll</HintPath>
      </Reference>
      <Reference Include="netstandard">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.6f1\Editor\Data\NetStandard\ref\2.1.0\netstandard.dll</HintPath>

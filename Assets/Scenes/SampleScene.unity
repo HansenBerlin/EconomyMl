@@ -206,9 +206,7 @@ MonoBehaviour:
   popDataTemplate: {fileID: 1958568387}
   buisnessFactoryGo: {fileID: 534444279261891460}
   bankingFactoryGo: {fileID: 3346862732693044716, guid: f050a010cfc2fe14383c3f8e8f144217, type: 3}
-  stepCountEpisode: 0
-  stepCountTotal: 0
-  episodeCount: 0
+  gvnAgentPrefab: {fileID: 0}
 --- !u!4 &578103253
 Transform:
   m_ObjectHideFlags: 0
@@ -240,6 +238,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1181652076}
     - target: {fileID: 2873034058988004469, guid: 668ebbd6de3f4ab40bf40f23755b1e99, type: 3}
+      propertyPath: workerPolicyGo
+      value: 
+      objectReference: {fileID: 1181652076}
+    - target: {fileID: 2873034058988004469, guid: 668ebbd6de3f4ab40bf40f23755b1e99, type: 3}
       propertyPath: AgeBoundaryPolicyGo
       value: 
       objectReference: {fileID: 789066893}
@@ -248,11 +250,27 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300261714615884933}
     - target: {fileID: 2873034058988004469, guid: 668ebbd6de3f4ab40bf40f23755b1e99, type: 3}
+      propertyPath: ageBoundaryPolicyGo
+      value: 
+      objectReference: {fileID: 789066893}
+    - target: {fileID: 2873034058988004469, guid: 668ebbd6de3f4ab40bf40f23755b1e99, type: 3}
+      propertyPath: centralBankPolicyGo
+      value: 
+      objectReference: {fileID: 8300261714615884933}
+    - target: {fileID: 2873034058988004469, guid: 668ebbd6de3f4ab40bf40f23755b1e99, type: 3}
       propertyPath: FederalServicesPolicyGo
       value: 
       objectReference: {fileID: 710817297}
     - target: {fileID: 2873034058988004469, guid: 668ebbd6de3f4ab40bf40f23755b1e99, type: 3}
+      propertyPath: federalServicesPolicyGo
+      value: 
+      objectReference: {fileID: 710817297}
+    - target: {fileID: 2873034058988004469, guid: 668ebbd6de3f4ab40bf40f23755b1e99, type: 3}
       propertyPath: EducationBoundaryPolicyGo
+      value: 
+      objectReference: {fileID: 659417560}
+    - target: {fileID: 2873034058988004469, guid: 668ebbd6de3f4ab40bf40f23755b1e99, type: 3}
+      propertyPath: educationBoundaryPolicyGo
       value: 
       objectReference: {fileID: 659417560}
     - target: {fileID: 7931453109781800959, guid: 668ebbd6de3f4ab40bf40f23755b1e99, type: 3}

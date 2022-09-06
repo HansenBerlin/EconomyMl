@@ -61,7 +61,7 @@ namespace Agents
             _controller = controller;
             _controller.Setup(this);
             _rewardController = new PersonRewardController(normController, _obs);
-            var actions = _controller.InitActions();
+            var actions = _controller.InitActions(_rewardController);
             _job = actions[0] as PersonJobAction;
             _buyBuyActions = actions[1] as PersonBuyActionBaseProduct;
             _luxuryBuyPersonBuyActions = actions[2] as PersonBuyActionLuxuryProduct;

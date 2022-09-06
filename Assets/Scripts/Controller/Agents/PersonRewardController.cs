@@ -63,17 +63,20 @@ namespace Controller.Agents
         {
             float reward = 0;
             if (isDecisionSkipped && isUnemployed) reward = -0.5F;
-
-            if (salaryBefore > salaryAfter)
+   
+            if (salaryBefore == 0 && salaryAfter > 0)
+            {
+                reward += 0.05f;
+            }
+            else if (salaryBefore == 0 && salaryAfter == 0)
+            {
+                reward -= 0.01f;
+            }
+            else if (salaryBefore > salaryAfter)
             {
                 var val = (float) (salaryAfter / salaryBefore - 1);
                 val += isUnemployed ? 2f : 0;
                 reward += val;
-            }
-
-            if (salaryBefore == 0 && salaryAfter > 0)
-            {
-                reward += 0.05f;
             }
             else
             {

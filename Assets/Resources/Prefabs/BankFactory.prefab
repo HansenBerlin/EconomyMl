@@ -44,4 +44,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77180264568d4740a8b5d83441e9c69a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BankAgentPrefab: {fileID: 6273130869091214051, guid: 2a1df3b58292d9843a0b7c481ed7cc59, type: 3}
+  bankAgentPrefab: {fileID: 6273130869091214051, guid: 2a1df3b58292d9843a0b7c481ed7cc59, type: 3}

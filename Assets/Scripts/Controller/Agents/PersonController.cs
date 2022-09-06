@@ -37,14 +37,20 @@ namespace Controller.Agents
             _bankAccount = _market.OpenBankAccount(_obs.Capital, true);
         }
 
-        public List<IPersonAction> InitActions()
+        public List<IPersonAction> InitActions(PersonRewardController rewardController)
         {
-            return new List<IPersonAction>
+            var actions =  new List<IPersonAction>
             {
                 _factory.Create(PersonActionType.JobDecision),
                 _factory.Create(PersonActionType.BaseProductBuy),
                 _factory.Create(PersonActionType.LuxuryProductBuy)
             };
+            foreach (var a in actions)
+            {
+                a.Init(_obs, rewardController, this);
+            }
+
+            return actions;
         }
 
         private decimal InitialIncome()

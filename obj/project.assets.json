@@ -2,19 +2,6 @@
   "version": 3,
   "targets": {
     ".NETFramework,Version=v4.7.1": {
-      "UnityEditor.UI/1.0.0": {
-        "type": "project",
-        "framework": ".NETFramework,Version=v4.7.1",
-        "dependencies": {
-          "UnityEngine.UI": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/UnityEditor.UI.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/UnityEditor.UI.dll": {}
-        }
-      },
       "UnityEngine.UI/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.7.1",
@@ -27,19 +14,6 @@
       }
     },
     ".NETFramework,Version=v4.7.1/win": {
-      "UnityEditor.UI/1.0.0": {
-        "type": "project",
-        "framework": ".NETFramework,Version=v4.7.1",
-        "dependencies": {
-          "UnityEngine.UI": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/UnityEditor.UI.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/UnityEditor.UI.dll": {}
-        }
-      },
       "UnityEngine.UI/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.7.1",
@@ -52,19 +26,6 @@
       }
     },
     ".NETFramework,Version=v4.7.1/win-x64": {
-      "UnityEditor.UI/1.0.0": {
-        "type": "project",
-        "framework": ".NETFramework,Version=v4.7.1",
-        "dependencies": {
-          "UnityEngine.UI": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/UnityEditor.UI.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/UnityEditor.UI.dll": {}
-        }
-      },
       "UnityEngine.UI/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.7.1",
@@ -77,19 +38,6 @@
       }
     },
     ".NETFramework,Version=v4.7.1/win-x86": {
-      "UnityEditor.UI/1.0.0": {
-        "type": "project",
-        "framework": ".NETFramework,Version=v4.7.1",
-        "dependencies": {
-          "UnityEngine.UI": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/UnityEditor.UI.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/UnityEditor.UI.dll": {}
-        }
-      },
       "UnityEngine.UI/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.7.1",
@@ -103,11 +51,6 @@
     }
   },
   "libraries": {
-    "UnityEditor.UI/1.0.0": {
-      "type": "project",
-      "path": "UnityEditor.UI.csproj",
-      "msbuildProject": "UnityEditor.UI.csproj"
-    },
     "UnityEngine.UI/1.0.0": {
       "type": "project",
       "path": "UnityEngine.UI.csproj",
@@ -116,7 +59,6 @@
   },
   "projectFileDependencyGroups": {
     ".NETFramework,Version=v4.7.1": [
-      "UnityEditor.UI >= 1.0.0",
       "UnityEngine.UI >= 1.0.0"
     ]
   },
@@ -127,9 +69,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\Assembly-CSharp.csproj",
-      "projectName": "Assembly-CSharp",
-      "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\Assembly-CSharp.csproj",
+      "projectUniqueName": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEditor.UI.csproj",
+      "projectName": "UnityEditor.UI",
+      "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEditor.UI.csproj",
       "packagesPath": "C:\\Users\\Hannes\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\obj\\",
       "projectStyle": "PackageReference",
@@ -152,9 +94,6 @@
       "frameworks": {
         "net471": {
           "projectReferences": {
-            "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEditor.UI.csproj": {
-              "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEditor.UI.csproj"
-            },
             "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEngine.UI.csproj": {
               "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEngine.UI.csproj"
             }

@@ -44,13 +44,13 @@ namespace Controller.Agents
 
         public override int GetDemand(int underageChildCount)
         {
-            if (underageChildCount > 1000 || underageChildCount < 0) Debug.Log("");
+            //if (underageChildCount > 1000 || underageChildCount < 0) Debug.Log("");
             float personDemand = Observations.AgeStatus == AgeStatus.RetiredAge
                 ? Settings.DemandRetired
                 : Settings.DemandWorkerAge;
             float childDemand = underageChildCount * Settings.DemandChild;
             var demand = (int) Math.Ceiling(personDemand + childDemand);
-            if (demand > 1000 || underageChildCount < 0) Debug.Log("");
+            //if (demand > 1000 || underageChildCount < 0) Debug.Log("");
             return demand;
         }
     }
