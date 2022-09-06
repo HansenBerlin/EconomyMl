@@ -206,7 +206,7 @@ MonoBehaviour:
   popDataTemplate: {fileID: 1958568387}
   buisnessFactoryGo: {fileID: 534444279261891460}
   bankingFactoryGo: {fileID: 3346862732693044716, guid: f050a010cfc2fe14383c3f8e8f144217, type: 3}
-  gvnAgentPrefab: {fileID: 0}
+  gvnAgentPrefab: {fileID: 1315289674275694805, guid: 895a4a3580cbbaf4e887878ea747269a, type: 3}
 --- !u!4 &578103253
 Transform:
   m_ObjectHideFlags: 0
