@@ -2,20 +2,16 @@
 using Controller.RepositoryController;
 using Enums;
 using Interfaces;
-using Models.Market;
 using Settings;
 
 namespace Factories
 {
-
-
-
     public class ActionsFactory
     {
         private readonly JobMarketController _jobMarketController;
         private readonly ICountryEconomy _market;
 
-        public ActionsFactory (JobMarketController jobMarketController, ICountryEconomy market)
+        public ActionsFactory(JobMarketController jobMarketController, ICountryEconomy market)
         {
             _jobMarketController = jobMarketController;
             _market = market;
@@ -23,10 +19,7 @@ namespace Factories
 
         public IPersonAction Create(PersonActionType type)
         {
-            if (type == PersonActionType.JobDecision)
-            {
-                return new PersonJobAction(_jobMarketController);
-            }
+            if (type == PersonActionType.JobDecision) return new PersonJobAction(_jobMarketController);
 
             if (type == PersonActionType.BaseProductBuy)
             {
@@ -36,8 +29,6 @@ namespace Factories
 
             var luxuryDemandSettings = new PersonResourceDemandSettings(2, 0, 1);
             return new PersonBuyActionLuxuryProduct(luxuryDemandSettings, _market);
-
-
         }
     }
 }

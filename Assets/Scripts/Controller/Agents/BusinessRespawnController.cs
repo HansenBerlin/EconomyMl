@@ -1,6 +1,6 @@
-﻿using Controller.RepositoryController;
+﻿using Agents;
+using Controller.RepositoryController;
 using Factories;
-using Models.Business;
 
 namespace Controller.Agents
 {
@@ -14,6 +14,7 @@ namespace Controller.Agents
             _factory = factory;
             _jobMarket = jobMarket;
         }
+
         public CompanyBaseAgent Respawn(CompanyBaseAgent oldBusiness)
         {
             var business = _factory.Create(oldBusiness.TypeProduced, _jobMarket);

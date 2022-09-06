@@ -1,20 +1,20 @@
-﻿using Enums;
-using Models.Observations;
+﻿using Agents;
+using Enums;
 
 namespace Controller.Agents
 {
     public class PersonRespawnController
     {
-        public decimal Capital { get; }
-        private decimal Salary { get; }
-        private decimal DesiredSalary { get; }
-
         public PersonRespawnController(PersonObservations observations)
         {
             Capital = observations.Capital;
             Salary = observations.Salary;
             DesiredSalary = observations.DesiredSalary;
         }
+
+        public decimal Capital { get; }
+        private decimal Salary { get; }
+        private decimal DesiredSalary { get; }
 
         public void Reset(PersonObservations observations)
         {

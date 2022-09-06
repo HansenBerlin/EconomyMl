@@ -1,8 +1,5 @@
 ﻿namespace Settings
 {
-
-
-
     public record PersonResourceDemandSettings(float DemandWorkerAge, float DemandChild, float DemandRetired)
     {
         public float DemandWorkerAge { get; } = DemandWorkerAge;

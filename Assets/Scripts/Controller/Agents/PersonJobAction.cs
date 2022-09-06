@@ -1,7 +1,7 @@
-﻿using Controller.RepositoryController;
+﻿using Agents;
+using Controller.RepositoryController;
 using Enums;
 using Interfaces;
-using Models.Observations;
 
 namespace Controller.Agents
 {
@@ -9,15 +9,16 @@ namespace Controller.Agents
     {
         private readonly JobMarketController _jobMarket;
         private PersonObservations _observations;
-        private PersonRewardController _rewardController;
         private PersonController _personController;
+        private PersonRewardController _rewardController;
 
         public PersonJobAction(JobMarketController jobMarket)
         {
             _jobMarket = jobMarket;
         }
-        
-        public void Init(PersonObservations observations, PersonRewardController rewardController, PersonController personController)
+
+        public void Init(PersonObservations observations, PersonRewardController rewardController,
+            PersonController personController)
         {
             _observations = observations;
             _rewardController = rewardController;

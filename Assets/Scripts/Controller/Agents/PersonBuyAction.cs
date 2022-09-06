@@ -1,17 +1,17 @@
-﻿using Interfaces;
-using Models.Market;
-using Models.Observations;
+﻿using Agents;
+using Interfaces;
+using Models;
 using Settings;
 
 namespace Controller.Agents
 {
     public abstract class PersonBuyAction : IPersonAction
     {
-        protected readonly PersonResourceDemandSettings Settings;
         protected readonly ICountryEconomy Market;
+        protected readonly PersonResourceDemandSettings Settings;
+        protected PersonController Controller;
         protected PersonObservations Observations;
         protected PersonRewardController RewardController;
-        protected PersonController Controller;
 
         protected PersonBuyAction(PersonResourceDemandSettings settings, ICountryEconomy market)
         {
@@ -19,7 +19,8 @@ namespace Controller.Agents
             Market = market;
         }
 
-        public void Init(PersonObservations observations, PersonRewardController rewardController, PersonController personController)
+        public void Init(PersonObservations observations, PersonRewardController rewardController,
+            PersonController personController)
         {
             Observations = observations;
             RewardController = rewardController;

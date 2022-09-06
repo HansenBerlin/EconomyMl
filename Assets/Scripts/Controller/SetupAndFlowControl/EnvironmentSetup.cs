@@ -1,20 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Agents;
 using Controller.Agents;
 using Controller.Data;
 using Controller.RepositoryController;
 using Enums;
 using Factories;
+using Interfaces;
 using Models;
-using Models.Agents;
-using Models.Business;
-using Models.Market;
-using Models.Meta;
-using Models.Population;
+using Policies;
 using Repositories;
-using Settings;
 using Unity.MLAgents;
 using UnityEngine;
+using Random = System.Random;
 
 namespace Controller.SetupAndFlowControl
 {
@@ -35,19 +33,21 @@ namespace Controller.SetupAndFlowControl
         public GameObject buisnessFactoryGo;
         public GameObject bankingFactoryGo;
         public GameObject gvnAgentPrefab;
+        private readonly List<PersonAgent> _population = new();
+        private readonly Random _rng = StatisticalDistributionController.Rng;
+
+        private Academy _academy;
+        private BankingMarkets _bankingMarkets;
+        private List<CompanyBaseAgent> _businesses;
+        private BusinessRespawnController _businessRespawner;
+        private ICountryEconomy _countryEconomyMarket;
 
         private EnvironmentModel _envSettings;
         private GovernmentAgent _governmentAgent;
-        private PopulationController _populationController;
-        private ICountryEconomy _countryEconomyMarket;
-        private List<CompanyBaseAgent> _businesses;
         private PoliciesWrapper _policies;
-        private readonly List<PersonAgent> _population = new();
-        private readonly System.Random _rng = StatisticalDistributionController.Rng;
+        private PopulationController _populationController;
         private PopulationModel _populationModel;
         private StatisticalDataRepository _statsRepository;
-        private BusinessRespawnController _businessRespawner;
-        private BankingMarkets _bankingMarkets;
 
         public void Awake()
         {
@@ -58,8 +58,7 @@ namespace Controller.SetupAndFlowControl
             var populationFactory = popFactory.GetComponent<PopulationFactory>();
             var jobMarketController = jobMarketControllerGo.GetComponent<JobMarketController>();
             var businessFactory = buisnessFactoryGo.GetComponent<BusinessFactory>();
-
-            var govData = new GovernmentDataRepository("GER");
+            var govData = new GovernmentDataRepository(_envSettings.CountryName);
             _statsRepository.AddGovernmentDataset(govData);
             var populationPropabilityController = new PopulationPropabilityController(popDataModel);
             var populationData = new PopulationDataRepository();
@@ -71,7 +70,6 @@ namespace Controller.SetupAndFlowControl
             _governmentAgent.Init(government, _populationModel, new NormalizationController());
             _populationController = new PopulationController(_envSettings, _populationModel, jobMarketController,
                 populationFactory, populationPropabilityController);
-            
             _bankingMarkets = new BankingMarkets();
             var bankFactory = bankingFactoryGo.GetComponent<BankFactory>();
             var cbAent = new CentralBankAgent();
@@ -79,25 +77,22 @@ namespace Controller.SetupAndFlowControl
             _bankingMarkets.AddBank(bankFactory.Create());
             _bankingMarkets.AddBank(bankFactory.Create());
             _bankingMarkets.AddBank(bankFactory.Create());
-            
-            _countryEconomyMarket = new CountryEconomy(productMarkets, jobMarketController, _populationModel,
-                _governmentAgent, _bankingMarkets);
+            _countryEconomyMarket = new CountryEconomy(productMarkets, _governmentAgent, _bankingMarkets);
             var actionsFactory = new ActionsFactory(jobMarketController, _countryEconomyMarket);
-            populationFactory.Init(actionsFactory, jobMarketController, _policies, populationPropabilityController, _countryEconomyMarket);
+            populationFactory.Init(actionsFactory, jobMarketController, _policies, populationPropabilityController,
+                _countryEconomyMarket);
             var initialPopulation = populationFactory.CreateInitialPopulation();
             _population.AddRange(initialPopulation);
-
             businessFactory.Init(_countryEconomyMarket, _envSettings, _statsRepository, _governmentAgent);
             _businessRespawner = new BusinessRespawnController(businessFactory, jobMarketController);
 
-            
-
             _businesses = new List<CompanyBaseAgent>();
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 var fossileEnergyCompany = businessFactory.Create(ProductType.FossileEnergy, jobMarketController);
                 var baseProductCompany = businessFactory.Create(ProductType.BaseProduct, jobMarketController);
-                var intermediateProductCompany = businessFactory.Create(ProductType.IntermediateProduct, jobMarketController);
+                var intermediateProductCompany =
+                    businessFactory.Create(ProductType.IntermediateProduct, jobMarketController);
                 var luxuryProductCompany = businessFactory.Create(ProductType.LuxuryProduct, jobMarketController);
                 _businesses.Add(fossileEnergyCompany);
                 _businesses.Add(baseProductCompany);
@@ -116,7 +111,6 @@ namespace Controller.SetupAndFlowControl
             _populationController.Setup();
         }
 
-
         public void Update()
         {
             if (_envSettings.Year >= simulateYears)
@@ -130,31 +124,14 @@ namespace Controller.SetupAndFlowControl
             }
         }
 
-        private Academy _academy;
-        public int stepCountEpisode;
-        public int stepCountTotal;
-        public int episodeCount;
-
-        IEnumerator UpdateBusinesses()
+        private IEnumerator UpdateBusinesses()
         {
             year = _envSettings.Year;
-            //Thread.Sleep(1000);
-            //Academy.Instance.EnvironmentStep();
-            stepCountEpisode = _academy.StepCount;
-            stepCountTotal = _academy.TotalStepCount;
-            episodeCount = _academy.EpisodeCount;
             _envSettings.Month++;
-            //xAxisFull.Add(i);
             _populationController.SetupMonth();
 
-
-            //int day = 1;
-            
             foreach (var business in _businesses)
-            {
-                //business.MakeDecision(CompanyActionPhase.AdaptCapital);
                 business.MakeDecision(CompanyActionPhase.BuyResources);
-            }
 
             _populationController.MonthlyUpdatePopulation(_countryEconomyMarket, _envSettings.Month);
 
@@ -180,9 +157,7 @@ namespace Controller.SetupAndFlowControl
                     business.MakeDecision(CompanyActionPhase.AdaptPrice);
                     business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
                 }
-
             }
-            
 
             _governmentAgent.PayoutUnemployed();
             _governmentAgent.PayoutRetired();
@@ -196,17 +171,14 @@ namespace Controller.SetupAndFlowControl
                     business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
                     business.EndYear(CompanyActionPhase.AdaptCapital);
                     _governmentAgent.EndYear();
-
                 }
             }
+
             _governmentAgent.MakeDecision();
             _bankingMarkets.PayOutInterestForSavings();
             _bankingMarkets.Decide();
 
-            foreach (var business in _businesses)
-            {
-                business.UpdateStats(_envSettings.Month);
-            }
+            foreach (var business in _businesses) business.UpdateStats(_envSettings.Month);
 
             _countryEconomyMarket.ResetProductMarkets();
             yield return new WaitForFixedUpdate();

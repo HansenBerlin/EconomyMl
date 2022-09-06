@@ -1,38 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Agents;
 using Controller.Data;
 using Controller.RepositoryController;
 using Enums;
 using Factories;
 using Interfaces;
-using Models.Agents;
-using Models.Finance;
-using Models.Market;
-using Models.Meta;
-using Models.Observations;
-using Models.Population;
-using Settings;
+using Models;
+using Policies;
 
 namespace Controller.Agents
 {
     public class PersonController
     {
-        private readonly PoliciesWrapper _policies;
         private readonly ActionsFactory _factory;
         private readonly ICountryEconomy _market;
         private readonly PersonObservations _obs;
-        private PersonAgent _person;
+        private readonly PoliciesWrapper _policies;
         private BankAccountModel _bankAccount;
         private CreditRating _currentRating = CreditRating.A;
+        private PersonAgent _person;
 
-        public PersonController (PersonObservations obs, PoliciesWrapper policies, ActionsFactory factory, ICountryEconomy market)
+        public PersonController(PersonObservations obs, PoliciesWrapper policies, ActionsFactory factory,
+            ICountryEconomy market)
         {
             _obs = obs;
             _policies = policies;
             _factory = factory;
             _market = market;
         }
-        
+
         public void Setup(PersonAgent person)
         {
             _person = person;
@@ -64,15 +60,17 @@ namespace Controller.Agents
         private decimal ReducedIncome(decimal calculationBase)
         {
             var policy = _policies.FederalUnemployedPaymentPolicies;
-            decimal reducedIncome = calculationBase * (decimal)policy.unemployedSupportRate;
-            decimal income = reducedIncome > (decimal)policy.unemployedSupportMax ? (decimal)policy.unemployedSupportMax : reducedIncome;
-            income = income < (decimal)policy.unemployedSupportMin ? (decimal)policy.unemployedSupportMin : income;
+            decimal reducedIncome = calculationBase * (decimal) policy.unemployedSupportRate;
+            decimal income = reducedIncome > (decimal) policy.unemployedSupportMax
+                ? (decimal) policy.unemployedSupportMax
+                : reducedIncome;
+            income = income < (decimal) policy.unemployedSupportMin ? (decimal) policy.unemployedSupportMin : income;
             return income;
         }
 
         private JobStatus GetInitialJobStatus()
         {
-            var age = _obs.Age;
+            int age = _obs.Age;
             var agesPolicy = _policies.AgeBoundaries;
             int schoolAge = _policies.EducationBoundaries.ageToStartSchool;
             int minYearsInSchool = _policies.EducationBoundaries.minYearsInSchool;
@@ -88,27 +86,18 @@ namespace Controller.Agents
         private DeathReason UpdateDeathData(PopulationPropabilityController controller)
         {
             int randomDeath = StatisticalDistributionController.CreateRandom(0, 10000);
-            if (randomDeath == 0)
-            {
-                return DeathReason.Random;
-            }
+            if (randomDeath == 0) return DeathReason.Random;
 
             bool hasDiedOfAge = controller.IsDead(_obs.Age);
 
-            if (!hasDiedOfAge)
-            {
-                return DeathReason.HasNotDied;
-            }
+            if (!hasDiedOfAge) return DeathReason.HasNotDied;
             return DeathReason.Age;
         }
 
         private void DistributeWealthToChildren(decimal capital)
         {
             if (capital <= 0) return;
-            foreach (var child in _person.Children)
-            {
-                child.UpdateCapital(capital / _person.Children.Count);
-            }
+            foreach (var child in _person.Children) child.UpdateCapital(capital / _person.Children.Count);
         }
 
         public void ResetBankAccount(decimal newCapital)
@@ -121,7 +110,7 @@ namespace Controller.Agents
         public bool GetLoan(decimal amount)
         {
             _currentRating = RatingController.Calculate(_obs.Capital,
-                (decimal)(_obs.ObsMonthlyExpensesAccumulatedForYear - _obs.ObsMonthlyIncomeAccumulatedForYear),
+                (decimal) (_obs.ObsMonthlyExpensesAccumulatedForYear - _obs.ObsMonthlyIncomeAccumulatedForYear),
                 _obs.LoansTakenSum, _obs.Salary, _currentRating);
             return _bankAccount.IsLoanAdded(amount, _currentRating);
         }
@@ -149,10 +138,7 @@ namespace Controller.Agents
 
         public void UpdateNewJob(JobModel newJob)
         {
-            if (_obs.JobStatus == JobStatus.Employed)
-            {
-                _person.Job.QuitJob(_person);
-            }
+            if (_obs.JobStatus == JobStatus.Employed) _person.Job.QuitJob(_person);
 
             newJob.TakeJob(_person, _obs.DesiredSalary);
             _obs.JobStatus = JobStatus.Employed;
@@ -180,25 +166,15 @@ namespace Controller.Agents
             PopulationPropabilityController probController)
         {
             _obs.Age++;
-            if (_obs.Age == 18)
-            {
-                TurnAdult(avgIncome);
-            }
+            if (_obs.Age == 18) TurnAdult(avgIncome);
 
-            if (_obs.Age is >= 18 and <= 55)
-            {
-                Reproduce(tempPop, factory);
-            }
+            if (_obs.Age is >= 18 and <= 55) Reproduce(tempPop, factory);
 
             if (_obs.AgeStatus == AgeStatus.RetiredAge)
-            {
-                _obs.Salary = _obs.LastSalaryBeforeRetirement * (decimal)_policies.FederalUnemployedPaymentPolicies.retirementSupportRate;
-            }
+                _obs.Salary = _obs.LastSalaryBeforeRetirement *
+                              (decimal) _policies.FederalUnemployedPaymentPolicies.retirementSupportRate;
 
-            if (_obs.Age == 68)
-            {
-                Retire(tempPop.Retired);
-            }
+            if (_obs.Age == 68) Retire(tempPop.Retired);
 
             if (_obs.Capital < -100000000)
             {
@@ -210,11 +186,8 @@ namespace Controller.Agents
             {
                 _person.Death = deathState;
                 tempPop.Died.Add(_person);
-                var leftMoney = _bankAccount.CloseAccount();
-                if (leftMoney > 0)
-                {
-                    DistributeWealthToChildren(leftMoney);
-                }
+                decimal leftMoney = _bankAccount.CloseAccount();
+                if (leftMoney > 0) DistributeWealthToChildren(leftMoney);
             }
         }
 
@@ -224,7 +197,7 @@ namespace Controller.Agents
             _obs.MonthlyIncomeAccumulatedForYear += _obs.Salary;
             return _obs.Salary;
         }
-        
+
         public void PayBill(decimal amount)
         {
             _bankAccount.Withdraw(amount);
@@ -234,22 +207,19 @@ namespace Controller.Agents
         {
             _obs.JobStatus = JobStatus.Retired;
             _obs.LastSalaryBeforeRetirement = _obs.Salary;
-            _obs.Salary *= (decimal)_policies.FederalUnemployedPaymentPolicies.retirementSupportRate;
+            _obs.Salary *= (decimal) _policies.FederalUnemployedPaymentPolicies.retirementSupportRate;
             _obs.AgeStatus = AgeStatus.RetiredAge;
-            
-            if (_obs.JobStatus == JobStatus.Employed)
-            {
-                _person.Job.QuitJob(_person);
-            }
+
+            if (_obs.JobStatus == JobStatus.Employed) _person.Job.QuitJob(_person);
 
             retiredTemp.Add(_person);
         }
-        
+
         private void TurnAdult(decimal avgIncome)
         {
             _obs.DesiredSalary = avgIncome * 0.7M;
             _obs.JobStatus = JobStatus.Unemployed;
-            _obs.Salary = (decimal)_policies.FederalUnemployedPaymentPolicies.unemployedSupportMin;
+            _obs.Salary = (decimal) _policies.FederalUnemployedPaymentPolicies.unemployedSupportMin;
         }
 
         private void Reproduce(TempPopulationUpdateModel tempPop, PopulationFactory factory)
@@ -262,11 +232,8 @@ namespace Controller.Agents
             int minAge = parentAge - randomAgeDifference > 18 ? parentAge - randomAgeDifference : 18;
             var secondParent = factory.FindPersonWithinValueRange(minAge, parentAge + randomAgeDifference,
                 tempPop.Current, _person.Id);
-            string secondParentId = "dead";
-            if (secondParent != null)
-            {
-                secondParentId = secondParent.Id;
-            }
+            var secondParentId = "dead";
+            if (secondParent != null) secondParentId = secondParent.Id;
             var child = factory.CreateChild(0, _person.Id, secondParentId);
             if (child.IsDummy == false)
             {
@@ -306,10 +273,7 @@ namespace Controller.Agents
             decimal prop = StatisticalDistributionController.ReproductionRate();
             bool propMet = prop * propability + 1 > childCount;
             int modifier = StatisticalDistributionController.CreateRandom(0, 17);
-            if (propMet && modifier == 1 && staysChildless == false)
-            {
-                return true;
-            }
+            if (propMet && modifier == 1 && staysChildless == false) return true;
 
             return false;
         }

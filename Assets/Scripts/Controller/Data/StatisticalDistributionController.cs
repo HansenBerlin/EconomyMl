@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MathNet.Numerics.Statistics;
+using ScottPlot;
 
 namespace Controller.Data
 {
@@ -11,7 +12,7 @@ namespace Controller.Data
 
         public static decimal ReproductionRate()
         {
-            return (decimal) ScottPlot.DataGen.RandomNormalValue(Rng, 1.52, 0.5);
+            return (decimal) DataGen.RandomNormalValue(Rng, 1.52, 0.5);
         }
 
         public static int CreateRandom(int startInclude, int endExclude)
@@ -23,7 +24,7 @@ namespace Controller.Data
         {
             double mn = MeanTrend(data);
 
-            var value = (currentValue - mn) / mn;
+            double value = (currentValue - mn) / mn;
             value = double.IsNaN(value) ? 0 : value;
             value = double.IsInfinity(value) ? 0 : value;
 
@@ -32,10 +33,7 @@ namespace Controller.Data
 
         public static double MeanTrend(List<double> data)
         {
-            if (data.Count == 0 || data.Sum() == 0)
-            {
-                return 0;
-            }
+            if (data.Count == 0 || data.Sum() == 0) return 0;
 
             int indexStart = data.Count < 6 ? 0 : data.Count - 6;
             int itemsCount = data.Count < 6 ? data.Count : 6;

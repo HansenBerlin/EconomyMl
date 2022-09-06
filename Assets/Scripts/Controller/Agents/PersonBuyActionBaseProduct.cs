@@ -1,26 +1,29 @@
 ﻿using System;
 using Enums;
-using Models.Market;
+using Interfaces;
+using Models;
 using Settings;
 
 namespace Controller.Agents
 {
     public class PersonBuyActionBaseProduct : PersonBuyAction
     {
-        public PersonBuyActionBaseProduct(PersonResourceDemandSettings settings, ICountryEconomy market) : base(settings, market) { }
-        
+        public PersonBuyActionBaseProduct(PersonResourceDemandSettings settings, ICountryEconomy market) : base(
+            settings, market)
+        {
+        }
+
         public override void BuyDemandedProduct(int underageChildCount, decimal maxSpendable = -1)
         {
-            maxSpendable = maxSpendable == -1 ? Observations.Capital : maxSpendable; 
+            maxSpendable = maxSpendable == -1 ? Observations.Capital : maxSpendable;
             int demand = GetDemand(underageChildCount);
-            ReceiptModel receipt = new ReceiptModel();
+            var receipt = new ReceiptModel();
             if (maxSpendable > 0)
             {
-                var request = new ProductRequestModel(ProductType.BaseProduct, 
+                var request = new ProductRequestModel(ProductType.BaseProduct,
                     ProductRequestSearchType.MaxAmountWithSpendingLimit, maxAmount: demand,
                     totalSpendable: maxSpendable);
                 receipt = Market.Buy(request);
-
             }
 
             UpdateProperties(receipt, demand);
@@ -47,7 +50,7 @@ namespace Controller.Agents
                 ? Settings.DemandRetired
                 : Settings.DemandWorkerAge;
             float childDemand = childCount * Settings.DemandChild;
-            int demand = (int) Math.Ceiling(personDemand + childDemand);
+            var demand = (int) Math.Ceiling(personDemand + childDemand);
             return demand;
         }
     }

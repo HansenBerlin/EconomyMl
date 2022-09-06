@@ -1,8 +1,5 @@
 ﻿namespace Enums
 {
-
-
-
     public enum EpisodeCut
     {
         Day = 1,

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Models;
+using Factories;
 
 namespace Controller.Data
 {
     public class PopulationPropabilityController
     {
         private readonly PopulationDataTemplateModel _dataTemplate;
-        public List<int> AgeDistribution { get; }
         private List<double> _qualificationDistribution;
 
         public PopulationPropabilityController(PopulationDataTemplateModel dataTemplate)
@@ -16,6 +15,8 @@ namespace Controller.Data
             AgeDistribution = _dataTemplate.CreateAgeDistributionTemplate();
             _qualificationDistribution = _dataTemplate.CreateQualificationStructure();
         }
+
+        public List<int> AgeDistribution { get; }
 
         public bool IsDead(int age)
         {
@@ -28,9 +29,9 @@ namespace Controller.Data
 
         public decimal[] InitialIncomeAndCapital(int age)
         {
-            var rnIndex = StatisticalDistributionController.CreateRandom(1, 10);
-            List<double> distAge = _dataTemplate.IncomeDistributionByAge(age);
-            List<double> distCapital = _dataTemplate.CapitalDistribution();
+            int rnIndex = StatisticalDistributionController.CreateRandom(1, 10);
+            var distAge = _dataTemplate.IncomeDistributionByAge(age);
+            var distCapital = _dataTemplate.CapitalDistribution();
 
             double lowAge = distAge[rnIndex - 1];
             double lowC = distCapital[rnIndex - 1];

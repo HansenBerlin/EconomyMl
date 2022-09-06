@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Agents;
 using Enums;
-using Models;
 
 namespace Controller.Data
 {
@@ -13,7 +13,7 @@ namespace Controller.Data
             var obsModel = new ObservationDataModel(range, initValue);
             _observationHistory.Add(observationName, obsModel);
         }
-        
+
         public float Normalize(string obsName, float value)
         {
             var obsModel = _observationHistory[obsName];
@@ -26,20 +26,14 @@ namespace Controller.Data
 
         private float GetRangeTwo(float min, float max, float value)
         {
-            if (max - min == 0)
-            {
-                return 0;
-            }
+            if (max - min == 0) return 0;
             float norm = 2 * ((value - min) / (max - min)) - 1;
             return norm;
         }
-        
+
         private float GetRangeOne(float min, float max, float value)
         {
-            if (max - min == 0)
-            {
-                return 0.5f;
-            }
+            if (max - min == 0) return 0.5f;
             float norm = (value - min) / (max - min);
             return norm;
         }

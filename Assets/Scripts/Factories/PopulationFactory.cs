@@ -1,34 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Agents;
 using Controller.Agents;
 using Controller.Data;
 using Controller.RepositoryController;
-using Models.Agents;
-using Models.Market;
-using Models.Observations;
-using Settings;
+using Interfaces;
+using Policies;
 using UnityEngine;
 
 namespace Factories
 {
-
-
-
     public class PopulationFactory : MonoBehaviour
     {
-        private int ParentMinimumAge => _policies.AgeBoundaries.adultMinAge;
-        private PoliciesWrapper _policies;
-        private PopulationPropabilityController _propabilityController;
-        private List<int> _distributionOfAges;
+        public GameObject personAgentPrefab;
         private ActionsFactory _actionsFactory;
+        private List<int> _distributionOfAges;
         private JobMarketController _jobMarketController;
         private ICountryEconomy _markets;
-        
-        public GameObject personAgentPrefab;
-        
-        
-        public void Init(ActionsFactory factory, JobMarketController jobMarketController, PoliciesWrapper policies, 
+        private PoliciesWrapper _policies;
+        private PopulationPropabilityController _propabilityController;
+        private int ParentMinimumAge => _policies.AgeBoundaries.adultMinAge;
+
+
+        public void Init(ActionsFactory factory, JobMarketController jobMarketController, PoliciesWrapper policies,
             PopulationPropabilityController propabilityController, ICountryEconomy markets)
         {
             _actionsFactory = factory;
@@ -53,7 +48,7 @@ namespace Factories
         public List<PersonAgent> CreateInitialPopulation()
         {
             List<PersonAgent> persons = new();
-            List<PersonAgent>[] buckets = CreateBuckets();
+            var buckets = CreateBuckets();
 
             var fbc = new List<PersonAgent>(buckets[0]);
             var fpb = new List<PersonAgent>(buckets[1]);
@@ -80,7 +75,7 @@ namespace Factories
                 childLeft.AddParents("dead", "dead");
                 persons.Add(childLeft);
             }
-            
+
             return persons;
         }
 
@@ -89,7 +84,7 @@ namespace Factories
         {
             double margin = 0;
             List<PersonAgent> matchingValues = new();
-            int itts = 0;
+            var itts = 0;
             while (matchingValues.Count == 0)
             {
                 double min = low - margin;
@@ -108,7 +103,7 @@ namespace Factories
                     return null;
             }
 
-            var randIndex = StatisticalDistributionController.CreateRandom(0, matchingValues.Count);
+            int randIndex = StatisticalDistributionController.CreateRandom(0, matchingValues.Count);
             return matchingValues[randIndex];
         }
 
@@ -117,15 +112,12 @@ namespace Factories
             List<PersonAgent> finalPersonsFromBucket = new();
             for (int i = parentBucket.Count - 1; i >= 0; i--)
             {
-                if (childBucket.Count == 0)
-                {
-                    break;
-                }
+                if (childBucket.Count == 0) break;
 
-                PersonAgent parentOne = parentBucket[i];
+                var parentOne = parentBucket[i];
 
-                double childCount = (double) StatisticalDistributionController.ReproductionRate();
-                int childCountRounded = (int)Math.Round(childCount, MidpointRounding.AwayFromZero);
+                var childCount = (double) StatisticalDistributionController.ReproductionRate();
+                var childCountRounded = (int) Math.Round(childCount, MidpointRounding.AwayFromZero);
                 var potentialPartners = FindMatchingSecondParent(parentBucket, parentOne);
                 PersonAgent parentTwo = null;
                 int parentTwoAge;
@@ -154,10 +146,7 @@ namespace Factories
                 {
                     c.AddParents(parentOne.Id, parentTwoId);
                     parentOne.AddChild(c);
-                    if (parentTwo != null)
-                    {
-                        parentTwo.AddChild(c);
-                    }
+                    if (parentTwo != null) parentTwo.AddChild(c);
                     childBucket.Remove(c);
                     finalPersonsFromBucket.Add(c);
                 }
@@ -165,7 +154,6 @@ namespace Factories
                 parentBucket.Remove(parentOne);
                 parentBucket.Remove(parentTwo);
             }
-
 
 
             return finalPersonsFromBucket;
@@ -176,7 +164,6 @@ namespace Factories
             var potentialChildren = bucket.Where(
                 p => p.Age <= parentAge - 18 && p.Age >= parentAge - 50).ToList();
             return potentialChildren.Count > 0 ? potentialChildren : new List<PersonAgent>();
-
         }
 
         private List<PersonAgent> FindMatchingSecondParent(IEnumerable<PersonAgent> bucket, PersonAgent parentOne)
@@ -184,14 +171,13 @@ namespace Factories
             var potentialPartners = bucket.Where(
                 p => p.Age >= parentOne.Age - 5 && p.Age <= parentOne.Age + 5 && p != parentOne).ToList();
             return potentialPartners.Count > 0 ? potentialPartners : new List<PersonAgent>();
-
         }
 
 
         private List<PersonAgent>[] CreateBuckets()
         {
             List<PersonAgent>[] generationBuckets = {new(), new(), new(), new()};
-            foreach (var age in _distributionOfAges)
+            foreach (int age in _distributionOfAges)
             {
                 var person = age >= ParentMinimumAge ? CreateAdult(age, "", "") : CreateChild(age, "", "");
 
@@ -205,28 +191,30 @@ namespace Factories
 
         private PersonAgent CreateAdult(int age, string parentAId, string parentBId)
         {
-            var financialData = _propabilityController.InitialIncomeAndCapital(age);
+            decimal[] financialData = _propabilityController.InitialIncomeAndCapital(age);
             decimal income = financialData[0];
             //Console.WriteLine(income);
             decimal capital = financialData[1];
 
             var bankAccount = _markets.OpenBankAccount(capital, true);
-            var observations = new PersonObservations(age, income, bankAccount, _policies, _jobMarketController, new NormalizationController());
+            var observations = new PersonObservations(age, income, bankAccount, _policies, _jobMarketController,
+                new NormalizationController());
             var controller = new PersonController(observations, _policies, _actionsFactory, _markets);
             var go = Instantiate(personAgentPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            PersonAgent person = go.GetComponent<PersonAgent>();
-            person.Init(parentAId, parentBId, observations, controller);
+            var person = go.GetComponent<PersonAgent>();
+            person.Init(parentAId, parentBId, observations, controller, new NormalizationController());
             return person;
         }
 
         public PersonAgent CreateChild(int age, string parentAId, string parentBId)
         {
             var bankAccount = _markets.OpenBankAccount(10, true);
-            var observations = new PersonObservations(age, 0, bankAccount, _policies, _jobMarketController, new NormalizationController());
+            var observations = new PersonObservations(age, 0, bankAccount, _policies, _jobMarketController,
+                new NormalizationController());
             var controller = new PersonController(observations, _policies, _actionsFactory, _markets);
             var go = Instantiate(personAgentPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            PersonAgent person = go.GetComponent<PersonAgent>();
-            person.Init(parentAId, parentBId, observations, controller);
+            var person = go.GetComponent<PersonAgent>();
+            person.Init(parentAId, parentBId, observations, controller, new NormalizationController());
             return person;
         }
     }

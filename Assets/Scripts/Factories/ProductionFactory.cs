@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
 using Controller.RepositoryController;
 using Enums;
-using Models.Market;
-using Models.Meta;
-using Models.Production;
+using Interfaces;
+using Models;
 using Repositories;
 using Settings;
 
 namespace Factories
 {
-
     public static class ProductionFactory
     {
-        public static IProductionTemplate CreateTemplate(ProductType type)
+        private static IProductionTemplate CreateTemplate(ProductType type)
         {
             var production = new ProductionTemplate();
 
@@ -29,7 +27,6 @@ namespace Factories
                 production.MachineEfficiencyMultiplier = 1;
                 production.AvailableProductionEnergy = 0;
                 production.AvailableProductionResources = 0;
-                //production.Product = CreateProduct(type, stats, env);
             }
             else if (type == ProductType.BaseProduct)
             {
@@ -44,7 +41,6 @@ namespace Factories
                 production.MachineEfficiencyMultiplier = 1;
                 production.AvailableProductionEnergy = 1000;
                 production.AvailableProductionResources = 0;
-                //production.Product = CreateProduct(type, stats, env);
             }
             else if (type == ProductType.IntermediateProduct)
             {
@@ -59,7 +55,6 @@ namespace Factories
                 production.MachineEfficiencyMultiplier = 1;
                 production.AvailableProductionEnergy = 10000;
                 production.AvailableProductionResources = 0;
-                //production.Product = CreateProduct(type, stats, env);
             }
             else if (type == ProductType.LuxuryProduct)
             {
@@ -74,7 +69,6 @@ namespace Factories
                 production.MachineEfficiencyMultiplier = 1;
                 production.AvailableProductionEnergy = 100;
                 production.AvailableProductionResources = 100;
-                //production.Product = CreateProduct(type, stats, env);
             }
             else if (type == ProductType.FederalService)
             {
@@ -87,7 +81,6 @@ namespace Factories
                 production.BaseCostPerPieceProduced = 2;
                 production.WorkerEfficiencyMultiplier = 5000;
                 production.MachineEfficiencyMultiplier = 5000;
-                //production.Product = CreateProduct(type, stats, env);
             }
 
             return production;
@@ -107,7 +100,7 @@ namespace Factories
                 string id = IdGenerator.Create(env.Month, env.CountryName, pr);
                 var dataRepo = new ProductMarketDataRepository(id);
                 stats.AddProductMarketDataset(dataRepo);
-                markets.Add(new ProductMarketModel(pr, dataRepo, CreateTemplate(pr)));
+                markets.Add(new ProductMarketModel(pr));
             }
 
             return markets;
@@ -121,12 +114,12 @@ namespace Factories
             stats.AddProductDataset(dataRepo);
             return type switch
             {
-                ProductType.FossileEnergy => new ProductModel(dataRepo, env, type, 0.8M),
-                ProductType.BaseProduct => new ProductModel(dataRepo, env, type, 17M),
-                ProductType.IntermediateProduct => new ProductModel(dataRepo, env, type, 45M),
-                ProductType.LuxuryProduct => new ProductModel(dataRepo, env, type, 400M),
-                ProductType.FederalService => new ProductModel(dataRepo, env, type, 100M),
-                _ => new ProductModel(null, null, ProductType.None, 0M)
+                ProductType.FossileEnergy => new ProductModel(dataRepo, type, 0.8M),
+                ProductType.BaseProduct => new ProductModel(dataRepo, type, 17M),
+                ProductType.IntermediateProduct => new ProductModel(dataRepo, type, 45M),
+                ProductType.LuxuryProduct => new ProductModel(dataRepo, type, 400M),
+                ProductType.FederalService => new ProductModel(dataRepo, type, 100M),
+                _ => new ProductModel(null, ProductType.None, 0M)
             };
         }
 
@@ -137,7 +130,8 @@ namespace Factories
             {
                 ProductType.FossileEnergy => new ProductController(ProductType.FossileEnergy, model, template),
                 ProductType.BaseProduct => new ProductController(ProductType.BaseProduct, model, template),
-                ProductType.IntermediateProduct => new ProductController(ProductType.IntermediateProduct, model, template),
+                ProductType.IntermediateProduct => new ProductController(ProductType.IntermediateProduct, model,
+                    template),
                 ProductType.LuxuryProduct => new ProductController(ProductType.LuxuryProduct, model, template),
                 ProductType.FederalService => new ProductController(ProductType.FederalService, model, template),
                 _ => new ProductController(ProductType.None, model, template)
