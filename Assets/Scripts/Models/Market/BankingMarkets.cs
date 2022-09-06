@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.Controller;
-using Assets.Scripts.Models.Agents;
-using Assets.Scripts.Models.Finance;
+using Controller.Data;
+using Models.Agents;
+using Models.Finance;
 
-namespace Assets.Scripts.Models.Market
+namespace Models.Market
 {
     public class BankingMarkets
     {

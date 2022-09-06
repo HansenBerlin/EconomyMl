@@ -1,4 +1,4 @@
-﻿namespace Assets.Scripts.Models.Market
+﻿namespace Models.Market
 {
 
 

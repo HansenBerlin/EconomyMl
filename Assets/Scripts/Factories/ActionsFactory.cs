@@ -1,10 +1,11 @@
-﻿using Assets.Scripts.Controller;
-using Assets.Scripts.Controller.Actions;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Models.Market;
-using Assets.Scripts.Settings;
+﻿using Controller.Agents;
+using Controller.RepositoryController;
+using Enums;
+using Interfaces;
+using Models.Market;
+using Settings;
 
-namespace Assets.Scripts.Factories
+namespace Factories
 {
 
 
@@ -24,17 +25,17 @@ namespace Assets.Scripts.Factories
         {
             if (type == PersonActionType.JobDecision)
             {
-                return new PersonActionsJobPhaseFree(_jobMarketController);
+                return new PersonJobAction(_jobMarketController);
             }
 
             if (type == PersonActionType.BaseProductBuy)
             {
                 var baseDemandSettings = new PersonResourceDemandSettings(60, 0.25F, 30);
-                return new PersonActionsBuyBaseProductPhase(baseDemandSettings, _market);
+                return new PersonBuyActionBaseProduct(baseDemandSettings, _market);
             }
 
             var luxuryDemandSettings = new PersonResourceDemandSettings(2, 0, 1);
-            return new PersonActionsBuyLuxuryProductPhase(luxuryDemandSettings, _market);
+            return new PersonBuyActionLuxuryProduct(luxuryDemandSettings, _market);
 
 
         }

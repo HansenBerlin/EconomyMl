@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.Controller;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Models.Business;
-using Assets.Scripts.Models.Finance;
-using Assets.Scripts.Models.Population;
+using Controller.RepositoryController;
+using Enums;
+using Models.Business;
+using Models.Finance;
+using Models.Population;
 
-namespace Assets.Scripts.Models.Market
+namespace Models.Market
 {
 
 

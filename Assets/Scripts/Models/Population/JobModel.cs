@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Models.Agents;
+using Enums;
+using Models.Agents;
 using UnityEngine;
 
-namespace Assets.Scripts.Models.Population
+namespace Models.Population
 {
 
 

@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Models.Agents;
+using Enums;
+using Models.Agents;
 
-namespace Assets.Scripts.Models.Finance
+namespace Models.Finance
 {
     public class BankAccountModel
     {
         private readonly BankAgent _bank;
         public decimal Savings { get; private set; }
-        private readonly List<LoanModel> Loans = new();
-        public decimal LoansSum => Loans.Sum(x => x.TotalSumLeft);
+        private readonly List<LoanModel> _loans = new();
+        public decimal LoansSum => _loans.Sum(x => x.TotalSumLeft);
 
         public BankAccountModel(decimal deposit, BankAgent bank)
         {
@@ -36,7 +36,7 @@ namespace Assets.Scripts.Models.Finance
             var loan = _bank.RequestLoan(amount, rating);
             if (loan.IsDeclined == false)
             {
-                Loans.Add(loan);
+                _loans.Add(loan);
                 Savings += loan.TotalSumLeft;
                 return true;
             }
@@ -47,15 +47,15 @@ namespace Assets.Scripts.Models.Finance
         public decimal MonthlyPaymentForLoans()
         {
             decimal totalPaid = 0;
-            for (int i = Loans.Count - 1; i >= 0; i--)
+            for (int i = _loans.Count - 1; i >= 0; i--)
             {
-                var loan = Loans[i];
+                var loan = _loans[i];
                 var paid = loan.MakeMonthlyPayment();
                 totalPaid += paid;
                 Savings -= paid;
                 if (loan.MonthLeft == 0)
                 {
-                    Loans.Remove(loan);
+                    _loans.Remove(loan);
                 }
             }
 
@@ -75,7 +75,7 @@ namespace Assets.Scripts.Models.Finance
 
         public decimal CloseAccount()
         {
-            foreach (var l in Loans)
+            foreach (var l in _loans)
             {
                 if (Savings <= 0)
                 {
@@ -88,7 +88,7 @@ namespace Assets.Scripts.Models.Finance
                 }
             }
             _bank.RemoveAccount(this);
-            Loans.Clear();
+            _loans.Clear();
             return Savings;
         }
     }

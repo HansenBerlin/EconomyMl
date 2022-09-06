@@ -1,9 +1,10 @@
-﻿using Assets.Scripts.Controller;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Models.Finance;
-using Assets.Scripts.Settings;
+﻿using Controller.Data;
+using Controller.RepositoryController;
+using Enums;
+using Models.Finance;
+using Settings;
 
-namespace Assets.Scripts.Models.Observations
+namespace Models.Observations
 {
 
 
@@ -60,8 +61,8 @@ namespace Assets.Scripts.Models.Observations
 
         private AgeStatus GetAgeStatus()
         {
-            int adultMinAge = _policies.AgeBoundaries.AdultMinAge;
-            int workerMaxAge = _policies.AgeBoundaries.WorkerMaxAge;
+            int adultMinAge = _policies.AgeBoundaries.adultMinAge;
+            int workerMaxAge = _policies.AgeBoundaries.workerMaxAge;
             if (_ageStatus == AgeStatus.Dead)
                 return AgeStatus.Dead;
             if (Age > 0 && Age < adultMinAge)

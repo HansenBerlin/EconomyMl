@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace Assets.Scripts.Settings
+namespace Settings
 {
     public class EducationBoundaryPolicy : MonoBehaviour
     {
-        public int AgeToStartSchool;
-        public int MinYearsInSchool;
-        public int MaxYearsInSchool;
+        [FormerlySerializedAs("AgeToStartSchool")] public int ageToStartSchool;
+        [FormerlySerializedAs("MinYearsInSchool")] public int minYearsInSchool;
+        [FormerlySerializedAs("MaxYearsInSchool")] public int maxYearsInSchool;
     }
 }

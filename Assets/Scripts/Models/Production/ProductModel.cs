@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assets.Scripts.Controller;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Models.Meta;
-using Assets.Scripts.Repositories;
+using Enums;
+using Models.Meta;
+using Repositories;
 
-namespace Assets.Scripts.Models.Production
+namespace Models.Production
 {
 
 
 
-    public class ProductModel : IEpisodeUpdateController
+    public class ProductModel
     {
         public readonly ProductDataRepository Stats;
         private readonly EnvironmentModel _environment;

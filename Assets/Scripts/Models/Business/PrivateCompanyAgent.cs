@@ -1,14 +1,14 @@
 ﻿using System;
-using Assets.Scripts.Controller;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Factories;
-using Assets.Scripts.Models.Market;
+using Controller.Agents;
+using Enums;
+using Factories;
+using Models.Market;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
-namespace Assets.Scripts.Models.Business
+namespace Models.Business
 {
     public class PrivateCompanyAgent : CompanyBaseAgent
     {
@@ -35,10 +35,10 @@ namespace Assets.Scripts.Models.Business
         private decimal ObsVariableSpendingsResource =>
             ObservationAveragePriceResource * Production.ResourceNeededPerPiece;
 
-        private CompanyActionPhase currentActionPhase;
+        private CompanyActionPhase _currentActionPhase;
         public override void MakeDecision(CompanyActionPhase phase)
         {
-            currentActionPhase = phase;
+            _currentActionPhase = phase;
             RequestDecision();
             Academy.Instance.EnvironmentStep();
 
@@ -50,7 +50,7 @@ namespace Assets.Scripts.Models.Business
             Academy.Instance.StatsRecorder.Add("YEAR/PROFIT-TREND" + TypeProduced, (float)ProductController.ObsProfitTrend);
             Academy.Instance.StatsRecorder.Add("YEAR/SALESTREND" + TypeProduced, (float)ProductController.ObsSalesTrend);
             
-            currentActionPhase = phase;
+            _currentActionPhase = phase;
             float capitalReward = Balance < BalanceLastYear ? -0.5f : 0.5f;
             float rewardTrends = Normalize((float)ProductController.ObsProductionTrend + ((float)ProductController.ObsSalesTrend +(float)ProductController.ObsProfitTrend));
             AddReward(capitalReward + rewardTrends / 2);
@@ -91,7 +91,7 @@ namespace Assets.Scripts.Models.Business
 
             try
             {
-                if (currentActionPhase != CompanyActionPhase.Produce && currentActionPhase != CompanyActionPhase.AdaptPrice)
+                if (_currentActionPhase != CompanyActionPhase.Produce && _currentActionPhase != CompanyActionPhase.AdaptPrice)
                 {
                     if (BankAccount.LoansSum < 10000000 && requestCredit > 0)
                     {
@@ -107,22 +107,22 @@ namespace Assets.Scripts.Models.Business
                         AddReward(0.05f);
                     }
                 }
-                if (currentActionPhase == CompanyActionPhase.AdaptPrice)
+                if (_currentActionPhase == CompanyActionPhase.AdaptPrice)
                 {
                     ActionAdaptPrices(adaptPrice);
                 }
-                if (currentActionPhase == CompanyActionPhase.Produce)
+                if (_currentActionPhase == CompanyActionPhase.Produce)
                 {
                     ActionProduce(maxProduction);
                     //AddReward((float)CapacityUsed);
                 }
             
-                if (currentActionPhase == CompanyActionPhase.BuyResources)
+                if (_currentActionPhase == CompanyActionPhase.BuyResources)
                 {
                     ActionBuyNeededProductionResources((decimal)buyResourcesFromBalance);
                 }
 
-                if (currentActionPhase == CompanyActionPhase.AdaptWorkerCapacity)
+                if (_currentActionPhase == CompanyActionPhase.AdaptWorkerCapacity)
                 {
                     ActionAdaptProductionCapacity(adaptWorkForce, setSalary);
                 }
@@ -168,7 +168,7 @@ namespace Assets.Scripts.Models.Business
             }
         }
 
-        private decimal last;
+        private decimal _last;
 
         private decimal CalculateMaxWorkerSalary()
         {
@@ -178,12 +178,12 @@ namespace Assets.Scripts.Models.Business
                                   Production.UnitsPerWorker;
             if (TypeProduced == ProductType.FossileEnergy)
             {
-                Console.WriteLine($"Last payment: {last}");
+                Console.WriteLine($"Last payment: {_last}");
                 Console.WriteLine($"New payment: {leftToSpend}");
                 Console.WriteLine($"Cost per worker: {ObsAveragePerWorkerSalary}");
             }
 
-            last = leftToSpend;
+            _last = leftToSpend;
             return leftToSpend;
         }
 

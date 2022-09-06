@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Factories;
-using Assets.Scripts.Models.Finance;
-using Assets.Scripts.Models.Market;
+using Enums;
+using Factories;
+using Models.Finance;
+using Models.Market;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
-namespace Assets.Scripts.Models.Business
+namespace Models.Business
 {
     public class PublicServiceAgent : CompanyBaseAgent
     {
@@ -35,10 +35,10 @@ namespace Assets.Scripts.Models.Business
         private decimal ObsVariableSpendingsResource =>
             ObservationAveragePriceResource * Production.ResourceNeededPerPiece;
 
-        private CompanyActionPhase currentActionPhase;
+        private CompanyActionPhase _currentActionPhase;
         public override void MakeDecision(CompanyActionPhase phase)
         {
-            currentActionPhase = phase;
+            _currentActionPhase = phase;
             if (phase == CompanyActionPhase.Produce)
             {
                 ActionProduce(0);
@@ -57,7 +57,7 @@ namespace Assets.Scripts.Models.Business
 
         public override void EndYear(CompanyActionPhase phase)
         {
-            currentActionPhase = phase;
+            _currentActionPhase = phase;
             float capitalReward = Balance < BalanceLastYear ? -0.5f : 0.5f;
             float rewardTrends = Normalize((float)ProductController.ObsProductionTrend);
             AddReward(capitalReward + rewardTrends / 2);
@@ -120,7 +120,7 @@ namespace Assets.Scripts.Models.Business
             }
         }
 
-        private decimal last;
+        private decimal _last;
 
         private decimal CalculateMaxWorkerSalary()
         {
@@ -130,12 +130,12 @@ namespace Assets.Scripts.Models.Business
                                   Production.UnitsPerWorker;
             if (TypeProduced == ProductType.FossileEnergy)
             {
-                Console.WriteLine($"Last payment: {last}");
+                Console.WriteLine($"Last payment: {_last}");
                 Console.WriteLine($"New payment: {leftToSpend}");
                 Console.WriteLine($"Cost per worker: {ObsAveragePerWorkerSalary}");
             }
 
-            last = leftToSpend;
+            _last = leftToSpend;
             return leftToSpend;
         }
 

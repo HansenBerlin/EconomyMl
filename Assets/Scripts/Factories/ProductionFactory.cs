@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
-using Assets.Scripts.Controller;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Models.Market;
-using Assets.Scripts.Models.Meta;
-using Assets.Scripts.Models.Production;
-using Assets.Scripts.Repositories;
-using Assets.Scripts.Settings;
+using Controller.RepositoryController;
+using Enums;
+using Models.Market;
+using Models.Meta;
+using Models.Production;
+using Repositories;
+using Settings;
 
-namespace Assets.Scripts.Factories
+namespace Factories
 {
 
     public static class ProductionFactory

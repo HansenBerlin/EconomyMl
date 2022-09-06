@@ -1,6 +1,6 @@
-﻿using Assets.Scripts.Enums;
+﻿using Enums;
 
-namespace Assets.Scripts.Models.Market
+namespace Models.Market
 {
 
 

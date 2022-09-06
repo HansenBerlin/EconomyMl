@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace Assets.Scripts.Settings
+namespace Settings
 {
     public class FederalServicesPolicy : MonoBehaviour
     {
-        public int ServiceUnitsPerPersonInPopulation;
-        public float IncomeTaxRate;
-        public float ProfitTaxRate;
-        public float ConsumerTaxRate;
-        public float FederalWorkerSalary;
+        [FormerlySerializedAs("ServiceUnitsPerPersonInPopulation")] public int serviceUnitsPerPersonInPopulation;
+        [FormerlySerializedAs("IncomeTaxRate")] public float incomeTaxRate;
+        [FormerlySerializedAs("ProfitTaxRate")] public float profitTaxRate;
+        [FormerlySerializedAs("ConsumerTaxRate")] public float consumerTaxRate;
+        [FormerlySerializedAs("FederalWorkerSalary")] public float federalWorkerSalary;
     }
 }

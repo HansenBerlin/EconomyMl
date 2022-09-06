@@ -1,17 +1,17 @@
-﻿using Assets.Scripts.Enums;
+﻿using Enums;
 
-namespace Assets.Scripts.Settings
+namespace Settings
 {
 
 
 
     public static class IdGenerator
     {
-        private static int IdRunner = 1;
+        private static int _idRunner = 1;
 
         public static string Create(int monthCreated, string country, ProductType product)
         {
-            string id = $"{country}-{IdRunner++}-{product}-{monthCreated}";
+            string id = $"{country}-{_idRunner++}-{product}-{monthCreated}";
             return id;
         }
     }

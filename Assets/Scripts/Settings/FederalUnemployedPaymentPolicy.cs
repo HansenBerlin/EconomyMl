@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Assets.Scripts.Settings
+namespace Settings
 {
     public class FederalUnemployedPaymentPolicy : MonoBehaviour
     {
-        public float GuaranteedIncome;
-        public float UnemployedSupportRate;
-        public float UnemployedSupportMax;
-        public float UnemployedSupportMin;
-        [FormerlySerializedAs("RetirementRateSupporRate")] public float RetirementSupportRate;
+        [FormerlySerializedAs("GuaranteedIncome")] public float guaranteedIncome;
+        [FormerlySerializedAs("UnemployedSupportRate")] public float unemployedSupportRate;
+        [FormerlySerializedAs("UnemployedSupportMax")] public float unemployedSupportMax;
+        [FormerlySerializedAs("UnemployedSupportMin")] public float unemployedSupportMin;
+        [FormerlySerializedAs("RetirementSupportRate")] [FormerlySerializedAs("RetirementRateSupporRate")] public float retirementSupportRate;
     }
 }

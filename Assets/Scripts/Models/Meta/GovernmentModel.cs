@@ -1,26 +1,26 @@
-﻿using Assets.Scripts.Repositories;
-using Assets.Scripts.Settings;
+﻿using Repositories;
+using Settings;
 using Unity.MLAgents;
 
-namespace Assets.Scripts.Models.Meta
+namespace Models.Meta
 {
 
 
 
     public class GovernmentModel
     {
-        public readonly FederalServicesPolicy _fedPolicy;
-        public readonly FederalUnemployedPaymentPolicy _workerPolicy;
-        private decimal Gdp;
-        public float IncomeTaxRate => _fedPolicy.IncomeTaxRate;
-        public float ProfitTaxRate => _fedPolicy.ProfitTaxRate;
-        public float ConsumerTaxRate => _fedPolicy.ConsumerTaxRate;
-        public float WorkerSalary => _fedPolicy.FederalWorkerSalary;
-        public float MinUnemploymentSupport => _workerPolicy.UnemployedSupportMin;
-        public float MaxUnemploymentSupport => _workerPolicy.UnemployedSupportMax;
-        public float UnemploymentSupportQuote => _workerPolicy.UnemployedSupportRate;
-        public float RetirementSupportSupportQuote => _workerPolicy.RetirementSupportRate;
-        public decimal ServiceUnitsNeededPerPop => _fedPolicy.ServiceUnitsPerPersonInPopulation;
+        public readonly FederalServicesPolicy FedPolicy;
+        public readonly FederalUnemployedPaymentPolicy WorkerPolicy;
+        private decimal _gdp;
+        public float IncomeTaxRate => FedPolicy.incomeTaxRate;
+        public float ProfitTaxRate => FedPolicy.profitTaxRate;
+        public float ConsumerTaxRate => FedPolicy.consumerTaxRate;
+        public float WorkerSalary => FedPolicy.federalWorkerSalary;
+        public float MinUnemploymentSupport => WorkerPolicy.unemployedSupportMin;
+        public float MaxUnemploymentSupport => WorkerPolicy.unemployedSupportMax;
+        public float UnemploymentSupportQuote => WorkerPolicy.unemployedSupportRate;
+        public float RetirementSupportSupportQuote => WorkerPolicy.retirementSupportRate;
+        public decimal ServiceUnitsNeededPerPop => FedPolicy.serviceUnitsPerPersonInPopulation;
         public decimal Capital { get; set; } = 40000000;
         public decimal RetirementFundCapital { get; set; }
         public decimal PublicServicePaymentsInYear { get; set; }
@@ -35,8 +35,8 @@ namespace Assets.Scripts.Models.Meta
 
         public GovernmentModel(PoliciesWrapper policies, GovernmentDataRepository data)
         {
-            _fedPolicy = policies.FederalPolicies;
-            _workerPolicy = policies.federalUnemployedPaymentPolicies;
+            FedPolicy = policies.FederalPolicies;
+            WorkerPolicy = policies.FederalUnemployedPaymentPolicies;
             _data = data;
         }
 

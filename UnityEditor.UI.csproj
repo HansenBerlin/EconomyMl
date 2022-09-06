@@ -335,16 +335,13 @@
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.ml-agents@2.0.1\Plugins\System.IO.Abstractions.dll</HintPath>
      </Reference>
      <Reference Include="Unity.Plastic.Newtonsoft.Json">
-     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.collab-proxy@1.15.18\Lib\Editor\PlasticSCM\Unity.Plastic.Newtonsoft.Json.dll</HintPath>
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.collab-proxy@1.17.2\Lib\Editor\PlasticSCM\Unity.Plastic.Newtonsoft.Json.dll</HintPath>
      </Reference>
      <Reference Include="Unity.Plastic.Antlr3.Runtime">
-     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.collab-proxy@1.15.18\Lib\Editor\PlasticSCM\Unity.Plastic.Antlr3.Runtime.dll</HintPath>
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.collab-proxy@1.17.2\Lib\Editor\PlasticSCM\Unity.Plastic.Antlr3.Runtime.dll</HintPath>
      </Reference>
      <Reference Include="Unity.VisualScripting.YamlDotNet">
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.visualscripting@1.7.8\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll</HintPath>
-     </Reference>
-     <Reference Include="unityplastic">
-     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.collab-proxy@1.15.18\Lib\Editor\PlasticSCM\unityplastic.dll</HintPath>
      </Reference>
      <Reference Include="Unity.Burst.Unsafe">
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.burst@1.6.6\Unity.Burst.Unsafe.dll</HintPath>
@@ -368,7 +365,10 @@
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.burst@1.6.6\Unity.Burst.CodeGen\Unity.Burst.Cecil.dll</HintPath>
      </Reference>
      <Reference Include="log4netPlastic">
-     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.collab-proxy@1.15.18\Lib\Editor\PlasticSCM\log4netPlastic.dll</HintPath>
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.collab-proxy@1.17.2\Lib\Editor\PlasticSCM\log4netPlastic.dll</HintPath>
+     </Reference>
+     <Reference Include="ScottPlot">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\ScottPlot.4.1.57\lib\netstandard2.0\ScottPlot.dll</HintPath>
      </Reference>
      <Reference Include="Unity.Burst.Cecil.Rocks">
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.burst@1.6.6\Unity.Burst.CodeGen\Unity.Burst.Cecil.Rocks.dll</HintPath>
@@ -376,11 +376,8 @@
      <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.visualscripting@1.7.8\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
      </Reference>
-     <Reference Include="System.Drawing.Common">
-     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\System.Drawing.Common.4.6.1\lib\netstandard2.0\System.Drawing.Common.dll</HintPath>
-     </Reference>
-     <Reference Include="System.IO.Abstractions.TestingHelpers">
-     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.ml-agents@2.0.1\Plugins\System.IO.Abstractions.TestingHelpers.dll</HintPath>
+     <Reference Include="MathNet.Numerics">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\MathNet.Numerics.5.0.0\lib\netstandard2.0\MathNet.Numerics.dll</HintPath>
      </Reference>
      <Reference Include="ReportGeneratorMerged">
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.testtools.codecoverage@1.0.1\lib\ReportGenerator\ReportGeneratorMerged.dll</HintPath>
@@ -388,8 +385,8 @@
      <Reference Include="System.Interactive.Async">
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.ml-agents@2.0.1\Plugins\ProtoBuffer\System.Interactive.Async.dll</HintPath>
      </Reference>
-     <Reference Include="MathNet.Numerics">
-     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\MathNet.Numerics.5.0.0\lib\netstandard2.0\MathNet.Numerics.dll</HintPath>
+     <Reference Include="System.IO.Abstractions.TestingHelpers">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.ml-agents@2.0.1\Plugins\System.IO.Abstractions.TestingHelpers.dll</HintPath>
      </Reference>
      <Reference Include="Grpc.Core">
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.ml-agents@2.0.1\Plugins\ProtoBuffer\Grpc.Core.dll</HintPath>
@@ -400,8 +397,11 @@
      <Reference Include="NugetForUnity">
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\NuGet\Editor\NugetForUnity.dll</HintPath>
      </Reference>
-     <Reference Include="ScottPlot">
-     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\ScottPlot.4.1.57\lib\netstandard2.0\ScottPlot.dll</HintPath>
+     <Reference Include="unityplastic">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.collab-proxy@1.17.2\Lib\Editor\PlasticSCM\unityplastic.dll</HintPath>
+     </Reference>
+     <Reference Include="System.Drawing.Common">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\System.Drawing.Common.4.6.1\lib\netstandard2.0\System.Drawing.Common.dll</HintPath>
      </Reference>
      <Reference Include="nunit.framework">
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.ext.nunit@1.0.6\net35\unity-custom\nunit.framework.dll</HintPath>

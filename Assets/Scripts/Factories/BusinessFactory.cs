@@ -1,14 +1,16 @@
-﻿using Assets.Scripts.Controller;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Models.Business;
-using Assets.Scripts.Models.Market;
-using Assets.Scripts.Models.Meta;
-using Assets.Scripts.Policies;
-using Assets.Scripts.Repositories;
-using Assets.Scripts.Settings;
+﻿using Controller.Data;
+using Controller.RepositoryController;
+using Enums;
+using Models;
+using Models.Business;
+using Models.Market;
+using Models.Meta;
+using Policies;
+using Repositories;
+using Settings;
 using UnityEngine;
 
-namespace Assets.Scripts.Factories
+namespace Factories
 {
 
 
@@ -22,11 +24,11 @@ namespace Assets.Scripts.Factories
         public GameObject privateBusinessPrefab;
         public GameObject publicServicePrefab;
         
-        CompanyResourcePolicy fossilePolicy = new CompanyResourcePolicy(2200, 2200, 15, 100000, 20000);
-        CompanyResourcePolicy basePolicy = new CompanyResourcePolicy(2300, 2300, 20, 100000, 5000);
-        CompanyResourcePolicy interPolicy = new CompanyResourcePolicy(2400, 2400, 10, 100000, 1000);
-        CompanyResourcePolicy luxPolicy = new CompanyResourcePolicy(2600, 2600, 5, 100000, 100);
-        CompanyResourcePolicy fedPolicy = new CompanyResourcePolicy(2300, 2300, 100, 10000000, 0);
+        CompanyResourcePolicy _fossilePolicy = new CompanyResourcePolicy(2200, 2200, 15, 100000, 20000);
+        CompanyResourcePolicy _basePolicy = new CompanyResourcePolicy(2300, 2300, 20, 100000, 5000);
+        CompanyResourcePolicy _interPolicy = new CompanyResourcePolicy(2400, 2400, 10, 100000, 1000);
+        CompanyResourcePolicy _luxPolicy = new CompanyResourcePolicy(2600, 2600, 5, 100000, 100);
+        CompanyResourcePolicy _fedPolicy = new CompanyResourcePolicy(2300, 2300, 100, 10000000, 0);
 
         public void Init(ICountryEconomy countryEconomyMarkets, EnvironmentModel environment,
             StatisticalDataRepository stats, GovernmentAgent government)
@@ -68,11 +70,11 @@ namespace Assets.Scripts.Factories
         {
             return type switch
             {
-                ProductType.BaseProduct => basePolicy,
-                ProductType.FossileEnergy => fossilePolicy,
-                ProductType.LuxuryProduct => luxPolicy,
-                ProductType.IntermediateProduct => interPolicy,
-                _ => fedPolicy
+                ProductType.BaseProduct => _basePolicy,
+                ProductType.FossileEnergy => _fossilePolicy,
+                ProductType.LuxuryProduct => _luxPolicy,
+                ProductType.IntermediateProduct => _interPolicy,
+                _ => _fedPolicy
             };
         }
     }

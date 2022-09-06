@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.Controller;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Factories;
-using Assets.Scripts.Models.Agents;
-using Assets.Scripts.Models.Finance;
-using Assets.Scripts.Models.Market;
-using Assets.Scripts.Models.Production;
-using Assets.Scripts.Policies;
-using Assets.Scripts.Repositories;
+using Controller.Data;
+using Controller.RepositoryController;
+using Enums;
+using Factories;
+using Models.Agents;
+using Models.Finance;
+using Models.Market;
+using Models.Production;
+using Policies;
+using Repositories;
 using Unity.MLAgents;
 
-namespace Assets.Scripts.Models.Business
+namespace Models.Business
 {
 
 
@@ -25,7 +26,7 @@ namespace Assets.Scripts.Models.Business
         protected decimal Balance => BankAccount.Savings;
         protected decimal BalanceLastYear;
         protected GovernmentAgent Government;
-        private CompanyDataRepository Data;
+        private CompanyDataRepository _data;
         protected IProductionTemplate Production;
         protected ICountryEconomy CountryEconomyMarkets;
         protected ProductController ProductController;
@@ -86,7 +87,7 @@ namespace Assets.Scripts.Models.Business
             NormCtr = normController;
             CountryEconomyMarkets = countryEconomyMarkets;
             Government = government;
-            Data = data;
+            _data = data;
             JobMarket = jobMarket;
             ProductController = productController;
             //_policy = policy;
@@ -98,7 +99,7 @@ namespace Assets.Scripts.Models.Business
             if (TypeProduced != ProductType.FederalService)
             {
                 BankAccount = countryEconomyMarkets.OpenBankAccount(0, true);
-                BankAccount.IsLoanAdded(policy.InitialBalance, CreditRating.AAA);
+                BankAccount.IsLoanAdded(policy.InitialBalance, CreditRating.Aaa);
             }
             else
             {
@@ -129,16 +130,16 @@ namespace Assets.Scripts.Models.Business
             NormCtr.AddNew(nameof(BankAccount.Savings), NormRange.Two, (float)BankAccount.Savings);
         }
 
-        protected int _month;
+        protected int Month;
 
         public void UpdateStats(int month)
         {
-            _month = month;
-            Data.BalanceStats.Add((double) Balance);
-            Data.TotalProduced.Add(UnitsProducedInMonth);
-            Data.WorkersStat.Add(Workers.Count);
-            Data.MoneyOutStat.Add((double) CashflowOut);
-            Data.MoneyInStat.Add((double) CashflowIn);
+            Month = month;
+            _data.BalanceStats.Add((double) Balance);
+            _data.TotalProduced.Add(UnitsProducedInMonth);
+            _data.WorkersStat.Add(Workers.Count);
+            _data.MoneyOutStat.Add((double) CashflowOut);
+            _data.MoneyInStat.Add((double) CashflowIn);
             ProductController.Update(EpisodeCut.Month, Cpp, CapacityUsed);
             UnitsProducedInMonth = 0;
             LastProdCostsInMonthForRessourcesAndEnergy = 0;
@@ -214,18 +215,18 @@ namespace Assets.Scripts.Models.Business
             return Workers.Sum(w => w.MonthlyIncome);
         }
 
-        private float minC;
-        private float maxC;
+        private float _minC;
+        private float _maxC;
         
         protected float Normalize(float value)
         {
-            minC = value < minC ? value : minC;
-            maxC = value > maxC ? value : maxC;
-            if (maxC - minC == 0)
+            _minC = value < _minC ? value : _minC;
+            _maxC = value > _maxC ? value : _maxC;
+            if (_maxC - _minC == 0)
             {
                 return 0;
             }
-            float norm = 2 * ((value - minC) / (maxC - minC)) - 1;
+            float norm = 2 * ((value - _minC) / (_maxC - _minC)) - 1;
             return norm;
         }
 

@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Models.Agents;
-using Assets.Scripts.Models.Meta;
-using Assets.Scripts.Repositories;
+using Enums;
+using Models.Agents;
+using Models.Meta;
+using Repositories;
 using Unity.MLAgents;
 
-namespace Assets.Scripts.Models.Population
+namespace Models.Population
 {
 
 

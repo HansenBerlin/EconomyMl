@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.Controller;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Models.Finance;
-using Assets.Scripts.Policies;
+using Controller.Data;
+using Enums;
+using Models.Finance;
+using Policies;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
-namespace Assets.Scripts.Models.Agents
+namespace Models.Agents
 {
     public class BankAgent : Agent
     {
@@ -27,7 +27,7 @@ namespace Assets.Scripts.Models.Agents
         private int _lengthInMonthForNewCredits = 12;
         private CentralBankAgent _centralBank;
         private NormalizationController _normController;
-        private enum Rt { C, B, BB, BBB, A, AA, AAA, LastItem }
+        private enum Rt { C, B, Bb, Bbb, A, AA, Aaa, LastItem }
 
         
 
@@ -54,7 +54,7 @@ namespace Assets.Scripts.Models.Agents
         public void AddRewards()
         {
             float totalReward = 0;
-            if (EquityRatio >= _policy.MinimumEquityRate)
+            if (EquityRatio >= _policy.minimumEquityRate)
             {
                 totalReward += 0.5f;
             }
@@ -118,7 +118,7 @@ namespace Assets.Scripts.Models.Agents
         private void ActionRequestFreshCapital()
         {
             var ownCapital = TotalAssets - TotalLiabilities;
-            var capitalGap = (decimal)_policy.MinimumEquityRate * (TotalLiabilities + ownCapital) - ownCapital;
+            var capitalGap = (decimal)_policy.minimumEquityRate * (TotalLiabilities + ownCapital) - ownCapital;
             if (capitalGap > 100000)
             {
                 _centralBankDeposit += _centralBank.RequestFreshCapital(capitalGap);
@@ -158,8 +158,8 @@ namespace Assets.Scripts.Models.Agents
 
             var requestedRateNeg = changeNegativeInterestRate * NegativeInterestRate;
             var requestedRatePos = changePositiveInterestRate * PositiveInterestRate;
-            requestedRateNeg = requestedRateNeg > _policy.LeaseInterestRate * 2 ? _policy.LeaseInterestRate * 2 : requestedRateNeg;
-            PositiveInterestRate = requestedRatePos > _policy.LeaseInterestRate ? _policy.LeaseInterestRate : requestedRatePos;
+            requestedRateNeg = requestedRateNeg > _policy.leaseInterestRate * 2 ? _policy.leaseInterestRate * 2 : requestedRateNeg;
+            PositiveInterestRate = requestedRatePos > _policy.leaseInterestRate ? _policy.leaseInterestRate : requestedRatePos;
             NegativeInterestRate = requestedRateNeg < requestedRatePos ? requestedRatePos * 1.5f : requestedRateNeg;
         }
     }

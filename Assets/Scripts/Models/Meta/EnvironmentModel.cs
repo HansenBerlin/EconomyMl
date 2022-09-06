@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Assets.Scripts.Models.Meta
+namespace Models.Meta
 {
 
 

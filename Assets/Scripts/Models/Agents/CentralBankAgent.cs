@@ -1,4 +1,4 @@
-﻿namespace Assets.Scripts.Models.Agents
+﻿namespace Models.Agents
 {
     public class CentralBankAgent
     {

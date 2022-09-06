@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Models.Agents;
-using Assets.Scripts.Models.Population;
+using Enums;
+using Models.Agents;
+using Models.Population;
 
-namespace Assets.Scripts.Factories
+namespace Factories
 {
 
 

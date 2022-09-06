@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.Controller;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Models.Production;
-using Assets.Scripts.Repositories;
+using Controller.Data;
+using Controller.RepositoryController;
+using Enums;
+using Models.Production;
+using Repositories;
 using Unity.MLAgents;
 
-namespace Assets.Scripts.Models.Market
+namespace Models.Market
 {
 
 

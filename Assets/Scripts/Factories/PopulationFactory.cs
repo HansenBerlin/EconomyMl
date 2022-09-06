@@ -1,20 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.Controller;
-using Assets.Scripts.Models.Agents;
-using Assets.Scripts.Models.Market;
-using Assets.Scripts.Models.Observations;
-using Assets.Scripts.Settings;
+using Controller.Agents;
+using Controller.Data;
+using Controller.RepositoryController;
+using Models.Agents;
+using Models.Market;
+using Models.Observations;
+using Settings;
 using UnityEngine;
 
-namespace Assets.Scripts.Factories
+namespace Factories
 {
 
 
 
     public class PopulationFactory : MonoBehaviour
     {
-        private int ParentMinimumAge => _policies.AgeBoundaries.AdultMinAge;
+        private int ParentMinimumAge => _policies.AgeBoundaries.adultMinAge;
         private PoliciesWrapper _policies;
         private PopulationPropabilityController _propabilityController;
         private List<int> _distributionOfAges;
@@ -122,7 +125,7 @@ namespace Assets.Scripts.Factories
                 PersonAgent parentOne = parentBucket[i];
 
                 double childCount = (double) StatisticalDistributionController.ReproductionRate();
-                int childCountRounded = ArithmeticController.RoundToInt(childCount);
+                int childCountRounded = (int)Math.Round(childCount, MidpointRounding.AwayFromZero);
                 var potentialPartners = FindMatchingSecondParent(parentBucket, parentOne);
                 PersonAgent parentTwo = null;
                 int parentTwoAge;

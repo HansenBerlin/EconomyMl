@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace Assets.Scripts.Settings
+namespace Settings
 {
 
     public class AgeBoundaryPolicy : MonoBehaviour
     {
-        public int AdultMinAge;
-        public int WorkerMaxAge;
+        [FormerlySerializedAs("AdultMinAge")] public int adultMinAge;
+        [FormerlySerializedAs("WorkerMaxAge")] public int workerMaxAge;
     }
 }

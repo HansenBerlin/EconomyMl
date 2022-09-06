@@ -1,7 +1,6 @@
 ﻿using System;
-using Assets.Scripts.Controller;
 
-namespace Assets.Scripts.Exceptions
+namespace Exceptions
 {
 
 
