@@ -1,26 +1,25 @@
-﻿using Assets.Scripts.Controller;
-using Assets.Scripts.Models.Agents;
-using Assets.Scripts.Policies;
+﻿using Agents;
+using Controller.Data;
+using Policies;
 using UnityEngine;
 
-namespace Assets.Scripts.Factories
+namespace Factories
 {
     public class BankFactory : MonoBehaviour
     {
-        private CentralBankPolicy _policy;
+        public GameObject bankAgentPrefab;
         private CentralBankAgent _centralBank;
-        public GameObject BankAgentPrefab;
-        
+        private CentralBankPolicy _policy;
+
         public void Init(CentralBankPolicy policy, CentralBankAgent centralBank)
         {
             _policy = policy;
             _centralBank = centralBank;
-
         }
 
         public BankAgent Create()
         {
-            var go =Instantiate(BankAgentPrefab);
+            var go = Instantiate(bankAgentPrefab);
             var bank = go.GetComponent<BankAgent>();
             bank.Init(_policy, _centralBank, new NormalizationController());
             return bank;

@@ -1,13 +1,13 @@
-﻿namespace Assets.Scripts.Enums
+﻿namespace Enums
 {
     public enum CreditRating
     {
         C,
         B,
-        BB,
-        BBB,
+        Bb,
+        Bbb,
         A,
         AA,
-        AAA
+        Aaa
     }
 }

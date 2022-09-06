@@ -1,8 +1,5 @@
-﻿namespace Assets.Scripts.Enums
+﻿namespace Enums
 {
-
-
-
     public enum EpisodeCut
     {
         Day = 1,

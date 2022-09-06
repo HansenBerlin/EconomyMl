@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
-using Assets.Scripts.Enums;
-using Assets.Scripts.Models.Agents;
-using Assets.Scripts.Models.Population;
+using Agents;
+using Enums;
+using Models;
 
-namespace Assets.Scripts.Factories
+namespace Factories
 {
-
-
-
     public static class JobPositionFactory
     {
         public static List<JobModel> Create(int count, decimal salary, string companyId, List<PersonAgent> workers,
@@ -15,13 +12,9 @@ namespace Assets.Scripts.Factories
         {
             List<JobModel> jobs = new();
 
-            for (int i = 0; i < count; i++)
-            {
-                jobs.Add(new JobModel(salary, workers, companyId, type));
-            }
+            for (var i = 0; i < count; i++) jobs.Add(new JobModel(salary, workers, companyId, type));
 
             return jobs;
         }
-
     }
 }

@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace Assets.Scripts.Policies
+namespace Policies
 {
     public class CentralBankPolicy : MonoBehaviour
     {
-        public float MinimumEquityRate;
-        public float LeaseInterestRate;
+        [FormerlySerializedAs("MinimumEquityRate")]
+        public float minimumEquityRate;
 
+        [FormerlySerializedAs("LeaseInterestRate")]
+        public float leaseInterestRate;
     }
 }

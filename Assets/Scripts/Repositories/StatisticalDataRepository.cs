@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assets.Scripts.Enums;
+using Enums;
 
-namespace Assets.Scripts.Repositories
+namespace Repositories
 {
-
-
-
     public class StatisticalDataRepository
     {
-        public readonly Dictionary<string, ProductDataRepository> ProductData = new();
-        public readonly Dictionary<string, ProductMarketDataRepository> ProductMarketData = new();
         public readonly Dictionary<string, CompanyDataRepository> CompanyMarketData = new();
         public readonly Dictionary<string, GovernmentDataRepository> GovernmentData = new();
+        public readonly Dictionary<string, ProductDataRepository> ProductData = new();
+        public readonly Dictionary<string, ProductMarketDataRepository> ProductMarketData = new();
 
         public void AddProductDataset(ProductDataRepository data)
         {
@@ -45,10 +42,7 @@ namespace Assets.Scripts.Repositories
             List<string> labels = new();
             foreach ((string key, var values) in CompanyMarketData)
             {
-                if (key.Contains(ProductType.FederalService.ToString()) && isFederalServiceIncluded == false)
-                {
-                    continue;
-                }
+                if (key.Contains(ProductType.FederalService.ToString()) && isFederalServiceIncluded == false) continue;
 
                 data.Add(values.BalanceStats);
                 labels.Add(key);
@@ -56,7 +50,5 @@ namespace Assets.Scripts.Repositories
 
             return new Tuple<List<double>[], string[]>(data.ToArray(), labels.ToArray());
         }
-
-
     }
 }
