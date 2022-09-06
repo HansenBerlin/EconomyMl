@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Controller;
-using Enums;
-using Models.Meta;
-using Repositories;
+using Assets.Scripts.Controller;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Models.Meta;
+using Assets.Scripts.Repositories;
 
-namespace Models.Production
+namespace Assets.Scripts.Models.Production
 {
 
 

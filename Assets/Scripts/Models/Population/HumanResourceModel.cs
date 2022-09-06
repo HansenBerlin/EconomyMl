@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Models.Agents;
+using Assets.Scripts.Models.Agents;
 
-namespace Models.Population
+namespace Assets.Scripts.Models.Population
 {
     public class HumanResourceModel
     {

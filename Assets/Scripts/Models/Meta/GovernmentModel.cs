@@ -1,8 +1,8 @@
-﻿using Repositories;
-using Settings;
+﻿using Assets.Scripts.Repositories;
+using Assets.Scripts.Settings;
 using Unity.MLAgents;
 
-namespace Models.Meta
+namespace Assets.Scripts.Models.Meta
 {
 
 

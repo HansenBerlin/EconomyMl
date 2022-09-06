@@ -1,12 +1,12 @@
 ﻿using System.Linq;
-using Enums;
-using Models.Meta;
-using Models.Population;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Models.Meta;
+using Assets.Scripts.Models.Population;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
-namespace Controller
+namespace Assets.Scripts.Controller
 {
     public class GovernmentAgent : Agent
     {
@@ -90,29 +90,21 @@ namespace Controller
 
         public void MakeDecision()
         {
-            var happinessReward = _population.LastHappiness;
-            var fundsReward = _government.LastBalance < _government.Capital ? 0.2 : -0.2;
-            var enemployedReward = _population.LastEmploymentRate > 0.9 ? 0.3 
-                : _population.LastEmploymentRate > 0.8 ? 0.1 
-                : _population.LastEmploymentRate > 0.4 ? -0.2 : -0.5;
-            AddReward((float)(happinessReward + fundsReward + enemployedReward));
             RequestDecision();
             Academy.Instance.EnvironmentStep();
         }
         
         public void EndYear()
         {
-            var happinessReward = _population.LastHappiness;
+            var happinessReward = _population.LastHappiness / _population.PopulationCount;
             var fundsReward = _government.LastBalance < _government.Capital ? 0.2 : -0.2;
             var enemployedReward = _population.LastEmploymentRate > 0.9 ? 0.3 
                 : _population.LastEmploymentRate > 0.8 ? 0.1 
                 : _population.LastEmploymentRate > 0.4 ? -0.2 : -0.5;
             var totalReward = (float) (happinessReward + fundsReward + enemployedReward);
             AddReward(totalReward);
-            if (totalReward < 0)
-            {
-                EndEpisode();
-            }
+            EndEpisode();
+
             _government.UpdateData();
             _government.Reset();
         }

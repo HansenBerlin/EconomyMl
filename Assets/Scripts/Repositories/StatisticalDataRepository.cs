@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Enums;
+using Assets.Scripts.Enums;
 
-namespace Repositories
+namespace Assets.Scripts.Repositories
 {
 
 

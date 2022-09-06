@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Controller;
-using Models.Agents;
-using Models.Market;
-using Models.Observations;
-using Settings;
+using Assets.Scripts.Controller;
+using Assets.Scripts.Models.Agents;
+using Assets.Scripts.Models.Market;
+using Assets.Scripts.Models.Observations;
+using Assets.Scripts.Settings;
 using UnityEngine;
 
-namespace Factories
+namespace Assets.Scripts.Factories
 {
 
 

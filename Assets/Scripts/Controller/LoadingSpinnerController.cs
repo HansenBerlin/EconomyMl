@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace Controller
+namespace Assets.Scripts.Controller
 {
 
 

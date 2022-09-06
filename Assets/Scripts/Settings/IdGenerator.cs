@@ -1,6 +1,6 @@
-﻿using Enums;
+﻿using Assets.Scripts.Enums;
 
-namespace Settings
+namespace Assets.Scripts.Settings
 {
 
 

@@ -22,7 +22,7 @@ behaviors:
     keep_checkpoints: 5
     max_steps: 1000000
     time_horizon: 64
-    summary_freq: 1000
+    summary_freq: 480
   Federal:
     trainer_type: ppo
     hyperparameters:
@@ -46,7 +46,7 @@ behaviors:
     keep_checkpoints: 5
     max_steps: 1000000
     time_horizon: 64
-    summary_freq: 1000
+    summary_freq: 480
   Person:
     trainer_type: ppo
     hyperparameters:
@@ -91,7 +91,7 @@ behaviors:
     keep_checkpoints: 5
     max_steps: 1200000
     time_horizon: 1024
-    summary_freq: 12000
+    summary_freq: 48
   Government:
     trainer_type: sac
     hyperparameters:
@@ -111,6 +111,6 @@ behaviors:
         strength: 1.0
     keep_checkpoints: 5
     max_steps: 1200000
-    time_horizon: 1024
-    summary_freq: 12000
+    time_horizon: 2048
+    summary_freq: 12
 

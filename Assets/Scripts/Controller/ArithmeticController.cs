@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Controller
+namespace Assets.Scripts.Controller
 {
     public static class ArithmeticController
     {

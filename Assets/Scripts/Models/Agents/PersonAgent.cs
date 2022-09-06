@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Controller;
-using Controller.Actions;
-using Controller.Rewards;
-using Enums;
-using Factories;
-using Models.Market;
-using Models.Meta;
-using Models.Observations;
-using Models.Population;
+using Assets.Scripts.Controller;
+using Assets.Scripts.Controller.Actions;
+using Assets.Scripts.Controller.Rewards;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Factories;
+using Assets.Scripts.Models.Meta;
+using Assets.Scripts.Models.Observations;
+using Assets.Scripts.Models.Population;
 using Unity.MLAgents;
-using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Policies;
+using Unity.MLAgents.Sensors;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace Models.Agents
+namespace Assets.Scripts.Models.Agents
 {
 
 

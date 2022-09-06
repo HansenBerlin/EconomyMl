@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using Controller;
-using Enums;
-using Models.Business;
-using Models.Finance;
+﻿using Assets.Scripts.Controller;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Models.Business;
+using Assets.Scripts.Models.Finance;
 
-namespace Models.Market
+namespace Assets.Scripts.Models.Market
 {
 
 

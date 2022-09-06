@@ -1,4 +1,4 @@
-﻿namespace Controller.Actions
+﻿namespace Assets.Scripts.Controller.Actions
 {
 
 

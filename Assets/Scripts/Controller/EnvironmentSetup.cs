@@ -1,20 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Enums;
-using Factories;
-using Models.Agents;
-using Models.Business;
-using Models.Market;
-using Models.Meta;
-using Models.Population;
-using Policies;
-using Repositories;
-using Settings;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Factories;
+using Assets.Scripts.Models.Agents;
+using Assets.Scripts.Models.Business;
+using Assets.Scripts.Models.Market;
+using Assets.Scripts.Models.Meta;
+using Assets.Scripts.Models.Population;
+using Assets.Scripts.Repositories;
+using Assets.Scripts.Settings;
 using Unity.MLAgents;
 using UnityEngine;
 
-namespace Controller
+namespace Assets.Scripts.Controller
 {
     public class EnvironmentSetup : MonoBehaviour
     {

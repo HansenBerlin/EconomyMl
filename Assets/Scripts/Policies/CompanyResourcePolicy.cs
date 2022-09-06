@@ -1,4 +1,4 @@
-﻿namespace Policies
+﻿namespace Assets.Scripts.Policies
 {
 
 

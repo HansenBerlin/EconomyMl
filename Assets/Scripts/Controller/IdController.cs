@@ -1,4 +1,4 @@
-﻿namespace Controller
+﻿namespace Assets.Scripts.Controller
 {
 
 

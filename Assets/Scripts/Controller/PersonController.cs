@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using Controller.Actions;
-using Enums;
-using Factories;
-using Models.Agents;
-using Models.Finance;
-using Models.Market;
-using Models.Meta;
-using Models.Observations;
-using Models.Population;
-using Settings;
+using Assets.Scripts.Controller.Actions;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Factories;
+using Assets.Scripts.Models.Agents;
+using Assets.Scripts.Models.Finance;
+using Assets.Scripts.Models.Market;
+using Assets.Scripts.Models.Meta;
+using Assets.Scripts.Models.Observations;
+using Assets.Scripts.Models.Population;
+using Assets.Scripts.Settings;
 
-namespace Controller
+namespace Assets.Scripts.Controller
 {
 
 

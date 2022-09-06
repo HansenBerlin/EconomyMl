@@ -1,7 +1,6 @@
-﻿using Enums;
-using UnityEditor;
+﻿using Assets.Scripts.Enums;
 
-namespace Controller
+namespace Assets.Scripts.Controller
 {
     public static class RatingController
     {

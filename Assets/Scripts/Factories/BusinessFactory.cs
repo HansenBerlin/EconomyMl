@@ -1,14 +1,14 @@
-﻿using Controller;
-using Enums;
-using Models.Business;
-using Models.Market;
-using Models.Meta;
-using Policies;
-using Repositories;
-using Settings;
+﻿using Assets.Scripts.Controller;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Models.Business;
+using Assets.Scripts.Models.Market;
+using Assets.Scripts.Models.Meta;
+using Assets.Scripts.Policies;
+using Assets.Scripts.Repositories;
+using Assets.Scripts.Settings;
 using UnityEngine;
 
-namespace Factories
+namespace Assets.Scripts.Factories
 {
 
 

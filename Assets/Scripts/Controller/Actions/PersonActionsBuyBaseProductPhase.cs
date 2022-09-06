@@ -1,11 +1,11 @@
 ﻿using System;
-using Controller.Rewards;
-using Enums;
-using Models.Market;
-using Models.Observations;
-using Settings;
+using Assets.Scripts.Controller.Rewards;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Models.Market;
+using Assets.Scripts.Models.Observations;
+using Assets.Scripts.Settings;
 
-namespace Controller.Actions
+namespace Assets.Scripts.Controller.Actions
 {
     public class PersonActionsBuyBaseProductPhase : IPersonAction
     {

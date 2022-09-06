@@ -1,7 +1,7 @@
-﻿using Policies;
+﻿using Assets.Scripts.Policies;
 using UnityEngine;
 
-namespace Settings
+namespace Assets.Scripts.Settings
 {
 
 

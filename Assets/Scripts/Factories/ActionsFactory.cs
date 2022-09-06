@@ -1,10 +1,10 @@
-﻿using Controller;
-using Controller.Actions;
-using Enums;
-using Models.Market;
-using Settings;
+﻿using Assets.Scripts.Controller;
+using Assets.Scripts.Controller.Actions;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Models.Market;
+using Assets.Scripts.Settings;
 
-namespace Factories
+namespace Assets.Scripts.Factories
 {
 
 

@@ -1,9 +1,9 @@
-﻿using Controller;
-using Models.Agents;
-using Policies;
+﻿using Assets.Scripts.Controller;
+using Assets.Scripts.Models.Agents;
+using Assets.Scripts.Policies;
 using UnityEngine;
 
-namespace Factories
+namespace Assets.Scripts.Factories
 {
     public class BankFactory : MonoBehaviour
     {

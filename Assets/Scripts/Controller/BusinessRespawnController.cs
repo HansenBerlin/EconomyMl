@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using Enums;
-using Factories;
-using Models.Agents;
-using Models.Business;
-using Policies;
+﻿using Assets.Scripts.Factories;
+using Assets.Scripts.Models.Business;
 
-namespace Controller
+namespace Assets.Scripts.Controller
 {
     public class BusinessRespawnController
     {

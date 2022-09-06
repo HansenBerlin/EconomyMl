@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Models.Agents;
+using Assets.Scripts.Models.Agents;
 
-namespace Models.Meta
+namespace Assets.Scripts.Models.Meta
 {
 
 

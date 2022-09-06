@@ -1,6 +1,6 @@
-﻿using Enums;
+﻿using Assets.Scripts.Enums;
 
-namespace Models.Production
+namespace Assets.Scripts.Models.Production
 {
 
 

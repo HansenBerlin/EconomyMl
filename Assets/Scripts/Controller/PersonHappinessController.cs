@@ -1,6 +1,6 @@
-﻿using Models.Agents;
+﻿using Assets.Scripts.Models.Agents;
 
-namespace Controller
+namespace Assets.Scripts.Controller
 {
 
 

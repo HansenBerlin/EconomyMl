@@ -1,4 +1,4 @@
-﻿namespace Settings
+﻿namespace Assets.Scripts.Settings
 {
 
 

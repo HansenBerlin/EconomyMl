@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Settings
+namespace Assets.Scripts.Settings
 {
     public class EducationBoundaryPolicy : MonoBehaviour
     {

@@ -1,6 +1,6 @@
-﻿using Enums;
+﻿using Assets.Scripts.Enums;
 
-namespace Models.Business
+namespace Assets.Scripts.Models.Business
 {
 
 

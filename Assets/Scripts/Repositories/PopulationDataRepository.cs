@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Enums;
-using Models.Agents;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Models.Agents;
 
-namespace Repositories
+namespace Assets.Scripts.Repositories
 {
 
 

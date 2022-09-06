@@ -1,8 +1,7 @@
-﻿using Enums;
-using Models.Observations;
-using UnityEngine;
+﻿using Assets.Scripts.Enums;
+using Assets.Scripts.Models.Observations;
 
-namespace Controller.Rewards
+namespace Assets.Scripts.Controller.Rewards
 {
     public class PersonRewardController
     {

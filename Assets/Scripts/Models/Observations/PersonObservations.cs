@@ -1,9 +1,9 @@
-﻿using Controller;
-using Enums;
-using Models.Finance;
-using Settings;
+﻿using Assets.Scripts.Controller;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Models.Finance;
+using Assets.Scripts.Settings;
 
-namespace Models.Observations
+namespace Assets.Scripts.Models.Observations
 {
 
 

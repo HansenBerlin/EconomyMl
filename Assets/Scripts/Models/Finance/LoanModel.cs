@@ -1,6 +1,6 @@
-﻿using Models.Agents;
+﻿using Assets.Scripts.Models.Agents;
 
-namespace Models.Finance
+namespace Assets.Scripts.Models.Finance
 {
     public class LoanModel
     {

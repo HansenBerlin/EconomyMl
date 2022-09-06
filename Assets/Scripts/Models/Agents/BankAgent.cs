@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Controller;
-using Enums;
-using Models.Finance;
-using Policies;
+using Assets.Scripts.Controller;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Models.Finance;
+using Assets.Scripts.Policies;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
-namespace Models.Agents
+namespace Assets.Scripts.Models.Agents
 {
     public class BankAgent : Agent
     {
@@ -17,7 +16,8 @@ namespace Models.Agents
         private decimal TotalLiabilities => _accounts.Sum(x => x.Savings);
         public float PositiveInterestRate { get; private set; } = 0.05F;
         private float NegativeInterestRate { get; set;} = 0.05F;
-        private float EquityRatio => (float)(TotalAssets / (TotalAssets + TotalLiabilities));
+        private float EquityRatio => (float)(OwnCapital / (OwnCapital + TotalLiabilities));
+        private decimal OwnCapital => TotalAssets - TotalLiabilities;
         private decimal _centralBankDeposit = 12000000;
         private readonly List<LoanModel> _loans = new();
         private readonly List<BankAccountModel> _accounts = new();
@@ -54,10 +54,6 @@ namespace Models.Agents
         public void AddRewards()
         {
             float totalReward = 0;
-            if (TotalAssets > TotalLiabilities)
-            {
-                totalReward += 0.5f;
-            }
             if (EquityRatio >= _policy.MinimumEquityRate)
             {
                 totalReward += 0.5f;
@@ -67,11 +63,9 @@ namespace Models.Agents
                 totalReward -= 0.5f;
             }
             AddReward(totalReward);
-            if (totalReward < 0)
-            {
-                EndEpisode();
-            }
             
+            EndEpisode();
+
             Academy.Instance.StatsRecorder.Add("BANK/ASSETS", (float)TotalAssets);
             Academy.Instance.StatsRecorder.Add("BANK/LIABILITIES", (float)TotalLiabilities);
             Academy.Instance.StatsRecorder.Add("BANK/EQUITYRATIO", (float)EquityRatio);

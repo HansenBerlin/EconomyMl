@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Controller;
-using Enums;
-using Factories;
-using Models.Agents;
-using Models.Finance;
-using Models.Market;
-using Models.Production;
-using Policies;
-using Repositories;
+using Assets.Scripts.Controller;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Factories;
+using Assets.Scripts.Models.Agents;
+using Assets.Scripts.Models.Finance;
+using Assets.Scripts.Models.Market;
+using Assets.Scripts.Models.Production;
+using Assets.Scripts.Policies;
+using Assets.Scripts.Repositories;
 using Unity.MLAgents;
-using Unity.MLAgents.Actuators;
 
-namespace Models.Business
+namespace Assets.Scripts.Models.Business
 {
 
 

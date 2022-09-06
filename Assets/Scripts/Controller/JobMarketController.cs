@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Enums;
-using Models.Population;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Models.Population;
 using UnityEngine;
 
-namespace Controller
+namespace Assets.Scripts.Controller
 {
     public class JobMarketController : MonoBehaviour
     {

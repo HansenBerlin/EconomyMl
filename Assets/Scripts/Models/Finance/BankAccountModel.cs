@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using Enums;
-using Models.Agents;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Models.Agents;
 
-namespace Models.Finance
+namespace Assets.Scripts.Models.Finance
 {
     public class BankAccountModel
     {

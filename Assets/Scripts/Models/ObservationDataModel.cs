@@ -1,6 +1,6 @@
-﻿using Enums;
+﻿using Assets.Scripts.Enums;
 
-namespace Models
+namespace Assets.Scripts.Models
 {
     public class ObservationDataModel
     {

@@ -1,7 +1,7 @@
-﻿using Enums;
-using Models.Observations;
+﻿using Assets.Scripts.Enums;
+using Assets.Scripts.Models.Observations;
 
-namespace Controller
+namespace Assets.Scripts.Controller
 {
     public class PersonRespawnController
     {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Settings
+namespace Assets.Scripts.Settings
 {
     public class FederalUnemployedPaymentPolicy : MonoBehaviour
     {

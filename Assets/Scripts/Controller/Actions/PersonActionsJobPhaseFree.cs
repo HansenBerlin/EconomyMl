@@ -1,9 +1,8 @@
-﻿using Controller.Rewards;
-using Enums;
-using Models.Observations;
-using UnityEngine;
+﻿using Assets.Scripts.Controller.Rewards;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Models.Observations;
 
-namespace Controller.Actions
+namespace Assets.Scripts.Controller.Actions
 {
 
 

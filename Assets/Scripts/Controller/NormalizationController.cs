@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Enums;
-using Models;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Models;
 
-namespace Controller
+namespace Assets.Scripts.Controller
 {
     public class NormalizationController
     {

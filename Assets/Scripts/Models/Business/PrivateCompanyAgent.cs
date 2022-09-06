@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Controller;
-using Enums;
-using Factories;
-using Models.Finance;
-using Models.Market;
-using Policies;
-using Repositories;
+using Assets.Scripts.Controller;
+using Assets.Scripts.Enums;
+using Assets.Scripts.Factories;
+using Assets.Scripts.Models.Market;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
-namespace Models.Business
+namespace Assets.Scripts.Models.Business
 {
     public class PrivateCompanyAgent : CompanyBaseAgent
     {

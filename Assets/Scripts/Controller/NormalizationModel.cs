@@ -1,10 +1,8 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using MathNet.Numerics.Statistics;
 
-
-namespace Controller
+namespace Assets.Scripts.Controller
 {
 
 

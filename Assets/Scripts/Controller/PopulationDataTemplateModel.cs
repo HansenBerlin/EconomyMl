@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Enums;
+using Assets.Scripts.Enums;
 using UnityEngine;
 
-namespace Controller
+namespace Assets.Scripts.Controller
 {
 
 

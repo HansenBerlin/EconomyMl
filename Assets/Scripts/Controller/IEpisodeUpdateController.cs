@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Enums;
+using Assets.Scripts.Enums;
 
-namespace Controller
+namespace Assets.Scripts.Controller
 {
 
 

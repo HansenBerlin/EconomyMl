@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Policies
+namespace Assets.Scripts.Policies
 {
     public class CentralBankPolicy : MonoBehaviour
     {
