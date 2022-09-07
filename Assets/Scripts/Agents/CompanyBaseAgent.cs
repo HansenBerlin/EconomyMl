@@ -9,13 +9,14 @@ using Models;
 using Policies;
 using Repositories;
 using Unity.MLAgents;
+using Unity.VisualScripting;
+using UnityEngine;
 
 namespace Agents
 {
     public abstract class CompanyBaseAgent : Agent
     {
         private CompanyDataRepository _data;
-        private decimal _lastWorkerPayments;
         private float _maxC;
         private float _minC;
         protected decimal BalanceLastYear;
@@ -28,6 +29,7 @@ namespace Agents
 
         protected decimal LastProdCostsInMonthForRessourcesAndEnergy;
 
+        private decimal _lastWorkerPayments;
         protected decimal LoanPayments;
         protected NormalizationController NormCtr;
         protected ProductController ProductController;
@@ -64,12 +66,12 @@ namespace Agents
                 : ObservationPossibleProductionByEnergy;
 
         private decimal ObserveTotalWorkers => Workers.Count + 1;
-        protected decimal CashflowOut => TotalCostBeforeTaxes + ProfitTaxPaidInMonth;
+        protected decimal CashflowOut => TotalCostBeforeTaxes + ProfitTaxPaidInMonth + LoanPayments;
         protected decimal FixedPerProductBaseCosts => UnitsProducedInMonth * Production.BaseCostPerPieceProduced;
         private decimal CapacityUsed => (decimal) UnitsProducedInMonth / ObsProductionCapacityByWorkers;
 
         protected decimal TotalCostBeforeTaxes => FixedPerProductBaseCosts + _lastWorkerPayments +
-                                                  LastProdCostsInMonthForRessourcesAndEnergy + LoanPayments;
+                                                  LastProdCostsInMonthForRessourcesAndEnergy;
 
         protected decimal Cpp => UnitsProducedInMonth != 0
             ? TotalCostBeforeTaxes / UnitsProducedInMonth
@@ -88,8 +90,7 @@ namespace Agents
             ProductController = productController;
             Production = productController.Template;
             ProductController.AddNew(policy.InitialResources);
-            var openPositions =
-                JobPositionFactory.Create(policy.InitialWorkers, policy.MinSalary, Id, Workers, TypeProduced);
+            var openPositions = JobPositionFactory.Create(policy.InitialWorkers, policy.MinSalary, Id, Workers, TypeProduced);
             JobMarket.AddOpenJobPositions(openPositions);
             if (TypeProduced != ProductType.FederalService)
             {
@@ -159,7 +160,9 @@ namespace Agents
                 FireWorkers(Workers.Count);
                 SetReward(-1);
                 EndEpisode();
+                BankAccount.CloseAccount();
                 CountryEconomyMarkets.RemoveBusiness(this, ProductController.Id);
+                Destroy(gameObject);
                 return true;
             }
 
@@ -210,6 +213,7 @@ namespace Agents
 
         protected void PayWorkers()
         {
+            Debug.Log(TypeProduced.ToString());
             foreach (var w in Workers)
             {
                 decimal paid = w.Pay();
@@ -219,6 +223,6 @@ namespace Agents
             }
         }
 
-        public abstract void MonthlyBookkeeping();
+        public abstract void MonthlyBookkeeping(int month);
     }
 }

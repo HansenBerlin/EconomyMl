@@ -122,11 +122,31 @@
      <Compile Include="Assets\Scripts\Agents\PrivateCompanyAgent.cs" />
      <Compile Include="Assets\Scripts\Controller\RepositoryController\PopulationController.cs" />
      <Compile Include="Assets\Scripts\Controller\Data\CollectionNormalizationController.cs" />
+     <None Include="Assets\Packages\BenchmarkDotNet.Annotations.0.13.2\lib\netstandard2.0\BenchmarkDotNet.Annotations.xml" />
      <None Include="Assets\ML-Agents\Timers\SampleScene_timers.json" />
+     <None Include="Assets\Packages\Microsoft.Diagnostics.Tracing.TraceEvent.3.0.2\lib\netstandard2.0\Microsoft.Diagnostics.FastSerialization.xml" />
      <None Include="Assets\Packages\System.Drawing.Common.4.6.1\version.txt" />
+     <None Include="Assets\Packages\Iced.1.17.0\lib\netstandard2.0\Iced.xml" />
+     <None Include="Assets\Packages\Microsoft.Extensions.Configuration.Abstractions.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.xml" />
+     <None Include="Assets\Packages\Microsoft.Extensions.Configuration.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.xml" />
+     <None Include="Assets\Packages\Iced.1.17.0\LICENSE.txt" />
      <None Include="Assets\Packages\System.Drawing.Common.4.6.1\useSharedDesignerContext.txt" />
+     <None Include="Assets\Packages\Microsoft.Extensions.Options.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Options.xml" />
+     <None Include="Assets\Packages\Microsoft.Extensions.Primitives.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Primitives.xml" />
+     <None Include="Assets\Packages\CommandLineParser.2.4.3\lib\netstandard2.0\CommandLine.xml" />
+     <None Include="Assets\Packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\useSharedDesignerContext.txt" />
+     <None Include="Assets\Packages\Microsoft.Extensions.Logging.Abstractions.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.xml" />
+     <None Include="Assets\Packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.1.1\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.xml" />
+     <None Include="Assets\Packages\Microsoft.DotNet.PlatformAbstractions.3.1.6\lib\netstandard2.0\Microsoft.DotNet.PlatformAbstractions.xml" />
+     <None Include="Assets\Packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\netstandard2.0\Microsoft.Bcl.AsyncInterfaces.xml" />
+     <None Include="Assets\Packages\Microsoft.Diagnostics.Tracing.TraceEvent.3.0.2\lib\netstandard2.0\Microsoft.Diagnostics.Tracing.TraceEvent.xml" />
      <None Include="Assets\Packages\ScottPlot.4.1.57\lib\netstandard2.0\ScottPlot.xml" />
      <None Include="Assets\Packages\MathNet.Numerics.5.0.0\lib\netstandard2.0\MathNet.Numerics.xml" />
+     <None Include="Assets\Packages\Microsoft.Extensions.Configuration.Binder.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.Binder.xml" />
+     <None Include="Assets\Packages\Microsoft.Extensions.Logging.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Logging.xml" />
+     <None Include="Assets\Packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\version.txt" />
+     <None Include="Assets\Packages\Microsoft.Diagnostics.NETCore.Client.0.2.251802\lib\netstandard2.0\Microsoft.Diagnostics.NETCore.Client.xml" />
+     <None Include="Assets\Packages\Microsoft.Diagnostics.Runtime.2.2.332302\lib\netstandard2.0\Microsoft.Diagnostics.Runtime.xml" />
      <Reference Include="UnityEngine">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.6f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
      </Reference>
@@ -417,6 +437,69 @@
      </Reference>
      <Reference Include="Newtonsoft.Json">
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\PackageCache\com.unity.nuget.newtonsoft-json@3.0.2\Runtime\Newtonsoft.Json.dll</HintPath>
+     </Reference>
+     <Reference Include="BenchmarkDotNet.Annotations">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\BenchmarkDotNet.Annotations.0.13.2\lib\netstandard2.0\BenchmarkDotNet.Annotations.dll</HintPath>
+     </Reference>
+     <Reference Include="CommandLine">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\CommandLineParser.2.4.3\lib\netstandard2.0\CommandLine.dll</HintPath>
+     </Reference>
+     <Reference Include="Iced">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Iced.1.17.0\lib\netstandard2.0\Iced.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.Bcl.AsyncInterfaces">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\netstandard2.0\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Extensions.Logging.Abstractions.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.Extensions.Primitives">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Extensions.Primitives.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.Extensions.Configuration.Abstractions">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Extensions.Configuration.Abstractions.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.Extensions.Configuration">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Extensions.Configuration.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.Extensions.Configuration.Binder">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Extensions.Configuration.Binder.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.1.1\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.Extensions.Options">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Extensions.Options.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Options.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.Extensions.Logging">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Extensions.Logging.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.Diagnostics.NETCore.Client">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Diagnostics.NETCore.Client.0.2.251802\lib\netstandard2.0\Microsoft.Diagnostics.NETCore.Client.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.Diagnostics.Runtime">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Diagnostics.Runtime.2.2.332302\lib\netstandard2.0\Microsoft.Diagnostics.Runtime.dll</HintPath>
+     </Reference>
+     <Reference Include="OSExtensions">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Diagnostics.Tracing.TraceEvent.3.0.2\lib\netstandard2.0\OSExtensions.dll</HintPath>
+     </Reference>
+     <Reference Include="Dia2Lib">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Diagnostics.Tracing.TraceEvent.3.0.2\lib\netstandard2.0\Dia2Lib.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.Diagnostics.Tracing.TraceEvent">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Diagnostics.Tracing.TraceEvent.3.0.2\lib\netstandard2.0\Microsoft.Diagnostics.Tracing.TraceEvent.dll</HintPath>
+     </Reference>
+     <Reference Include="TraceReloggerLib">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Diagnostics.Tracing.TraceEvent.3.0.2\lib\netstandard2.0\TraceReloggerLib.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.Diagnostics.FastSerialization">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.Diagnostics.Tracing.TraceEvent.3.0.2\lib\netstandard2.0\Microsoft.Diagnostics.FastSerialization.dll</HintPath>
+     </Reference>
+     <Reference Include="Microsoft.DotNet.PlatformAbstractions">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Microsoft.DotNet.PlatformAbstractions.3.1.6\lib\netstandard2.0\Microsoft.DotNet.PlatformAbstractions.dll</HintPath>
+     </Reference>
+     <Reference Include="Perfolizer">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Assets\Packages\Perfolizer.0.2.1\lib\netstandard2.0\Perfolizer.dll</HintPath>
      </Reference>
      <Reference Include="netstandard">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.6f1\Editor\Data\NetStandard\ref\2.1.0\netstandard.dll</HintPath>
@@ -894,6 +977,15 @@
      </Reference>
      <Reference Include="Unity.ML-Agents.Editor">
      <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\ScriptAssemblies\Unity.ML-Agents.Editor.dll</HintPath>
+     </Reference>
+     <Reference Include="Unity.MemoryProfiler.Editor">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\ScriptAssemblies\Unity.MemoryProfiler.Editor.dll</HintPath>
+     </Reference>
+     <Reference Include="Unity.MemoryProfiler">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\ScriptAssemblies\Unity.MemoryProfiler.dll</HintPath>
+     </Reference>
+     <Reference Include="Unity.MemoryProfiler.Editor.MemoryProfilerModule">
+     <HintPath>C:\Users\Hannes\source\repos\HWR\Studienarbeit\UnityEconomy\EconomyMl\Library\ScriptAssemblies\Unity.MemoryProfiler.Editor.MemoryProfilerModule.dll</HintPath>
      </Reference>
   </ItemGroup>
   <ItemGroup>

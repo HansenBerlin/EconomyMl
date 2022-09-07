@@ -182,9 +182,12 @@ namespace Controller.Agents
 
             if (_obs.Age == 68) Retire(tempPop.Retired);
 
-            if (_obs.Capital < -100000000)
+            if (_obs.Capital < -100000)
             {
-                // Die
+                _person.Death = DeathReason.Starved;
+                tempPop.Died.Add(_person);
+                _bankAccount.CloseAccount();
+                _person.Kill(true);
             }
 
             var deathState = UpdateDeathData(probController);
@@ -194,6 +197,7 @@ namespace Controller.Agents
                 tempPop.Died.Add(_person);
                 decimal leftMoney = _bankAccount.CloseAccount();
                 if (leftMoney > 0) DistributeWealthToChildren(leftMoney);
+                _person.Kill(false);
             }
         }
 

@@ -157,7 +157,7 @@ namespace Agents
             }
         }
 
-        public override void MonthlyBookkeeping()
+        public override void MonthlyBookkeeping(int month)
         {
             PayWorkers();
             decimal profit = Government.GetFederalMoneyForService(FixedPerProductBaseCosts + LoanPayments);

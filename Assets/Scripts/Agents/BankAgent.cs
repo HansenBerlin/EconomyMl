@@ -80,6 +80,7 @@ namespace Agents
 
         public void RemoveAccount(BankAccountModel account)
         {
+            _centralBankDeposit += account.Savings;
             _accounts.Remove(account);
         }
 

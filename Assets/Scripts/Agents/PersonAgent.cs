@@ -9,6 +9,7 @@ using Models;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -327,6 +328,16 @@ namespace Agents
         public void SetupWorkState(JobMarketController jobMarket)
         {
             _controller.SetupWorkState(jobMarket);
+        }
+
+        public void Kill(bool isNegReward)
+        {
+            if (isNegReward)
+            {
+                SetReward(-1);
+                EndEpisode();
+            }
+            Destroy(gameObject);
         }
 
         private enum JobSt

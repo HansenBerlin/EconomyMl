@@ -62,9 +62,11 @@ namespace Models
         public ReceiptModel BuyMaxProductsForMoney(ProductRequestModel buyRequest)
         {
             decimal moneyAmount = buyRequest.TotalSpendable;
-            var matchingProducts = _productsAvailable.OrderBy(x => x.Price).ToList();
+            //var matchingProducts = _productsAvailable.OrderBy(x => x.Price).ToList();
+            _productsAvailable.Sort((p1,p2)=>decimal.Compare(p1.Price,p2.Price));
+
             var receipt = new ReceiptModel();
-            foreach (var p in matchingProducts)
+            foreach (var p in _productsAvailable)
             {
                 var tempReciept = p.BuyFor(moneyAmount);
                 decimal moneyPaid = tempReciept.TotalPricePaid;
@@ -81,9 +83,11 @@ namespace Models
         {
             decimal moneyAmount = buyRequest.TotalSpendable;
             long maxAmount = buyRequest.MaxAmount;
-            var matchingProducts = _productsAvailable.OrderBy(x => x.Price).ToList();
+            //var matchingProducts = _productsAvailable.OrderBy(x => x.Price).ToList();
+            _productsAvailable.Sort((p1,p2)=>decimal.Compare(p1.Price,p2.Price));
+
             var receipt = new ReceiptModel();
-            foreach (var p in matchingProducts)
+            foreach (var p in _productsAvailable)
             {
                 var tempReciept = p.BuyFor(moneyAmount, maxAmount);
                 decimal moneyPaid = tempReciept.TotalPricePaid;
@@ -109,12 +113,18 @@ namespace Models
         {
             decimal maxPrice = buyRequest.MaxPrice;
             long amount = buyRequest.MaxAmount;
-            var matchingProducts = _productsAvailable.ToList();
-            matchingProducts = matchingProducts.OrderBy(x => x.Price).ToList();
+            //var matchingProducts = _productsAvailable.ToList();
+            //matchingProducts = matchingProducts.OrderBy(x => x.Price).ToList();
+            _productsAvailable.Sort((p1,p2)=>decimal.Compare(p1.Price,p2.Price));
+
 
             var receipt = new ReceiptModel();
-            foreach (var p in matchingProducts)
+            foreach (var p in _productsAvailable)
             {
+                if (maxPrice < p.Price)
+                {
+                    continue;
+                }
                 var tempReciept = p.BuyMaxAmount(amount, maxPrice);
                 long amountBought = tempReciept.AmountBought;
                 receipt.AmountBought += amountBought;
@@ -131,13 +141,12 @@ namespace Models
         public ReceiptModel BuyMaxProducts(ProductRequestModel buyRequest)
         {
             long amount = buyRequest.MaxAmount;
-            var matchingProducts = _productsAvailable.OrderBy(x => x.Price).ToList();
+            //var matchingProducts = _productsAvailable.OrderBy(x => x.Price).ToList();
+            _productsAvailable.Sort((p1,p2)=>decimal.Compare(p1.Price,p2.Price));
 
             var receipt = new ReceiptModel();
-            foreach (var p in matchingProducts.Where(p => p.TotalSupply != 0))
+            foreach (var p in _productsAvailable)
             {
-                if (amount < 0)
-                    throw new Exception();
                 var tempReciept = p.BuyMaxAmount(amount);
                 long amountBought = tempReciept.AmountBought;
                 receipt.AmountBought += amountBought;
@@ -166,14 +175,15 @@ namespace Models
 
         private void WriteAndResetStats()
         {
-            Academy.Instance.StatsRecorder.Add("workers/" + Type, (float) _workers / 10);
-            Academy.Instance.StatsRecorder.Add("capital/" + Type, _capital / 10);
-            Academy.Instance.StatsRecorder.Add("moneyin/" + Type, _moneyIn / 10);
-            Academy.Instance.StatsRecorder.Add("moneyout/" + Type, _moneyOut / 10);
-            Academy.Instance.StatsRecorder.Add("production/" + Type, (float) _production / 10);
-            Academy.Instance.StatsRecorder.Add("sales/" + Type, (float) _sales / 10);
-            Academy.Instance.StatsRecorder.Add("price/" + Type, _price / 10);
-            Academy.Instance.StatsRecorder.Add("cpp/" + Type, _cpp / 10);
+            float cnt = _productsAvailable.Count;
+            Academy.Instance.StatsRecorder.Add("workers/" + Type, _workers / cnt);
+            Academy.Instance.StatsRecorder.Add("capital/" + Type, _capital / cnt);
+            Academy.Instance.StatsRecorder.Add("moneyin/" + Type, _moneyIn / cnt);
+            Academy.Instance.StatsRecorder.Add("moneyout/" + Type, _moneyOut / cnt);
+            Academy.Instance.StatsRecorder.Add("production/" + Type, _production / cnt);
+            Academy.Instance.StatsRecorder.Add("sales/" + Type, _sales / cnt);
+            Academy.Instance.StatsRecorder.Add("price/" + Type, _price / cnt);
+            Academy.Instance.StatsRecorder.Add("cpp/" + Type, _cpp / cnt);
             _workers = 0;
             _capital = 0;
             _moneyIn = 0;

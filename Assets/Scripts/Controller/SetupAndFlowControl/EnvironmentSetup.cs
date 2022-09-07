@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Agents;
+using BenchmarkDotNet.Attributes;
 using Controller.Agents;
 using Controller.Data;
 using Controller.RepositoryController;
@@ -14,6 +16,7 @@ using Repositories;
 using Unity.Barracuda;
 using Unity.MLAgents;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 using Random = System.Random;
 
 namespace Controller.SetupAndFlowControl
@@ -46,7 +49,7 @@ namespace Controller.SetupAndFlowControl
         private PopulationModel _populationModel;
         private StatisticalDataRepository _statsRepository;
 
-        public void SetupDependencies()
+        private void SetupDependencies()
         {
             _statsRepository = new StatisticalDataRepository();
             _envSettings = environmentSettings.GetComponent<EnvironmentModel>();
@@ -84,7 +87,7 @@ namespace Controller.SetupAndFlowControl
             _businessRespawner = new BusinessRespawnController(businessFactory, jobMarketController);
 
             _businesses = new List<CompanyBaseAgent>();
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 1; i++)
             {
                 var fossileEnergyCompany = businessFactory.Create(ProductType.FossileEnergy, jobMarketController);
                 var baseProductCompany = businessFactory.Create(ProductType.BaseProduct, jobMarketController);
@@ -106,43 +109,93 @@ namespace Controller.SetupAndFlowControl
 
         public void Update()
         {
-            if (_envSettings.Month > 120)
+            if (_envSettings.Month > simulateYears * 12)
             {
+                _timer2.Stop();
+                var time = _timer2.Elapsed.TotalMilliseconds.ToString("0.00 ms");
+                var timeAverage = (_timer2.Elapsed.TotalMilliseconds / (simulateYears * 12)).ToString("0.00 ms");
+                Debug.Log($"Time for all phases in 24 month: {time}, month average: {timeAverage}");
                 UnityEditor.EditorApplication.isPlaying = false;
             }
             else
             {
-                Debug.Log("YEAR " + _envSettings.Year + " MONTH " + _envSettings.Month);
-                StartCoroutine(RunOneYear());
+                Debug.Log("--------------------\nYEAR " + _envSettings.Year + " MONTH " + _envSettings.Month + "\n-------------------");
+                _timer.Start();
+                StartCoroutine(ResourceBuyPhase());
+                Measure(nameof(ResourceBuyPhase));
+                _timer.Start();
+                StartCoroutine(ProductionPhase());
+                Measure(nameof(ProductionPhase));
+                _timer.Start();
+                StartCoroutine(MonthlyPopulationUpdatePhase());
+                Measure(nameof(MonthlyPopulationUpdatePhase));
+                _timer.Start();
+                StartCoroutine(CapacityUpdatePhase());
+                Measure(nameof(CapacityUpdatePhase));
+                _timer.Start();
+                if (_envSettings.Month % 12 == 0)
+                {
+                    StartCoroutine(YearlyUpdatePhase());
+                    Measure(nameof(YearlyUpdatePhase));
+                    _timer.Start();
+                }
+                StartCoroutine(GovernmentDecisionPhase());
+                Measure(nameof(GovernmentDecisionPhase));
+                _timer.Start();
+                StartCoroutine(ResetPhase());
+                Measure(nameof(ResetPhase));
             }
         }
 
+        private void Measure(string phase)
+        {
+            _timer.Stop();
+            var time = _timer.Elapsed.TotalMilliseconds.ToString("0.00 ms");
+            Debug.Log($"Time for{phase}: {time}");
+            _timer.Reset();
+        }
+
+        private readonly Stopwatch _timer = new();
+        private readonly Stopwatch _timer2 = new();
+        
         public void Awake()
         {
             SetupDependencies();
             _populationController.Setup();
+            _timer2.Start();
         }
 
 
-        IEnumerator RunOneYear()
+        private IEnumerator ResourceBuyPhase()
         {
             year = _envSettings.Year;
             _envSettings.Month++;
             _populationController.SetupMonth();
 
-
             foreach (var business in _businesses)
                 business.MakeDecision(CompanyActionPhase.BuyResources);
+            yield return new WaitForSeconds(0.1f);
+        }
 
-            _populationController.MonthlyUpdatePopulation(_countryEconomyMarket, _envSettings.Month);
-
-
+        private IEnumerator ProductionPhase()
+        {
             foreach (var business in _businesses)
             {
                 business.MakeDecision(CompanyActionPhase.Produce);
-                business.MonthlyBookkeeping();
+                business.MonthlyBookkeeping(_envSettings.Month);
             }
 
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        private IEnumerator MonthlyPopulationUpdatePhase()
+        {
+            _populationController.MonthlyUpdatePopulation(_countryEconomyMarket, _envSettings.Month);
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        private IEnumerator CapacityUpdatePhase()
+        {
             for (int i = _businesses.Count - 1; i >= 0; i--)
             {
                 var business = _businesses[i];
@@ -159,9 +212,11 @@ namespace Controller.SetupAndFlowControl
                     business.MakeDecision(CompanyActionPhase.AdaptWorkerCapacity);
                 }
             }
+            yield return new WaitForSeconds(0.1f);
+        }
 
-            _governmentAgent.PayoutUnemployed();
-            _governmentAgent.PayoutRetired();
+        private IEnumerator YearlyUpdatePhase()
+        {
 
             if (_envSettings.Month % 12 == 0)
             {
@@ -174,15 +229,27 @@ namespace Controller.SetupAndFlowControl
                     _governmentAgent.EndYear();
                 }
             }
+            yield return new WaitForSeconds(0.1f);
+        }
 
+        private IEnumerator GovernmentDecisionPhase()
+        {
+            _governmentAgent.PayoutUnemployed();
+            _governmentAgent.PayoutRetired();
             _governmentAgent.MakeDecision();
+            yield return new WaitForSeconds(0.1f);
+           
+        }
+
+        private IEnumerator ResetPhase()
+        {
             _bankingMarkets.PayOutInterestForSavings();
             _bankingMarkets.Decide();
 
             foreach (var business in _businesses) business.UpdateStats(_envSettings.Month);
 
             _countryEconomyMarket.ResetProductMarkets();
-            yield break;
+            yield return new WaitForSeconds(0.1f);
         }
     }
 }

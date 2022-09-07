@@ -121,19 +121,31 @@ namespace Agents
 
             if (Production.ResourceTypeNeeded != ProductType.None)
             {
-                decimal resourceSplit = Production.ResourceNeededPerPiece /
-                                        (Production.ResourceNeededPerPiece + Production.EnergyNeededPerPiece);
-                decimal maxResourceSpendings = resourceSplit * maxSpendinsTotal;
                 var resourcesDemanded = (int) CalculateDemandForMonthlyProduction("r");
-                ActionBuyResources(maxResourceSpendings, resourcesDemanded);
+                if (resourcesDemanded > 0)
+                {
+                    decimal resourceSplit = Production.ResourceNeededPerPiece /
+                                            (Production.ResourceNeededPerPiece + Production.EnergyNeededPerPiece);
+                    decimal maxResourceSpendings = resourceSplit * maxSpendinsTotal;
+                    ActionBuyResources(maxResourceSpendings, resourcesDemanded);
+                }
             }
 
             if (Production.EnergyTypeNeeded == ProductType.None) return;
+            var energyDemanded = (int) CalculateDemandForMonthlyProduction("e");
+            if (energyDemanded == 0) return;
             decimal energySplit = Production.EnergyNeededPerPiece /
                                   (Production.ResourceNeededPerPiece + Production.EnergyNeededPerPiece);
             decimal maxEnergySpendings = energySplit * maxSpendinsTotal;
-            var energyDemanded = (int) CalculateDemandForMonthlyProduction("e");
+            if (maxEnergySpendings < 0)
+            {
+                Debug.Log("");
+            }
             ActionBuyEnergy(maxEnergySpendings, energyDemanded);
+            if (Balance < 0)
+            {
+                Debug.Log("");
+            }
         }
 
         private void ActionBuyResources(decimal maxSpendings, long resourcesDemanded)
@@ -194,18 +206,26 @@ namespace Agents
             }
         }
 
-        public override void MonthlyBookkeeping()
+        public override void MonthlyBookkeeping(int month)
         {
+            if (Balance < 0)
+            {
+                Debug.Log("");
+            }
             PayWorkers();
+            if (Balance < 0)
+            {
+                Debug.Log("");
+            }
             CurrentRating = RatingController.Calculate(Balance, ProductController.ObsProfitTrend, BankAccount.LoansSum,
                 ProductController.ProfitLastMonth, CurrentRating);
             LoanPayments += BankAccount.MonthlyPaymentForLoans();
 
             //if (Cpp > ProductController.Price) Debug.Log("");
 
-            decimal profit = ProductController.Profit - TotalCostBeforeTaxes - UpgradeEffiencyCosts;
+            decimal profit = ProductController.Profit - TotalCostBeforeTaxes - LoanPayments;
             ProfitTaxPaidInMonth = Government.PayProfitTax(profit);
-            BankAccount.Withdraw(FixedPerProductBaseCosts + ProfitTaxPaidInMonth + LoanPayments);
+            BankAccount.Withdraw(FixedPerProductBaseCosts + ProfitTaxPaidInMonth);
             BankAccount.Deposit(ProductController.Profit);
             if (Balance > BalanceLastYear) AddReward(0.05f);
             CashflowIn = ProductController.Profit;

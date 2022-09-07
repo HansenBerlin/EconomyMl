@@ -1,66 +1,14 @@
 {
   "version": 3,
   "targets": {
-    ".NETFramework,Version=v4.7.1": {
-      "UnityEngine.UI/1.0.0": {
-        "type": "project",
-        "framework": ".NETFramework,Version=v4.7.1",
-        "compile": {
-          "bin/placeholder/UnityEngine.UI.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/UnityEngine.UI.dll": {}
-        }
-      }
-    },
-    ".NETFramework,Version=v4.7.1/win": {
-      "UnityEngine.UI/1.0.0": {
-        "type": "project",
-        "framework": ".NETFramework,Version=v4.7.1",
-        "compile": {
-          "bin/placeholder/UnityEngine.UI.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/UnityEngine.UI.dll": {}
-        }
-      }
-    },
-    ".NETFramework,Version=v4.7.1/win-x64": {
-      "UnityEngine.UI/1.0.0": {
-        "type": "project",
-        "framework": ".NETFramework,Version=v4.7.1",
-        "compile": {
-          "bin/placeholder/UnityEngine.UI.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/UnityEngine.UI.dll": {}
-        }
-      }
-    },
-    ".NETFramework,Version=v4.7.1/win-x86": {
-      "UnityEngine.UI/1.0.0": {
-        "type": "project",
-        "framework": ".NETFramework,Version=v4.7.1",
-        "compile": {
-          "bin/placeholder/UnityEngine.UI.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/UnityEngine.UI.dll": {}
-        }
-      }
-    }
+    ".NETFramework,Version=v4.7.1": {},
+    ".NETFramework,Version=v4.7.1/win": {},
+    ".NETFramework,Version=v4.7.1/win-x64": {},
+    ".NETFramework,Version=v4.7.1/win-x86": {}
   },
-  "libraries": {
-    "UnityEngine.UI/1.0.0": {
-      "type": "project",
-      "path": "UnityEngine.UI.csproj",
-      "msbuildProject": "UnityEngine.UI.csproj"
-    }
-  },
+  "libraries": {},
   "projectFileDependencyGroups": {
-    ".NETFramework,Version=v4.7.1": [
-      "UnityEngine.UI >= 1.0.0"
-    ]
+    ".NETFramework,Version=v4.7.1": []
   },
   "packageFolders": {
     "C:\\Users\\Hannes\\.nuget\\packages\\": {},
@@ -69,9 +17,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEditor.UI.csproj",
-      "projectName": "UnityEditor.UI",
-      "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEditor.UI.csproj",
+      "projectUniqueName": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEngine.UI.csproj",
+      "projectName": "UnityEngine.UI",
+      "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEngine.UI.csproj",
       "packagesPath": "C:\\Users\\Hannes\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\obj\\",
       "projectStyle": "PackageReference",
@@ -93,11 +41,7 @@
       },
       "frameworks": {
         "net471": {
-          "projectReferences": {
-            "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEngine.UI.csproj": {
-              "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEngine.UI.csproj"
-            }
-          }
+          "projectReferences": {}
         }
       }
     },

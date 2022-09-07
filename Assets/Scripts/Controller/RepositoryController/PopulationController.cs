@@ -40,12 +40,14 @@ namespace Controller.RepositoryController
         }
 
 
+        private decimal avgIncome = 0;
         public void MonthlyUpdatePopulation(ICountryEconomy countryEconomyMarkets, int month)
         {
+            avgIncome = AverageWorkerIncome();
             var rng = StatisticalDistributionController.Rng;
 
             foreach (var person in _populationModel.Population.OrderBy(_ => rng.Next()))
-                person.RequestMonthlyDecisions(AverageWorkerIncome());
+                person.RequestMonthlyDecisions(avgIncome);
         }
 
         public void SetupMonth()

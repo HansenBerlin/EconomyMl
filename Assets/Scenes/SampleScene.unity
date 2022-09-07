@@ -857,8 +857,16 @@ PrefabInstance:
     m_TransformParent: {fileID: 1712063356}
     m_Modifications:
     - target: {fileID: 2187876330811573894, guid: 1e4d44195c8e16a44b4792eae9d65931, type: 3}
+      propertyPath: type
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2187876330811573894, guid: 1e4d44195c8e16a44b4792eae9d65931, type: 3}
       propertyPath: _type
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2187876330811573894, guid: 1e4d44195c8e16a44b4792eae9d65931, type: 3}
+      propertyPath: initialPopulationCount
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 2187876330811573894, guid: 1e4d44195c8e16a44b4792eae9d65931, type: 3}
       propertyPath: _initialPopulationCount
@@ -1166,6 +1174,10 @@ PrefabInstance:
     - target: {fileID: 2320552106197243553, guid: 6f8f1ea00bd604d4794edc83a84456af, type: 3}
       propertyPath: m_Name
       value: EnvironmentSettings
+      objectReference: {fileID: 0}
+    - target: {fileID: 2320552106197243554, guid: 6f8f1ea00bd604d4794edc83a84456af, type: 3}
+      propertyPath: CountryName
+      value: ger
       objectReference: {fileID: 0}
     - target: {fileID: 2320552106197243555, guid: 6f8f1ea00bd604d4794edc83a84456af, type: 3}
       propertyPath: m_RootOrder
