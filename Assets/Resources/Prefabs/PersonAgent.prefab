@@ -57,11 +57,12 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 5022602860645237092, guid: 4f6f11d11e97c7b42b7baa594c7b5090, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
+  m_BehaviorType: 2
   m_BehaviorName: Person
   TeamId: 0
   m_UseChildSensors: 0
   m_UseChildActuators: 1
+  m_DeterministicInference: 0
   m_ObservableAttributeHandling: 0
 --- !u!114 &1691147508360694233
 MonoBehaviour:
@@ -79,12 +80,11 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  <IsDummy>k__BackingField: 0
   initage: 0
-  <Death>k__BackingField: 0
-  Month: 0
-  CompletedEps: 0
+  completedEps: 0
   maskBaseBuyActions: 0
   maskLuxuryBuyActions: 0
   maskUnEmployedJobActions: 0
   maskAllJobActions: 0
+  <IsDummy>k__BackingField: 0
+  <Death>k__BackingField: 0

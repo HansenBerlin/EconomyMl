@@ -1,42 +1,42 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\Assembly-CSharp.csproj": {}
+    "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\Assembly-CSharp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\Assembly-CSharp.csproj": {
+    "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\Assembly-CSharp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\Assembly-CSharp.csproj",
+        "projectUniqueName": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\Assembly-CSharp.csproj",
         "projectName": "Assembly-CSharp",
-        "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\Assembly-CSharp.csproj",
+        "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\Assembly-CSharp.csproj",
         "packagesPath": "C:\\Users\\Hannes\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\obj\\",
+        "outputPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\obj\\",
         "projectStyle": "PackageReference",
         "skipContentFileWrite": true,
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+          "C:\\Users\\Hannes\\AppData\\Roaming\\Godot\\mono\\GodotNuGetFallbackFolder"
         ],
         "configFilePaths": [
+          "C:\\Users\\Hannes\\NuGet.Config",
           "C:\\Users\\Hannes\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Hannes\\AppData\\Roaming\\NuGet\\config\\Godot.Offline.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net471"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net471": {
             "projectReferences": {
-              "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEditor.UI.csproj": {
-                "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEditor.UI.csproj"
+              "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEditor.UI.csproj": {
+                "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEditor.UI.csproj"
               },
-              "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEngine.UI.csproj": {
-                "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEngine.UI.csproj"
+              "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEngine.UI.csproj": {
+                "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEngine.UI.csproj"
               }
             }
           }
@@ -49,6 +49,9 @@
         "win": {
           "#import": []
         },
+        "win-arm64": {
+          "#import": []
+        },
         "win-x64": {
           "#import": []
         },
@@ -57,36 +60,36 @@
         }
       }
     },
-    "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEditor.UI.csproj": {
+    "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEditor.UI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEditor.UI.csproj",
+        "projectUniqueName": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEditor.UI.csproj",
         "projectName": "UnityEditor.UI",
-        "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEditor.UI.csproj",
+        "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEditor.UI.csproj",
         "packagesPath": "C:\\Users\\Hannes\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\obj\\",
+        "outputPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\obj\\",
         "projectStyle": "PackageReference",
         "skipContentFileWrite": true,
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+          "C:\\Users\\Hannes\\AppData\\Roaming\\Godot\\mono\\GodotNuGetFallbackFolder"
         ],
         "configFilePaths": [
+          "C:\\Users\\Hannes\\NuGet.Config",
           "C:\\Users\\Hannes\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Hannes\\AppData\\Roaming\\NuGet\\config\\Godot.Offline.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net471"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net471": {
             "projectReferences": {
-              "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEngine.UI.csproj": {
-                "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEngine.UI.csproj"
+              "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEngine.UI.csproj": {
+                "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEngine.UI.csproj"
               }
             }
           }
@@ -99,6 +102,9 @@
         "win": {
           "#import": []
         },
+        "win-arm64": {
+          "#import": []
+        },
         "win-x64": {
           "#import": []
         },
@@ -107,29 +113,29 @@
         }
       }
     },
-    "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEngine.UI.csproj": {
+    "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEngine.UI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEngine.UI.csproj",
+        "projectUniqueName": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEngine.UI.csproj",
         "projectName": "UnityEngine.UI",
-        "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEngine.UI.csproj",
+        "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEngine.UI.csproj",
         "packagesPath": "C:\\Users\\Hannes\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\obj\\",
+        "outputPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\obj\\",
         "projectStyle": "PackageReference",
         "skipContentFileWrite": true,
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+          "C:\\Users\\Hannes\\AppData\\Roaming\\Godot\\mono\\GodotNuGetFallbackFolder"
         ],
         "configFilePaths": [
+          "C:\\Users\\Hannes\\NuGet.Config",
           "C:\\Users\\Hannes\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Hannes\\AppData\\Roaming\\NuGet\\config\\Godot.Offline.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net471"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -143,6 +149,9 @@
       },
       "runtimes": {
         "win": {
+          "#import": []
+        },
+        "win-arm64": {
           "#import": []
         },
         "win-x64": {

@@ -113,15 +113,23 @@ namespace Controller.SetupAndFlowControl
 
         public void Update()
         {
-            if (_envSettings.Year >= simulateYears)
+            if (isTraining)
             {
-                Application.Quit();
+                if (_envSettings.Year >= simulateYears)
+                {
+                    Application.Quit();
+                }
+                else
+                {
+                    StartCoroutine(UpdateBusinesses());
+                    Debug.Log("YEAR " + _envSettings.Year + " MONTH " + _envSettings.Month);
+                }
             }
-            else
-            {
-                StartCoroutine(UpdateBusinesses());
-                Debug.Log("YEAR " + _envSettings.Year + " MONTH " + _envSettings.Month);
-            }
+        }
+
+        public void NextStep()
+        {
+            StartCoroutine(UpdateBusinesses());
         }
 
         private IEnumerator UpdateBusinesses()
@@ -178,7 +186,8 @@ namespace Controller.SetupAndFlowControl
             _bankingMarkets.PayOutInterestForSavings();
             _bankingMarkets.Decide();
 
-            foreach (var business in _businesses) business.UpdateStats(_envSettings.Month);
+            foreach (var business in _businesses) 
+                business.UpdateStats(_envSettings.Month);
 
             _countryEconomyMarket.ResetProductMarkets();
             yield return new WaitForFixedUpdate();

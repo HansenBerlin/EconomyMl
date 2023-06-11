@@ -2,6 +2,35 @@
   "version": 3,
   "targets": {
     ".NETFramework,Version=v4.7.1": {
+      "Unity.ML-Agents/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "Unity.ML-Agents.CommunicatorObjects": "1.0.0",
+          "UnityEditor.UI": "1.0.0",
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Unity.ML-Agents.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Unity.ML-Agents.dll": {}
+        }
+      },
+      "Unity.ML-Agents.CommunicatorObjects/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEditor.UI": "1.0.0",
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Unity.ML-Agents.CommunicatorObjects.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Unity.ML-Agents.CommunicatorObjects.dll": {}
+        }
+      },
       "UnityEditor.UI/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.7.1",
@@ -27,6 +56,89 @@
       }
     },
     ".NETFramework,Version=v4.7.1/win": {
+      "Unity.ML-Agents/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "Unity.ML-Agents.CommunicatorObjects": "1.0.0",
+          "UnityEditor.UI": "1.0.0",
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Unity.ML-Agents.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Unity.ML-Agents.dll": {}
+        }
+      },
+      "Unity.ML-Agents.CommunicatorObjects/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEditor.UI": "1.0.0",
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Unity.ML-Agents.CommunicatorObjects.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Unity.ML-Agents.CommunicatorObjects.dll": {}
+        }
+      },
+      "UnityEditor.UI/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/UnityEditor.UI.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/UnityEditor.UI.dll": {}
+        }
+      },
+      "UnityEngine.UI/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "compile": {
+          "bin/placeholder/UnityEngine.UI.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/UnityEngine.UI.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.7.1/win-arm64": {
+      "Unity.ML-Agents/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "Unity.ML-Agents.CommunicatorObjects": "1.0.0",
+          "UnityEditor.UI": "1.0.0",
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Unity.ML-Agents.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Unity.ML-Agents.dll": {}
+        }
+      },
+      "Unity.ML-Agents.CommunicatorObjects/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEditor.UI": "1.0.0",
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Unity.ML-Agents.CommunicatorObjects.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Unity.ML-Agents.CommunicatorObjects.dll": {}
+        }
+      },
       "UnityEditor.UI/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.7.1",
@@ -52,6 +164,35 @@
       }
     },
     ".NETFramework,Version=v4.7.1/win-x64": {
+      "Unity.ML-Agents/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "Unity.ML-Agents.CommunicatorObjects": "1.0.0",
+          "UnityEditor.UI": "1.0.0",
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Unity.ML-Agents.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Unity.ML-Agents.dll": {}
+        }
+      },
+      "Unity.ML-Agents.CommunicatorObjects/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEditor.UI": "1.0.0",
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Unity.ML-Agents.CommunicatorObjects.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Unity.ML-Agents.CommunicatorObjects.dll": {}
+        }
+      },
       "UnityEditor.UI/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.7.1",
@@ -77,6 +218,35 @@
       }
     },
     ".NETFramework,Version=v4.7.1/win-x86": {
+      "Unity.ML-Agents/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "Unity.ML-Agents.CommunicatorObjects": "1.0.0",
+          "UnityEditor.UI": "1.0.0",
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Unity.ML-Agents.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Unity.ML-Agents.dll": {}
+        }
+      },
+      "Unity.ML-Agents.CommunicatorObjects/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEditor.UI": "1.0.0",
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Unity.ML-Agents.CommunicatorObjects.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Unity.ML-Agents.CommunicatorObjects.dll": {}
+        }
+      },
       "UnityEditor.UI/1.0.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.7.1",
@@ -103,6 +273,16 @@
     }
   },
   "libraries": {
+    "Unity.ML-Agents/1.0.0": {
+      "type": "project",
+      "path": "Unity.ML-Agents.csproj",
+      "msbuildProject": "Unity.ML-Agents.csproj"
+    },
+    "Unity.ML-Agents.CommunicatorObjects/1.0.0": {
+      "type": "project",
+      "path": "Unity.ML-Agents.CommunicatorObjects.csproj",
+      "msbuildProject": "Unity.ML-Agents.CommunicatorObjects.csproj"
+    },
     "UnityEditor.UI/1.0.0": {
       "type": "project",
       "path": "UnityEditor.UI.csproj",
@@ -116,47 +296,55 @@
   },
   "projectFileDependencyGroups": {
     ".NETFramework,Version=v4.7.1": [
+      "Unity.ML-Agents >= 1.0.0",
+      "Unity.ML-Agents.CommunicatorObjects >= 1.0.0",
       "UnityEditor.UI >= 1.0.0",
       "UnityEngine.UI >= 1.0.0"
     ]
   },
   "packageFolders": {
     "C:\\Users\\Hannes\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\Hannes\\AppData\\Roaming\\Godot\\mono\\GodotNuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\Assembly-CSharp.csproj",
-      "projectName": "Assembly-CSharp",
-      "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\Assembly-CSharp.csproj",
+      "projectUniqueName": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\Unity.ML-Agents.Editor.csproj",
+      "projectName": "Unity.ML-Agents.Editor",
+      "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\Unity.ML-Agents.Editor.csproj",
       "packagesPath": "C:\\Users\\Hannes\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\obj\\",
+      "outputPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\obj\\",
       "projectStyle": "PackageReference",
       "skipContentFileWrite": true,
       "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        "C:\\Users\\Hannes\\AppData\\Roaming\\Godot\\mono\\GodotNuGetFallbackFolder"
       ],
       "configFilePaths": [
+        "C:\\Users\\Hannes\\NuGet.Config",
         "C:\\Users\\Hannes\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\Hannes\\AppData\\Roaming\\NuGet\\config\\Godot.Offline.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net471"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net471": {
           "projectReferences": {
-            "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEditor.UI.csproj": {
-              "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEditor.UI.csproj"
+            "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\Unity.ML-Agents.CommunicatorObjects.csproj": {
+              "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\Unity.ML-Agents.CommunicatorObjects.csproj"
             },
-            "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEngine.UI.csproj": {
-              "projectPath": "C:\\Users\\Hannes\\source\\repos\\HWR\\Studienarbeit\\UnityEconomy\\EconomyMl\\UnityEngine.UI.csproj"
+            "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\Unity.ML-Agents.csproj": {
+              "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\Unity.ML-Agents.csproj"
+            },
+            "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEditor.UI.csproj": {
+              "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEditor.UI.csproj"
+            },
+            "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEngine.UI.csproj": {
+              "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEngine.UI.csproj"
             }
           }
         }
@@ -167,6 +355,9 @@
     },
     "runtimes": {
       "win": {
+        "#import": []
+      },
+      "win-arm64": {
         "#import": []
       },
       "win-x64": {

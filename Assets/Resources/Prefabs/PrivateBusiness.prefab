@@ -57,11 +57,12 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 5022602860645237092, guid: 2fe83d8e5f1ed914e97f54e231197f52, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
+  m_BehaviorType: 2
   m_BehaviorName: Business
   TeamId: 0
   m_UseChildSensors: 0
   m_UseChildActuators: 1
+  m_DeterministicInference: 0
   m_ObservableAttributeHandling: 0
 --- !u!114 &2017926742151883019
 MonoBehaviour:

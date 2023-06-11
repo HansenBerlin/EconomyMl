@@ -12,7 +12,8 @@ namespace Controller.Data
 
         public static decimal ReproductionRate()
         {
-            return (decimal) DataGen.RandomNormalValue(Rng, 1.52, 0.5);
+            var rate = (decimal) DataGen.RandomNormalValue(Rng, 1.52, 0.5);
+            return rate < 0 ? 0 : rate;
         }
 
         public static int CreateRandom(int startInclude, int endExclude)
