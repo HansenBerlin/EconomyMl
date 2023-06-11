@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
@@ -28,6 +29,10 @@ namespace NewScripts
 
         public float AveragePrice(ProductType type)
         {
+            if (type == ProductType.None)
+            {
+                return 0;
+            }
             float accumulatedPrice = 0;
             float countOffers = 0;
             foreach (var company in ServiceLocator.Instance.Companys)
@@ -54,18 +59,23 @@ namespace NewScripts
 
         public Receipt Buy(ProductType type, int demand, float maxSpending)
         {
+            if (maxSpending <= 0)
+            {
+                Debug.Log("");
+            }
             int countFullfilled = 0;
             float amountSpent = 0;
 
-            foreach (var company in ServiceLocator.Instance.Companys)
+            var matches = ServiceLocator.Instance.Companys
+                .Where(x => x.ProducedProduct.ProductTypeOutput == type && x.ProducedProduct.Amount > 0)
+                .OrderBy(x => x.ProducedProduct.Price);
+
+            foreach (var company in matches)
             {
-                if (company.ProducedProduct.ProductTypeOutput != type)
+                var product = company.ProducedProduct;
+                if (product.Price <= maxSpending - amountSpent)
                 {
-                    continue;
-                }
-                if (company.ProducedProduct.Price <= maxSpending - amountSpent)
-                {
-                    while (countFullfilled < demand && amountSpent < maxSpending && company.ProducedProduct.Amount > 0)
+                    while (countFullfilled < demand && amountSpent + product.Price < maxSpending && company.ProducedProduct.Amount > 0)
                     {
                         countFullfilled++;
                         amountSpent += company.BuyFromCompany();
@@ -74,8 +84,13 @@ namespace NewScripts
                 }
                 else
                 {
-                    Debug.Log($"Offer for {type} with demand {demand} and max pending {maxSpending} rejected.");
+                    //Debug.Log($"Offer for {type} with demand {demand} and max pending {maxSpending} rejected.");
                 }
+            }
+
+            if (amountSpent > maxSpending)
+            {
+                throw new Exception("NOT POSSIBLE");
             }
 
             return new Receipt
@@ -91,18 +106,25 @@ namespace NewScripts
             for (var index = workers.Count - 1; index >= 0; index--)
             {
                 var worker = ServiceLocator.Instance.LaborMarketService.Workers[index];
+                
                 var receipt = Buy(ProductType.Food, worker.FoodDemand, worker.Money);
+                if (receipt.AmountPaid > worker.Money)
+                {
+                    Debug.Log("");
+                }
                 if (receipt.CountBought < 10)
                 {
-                    worker.Health -= 10 - receipt.CountBought;
-                }
-                worker.Money -= receipt.AmountPaid;
-                if (worker.Health < 0)
-                {
-                    ServiceLocator.Instance.LaborMarketService.Workers.Remove(worker);
-                    workers.Remove(worker);
+                    worker.Health--;
+                    worker.Health = worker.Health <= 0 ? 0 : worker.Health;
                 }
                 else
+                {
+                    worker.Health++;
+                }
+                worker.Money -= receipt.AmountPaid;
+                //float foodAvg = ServiceLocator.Instance.ProductMarketService.AveragePrice(ProductType.Food);
+                //float maxSpending = worker.Money - foodAvg * worker.FoodDemand;
+                if (true)
                 {
                     receipt = Buy(ProductType.Luxury, worker.LuxuryDemand, worker.Money);
                     worker.Money -= receipt.AmountPaid;

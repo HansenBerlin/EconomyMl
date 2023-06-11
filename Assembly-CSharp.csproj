@@ -204,6 +204,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Buildings_T" />
      <Folder Include="Assets\TextMesh Pro\Examples &amp; Extras\Sprites" />
      <None Include="Library\PackageCache\com.unity.modules.screencapture@1.0.0\package.json" />
+     <Folder Include="Assets\results\company-two\Company" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Tiles_M" />
      <None Include="Library\PackageCache\com.unity.modules.cloth@1.0.0\package.json" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
@@ -234,6 +235,7 @@
      <None Include="Library\PackageCache\com.unity.modules.assetbundle@1.0.0\package.json" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Nature_T" />
+     <None Include="Assets\results\company-one\run_logs\timers.json" />
      <None Include="Assets\ML-Agents\Timers\SampleScene_timers.json" />
      <None Include="Library\PackageCache\com.unity.modules.imgui@1.0.0\package.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Tiles_T\Race_T" />
@@ -248,6 +250,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\People_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M" />
      <Folder Include="Library\PackageCache\com.unity.modules.assetbundle@1.0.0" />
+     <Folder Include="Assets\results\company-two" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Vehicles_T\Trains_AI_T" />
      <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Oswald-Bold - OFL.txt" />
@@ -263,6 +266,7 @@
      <Folder Include="Assets\TextMesh Pro\Resources\Fonts &amp; Materials" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Props_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Tiles_T" />
+     <Folder Include="Assets\results\company-two\run_logs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Military_T" />
      <Folder Include="Assets\Scripts\Enums" />
@@ -301,7 +305,6 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\People_T\Rigs_T" />
      <Folder Include="Library\PackageCache\com.unity.modules.terrainphysics@1.0.0" />
      <None Include="Library\PackageCache\com.unity.modules.imageconversion@1.0.0\package.json" />
-     <Folder Include="Assets\results\company-one\Company" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Terrains_T" />
      <Folder Include="Library\PackageCache\com.unity.modules.unitywebrequest@1.0.0" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Beach_M" />
@@ -342,8 +345,8 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Tiles_M\Race_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\People_M\Rigs_M" />
      <None Include="Library\PackageCache\com.unity.modules.particlesystem@1.0.0\package.json" />
-     <None Include="Assets\results\company-one\run_logs\training_status.json" />
      <None Include="Assets\Packages\ScottPlot.4.1.64\lib\netstandard2.0\ScottPlot.xml" />
+     <None Include="Assets\results\company-two\run_logs\timers.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Tiles_M\Runway_M" />
      <Folder Include="Library\PackageCache\com.unity.modules.wind@1.0.0" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Tiles_M\Bridges_M" />
@@ -453,6 +456,7 @@
      <Folder Include="Library\PackageCache\com.unity.modules.unitywebrequestwww@1.0.0" />
      <None Include="Library\PackageCache\com.unity.modules.director@1.0.0\package.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Beach_T" />
+     <None Include="Assets\results\company-two\run_logs\training_status.json" />
      <Folder Include="Library\PackageCache\com.unity.modules.jsonserialize@1.0.0" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Tiles_T\Bridges_T" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\- PhysicMaterial" />
@@ -475,6 +479,7 @@
      <Folder Include="Assets\Resources\Prefabs\BaVersion\Physical" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T" />
+     <Folder Include="Assets\results\company-one\Company" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Buildings_M" />
      <Folder Include="Assets\Scenes" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\- Materials" />
@@ -489,7 +494,7 @@
      <None Include="Assets\Packages\MathNet.Numerics.5.0.0\lib\netstandard2.0\MathNet.Numerics.xml" />
      <Folder Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents" />
      <Folder Include="Assets\TextMesh Pro\Examples &amp; Extras" />
-     <None Include="Assets\results\company-one\run_logs\timers.json" />
+     <None Include="Assets\results\company-one\run_logs\training_status.json" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
      <Folder Include="Assets\Packages\MathNet.Numerics.5.0.0\lib\netstandard2.0" />
      <None Include="Library\PackageCache\com.unity.modules.unitywebrequest@1.0.0\package.json" />

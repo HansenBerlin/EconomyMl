@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = System.Random;
@@ -11,14 +12,16 @@ namespace NewScripts
     {
         public GameObject CompanyPrefab;
         public bool IsManual;
+        public TextMeshProUGUI RoundText;
+
 
         //private ProductMarket _productMarket;
         private readonly Random _rand = new();
 
-        private Company GetFromGameObject(float xPos)
+        private Company GetFromGameObject(float xPos, float zPos)
         {
             var go = Instantiate(CompanyPrefab);
-            go.transform.position = new Vector3(xPos, 0, 0);
+            go.transform.position = new Vector3(xPos, 0, zPos);
             Transform[] transforms = go.GetComponentsInChildren<Transform>();
             Company company = null;
  
@@ -37,9 +40,11 @@ namespace NewScripts
         
         public void Awake()
         {
-            for (var i = 0; i < 1; i++)
+            ServiceLocator.Instance.LaborMarketService.InitWorkers();
+            for (var i = 0; i < 3; i++)
             {
-                Company company = GetFromGameObject(-15);
+                float zPos = i == 0 ? -15 : i == 2 ? 15 : 0;
+                Company company = GetFromGameObject(-15, zPos);
                 
                 var product = new Product
                 {
@@ -48,27 +53,29 @@ namespace NewScripts
                     Price = 1
                 };
                 company.Init(product);
-                company.Capital = 100000;
+                company.Capital = 30000;
                 ServiceLocator.Instance.Companys.Add(company);
             }
             
-            for (var i = 0; i < 1; i++)
+            for (var i = 0; i < 3; i++)
             {
-                Company company = GetFromGameObject(0);
+                float zPos = i == 0 ? -15 : i == 2 ? 15 : 0;
+                Company company = GetFromGameObject(0, zPos);
                 var product = new Product
                 {
                     ProductTypeInput = ProductType.None,
                     ProductTypeOutput = ProductType.Intermediate,
-                    Price = 5
+                    Price = 2.5F
                 };
                 company.Init(product);
-                company.Capital = 100000;
+                company.Capital = 40000;
                 ServiceLocator.Instance.Companys.Add(company);
             }
             
-            for (var i = 0; i < 1; i++)
+            for (var i = 0; i < 3; i++)
             {
-                Company company = GetFromGameObject(15);
+                float zPos = i == 0 ? -15 : i == 2 ? 15 : 0;
+                Company company = GetFromGameObject(15, zPos);
                 var product = new Product
                 {
                     ProductTypeInput = ProductType.Intermediate,
@@ -76,7 +83,7 @@ namespace NewScripts
                     Price = 25
                 };
                 company.Init(product);
-                company.Capital = 500000;
+                company.Capital = 80000;
                 ServiceLocator.Instance.Companys.Add(company);
             }
         }
@@ -85,7 +92,8 @@ namespace NewScripts
         {
             if (IsManual == false)
             {
-                StartCoroutine(UpdateBusinesses());
+                //StartCoroutine(UpdateBusinesses());
+                RunRound();
             }
         }
 
@@ -93,26 +101,52 @@ namespace NewScripts
         {
             if (IsManual)
             {
-                StartCoroutine(UpdateBusinesses());
+                //StartCoroutine(UpdateBusinesses());
+                RunRound();
             }
         }
 
+        private int round = 0;
+
         private IEnumerator UpdateBusinesses()
         {
+            RunRound();
+            yield return new WaitForFixedUpdate();
+        }
+
+        private void RunRound()
+        {
+            round++;
+            RoundText.GetComponent<TextMeshProUGUI>().text = round.ToString();
             var companies = GenerateRandomLoop(ServiceLocator.Instance.Companys);
-            bool isfirst = true;
             foreach (var company in companies)
             {
-                if (isfirst)
+                if (IsManual)
                 {
-                    //Debug.Log(company.Id);
-                    isfirst = false;
+                    company.RunManual();
                 }
-                company.RequestNextStep();
+                else
+                {
+                    if (company.ExtinctPenaltyRounds > 0)
+                    {
+                        company.ExtinctPenaltyRounds--;
+                    }
+                    else
+                    {
+                        company.RequestNextStep();
+                    }
+                }
             }
             ServiceLocator.Instance.ProductMarketService.SimulateDemand();
+            foreach (var company in companies)
+            {
+                if (company.ExtinctPenaltyRounds == 0)
+                {
+                    company.EndRound();
+                }
+            }
+            ServiceLocator.Instance.LaborMarketService.RemoveSick();
             ServiceLocator.Instance.LaborMarketService.NewRound();
-            yield return new WaitForFixedUpdate();
         }
         
         public List<Company> GenerateRandomLoop(List<Company> listToShuffle)

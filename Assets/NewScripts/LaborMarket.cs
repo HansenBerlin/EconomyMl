@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using Random = System.Random;
 
 namespace NewScripts
 {
@@ -11,18 +13,28 @@ namespace NewScripts
         public TextMeshProUGUI AvgText;
         public TextMeshProUGUI HealthText;
         public List<Worker> Workers { get; private set; } = new();
+        private readonly Random _rand = new();
+        
+        public void InitWorkers()
+        {
+            for (int i = 0; i < 1000; i++)
+            {
+                Workers.Add(new Worker());
+            }
+        }
 
 
-        public int WorkersCount => Workers.Count;
-        
-        
         public void NewRound()
         {
-            var avg = Workers.Select(x => x.Money).Average();
-            AvgText.GetComponent<TextMeshProUGUI>().text = $"{avg:0.##}";
-            WorkerText.GetComponent<TextMeshProUGUI>().text = WorkersCount.ToString();
-            var health = Workers.Select(x => x.Health).Average();
-            HealthText.GetComponent<TextMeshProUGUI>().text = $"{health:0.##}";
+            var avg = Workers.Where(x => x.CompanyId == 0).Select(x => x.Money).Average();
+            var workeravg = Workers.Where(x => x.CompanyId != 0).Select(x => x.Money).Average();
+            AvgText.GetComponent<TextMeshProUGUI>().text = $"{avg:0}/{workeravg:0}";
+
+            var workerCount = Workers.Where(x => x.CompanyId != 0).ToList().Count.ToString();
+            WorkerText.GetComponent<TextMeshProUGUI>().text = $"{workerCount}/{Workers.Count}";
+            var health = Workers.Where(x => x.CompanyId == 0).Select(x => x.Health).Average();
+            var workerhealth = Workers.Where(x => x.CompanyId != 0).Select(x => x.Health).Average();
+            HealthText.GetComponent<TextMeshProUGUI>().text = $"{health:0}/{workerhealth:0}";
         }
         
         public int CompanyWorkerCount(int companyId)
@@ -41,28 +53,31 @@ namespace NewScripts
 
         public void Hire(int count, int companyId)
         {
-            for (int i = 0; i < count; i++)
-            {
-                var worker = new Worker()
-                {
-                    CompanyId = companyId
-                };
-                Workers.Add(worker);
-            }
-        }
-
-        public void Fire(int count, int companyId)
-        {
-            for (var index = Workers.Count - 1; index >= 0; index--)
+            foreach (var worker in GenerateRandomLoop(Workers))
             {
                 if (count == 0)
                 {
                     break;
                 }
-                var worker = Workers[index];
+                if (worker.CompanyId == 0)
+                {
+                    worker.CompanyId = companyId;
+                    count--;
+                }
+            }
+        }
+
+        public void Fire(int count, int companyId)
+        {
+            foreach (var worker in Workers)
+            {
+                if (count == 0)
+                {
+                    break;
+                }
                 if (worker.CompanyId == companyId)
                 {
-                    Workers.Remove(worker);
+                    worker.CompanyId = 0;
                     count--;
                 }
             }
@@ -70,7 +85,6 @@ namespace NewScripts
 
         public void Pay(int amount, int companyId)
         {
-            
             foreach (var worker in Workers)
             {
                 if (worker.CompanyId == companyId)
@@ -78,6 +92,28 @@ namespace NewScripts
                     worker.Money += amount;
                 }
             }
+        }
+
+        public void RemoveSick()
+        {
+            for (var index = Workers.Count - 1; index >= 0; index--)
+            {
+                var worker = Workers[index];
+                if (worker.Health <= 0)
+                {
+                    //Workers.Remove(worker);
+                }
+            }
+        }
+        
+        public List<Worker> GenerateRandomLoop(List<Worker> listToShuffle)
+        {
+            for (int i = listToShuffle.Count - 1; i > 0; i--)
+            {
+                var k = _rand.Next(i + 1);
+                (listToShuffle[k], listToShuffle[i]) = (listToShuffle[i], listToShuffle[k]);
+            }
+            return listToShuffle;
         }
     }
 }
