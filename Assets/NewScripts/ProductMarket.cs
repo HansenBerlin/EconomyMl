@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using Random = System.Random;
 
 namespace NewScripts
 {
@@ -14,6 +15,8 @@ namespace NewScripts
     {
         //private LaborMarket _laborMarket;
         public CompanyPayEvent payCompanyEvent;
+
+        private readonly Random _rand = new();
 
         public void Awake()
         {
@@ -84,13 +87,37 @@ namespace NewScripts
 
         public void SimulateDemand()
         {
-            //Debug.Log("Worker Money before: " + _laborMarket.WorkerAccumulatedIncome);
-            int workers = ServiceLocator.Instance.LaborMarketService.Workers;
-            var receipt = Buy(ProductType.Food, workers * 10, ServiceLocator.Instance.LaborMarketService.WorkerAccumulatedIncome);
-            ServiceLocator.Instance.LaborMarketService.Decrease(receipt.AmountPaid);
-            receipt = Buy(ProductType.Luxury, workers, ServiceLocator.Instance.LaborMarketService.WorkerAccumulatedIncome);
-            ServiceLocator.Instance.LaborMarketService.Decrease(receipt.AmountPaid);
-            //Debug.Log("Worker Money after: " + _laborMarket.WorkerAccumulatedIncome);
+            var workers = GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
+            for (var index = workers.Count - 1; index >= 0; index--)
+            {
+                var worker = ServiceLocator.Instance.LaborMarketService.Workers[index];
+                var receipt = Buy(ProductType.Food, worker.FoodDemand, worker.Money);
+                if (receipt.CountBought < 10)
+                {
+                    worker.Health -= 10 - receipt.CountBought;
+                }
+                worker.Money -= receipt.AmountPaid;
+                if (worker.Health < 0)
+                {
+                    ServiceLocator.Instance.LaborMarketService.Workers.Remove(worker);
+                    workers.Remove(worker);
+                }
+                else
+                {
+                    receipt = Buy(ProductType.Luxury, worker.LuxuryDemand, worker.Money);
+                    worker.Money -= receipt.AmountPaid;
+                }
+            }
+        }
+        
+        public List<Worker> GenerateRandomLoop(List<Worker> listToShuffle)
+        {
+            for (int i = listToShuffle.Count - 1; i > 0; i--)
+            {
+                var k = _rand.Next(i + 1);
+                (listToShuffle[k], listToShuffle[i]) = (listToShuffle[i], listToShuffle[k]);
+            }
+            return listToShuffle;
         }
     }
 }

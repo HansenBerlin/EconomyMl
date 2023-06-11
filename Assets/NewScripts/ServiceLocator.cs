@@ -23,5 +23,8 @@ namespace NewScripts
             ProductMarketService = GetComponentInChildren<ProductMarket>();
             LaborMarketService = GetComponentInChildren<LaborMarket>();
         }
+
+        
+        
     }
 }

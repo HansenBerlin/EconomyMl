@@ -14,17 +14,17 @@ namespace NewScripts
 {
     public class Company : Agent
     {
-        public int Id;
+        public int Id => GetInstanceID();
         public float Capital;
         //public float Count;
         //public float Price;
         //public float Capacity;
         public int LastSales;
         public int TotalSales;
-        public int WorkerCount;
+        private int WorkerCount => ServiceLocator.Instance.LaborMarketService.CompanyWorkerCount(Id);
         public int ResourceStock;
         public float LastCapital;
-        public ProductType Type;
+        //public ProductType Type;
         public TextMeshProUGUI TypeText;
         public TextMeshProUGUI CapitalText;
         public TextMeshProUGUI WorkersText;
@@ -47,9 +47,9 @@ namespace NewScripts
 
         public void Init(Product produced)
         {
-            Id = GetInstanceID();
+            //Id = GetInstanceID();
             ProducedProduct = produced;
-            Type = ProducedProduct.ProductTypeOutput;
+            //Type = ProducedProduct.ProductTypeOutput;
             ServiceLocator.Instance.ProductMarketService.payCompanyEvent.AddListener((x) =>
             {
                 if (int.Parse(x) == Id)
@@ -62,13 +62,14 @@ namespace NewScripts
             });
             _workerPayment = produced.ProductTypeOutput == ProductType.Food ? 35 :
                 produced.ProductTypeOutput == ProductType.Intermediate ? 35 : 60;
-            WorkerCount = produced.ProductTypeOutput == ProductType.Food ? 200 :
-                produced.ProductTypeOutput == ProductType.Intermediate ? 500 : 200;
             _energyCostPerUnit = produced.ProductTypeOutput == ProductType.Food ? 0.2F :
                 produced.ProductTypeOutput == ProductType.Intermediate ? 1 : 5;
             _workerCapacityModifier = produced.ProductTypeOutput == ProductType.Food ? 50 :
                 produced.ProductTypeOutput == ProductType.Intermediate ? 10 : 5;
             _ressourceCapacityModifier = produced.ProductTypeOutput == ProductType.Luxury ? 5 : 1;
+            var workerCount = produced.ProductTypeOutput == ProductType.Food ? 2 :
+                produced.ProductTypeOutput == ProductType.Intermediate ? 5 : 2;
+            ServiceLocator.Instance.LaborMarketService.Hire(workerCount, Id);
             TypeText.GetComponent<TextMeshProUGUI>().text = ProducedProduct.ProductTypeOutput.ToString();
         }
 
@@ -78,7 +79,7 @@ namespace NewScripts
             LastSales++;
             TotalSales++;
             Capital += ProducedProduct.Price;
-            CapitalText.GetComponent<TextMeshProUGUI>().text = Capital.ToString();
+            CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Capital:0.##}";;
             LastSalesText.GetComponent<TextMeshProUGUI>().text = LastSales.ToString();
             TotalSalesText.GetComponent<TextMeshProUGUI>().text = TotalSales.ToString();
             StockText.GetComponent<TextMeshProUGUI>().text = ProducedProduct.Amount.ToString();
@@ -117,8 +118,9 @@ namespace NewScripts
                 Debug.Log("Company of type " + ProducedProduct.ProductTypeOutput + " extinct");
                 SetReward(-1F);
                 Capital = ProducedProduct.ProductTypeOutput == ProductType.Luxury ? 500000 : 100000;
-                WorkerCount -= ServiceLocator.Instance.LaborMarketService.Fire(WorkerCount);
-                ServiceLocator.Instance.LaborMarketService.Hire(10);
+                ServiceLocator.Instance.LaborMarketService.Fire(WorkerCount, Id);
+                ServiceLocator.Instance.LaborMarketService.Hire(2, Id);
+                //ServiceLocator.Instance.LaborMarketService.Hire(1);
                 ProducedProduct.Price = ProducedProduct.ProductTypeOutput == ProductType.Food ? 1 :
                     ProducedProduct.ProductTypeOutput == ProductType.Intermediate ? 5 : 25;
                 ProducedProduct.Amount = 0;
@@ -131,15 +133,15 @@ namespace NewScripts
             AddReward(Capital > LastCapital ? 0.1F : -0.1F);
             int workerPayments = SimulatePayWorkers();
             Capital -= workerPayments;
-            ServiceLocator.Instance.LaborMarketService.Pay(workerPayments);
+            ServiceLocator.Instance.LaborMarketService.Pay(_workerPayment, Id);
             if (LastSales > 0)
             {
                 //Debug.Log("Last sales: " + LastSales);
             }
             CapacityText.GetComponent<TextMeshProUGUI>().text = ProductionCapacity.ToString();
-            PriceText.GetComponent<TextMeshProUGUI>().text = ProducedProduct.Price.ToString();
+            PriceText.GetComponent<TextMeshProUGUI>().text = $"{ProducedProduct.Price:0.##}";
             StockText.GetComponent<TextMeshProUGUI>().text = ProducedProduct.Amount.ToString();
-            CapitalText.GetComponent<TextMeshProUGUI>().text = Capital.ToString();
+            CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Capital:0.##}";
             WorkersText.GetComponent<TextMeshProUGUI>().text = WorkerCount.ToString();
             LastSales = 0;
         }
@@ -162,9 +164,9 @@ namespace NewScripts
             int buyResources = actionBuffers.DiscreteActions[0];
             if (buyResources == 1)
             {
-                int amount = actionBuffers.DiscreteActions[1];
-                float maxPrice = actionBuffers.DiscreteActions[2];
-                BuyRessourceDecision(maxPrice, amount);
+                int amount = actionBuffers.DiscreteActions[1] + 1;
+                float maxFromCapital = actionBuffers.DiscreteActions[2] + 1;
+                BuyRessourceDecision(Capital / maxFromCapital, amount);
             }
             
             int produce = actionBuffers.DiscreteActions[3];
@@ -182,15 +184,18 @@ namespace NewScripts
             }
             if (hireOrFire == 1)
             {
-                ServiceLocator.Instance.LaborMarketService.Hire(count);
-                WorkerCount += count;
+                ServiceLocator.Instance.LaborMarketService.Hire(count, Id);
             }
             else if (hireOrFire == 2 && WorkerCount > count)
             {
-                WorkerCount -= ServiceLocator.Instance.LaborMarketService.Fire(count);
+                ServiceLocator.Instance.LaborMarketService.Fire(count, Id);
             }
 
             int priceChange = actionBuffers.DiscreteActions[6];
+            if (priceChange == 0)
+            {
+                Debug.Log(priceChange);
+            }
             SetPriceDecision(priceChange);
         }
 
@@ -199,7 +204,7 @@ namespace NewScripts
             float newPrice = priceChange == 0 ? ProducedProduct.Price * 0.99F :
                 priceChange == 2 ? ProducedProduct.Price * 1.01F : ProducedProduct.Price;
             ProducedProduct.Price = newPrice;
-            PriceText.GetComponent<TextMeshProUGUI>().text = ProducedProduct.Price.ToString();
+            PriceText.GetComponent<TextMeshProUGUI>().text = $"{ProducedProduct.Price:0.##}";
         }
 
         private int SimulatePayWorkers()
@@ -217,10 +222,10 @@ namespace NewScripts
             Capital -= ProductionCapacity * _energyCostPerUnit;
             if (ProducedProduct.ProductTypeInput != ProductType.None)
             {
-                ResourceStock -= ProductionCapacity / _ressourceCapacityModifier;
+                ResourceStock -= ProductionCapacity * _ressourceCapacityModifier;
             }
             StockText.GetComponent<TextMeshProUGUI>().text = ProducedProduct.Amount.ToString();
-            CapitalText.GetComponent<TextMeshProUGUI>().text = Capital.ToString();
+            CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Capital:0.##}";
             MaterialText.GetComponent<TextMeshProUGUI>().text = ResourceStock.ToString();
         }
 
@@ -239,7 +244,7 @@ namespace NewScripts
             }
             Capital -= receipt.AmountPaid;
             ResourceStock += receipt.CountBought;
-            CapitalText.GetComponent<TextMeshProUGUI>().text = Capital.ToString();
+            CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Capital:0.##}";
             MaterialText.GetComponent<TextMeshProUGUI>().text = ResourceStock.ToString();
         }
     }

@@ -111,6 +111,7 @@ namespace NewScripts
                 company.RequestNextStep();
             }
             ServiceLocator.Instance.ProductMarketService.SimulateDemand();
+            ServiceLocator.Instance.LaborMarketService.NewRound();
             yield return new WaitForFixedUpdate();
         }
         
