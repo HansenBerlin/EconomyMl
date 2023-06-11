@@ -12,17 +12,11 @@ namespace NewScripts
     
     public class ProductMarket : MonoBehaviour
     {
-        public List<Company> Companys;
-        public List<ProductOffer> Offers;
-        public GameObject LaborMarketGameObject;
-        private LaborMarket _laborMarket;
+        //private LaborMarket _laborMarket;
         public CompanyPayEvent payCompanyEvent;
 
         public void Awake()
         {
-            _laborMarket = LaborMarketGameObject.GetComponent<LaborMarket>();
-            Offers = new List<ProductOffer>();
-            Companys = new();
             if (payCompanyEvent == null)
             {
                 payCompanyEvent = new CompanyPayEvent();
@@ -31,72 +25,47 @@ namespace NewScripts
 
         public float AveragePrice(ProductType type)
         {
-            
-            var offers = Offers
-                .Where(x => x.Product.ProductTypeOutput == type);
-            if (offers != null && offers.ToList().Count > 0)
+            float accumulatedPrice = 0;
+            float countOffers = 0;
+            foreach (var company in ServiceLocator.Instance.Companys)
             {
-                return offers
-                    .Select(x => x.Product.Price)
-                    .Average();
-            }
-
-            return type == ProductType.Food ? 1 : type == ProductType.Intermediate ? 5 : 25;
-
-
-        }
-
-        public void RemoveOffer(int guid)
-        {
-            for (var index = Offers.Count - 1; index >= 0; index--)
-            {
-                var offer = Offers[index];
-                if (offer.OfferedBy.Id == guid)
+                if (company.ProducedProduct.ProductTypeOutput == type)
                 {
-                    Offers.Remove(offer);
-                    //offer.Product.Amount = newOffer.Product.Amount;
+                    accumulatedPrice += company.ProducedProduct.Price;
+                    countOffers++;
                 }
             }
-        }
 
-        public void AddOffer(ProductOffer newOffer)
-        {
-            if (Offers.ToList().Count == 0)
+            if (countOffers > 0)
             {
-                Offers.Add(newOffer);
-                return;
+                return accumulatedPrice / countOffers;
             }
 
-            foreach (var offer in Offers)
+            return type switch
             {
-                if (offer.OfferedBy.Id == newOffer.OfferedBy.Id)
-                {
-                    offer.Product.Price = newOffer.Product.Price;
-                    offer.Product.Amount = newOffer.Product.Amount;
-                }
-            }
-            
+                ProductType.Food => 1,
+                ProductType.Intermediate => 5,
+                _ => 25
+            };
         }
 
         public Receipt Buy(ProductType type, int demand, float maxSpending)
         {
-            var matchingOffers = Offers
-                .Where(x => x.Product.ProductTypeOutput == type)
-                .OrderBy(x => x.Product.Price);
-
             int countFullfilled = 0;
             float amountSpent = 0;
 
-            foreach (var offer in matchingOffers)
+            foreach (var company in ServiceLocator.Instance.Companys)
             {
-                if (offer.Product.Price <= maxSpending - amountSpent)
+                if (company.ProducedProduct.ProductTypeOutput != type)
                 {
-                    var company = Companys.FirstOrDefault(x => x.Id == offer.OfferedBy.Id);
-                    while (countFullfilled < demand && amountSpent < maxSpending && offer.Product.Amount > 0)
+                    continue;
+                }
+                if (company.ProducedProduct.Price <= maxSpending - amountSpent)
+                {
+                    while (countFullfilled < demand && amountSpent < maxSpending && company.ProducedProduct.Amount > 0)
                     {
                         countFullfilled++;
-                        amountSpent += offer.Buy();
-                        company.MakeSale();
+                        amountSpent += company.BuyFromCompany();
                         //payCompanyEvent.Invoke(offer.OfferedBy.Name);
                     }
                 }
@@ -116,11 +85,11 @@ namespace NewScripts
         public void SimulateDemand()
         {
             //Debug.Log("Worker Money before: " + _laborMarket.WorkerAccumulatedIncome);
-            int workers = _laborMarket.Workers;
-            var receipt = Buy(ProductType.Food, workers * 10, _laborMarket.WorkerAccumulatedIncome);
-            _laborMarket.Decrease(receipt.AmountPaid);
-            receipt = Buy(ProductType.Luxury, workers, _laborMarket.WorkerAccumulatedIncome);
-            _laborMarket.Decrease(receipt.AmountPaid);
+            int workers = ServiceLocator.Instance.LaborMarketService.Workers;
+            var receipt = Buy(ProductType.Food, workers * 10, ServiceLocator.Instance.LaborMarketService.WorkerAccumulatedIncome);
+            ServiceLocator.Instance.LaborMarketService.Decrease(receipt.AmountPaid);
+            receipt = Buy(ProductType.Luxury, workers, ServiceLocator.Instance.LaborMarketService.WorkerAccumulatedIncome);
+            ServiceLocator.Instance.LaborMarketService.Decrease(receipt.AmountPaid);
             //Debug.Log("Worker Money after: " + _laborMarket.WorkerAccumulatedIncome);
         }
     }
