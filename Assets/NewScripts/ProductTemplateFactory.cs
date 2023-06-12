@@ -9,8 +9,8 @@ namespace NewScripts
             float defaultPrice = 0.33F;
             int workerSalary = 10;
             int unitsPerWorker = 30;
-            int startCapital = 45000;
-            int avgConsumption = 10000;
+            int startCapital = 15000;
+            int avgConsumption = 3333;
             ProductType input = ProductType.None;
             
             if (type == ProductType.Intermediate)
@@ -18,17 +18,17 @@ namespace NewScripts
                 defaultPrice = 10;
                 workerSalary = 20;
                 unitsPerWorker = 2;
-                startCapital = 90000;
-                avgConsumption = 666;
+                startCapital = 30000;
+                avgConsumption = 222;
             }
             if (type == ProductType.Luxury)
             {
                 defaultPrice = 25;
                 workerSalary = 30;
                 unitsPerWorker = 2;
-                startCapital = 240000;
+                startCapital = 80000;
                 input = ProductType.Intermediate;
-                avgConsumption = 666;
+                avgConsumption = 222;
             }
 
             return new ProductTemplate(new Product

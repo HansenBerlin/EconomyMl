@@ -12,14 +12,20 @@
 
         private int LuxuryDemandModifier()
         {
-            return Money > 100 ? _luxuryDemand + 1 : Money > 1000 ? _luxuryDemand * 3 : int.MaxValue;
+            return Health < 100 
+                ? _luxuryDemand 
+                : Money > 100 
+                    ? _luxuryDemand + 1 
+                    : Money > 1000 
+                        ? _luxuryDemand * 3 
+                        : int.MaxValue;
             return _luxuryDemand;
         }
         
         private int FoodDemandModifier()
         {
             return _foodDemand;
-            return (int)(Health < 100 ? _foodDemand * 2 :  Health < 500 ? _foodDemand * 1.5 : _foodDemand);
+            //return (int)(Health < 100 ? _foodDemand * 2 :  Health < 500 ? _foodDemand * 1.5 : _foodDemand);
         }
     }
 }

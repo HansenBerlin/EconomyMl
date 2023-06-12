@@ -16,7 +16,7 @@ behaviors:
     network_settings:
       normalize: true
       hidden_units: 128
-      num_layers: 2
+      num_layers: 3
       vis_encode_type: simple
       memory: null
       goal_conditioning_type: hyper
@@ -28,7 +28,7 @@ behaviors:
         network_settings:
           normalize: false
           hidden_units: 128
-          num_layers: 2
+          num_layers: 3
           vis_encode_type: simple
           memory: null
           goal_conditioning_type: hyper
@@ -36,9 +36,9 @@ behaviors:
     init_path: null
     keep_checkpoints: 5
     checkpoint_interval: 500000
-    max_steps: 500000
-    time_horizon: 1000
-    summary_freq: 12000
+    max_steps: 5000000
+    time_horizon: 5000
+    summary_freq: 10000
     threaded: false
     self_play: null
     behavioral_cloning: null

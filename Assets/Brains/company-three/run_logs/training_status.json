@@ -1,0 +1,38 @@
+{
+    "Company": {
+        "checkpoints": [
+            {
+                "steps": 499510,
+                "file_path": "results\\company-three\\Company\\Company-499510.onnx",
+                "reward": -1.4479999542236328,
+                "creation_time": 1686589264.4585736,
+                "auxillary_file_paths": [
+                    "results\\company-three\\Company\\Company-499510.pt"
+                ]
+            },
+            {
+                "steps": 500510,
+                "file_path": "results\\company-three\\Company\\Company-500510.onnx",
+                "reward": -1.4479999542236328,
+                "creation_time": 1686589264.6315742,
+                "auxillary_file_paths": [
+                    "results\\company-three\\Company\\Company-500510.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 500510,
+            "file_path": "results\\company-three\\Company.onnx",
+            "reward": -1.4479999542236328,
+            "creation_time": 1686589264.6315742,
+            "auxillary_file_paths": [
+                "results\\company-three\\Company\\Company-500510.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.0.1+cpu"
+    }
+}

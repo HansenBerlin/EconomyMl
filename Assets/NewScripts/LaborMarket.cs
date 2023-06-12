@@ -26,14 +26,22 @@ namespace NewScripts
 
         public void NewRound()
         {
-            var avg = Workers?.Where(x => x.CompanyId == 0)?.Select(x => x.Money)?.Average();
-            var workeravg = Workers?.Where(x => x.CompanyId != 0)?.Select(x => x.Money)?.Average();
-            AvgText.GetComponent<TextMeshProUGUI>().text = $"{avg:0}/{workeravg:0}";
-            var workerCount = Workers.Where(x => x.CompanyId != 0).ToList().Count.ToString();
-            WorkerText.GetComponent<TextMeshProUGUI>().text = $"{workerCount}/{Workers.Count}";
-            var health = Workers.Where(x => x.CompanyId == 0).Select(x => x.Health).Average();
-            var workerhealth = Workers.Where(x => x.CompanyId != 0).Select(x => x.Health).Average();
-            HealthText.GetComponent<TextMeshProUGUI>().text = $"{health:0}/{workerhealth:0}";
+            try
+            {
+                var avg = Workers?.Where(x => x.CompanyId == 0)?.Select(x => x.Money)?.Average();
+                var workeravg = Workers?.Where(x => x.CompanyId != 0)?.Select(x => x.Money)?.Average();
+                AvgText.GetComponent<TextMeshProUGUI>().text = $"{avg:0}/{workeravg:0}";
+                var workerCount = Workers.Where(x => x.CompanyId != 0).ToList().Count.ToString();
+                WorkerText.GetComponent<TextMeshProUGUI>().text = $"{workerCount}/{Workers.Count}";
+                var health = Workers.Where(x => x.CompanyId == 0).Select(x => x.Health).Average();
+                var workerhealth = Workers.Where(x => x.CompanyId != 0).Select(x => x.Health).Average();
+                HealthText.GetComponent<TextMeshProUGUI>().text = $"{health:0}/{workerhealth:0}";
+
+            }
+            catch (Exception)
+            {
+                Debug.LogWarning("Updating stats failed");
+            }
         }
         
         public int CompanyWorkerCount(int companyId)

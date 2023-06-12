@@ -115,7 +115,7 @@ namespace NewScripts
 
             if (countFullfilled > 0 && type != ProductType.Food)
             {
-                Debug.Log($"Offer for {type} completed. Bought: {countFullfilled}, Spent: {amountSpent}. Demand: {demand}, Max: {maxSpending}");
+                //Debug.Log($"Offer for {type} completed. Bought: {countFullfilled}, Spent: {amountSpent}. Demand: {demand}, Max: {maxSpending}");
                 
             }
             return new Receipt
