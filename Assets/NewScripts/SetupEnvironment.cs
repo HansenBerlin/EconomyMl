@@ -12,11 +12,10 @@ namespace NewScripts
     {
         public GameObject CompanyPrefab;
         public bool IsManual;
+        public bool IsThrottled;
         public TextMeshProUGUI RoundText;
-
-
-        //private ProductMarket _productMarket;
         private readonly Random _rand = new();
+        private int companysPerType = 1;
 
         private Company GetFromGameObject(float xPos, float zPos)
         {
@@ -41,68 +40,53 @@ namespace NewScripts
         public void Awake()
         {
             ServiceLocator.Instance.LaborMarketService.InitWorkers();
-            for (var i = 0; i < 3; i++)
+            for (var i = 0; i < companysPerType; i++)
             {
-                float zPos = i == 0 ? -15 : i == 2 ? 15 : 0;
+                float zPos = i == 0 ? 0 : i == 2 ? 15 : -15;
                 Company company = GetFromGameObject(-15, zPos);
-                
-                var product = new Product
-                {
-                    ProductTypeInput = ProductType.None,
-                    ProductTypeOutput = ProductType.Food,
-                    Price = 1
-                };
-                company.Init(product);
-                company.Capital = 30000;
+                var productTemplate = ProductTemplateFactory.Create(ProductType.Food); 
+                company.Init(productTemplate);
                 ServiceLocator.Instance.Companys.Add(company);
             }
             
-            for (var i = 0; i < 3; i++)
+            for (var i = 0; i < companysPerType; i++)
             {
-                float zPos = i == 0 ? -15 : i == 2 ? 15 : 0;
+                float zPos = i == 0 ? 0 : i == 2 ? 15 : -15;
                 Company company = GetFromGameObject(0, zPos);
-                var product = new Product
-                {
-                    ProductTypeInput = ProductType.None,
-                    ProductTypeOutput = ProductType.Intermediate,
-                    Price = 2.5F
-                };
-                company.Init(product);
-                company.Capital = 40000;
+                var productTemplate = ProductTemplateFactory.Create(ProductType.Intermediate);
+                company.Init(productTemplate);
                 ServiceLocator.Instance.Companys.Add(company);
             }
             
-            for (var i = 0; i < 3; i++)
+            for (var i = 0; i < companysPerType; i++)
             {
-                float zPos = i == 0 ? -15 : i == 2 ? 15 : 0;
+                float zPos = i == 0 ? 0 : i == 2 ? 15 : -15;
                 Company company = GetFromGameObject(15, zPos);
-                var product = new Product
-                {
-                    ProductTypeInput = ProductType.Intermediate,
-                    ProductTypeOutput = ProductType.Luxury,
-                    Price = 25
-                };
-                company.Init(product);
-                company.Capital = 80000;
+                var productTemplate = ProductTemplateFactory.Create(ProductType.Luxury);
+                company.Init(productTemplate);
                 ServiceLocator.Instance.Companys.Add(company);
             }
         }
         
         public void Update()
         {
-            if (IsManual == false)
+            if (IsManual == false && IsThrottled == false)
             {
-                //StartCoroutine(UpdateBusinesses());
-                RunRound();
+                StartCoroutine(UpdateBusinesses());
+                //RunRound();
             }
         }
 
         public void RequestStep()
         {
-            if (IsManual)
+            if (IsManual && IsThrottled == false)
             {
                 //StartCoroutine(UpdateBusinesses());
                 RunRound();
+            }
+            else if (IsManual == false && IsThrottled)
+            {
+                StartCoroutine(UpdateBusinesses());
             }
         }
 
@@ -125,27 +109,27 @@ namespace NewScripts
                 {
                     company.RunManual();
                 }
-                else
+                else if (company.HasPenalty == false)
                 {
-                    if (company.ExtinctPenaltyRounds > 0)
-                    {
-                        company.ExtinctPenaltyRounds--;
-                    }
-                    else
-                    {
-                        company.RequestNextStep();
-                    }
+                    //company.ExtinctPenaltyRounds--;
+                    company.RequestNextStep();
                 }
             }
+            
             ServiceLocator.Instance.ProductMarketService.SimulateDemand();
+            
             foreach (var company in companies)
             {
-                if (company.ExtinctPenaltyRounds == 0)
+                if (company.HasPenalty == false)
                 {
                     company.EndRound();
                 }
+                else
+                {
+                    company.DecreasePenalty();
+                }
             }
-            ServiceLocator.Instance.LaborMarketService.RemoveSick();
+            //ServiceLocator.Instance.LaborMarketService.RemoveSick();
             ServiceLocator.Instance.LaborMarketService.NewRound();
         }
         

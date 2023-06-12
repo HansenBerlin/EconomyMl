@@ -99,6 +99,7 @@
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\PathFinding.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark04.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\TrajectoryPoint.cs" />
+     <Compile Include="Assets\NewScripts\ProductTemplateFactory.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ChatController.cs" />
      <Compile Include="Assets\Scripts\Policies\FederalUnemployedPaymentPolicy.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ObjectSpin.cs" />

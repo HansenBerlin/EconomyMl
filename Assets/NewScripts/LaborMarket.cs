@@ -12,7 +12,7 @@ namespace NewScripts
         public TextMeshProUGUI WorkerText;
         public TextMeshProUGUI AvgText;
         public TextMeshProUGUI HealthText;
-        public List<Worker> Workers { get; private set; } = new();
+        public List<Worker> Workers { get; } = new();
         private readonly Random _rand = new();
         
         public void InitWorkers()
@@ -26,10 +26,9 @@ namespace NewScripts
 
         public void NewRound()
         {
-            var avg = Workers.Where(x => x.CompanyId == 0).Select(x => x.Money).Average();
-            var workeravg = Workers.Where(x => x.CompanyId != 0).Select(x => x.Money).Average();
+            var avg = Workers?.Where(x => x.CompanyId == 0)?.Select(x => x.Money)?.Average();
+            var workeravg = Workers?.Where(x => x.CompanyId != 0)?.Select(x => x.Money)?.Average();
             AvgText.GetComponent<TextMeshProUGUI>().text = $"{avg:0}/{workeravg:0}";
-
             var workerCount = Workers.Where(x => x.CompanyId != 0).ToList().Count.ToString();
             WorkerText.GetComponent<TextMeshProUGUI>().text = $"{workerCount}/{Workers.Count}";
             var health = Workers.Where(x => x.CompanyId == 0).Select(x => x.Health).Average();
