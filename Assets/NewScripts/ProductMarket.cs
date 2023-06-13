@@ -77,7 +77,7 @@ namespace NewScripts
             return lowest;
         }
 
-        public Receipt Buy(ProductType type, int demand, float maxSpending)
+        public Receipt Buy(ProductType type, int demand, float maxSpending, float maxPricPerPiece = float.MaxValue)
         {
             int countFullfilled = 0;
             float amountSpent = 0;

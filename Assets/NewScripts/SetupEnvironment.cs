@@ -12,11 +12,14 @@ namespace NewScripts
     public class SetupEnvironment : MonoBehaviour
     {
         public GameObject CompanyPrefab;
-        public bool IsManual;
         public bool IsThrottled;
         public TextMeshProUGUI RoundText;
         private readonly Random _rand = new();
         private int companysPerType = 3;
+        private int step = 0;
+        private int month = 0;
+
+        
 
         private Company GetFromGameObject(float xPos, float zPos)
         {
@@ -36,10 +39,17 @@ namespace NewScripts
 
             return company;
         }
+        
+        void EnvironmentReset()
+        {
+            // Reset the scene here
+        }
 
         
         public void Awake()
         {
+            Academy.Instance.OnEnvironmentReset += EnvironmentReset;
+            ProductTemplateFactory.CompanysPerType = companysPerType;
             ServiceLocator.Instance.LaborMarketService.InitWorkers();
             for (var i = 0; i < companysPerType; i++)
             {
@@ -71,9 +81,11 @@ namespace NewScripts
         
         public void FixedUpdate()
         {
-            if (IsManual == false && IsThrottled == false)
+            if (IsThrottled == false)
             {
-                RoundText.GetComponent<TextMeshProUGUI>().text = round + "//" + step + "//" + Academy.Instance.TotalStepCount;
+                month = month == 120 ? 0 : month + 1;
+                string stepText = ((SimulationStep)step).ToString();
+                RoundText.GetComponent<TextMeshProUGUI>().text = month + " | " + stepText;
 
                 if (step == 0)
                 {
@@ -89,69 +101,49 @@ namespace NewScripts
                 }
 
                 step = step == 2 ? 0 : step + 1;
-                //RunRound();
             }
         }
 
-        private int step = 0;
 
         public void RequestStep()
         {
-            if (IsManual && IsThrottled == false)
+            month = month == 120 ? 0 : month + 1;
+            string stepText = ((SimulationStep)step).ToString();
+            RoundText.GetComponent<TextMeshProUGUI>().text = month + " | " + stepText;
+
+            if (step == 0)
             {
-                //StartCoroutine(UpdateBusinesses());
-                RunRound();
+                StartCoroutine(RunCompanies());
             }
-            else if (IsManual == false && IsThrottled)
+            else if (step == 1)
             {
-                //StartCoroutine(UpdateBusinesses());
-                RoundText.GetComponent<TextMeshProUGUI>().text = round + "//" + step + "//" + Academy.Instance.TotalStepCount;
-
-                if (step == 0)
-                {
-                    StartCoroutine(RunCompanies());
-                }
-                else if (step == 1)
-                {
-                    SimulateDemand();
-                }
-                else if (step == 2)
-                {
-                    BookKeeping();
-                }
-
-                step = step == 2 ? 0 : step + 1;
-
+                SimulateDemand();
             }
-        }
+            else if (step == 2)
+            {
+                BookKeeping();
+            }
 
-        private int round = 0;
-
-        private IEnumerator UpdateBusinesses()
-        {
-            RunRound();
-            yield return new WaitForFixedUpdate();
+            step = step == 2 ? 0 : step + 1;
         }
 
         private IEnumerator RunCompanies()
         {
-            round++;
-            //RoundText.GetComponent<TextMeshProUGUI>().text = round.ToString() + "//" + step;
             var companies = GenerateRandomLoop(ServiceLocator.Instance.Companys);
             foreach (var company in companies)
             {
-                if (IsManual)
-                {
-                    company.RunManual();
-                }
-                else if (company.HasPenalty == false)
-                {
-                    //company.ExtinctPenaltyRounds--;
-                    company.RequestNextStep();
-                }
+                company.RequestNextStep(month);
             }
             yield return new WaitForFixedUpdate();
-
+        }
+        
+        private IEnumerator EndEpisode()
+        {
+            foreach (var company in ServiceLocator.Instance.Companys)
+            {
+                company.EndRound();
+            }
+            yield return new WaitForFixedUpdate();
         }
 
         private void SimulateDemand()
@@ -163,26 +155,11 @@ namespace NewScripts
         {
             foreach (var company in ServiceLocator.Instance.Companys)
             {
-                if (company.HasPenalty == false)
-                {
-                    company.EndRound();
-                }
-                else
-                {
-                    company.DecreasePenalty();
-                }
+                company.EndRound();
             }
             ServiceLocator.Instance.LaborMarketService.NewRound();
         }
 
-        private void RunRound()
-        {
-            RunCompanies();
-            SimulateDemand();
-            BookKeeping();
-            //ServiceLocator.Instance.LaborMarketService.RemoveSick();
-        }
-        
         public List<Company> GenerateRandomLoop(List<Company> listToShuffle)
         {
             for (int i = listToShuffle.Count - 1; i > 0; i--)

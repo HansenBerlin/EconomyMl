@@ -17,7 +17,7 @@ namespace NewScripts
         
         public void InitWorkers()
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 1009; i++)
             {
                 Workers.Add(new Worker());
             }
@@ -90,15 +90,37 @@ namespace NewScripts
             }
         }
 
-        public void Pay(int amount, int companyId)
+        public void Pay(float amount, int companyId, bool isCeoPayment = false)
         {
             foreach (var worker in Workers)
             {
                 if (worker.CompanyId == companyId)
                 {
-                    worker.Money += amount;
+                    if (isCeoPayment && worker.IsCeo)
+                    {
+                        worker.Money += amount;
+                    }
+                    else if (isCeoPayment == false && worker.IsCeo == false)
+                    {
+                        worker.Money += amount;
+                    }
                 }
             }
+        }
+        
+        public float MakeCeoLiable(int companyId)
+        {
+            foreach (var worker in Workers)
+            {
+                if (worker.CompanyId == companyId && worker.IsCeo)
+                {
+                    float money = worker.Money;
+                    worker.Money = 0;
+                    return money;
+                }
+            }
+
+            throw new Exception("NO CEO FOUND");
         }
 
         public void RemoveSick()

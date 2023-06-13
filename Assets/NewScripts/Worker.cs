@@ -9,6 +9,7 @@
         private readonly int _luxuryDemand = 1;
         public int Health { get; set; } = 1000;
         public int CompanyId { get; set; }
+        public bool IsCeo { get; set; }
 
         private int LuxuryDemandModifier()
         {
