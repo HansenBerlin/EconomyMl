@@ -51,25 +51,41 @@ namespace NewScripts
         private float _energyCostPerUnit;
         private float _storageCostPerUnit;
         private ProductTemplate _template;
-
-        private int ExtinctPenaltyRounds { get; set; }
-        public bool HasPenalty { get; private set; }
+        private bool _initDone;
 
         public void Init(ProductTemplate productTemplate)
         {
             _template = productTemplate;
+            ProducedProduct = _template.Product;
             TypeText.GetComponent<TextMeshProUGUI>().text = ProducedProduct.ProductTypeOutput.ToString();
+            Reset();
+            _initDone = true;
+            var ceo = new Worker()
+            {
+                CompanyId = Id,
+                IsCeo = true,
+                Money = 300,
+                Health = 500
+            };
+            ServiceLocator.Instance.LaborMarketService.Workers.Add(ceo);
         }
 
-        public override void OnEpisodeBegin()
+        private void Reset()
         {
-            ProducedProduct = _template.Product;
             Capital = _template.StartCapital;
             _workerPayment = _template.WorkerSalary;
             _storageCostPerUnit = 0;
             _energyCostPerUnit = 0;
             _workerCapacityModifier = _template.UnitsPerWorker;
             ServiceLocator.Instance.LaborMarketService.Hire(_template.StartWorkerCount, Id);
+        }
+
+        public override void OnEpisodeBegin()
+        {
+            if (_initDone)
+            {
+                Reset();
+            }
         }
 
         public float BuyFromCompany()
@@ -113,6 +129,7 @@ namespace NewScripts
                 float negativeReward = _template.StartCapital / Capital * -0.25F;
                 SetReward(negativeReward);
             }
+            ServiceLocator.Instance.LaborMarketService.Fire(WorkerCount - 1, Id);
             EndEpisode();
         }
 
@@ -164,11 +181,11 @@ namespace NewScripts
         
         public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
-            if (ProducedProduct.ProductTypeInput == ProductType.None)
-            {
-                actionMask.SetActionEnabled(0, 0, false);
-                actionMask.SetActionEnabled(0, 1, false);
-            }
+            //if (ProducedProduct.ProductTypeInput == ProductType.None)
+            //{
+            //    actionMask.SetActionEnabled(0, 0, false);
+            //    actionMask.SetActionEnabled(0, 1, false);
+            //}
             if (_month >= 13)
             {
                 return;

@@ -17,7 +17,7 @@ namespace NewScripts
         
         public void InitWorkers()
         {
-            for (int i = 0; i < 1009; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 Workers.Add(new Worker());
             }
@@ -82,7 +82,7 @@ namespace NewScripts
                 {
                     break;
                 }
-                if (worker.CompanyId == companyId)
+                if (worker.CompanyId == companyId && worker.IsCeo == false)
                 {
                     worker.CompanyId = 0;
                     count--;

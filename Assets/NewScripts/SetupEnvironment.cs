@@ -11,19 +11,22 @@ namespace NewScripts
 {
     public class SetupEnvironment : MonoBehaviour
     {
-        public GameObject CompanyPrefab;
+        public GameObject FoodCompanyPrefab;
+        GameObject InterCompanyPrefab;
+        GameObject LuxuryCompanyPrefab;
         public bool IsThrottled;
         public TextMeshProUGUI RoundText;
         private readonly Random _rand = new();
         private int companysPerType = 3;
         private int step = 0;
         private int month = 0;
+        private int gridGap = 30;
 
         
 
         private Company GetFromGameObject(float xPos, float zPos)
         {
-            var go = Instantiate(CompanyPrefab);
+            var go = Instantiate(FoodCompanyPrefab);
             go.transform.position = new Vector3(xPos, 0, zPos);
             Transform[] transforms = go.GetComponentsInChildren<Transform>();
             Company company = null;
@@ -31,7 +34,7 @@ namespace NewScripts
             foreach (var transform in transforms)
             {
                 company = transform.GetComponent<Company>();
-                if (company != null)
+                if (company is not null)
                 {
                     break;
                 }
@@ -42,7 +45,12 @@ namespace NewScripts
         
         void EnvironmentReset()
         {
-            // Reset the scene here
+            foreach (var worker in ServiceLocator.Instance.LaborMarketService.Workers)
+            {
+                float money = worker.IsCeo ? 300 : 30;
+                worker.Money = money;
+                worker.Health = 1000;
+            }
         }
 
         
@@ -53,8 +61,8 @@ namespace NewScripts
             ServiceLocator.Instance.LaborMarketService.InitWorkers();
             for (var i = 0; i < companysPerType; i++)
             {
-                float zPos = i == 0 ? 0 : i == 2 ? 15 : -15;
-                Company company = GetFromGameObject(-15, zPos);
+                float zPos = i == 0 ? 0 : i == 2 ? gridGap : gridGap * -1;
+                Company company = GetFromGameObject(gridGap * -1, zPos);
                 var productTemplate = ProductTemplateFactory.Create(ProductType.Food); 
                 company.Init(productTemplate);
                 ServiceLocator.Instance.Companys.Add(company);
@@ -62,7 +70,7 @@ namespace NewScripts
             
             for (var i = 0; i < companysPerType; i++)
             {
-                float zPos = i == 0 ? 0 : i == 2 ? 15 : -15;
+                float zPos = i == 0 ? 0 : i == 2 ? gridGap : gridGap * -1;
                 Company company = GetFromGameObject(0, zPos);
                 var productTemplate = ProductTemplateFactory.Create(ProductType.Intermediate);
                 company.Init(productTemplate);
@@ -71,8 +79,8 @@ namespace NewScripts
             
             for (var i = 0; i < companysPerType; i++)
             {
-                float zPos = i == 0 ? 0 : i == 2 ? 15 : -15;
-                Company company = GetFromGameObject(15, zPos);
+                float zPos = i == 0 ? 0 : i == 2 ? gridGap : gridGap * -1;
+                Company company = GetFromGameObject(gridGap, zPos);
                 var productTemplate = ProductTemplateFactory.Create(ProductType.Luxury);
                 company.Init(productTemplate);
                 ServiceLocator.Instance.Companys.Add(company);
@@ -86,6 +94,14 @@ namespace NewScripts
                 month = month == 120 ? 0 : month + 1;
                 string stepText = ((SimulationStep)step).ToString();
                 RoundText.GetComponent<TextMeshProUGUI>().text = month + " | " + stepText;
+
+                if (month == 120)
+                {
+                    step = 0;
+                    month = 0;
+                    StartCoroutine(EndEpisode());
+                    return;
+                }
 
                 if (step == 0)
                 {
@@ -110,6 +126,14 @@ namespace NewScripts
             month = month == 120 ? 0 : month + 1;
             string stepText = ((SimulationStep)step).ToString();
             RoundText.GetComponent<TextMeshProUGUI>().text = month + " | " + stepText;
+            
+            if (month == 120)
+            {
+                step = 0;
+                month = 0;
+                StartCoroutine(EndEpisode());
+                return;
+            }
 
             if (step == 0)
             {
@@ -141,7 +165,7 @@ namespace NewScripts
         {
             foreach (var company in ServiceLocator.Instance.Companys)
             {
-                company.EndRound();
+                company.EndDecade();
             }
             yield return new WaitForFixedUpdate();
         }

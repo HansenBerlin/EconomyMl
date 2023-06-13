@@ -2,7 +2,7 @@
 {
     public class Worker
     {
-        public float Money { get; set; } = 50;
+        public float Money { get; set; } = 30;
         public int FoodDemand => FoodDemandModifier();
         private readonly int _foodDemand = 10;
         public int LuxuryDemand => LuxuryDemandModifier();

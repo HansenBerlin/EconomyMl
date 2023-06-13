@@ -97,6 +97,7 @@
      <Compile Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\MaterialModifiers\IMaterialModifier.cs" />
      <Compile Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\Selectable.cs" />
      <Compile Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\SpriteState.cs" />
+     <Compile Include="Library\PackageCache\com.unity.shadergraph@14.0.7\Editor\Generation\Targets\BuiltIn\Editor\ShaderGUI\MaterialAssemblyReference\RawRenderQueue.cs" />
      <Compile Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\Button.cs" />
      <Compile Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\MaskableGraphic.cs" />
      <Compile Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\Graphic.cs" />
@@ -123,6 +124,7 @@
      <Compile Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\EventSystem\UIElements\PanelRaycaster.cs" />
      <Compile Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\Utility\ReflectionMethodsCache.cs" />
      <Compile Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\GraphicRebuildTracker.cs" />
+     <Compile Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\Editor\ShaderGUI\MaterialAssemblyReference\RawRenderQueue.cs" />
      <Compile Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\VertexModifiers\BaseMeshEffect.cs" />
      <Compile Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\VertexModifiers\IMeshModifier.cs" />
      <Compile Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\Mask.cs" />
@@ -130,14 +132,17 @@
      <Compile Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\RectMask2D.cs" />
      <Compile Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\EventSystem\RaycastResult.cs" />
      <Compile Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\Utility\VertexHelper.cs" />
+     <Folder Include="Library\PackageCache\com.unity.shadergraph@14.0.7\Editor\Generation\Targets\BuiltIn\Editor\ShaderGUI\MaterialAssemblyReference" />
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core" />
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\Properties" />
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\EventSystem\EventData" />
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Animation" />
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI" />
+     <None Include="Library\PackageCache\com.unity.shadergraph@14.0.7\Editor\Generation\Targets\BuiltIn\Editor\ShaderGUI\MaterialAssemblyReference\MaterialAssemblyReference.asmref" />
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\EventSystem\Raycasters" />
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\Utility" />
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\Culling" />
+     <Folder Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\Editor\ShaderGUI\MaterialAssemblyReference" />
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\SpecializedCollections" />
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\Layout" />
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime" />
@@ -145,6 +150,7 @@
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\MaterialModifiers" />
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\EventSystem\UIElements" />
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\EventSystem\InputModules" />
+     <None Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\Editor\ShaderGUI\MaterialAssemblyReference\MaterialAssemblyReference.asmref" />
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\EventSystem" />
      <Folder Include="Library\PackageCache\com.unity.ugui@1.0.0\Runtime\UI\Core\VertexModifiers" />
      <Reference Include="UnityEngine">

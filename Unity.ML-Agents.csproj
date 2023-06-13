@@ -126,8 +126,8 @@
      <Compile Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents\Runtime\Sensors\RayPerceptionSensorComponent2D.cs" />
      <Compile Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents\Runtime\Utilities.cs" />
      <Compile Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents\Runtime\SideChannels\EngineConfigurationChannel.cs" />
-     <Compile Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents\Runtime\RecursionChecker.cs" />
      <Compile Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents\Runtime\Inference\BarracudaModelExtensions.cs" />
+     <Compile Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents\Runtime\RecursionChecker.cs" />
      <Compile Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents\Runtime\Actuators\ActuatorDiscreteActionMask.cs" />
      <Compile Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents\Runtime\Sensors\Reflection\Vector2ReflectionSensor.cs" />
      <Compile Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents\Runtime\Inference\ModelRunner.cs" />
