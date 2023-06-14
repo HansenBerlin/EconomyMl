@@ -8,29 +8,29 @@ namespace NewScripts
         public static ProductTemplate Create(ProductType type)
         {
             float defaultPrice = 0.33F;
-            int workerSalary = 10;
-            int startWorkerCount = 333 / CompanysPerType;
+            int workerSalary = 300;
+            int startWorkerCount = 30 / CompanysPerType;
             int unitsPerWorker = 30;
-            int startCapital = 3333 / CompanysPerType * 12;
-            int avgConsumptionPerCompany = 10000 / CompanysPerType;
+            int startCapital = 333 / CompanysPerType * 12;
+            int avgConsumptionFromAllWorkers = 10000 / CompanysPerType;
             ProductType input = ProductType.None;
             
             if (type == ProductType.Intermediate)
             {
                 defaultPrice = 10;
-                workerSalary = 20;
+                workerSalary = 600;
                 unitsPerWorker = 2;
-                startCapital = 6660 / CompanysPerType * 12;
-                avgConsumptionPerCompany = 666 / CompanysPerType;
+                startCapital = 666 / CompanysPerType * 12;
+                avgConsumptionFromAllWorkers = 666 / CompanysPerType;
             }
             if (type == ProductType.Luxury)
             {
                 defaultPrice = 25;
-                workerSalary = 30;
+                workerSalary = 900;
                 unitsPerWorker = 2;
-                startCapital = 16650 / CompanysPerType * 12;
+                startCapital = 1650 / CompanysPerType * 12;
                 input = ProductType.Intermediate;
-                avgConsumptionPerCompany = 666 / CompanysPerType;
+                avgConsumptionFromAllWorkers = 666 / CompanysPerType;
             }
 
             return new ProductTemplate(new Product
@@ -39,7 +39,7 @@ namespace NewScripts
                     ProductTypeOutput = type,
                     Price = defaultPrice
                 },
-                workerSalary, unitsPerWorker, defaultPrice, startCapital, avgConsumptionPerCompany, startWorkerCount);
+                workerSalary, unitsPerWorker, defaultPrice, startCapital, avgConsumptionFromAllWorkers, startWorkerCount);
         }
     }
 

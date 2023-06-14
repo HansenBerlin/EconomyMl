@@ -10,6 +10,8 @@ namespace NewScripts
         public ProductMarket ProductMarketService { get; private set; }
         public LaborMarket LaborMarketService { get; private set; }
         public List<Company> Companys { get; private set; } = new();
+        public FlowController FlowController { get; } = new();
+
         
         private void Awake()
         {
@@ -22,8 +24,5 @@ namespace NewScripts
             ProductMarketService = GetComponentInChildren<ProductMarket>();
             LaborMarketService = GetComponentInChildren<LaborMarket>();
         }
-
-        
-        
     }
 }

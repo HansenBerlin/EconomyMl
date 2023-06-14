@@ -11,24 +11,24 @@ namespace NewScripts
 {
     public class SetupEnvironment : MonoBehaviour
     {
-        public GameObject FoodCompanyPrefab;
-        GameObject InterCompanyPrefab;
-        GameObject LuxuryCompanyPrefab;
-        public bool IsThrottled;
-        public TextMeshProUGUI RoundText;
+        public GameObject foodCompanyPrefab;
+        public GameObject interCompanyPrefab;
+        public GameObject luxuryCompanyPrefab;
+        public int companysPerType = 3;
+        public bool isThrottled;
+        public TextMeshProUGUI roundText;
         private readonly Random _rand = new();
-        private int companysPerType = 3;
-        private int step = 0;
-        private int month = 0;
-        private int gridGap = 30;
+        private int _step = 0;
+        private const int GridGap = 30;
+        private bool _isInitDone;
 
         
 
-        private Company GetFromGameObject(float xPos, float zPos)
+        private Company GetFromGameObject(float xPos, float zPos, GameObject instance)
         {
-            var go = Instantiate(FoodCompanyPrefab);
-            go.transform.position = new Vector3(xPos, 0, zPos);
-            Transform[] transforms = go.GetComponentsInChildren<Transform>();
+            //var go = Instantiate(FoodCompanyPrefab);
+            instance.transform.position = new Vector3(xPos, 0, zPos);
+            Transform[] transforms = instance.GetComponentsInChildren<Transform>();
             Company company = null;
  
             foreach (var transform in transforms)
@@ -43,26 +43,35 @@ namespace NewScripts
             return company;
         }
         
-        void EnvironmentReset()
-        {
-            foreach (var worker in ServiceLocator.Instance.LaborMarketService.Workers)
-            {
-                float money = worker.IsCeo ? 300 : 30;
-                worker.Money = money;
-                worker.Health = 1000;
-            }
-        }
+        //void EnvironmentReset()
+        //{
+        //    foreach (var worker in ServiceLocator.Instance.LaborMarketService.Workers)
+        //    {
+        //        float money = worker.IsCeo ? 300 : 30;
+        //        worker.Money = money;
+        //        worker.Health = 1000;
+        //    }
+        //}
 
         
         public void Awake()
         {
-            Academy.Instance.OnEnvironmentReset += EnvironmentReset;
-            ProductTemplateFactory.CompanysPerType = companysPerType;
+            if (ServiceLocator.Instance is not null && _isInitDone == false)
+            {
+                SetupGameObjects();
+            }
+        }
+
+        private void SetupGameObjects()
+        {
+            //Academy.Instance.OnEnvironmentReset += EnvironmentReset;
             ServiceLocator.Instance.LaborMarketService.InitWorkers();
+            ProductTemplateFactory.CompanysPerType = companysPerType;
             for (var i = 0; i < companysPerType; i++)
             {
-                float zPos = i == 0 ? 0 : i == 2 ? gridGap : gridGap * -1;
-                Company company = GetFromGameObject(gridGap * -1, zPos);
+                var go = Instantiate(foodCompanyPrefab);
+                float zPos = i == 0 ? 0 : i == 2 ? GridGap : GridGap * -1;
+                Company company = GetFromGameObject(GridGap * -1, zPos, go);
                 var productTemplate = ProductTemplateFactory.Create(ProductType.Food); 
                 company.Init(productTemplate);
                 ServiceLocator.Instance.Companys.Add(company);
@@ -70,8 +79,9 @@ namespace NewScripts
             
             for (var i = 0; i < companysPerType; i++)
             {
-                float zPos = i == 0 ? 0 : i == 2 ? gridGap : gridGap * -1;
-                Company company = GetFromGameObject(0, zPos);
+                var go = Instantiate(interCompanyPrefab);
+                float zPos = i == 0 ? 0 : i == 2 ? GridGap : GridGap * -1;
+                Company company = GetFromGameObject(0, zPos, go);
                 var productTemplate = ProductTemplateFactory.Create(ProductType.Intermediate);
                 company.Init(productTemplate);
                 ServiceLocator.Instance.Companys.Add(company);
@@ -79,76 +89,83 @@ namespace NewScripts
             
             for (var i = 0; i < companysPerType; i++)
             {
-                float zPos = i == 0 ? 0 : i == 2 ? gridGap : gridGap * -1;
-                Company company = GetFromGameObject(gridGap, zPos);
+                var go = Instantiate(luxuryCompanyPrefab);
+                float zPos = i == 0 ? 0 : i == 2 ? GridGap : GridGap * -1;
+                Company company = GetFromGameObject(GridGap, zPos, go);
                 var productTemplate = ProductTemplateFactory.Create(ProductType.Luxury);
                 company.Init(productTemplate);
                 ServiceLocator.Instance.Companys.Add(company);
             }
+
+            _isInitDone = true;
         }
         
-        public void FixedUpdate()
+        public void Update()
         {
-            if (IsThrottled == false)
+            if (_isInitDone == false)
             {
-                month = month == 120 ? 0 : month + 1;
-                string stepText = ((SimulationStep)step).ToString();
-                RoundText.GetComponent<TextMeshProUGUI>().text = month + " | " + stepText;
-
-                if (month == 120)
-                {
-                    step = 0;
-                    month = 0;
-                    StartCoroutine(EndEpisode());
-                    return;
-                }
-
-                if (step == 0)
-                {
-                    StartCoroutine(RunCompanies());
-                }
-                else if (step == 1)
-                {
-                    SimulateDemand();
-                }
-                else if (step == 2)
-                {
-                    BookKeeping();
-                }
-
-                step = step == 2 ? 0 : step + 1;
+                SetupGameObjects();
             }
+            if (isThrottled == false)
+            {
+                StartCoroutine(RunAiSequence());
+            }
+        }
+
+        private IEnumerator RunAiSequence()
+        {
+            roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
+
+            if (ServiceLocator.Instance.FlowController.Year == 10)
+            {
+                foreach (var company in ServiceLocator.Instance.Companys)
+                {
+                    company.EndCompanyEpisode();
+                }
+                
+                ServiceLocator.Instance.FlowController.Reset();
+                foreach (var worker in ServiceLocator.Instance.LaborMarketService.Workers)
+                {
+                    float money = worker.IsCeo ? 2000 : 800;
+                    worker.Money = money;
+                    worker.Health = 1000;
+                }
+                            
+                yield return new WaitForFixedUpdate();
+            }
+
+            var companies = GenerateRandomLoop(ServiceLocator.Instance.Companys);
+            foreach (var company in companies)
+            {
+                company.RequestNextStep();
+            }
+            
+            if (ServiceLocator.Instance.FlowController.Day == 29)
+            {
+                foreach (var company in ServiceLocator.Instance.Companys)
+                {
+                    company.PayWorkers();
+                }
+            }
+            
+            ServiceLocator.Instance.LaborMarketService.PaySocialWelfare(
+                ServiceLocator.Instance.ProductMarketService.AveragePrice(ProductType.Food) * 10, 100);
+            ServiceLocator.Instance.ProductMarketService.SimulateDemand();
+            foreach (var company in ServiceLocator.Instance.Companys)
+            {
+                company.EndRound();
+            }
+
+            ServiceLocator.Instance.LaborMarketService.NewRound();
+            ServiceLocator.Instance.FlowController.Increment();
+            yield return new WaitForFixedUpdate();
+
         }
 
 
         public void RequestStep()
         {
-            month = month == 120 ? 0 : month + 1;
-            string stepText = ((SimulationStep)step).ToString();
-            RoundText.GetComponent<TextMeshProUGUI>().text = month + " | " + stepText;
-            
-            if (month == 120)
-            {
-                step = 0;
-                month = 0;
-                StartCoroutine(EndEpisode());
-                return;
-            }
-
-            if (step == 0)
-            {
-                StartCoroutine(RunCompanies());
-            }
-            else if (step == 1)
-            {
-                SimulateDemand();
-            }
-            else if (step == 2)
-            {
-                BookKeeping();
-            }
-
-            step = step == 2 ? 0 : step + 1;
+            StartCoroutine(RunAiSequence());
         }
 
         private IEnumerator RunCompanies()
@@ -156,7 +173,7 @@ namespace NewScripts
             var companies = GenerateRandomLoop(ServiceLocator.Instance.Companys);
             foreach (var company in companies)
             {
-                company.RequestNextStep(month);
+                company.RequestNextStep();
             }
             yield return new WaitForFixedUpdate();
         }
@@ -165,7 +182,7 @@ namespace NewScripts
         {
             foreach (var company in ServiceLocator.Instance.Companys)
             {
-                company.EndDecade();
+                company.EndCompanyEpisode();
             }
             yield return new WaitForFixedUpdate();
         }
@@ -173,6 +190,7 @@ namespace NewScripts
         private void SimulateDemand()
         {
             ServiceLocator.Instance.ProductMarketService.SimulateDemand();
+            ServiceLocator.Instance.LaborMarketService.NewRound();
         }
 
         private void BookKeeping()
@@ -180,6 +198,15 @@ namespace NewScripts
             foreach (var company in ServiceLocator.Instance.Companys)
             {
                 company.EndRound();
+            }
+            //ServiceLocator.Instance.LaborMarketService.NewRound();
+        }
+        
+        private void PayWorkers()
+        {
+            foreach (var company in ServiceLocator.Instance.Companys)
+            {
+                company.PayWorkers();
             }
             ServiceLocator.Instance.LaborMarketService.NewRound();
         }

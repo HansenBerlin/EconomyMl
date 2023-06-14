@@ -15,16 +15,17 @@ namespace NewScripts
     public class Company : Agent
     {
         private int Id => GetInstanceID();
-        private float Capital;
+
+        private float _capital;
         //public float Count;
         //public float Price;
         //public float Capacity;
-        //private int LastSales;
-        private float RoundIncome;
-        private float RoundExpenses;
+        private float _roundIncome;
+
+        private float _roundExpenses;
         //private int TotalSales;
         private int WorkerCount => ServiceLocator.Instance.LaborMarketService.CompanyWorkerCount(Id);
-        private int ResourceStock;
+        private int _resourceStock;
         //private float LastCapital;
         //public ProductType Type;
         public TextMeshProUGUI TypeText;
@@ -32,16 +33,16 @@ namespace NewScripts
         public TextMeshProUGUI WorkersText;
         public TextMeshProUGUI StockText;
         public TextMeshProUGUI MaterialText;
-        [FormerlySerializedAs("LastSalesText")] public TextMeshProUGUI RoundIncomeText;
-        [FormerlySerializedAs("TotalSalesText")] public TextMeshProUGUI RoundExpensesText;
+        public TextMeshProUGUI RoundIncomeText;
+        public TextMeshProUGUI RoundExpensesText;
         public TextMeshProUGUI PriceText;
         public TextMeshProUGUI CapacityText;
         public TextMeshProUGUI ExtinctStatus;
+        private int companyAge = 0;
 
-        private int _month;
-        
-        public int ProductionCapacity => CalculateProductionCapacity();
-        public Product ProducedProduct { get; set; }
+
+        private int ProductionCapacity => CalculateProductionCapacity();
+        public Product ProducedProduct { get; private set; }
 
         //private ProductMarket _productMarket;
         //private LaborMarket _laborMarket;
@@ -57,48 +58,49 @@ namespace NewScripts
         {
             _template = productTemplate;
             ProducedProduct = _template.Product;
-            TypeText.GetComponent<TextMeshProUGUI>().text = ProducedProduct.ProductTypeOutput.ToString();
-            Reset();
-            _initDone = true;
-            var ceo = new Worker()
+            //TypeText.GetComponent<TextMeshProUGUI>().text = ProducedProduct.ProductTypeOutput.ToString();
+            var ceo = new Worker
             {
                 CompanyId = Id,
                 IsCeo = true,
-                Money = 300,
+                Money = 2000,
                 Health = 500
             };
             ServiceLocator.Instance.LaborMarketService.Workers.Add(ceo);
+            //Reset();
+            _initDone = true;
         }
 
         private void Reset()
         {
-            Capital = _template.StartCapital;
+            _capital = _template.StartCapital;
             _workerPayment = _template.WorkerSalary;
             _storageCostPerUnit = 0;
             _energyCostPerUnit = 0;
             _workerCapacityModifier = _template.UnitsPerWorker;
+            ProducedProduct = _template.Product;
             ServiceLocator.Instance.LaborMarketService.Hire(_template.StartWorkerCount, Id);
         }
 
         public override void OnEpisodeBegin()
         {
+            companyAge = 0;
             if (_initDone)
             {
                 Reset();
             }
         }
 
-        public float BuyFromCompany()
+        public float BuyFromCompany(int amount)
         {
-            ProducedProduct.Amount--;
-            RoundIncome += ProducedProduct.Price;
-            //CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Capital:0}";;
-            RoundIncomeText.GetComponent<TextMeshProUGUI>().text = $"{RoundIncome:0}";
-            //TotalSalesText.GetComponent<TextMeshProUGUI>().text = TotalSales.ToString();
-            StockText.GetComponent<TextMeshProUGUI>().text = ProducedProduct.Amount.ToString();
-
-            return ProducedProduct.Price;
-            //Debug.Log("Sold!");
+            ProducedProduct.Amount -= amount;
+            if (ProducedProduct.Amount < 0)
+            {
+                throw new Exception("Less than zero.");
+            }
+            _roundIncome += ProducedProduct.Price * amount;
+            RoundIncomeText.GetComponent<TextMeshProUGUI>().text = $"{_roundIncome:0}";
+            return ProducedProduct.Price * amount;
         }
 
         private int CalculateProductionCapacity()
@@ -110,7 +112,7 @@ namespace NewScripts
             }
             else
             {
-                var maxByRessource = ResourceStock;
+                var maxByRessource = _resourceStock;
                 var maxByWorkers = WorkerCount * _workerCapacityModifier;
                 capacity = maxByRessource > maxByWorkers ? maxByWorkers : maxByRessource;
             }
@@ -118,58 +120,60 @@ namespace NewScripts
             return capacity;
         }
 
-        public void EndDecade()
+        public void EndCompanyEpisode()
         {
-            if (Capital > _template.StartCapital)
+            if (_capital > _template.StartCapital)
             {
-                SetReward(Capital / _template.StartCapital);
+                SetReward(_capital / _template.StartCapital);
             }
             else
             {
-                float negativeReward = _template.StartCapital / Capital * -0.25F;
+                float negativeReward = _template.StartCapital / _capital * -0.25F;
                 SetReward(negativeReward);
             }
-            ServiceLocator.Instance.LaborMarketService.Fire(WorkerCount - 1, Id);
+            ServiceLocator.Instance.LaborMarketService.Fire(WorkerCount, Id);
             EndEpisode();
         }
 
 
-        public void RequestNextStep(int month)
+        public void RequestNextStep()
         {
-            _month = month;
-            RoundExpenses = 0;
-            RoundIncome = 0;
+            companyAge++;
+            //RoundExpenses = 0;
+            //RoundIncome = 0;
+            //RoundIncomeText.GetComponent<TextMeshProUGUI>().text = $"{RoundIncome:0}";
+            RoundExpensesText.GetComponent<TextMeshProUGUI>().text = $"{_roundExpenses:0}";
 
-            if (Capital <= 0)
+            if (_capital > _template.StartCapital)
             {
-                AddReward(-0.1F);
-                ServiceLocator.Instance.LaborMarketService.Fire(WorkerCount - 1, Id);
-                Capital += ServiceLocator.Instance.LaborMarketService.MakeCeoLiable(Id);
+                AddReward(_capital / _template.StartCapital * 0.001F);
             }
-            if (Capital > _template.StartCapital * 10)
+            else if(_capital * -0.0001F != 0)
             {
-                AddReward(0.1F);
+                float negativeReward = _template.StartCapital / _capital * -0.0001F;
+                AddReward(negativeReward);
             }
-            if (Capital > _template.StartCapital)
+
+            if (_capital <= 0)
             {
-                AddReward(0.01F);
-                ServiceLocator.Instance.LaborMarketService.Pay((Capital - _template.StartCapital) / 10, Id, true);
+                //ServiceLocator.Instance.LaborMarketService.Fire(WorkerCount, Id);
+                _capital += ServiceLocator.Instance.LaborMarketService.MakeCeoLiable(Id);
             }
-            
+
             RequestDecision();
             CapacityText.GetComponent<TextMeshProUGUI>().text = ProductionCapacity.ToString();
             PriceText.GetComponent<TextMeshProUGUI>().text = $"{ProducedProduct.Price:0.##}";
-            StockText.GetComponent<TextMeshProUGUI>().text = ProducedProduct.Amount.ToString();
-            CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Capital:0}";
+            //StockText.GetComponent<TextMeshProUGUI>().text = ProducedProduct.Amount.ToString();
+            CapitalText.GetComponent<TextMeshProUGUI>().text = $"{_capital:0}";
             WorkersText.GetComponent<TextMeshProUGUI>().text = WorkerCount.ToString();
         }
         
         public override void CollectObservations(VectorSensor sensor)
         {
-            sensor.AddObservation(Capital);
-            sensor.AddObservation(RoundIncome);
+            sensor.AddObservation(_capital);
+            sensor.AddObservation(_roundIncome);
             sensor.AddObservation(ProductionCapacity);
-            sensor.AddObservation(RoundExpenses);
+            sensor.AddObservation(_roundExpenses);
             sensor.AddObservation(WorkerCount);
             //sensor.AddObservation(_energyCostPerUnit*ProductionCapacity);
             //sensor.AddObservation(_storageCostPerUnit*ProducedProduct.Amount);
@@ -186,42 +190,60 @@ namespace NewScripts
             //    actionMask.SetActionEnabled(0, 0, false);
             //    actionMask.SetActionEnabled(0, 1, false);
             //}
-            if (_month >= 13)
+            actionMask.SetActionEnabled(4, 0, false);
+            if (ServiceLocator.Instance.FlowController.Day != 30)
+            {
+                actionMask.SetActionEnabled(2, 1, false);
+                actionMask.SetActionEnabled(2, 2, false);
+            }
+            
+            if (companyAge > 365)
             {
                 return;
             }
+            
+            actionMask.SetActionEnabled(2, 2, false);
             actionMask.SetActionEnabled(0, 0, false);
             actionMask.SetActionEnabled(1, 0, false);
             actionMask.SetActionEnabled(1, 1, false);
             actionMask.SetActionEnabled(1, 2, false);
-            actionMask.SetActionEnabled(4, 0, false);
         }
         
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
             int buyResources = actionBuffers.DiscreteActions[0];
             float maxFromCapital = (actionBuffers.DiscreteActions[1] + 1) * 0.25F;
-            int hireOrFire = actionBuffers.DiscreteActions[2];
-            int count = actionBuffers.DiscreteActions[3];
+            
             int produce = actionBuffers.DiscreteActions[4];
             int priceChange = actionBuffers.DiscreteActions[5];
             //int buyResources = actionBuffers.DiscreteActions[0];
 
-            if (buyResources == 1 && Capital > 0)
+            if (buyResources == 1 && _capital > 0)
             {
-                BuyRessourceDecision(WorkerCount * _workerCapacityModifier, Capital * maxFromCapital, float.MaxValue);
+                BuyRessourceDecision(WorkerCount * _workerCapacityModifier, _capital * maxFromCapital, float.MaxValue);
             }
-            if (hireOrFire == 1)
+
+            if (ServiceLocator.Instance.FlowController.Day == 30)
             {
-                ServiceLocator.Instance.LaborMarketService.Hire(count, Id);
-            }
-            else if (hireOrFire == 2 && WorkerCount > count)
-            {
-                ServiceLocator.Instance.LaborMarketService.Fire(count, Id);
+                int hireOrFire = actionBuffers.DiscreteActions[2];
+                
+                float count = (actionBuffers.DiscreteActions[3] + 1) * 0.25F * WorkerCount;
+                if (hireOrFire == 1)
+                {
+                    ServiceLocator.Instance.LaborMarketService.Hire((int)Math.Ceiling(count), Id);
+                }
+                else if (hireOrFire == 2)
+                {
+                    ServiceLocator.Instance.LaborMarketService.Fire((int)Math.Ceiling(count), Id);
+                }
             }
             if (produce == 1)
             {
                 Produce();
+            }
+            else
+            {
+                Debug.Log("dfdf");
             }
 
             SetPriceDecision(priceChange);
@@ -229,25 +251,57 @@ namespace NewScripts
 
         private void SetPriceDecision(int priceChange)
         {
-            float newPrice = priceChange == 0 ? ProducedProduct.Price * 0.999F :
-                priceChange == 2 ? ProducedProduct.Price * 1.001F : ProducedProduct.Price;
+            float newPrice = priceChange == 0 ? ProducedProduct.Price * 0.995F :
+                priceChange == 2 ? ProducedProduct.Price * 1.005F : ProducedProduct.Price;
             newPrice = newPrice < 0.1F ? 0.1F : newPrice;
             ProducedProduct.Price = newPrice;
             PriceText.GetComponent<TextMeshProUGUI>().text = $"{ProducedProduct.Price:0.##}";
         }
 
+        public void PayWorkers()
+        {
+            int workerPayments = _workerPayment * (WorkerCount - 1);
+            ServiceLocator.Instance.LaborMarketService.Pay(WorkerCount, Id);
+            
+            float gap = _capital - _roundExpenses - workerPayments;
+            if (gap < 0)
+            {
+                AddReward(-0.01F);
+                int unpaidWorkers = (int)Math.Ceiling(gap * -1 / WorkerCount);
+                ServiceLocator.Instance.LaborMarketService.Fire(unpaidWorkers, Id);
+                //workerPayments = _workerPayment * (WorkerCount - 1);
+            }
+            _roundExpenses += workerPayments;
+            
+            //ServiceLocator.Instance.LaborMarketService.Pay(_workerPayment, Id);
+            if (_capital - _roundExpenses > _template.StartCapital)
+            {
+                AddReward(0.02F);
+                float ceoShare = (_capital - _roundExpenses - _template.StartCapital) / 10;
+                ServiceLocator.Instance.LaborMarketService.Pay(ceoShare, Id, true);
+                _roundExpenses += ceoShare;
+            }
+
+            if (_capital <= 0 && WorkerCount == 1)
+            {
+                EndCompanyEpisode();
+            }
+
+            RoundExpensesText.GetComponent<TextMeshProUGUI>().text = $"{_roundExpenses:0}";
+        }
+
         public void EndRound()
         {
-            int workerPayments = _workerPayment * WorkerCount;
-            RoundExpenses += workerPayments;
-            ServiceLocator.Instance.LaborMarketService.Pay(_workerPayment, Id);
-            var lastCapital = Capital;
-            Capital += RoundIncome;
-            Capital -= RoundExpenses;
-            RoundExpensesText.GetComponent<TextMeshProUGUI>().text = $"{RoundExpenses:0}";
-            CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Capital:0}";
+            var lastCapital = _capital;
+            _capital += _roundIncome;
+            _capital -= _roundExpenses;
+            CapitalText.GetComponent<TextMeshProUGUI>().text = $"{_capital:0}";
+            RoundIncomeText.GetComponent<TextMeshProUGUI>().text = $"{_roundIncome:0}";
+            RoundExpensesText.GetComponent<TextMeshProUGUI>().text = $"{_roundExpenses:0}";
+            _roundIncome = 0;
+            _roundExpenses = 0;
 
-            AddReward(Capital > lastCapital ? 0.01F : -0.001F);
+            AddReward(_capital > lastCapital ? 0.001F : -0.00001F);
         }
 
         private void Produce()
@@ -259,12 +313,12 @@ namespace NewScripts
             }
             
             ProducedProduct.Amount += ProductionCapacity;
-            Capital -= ProductionCapacity * _energyCostPerUnit;
+            //Capital -= ProductionCapacity * _energyCostPerUnit;
             if (ProducedProduct.ProductTypeInput != ProductType.None)
             {
-                ResourceStock -= ProductionCapacity;
+                _resourceStock -= ProductionCapacity;
             }
-            StockText.GetComponent<TextMeshProUGUI>().text = ProducedProduct.Amount.ToString();
+            //StockText.GetComponent<TextMeshProUGUI>().text = ProducedProduct.Amount.ToString();
             //CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Capital:0}";
         }
 
@@ -274,16 +328,21 @@ namespace NewScripts
             {
                 return;
             }
+
+            if (_capital == 0 && WorkerCount == 1 && _resourceStock == 0)
+            {
+                _resourceStock = 2;
+                return;
+            }
             
             var receipt = ServiceLocator.Instance.ProductMarketService
                 .Buy(ProducedProduct.ProductTypeInput, amount, maxSpending, maxPricePerPiece);
             
-            RoundExpenses += receipt.AmountPaid;
-            RoundExpensesText.GetComponent<TextMeshProUGUI>().text = $"{RoundExpenses:0}";
+            _roundExpenses += receipt.AmountPaid;
+            RoundExpensesText.GetComponent<TextMeshProUGUI>().text = $"{_roundExpenses:0}";
 
-            ResourceStock += receipt.CountBought;
-            //CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Capital:0}";
-            MaterialText.GetComponent<TextMeshProUGUI>().text = ResourceStock.ToString();
+            _resourceStock += receipt.CountBought;
+            MaterialText.GetComponent<TextMeshProUGUI>().text = _resourceStock.ToString();
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class Worker
     {
-        public float Money { get; set; } = 30;
+        public float Money { get; set; } = 900;
         public int FoodDemand => FoodDemandModifier();
         private readonly int _foodDemand = 10;
         public int LuxuryDemand => LuxuryDemandModifier();
@@ -15,9 +15,9 @@
         {
             return Health < 100 
                 ? _luxuryDemand 
-                : Money > 100 
+                : Money > 1000
                     ? _luxuryDemand + 1 
-                    : Money > 1000 
+                    : Money > 10000 
                         ? _luxuryDemand * 3 
                         : int.MaxValue;
             return _luxuryDemand;

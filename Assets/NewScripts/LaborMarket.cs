@@ -17,9 +17,13 @@ namespace NewScripts
         
         public void InitWorkers()
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 90; i++)
             {
                 Workers.Add(new Worker());
+            }
+            for (int i = 0; i < 910; i++)
+            {
+                Workers.Add(new Worker(){Money = 100});
             }
         }
 
@@ -36,7 +40,6 @@ namespace NewScripts
                 var health = Workers.Where(x => x.CompanyId == 0).Select(x => x.Health).Average();
                 var workerhealth = Workers.Where(x => x.CompanyId != 0).Select(x => x.Health).Average();
                 HealthText.GetComponent<TextMeshProUGUI>().text = $"{health:0}/{workerhealth:0}";
-
             }
             catch (Exception)
             {
@@ -104,6 +107,22 @@ namespace NewScripts
                     {
                         worker.Money += amount;
                     }
+                }
+            }
+        }
+        
+        public void PaySocialWelfare(float amount, int count)
+        {
+            foreach (var worker in GenerateRandomLoop(Workers))
+            {
+                if (count == 0)
+                {
+                    break;
+                }
+                if (worker.CompanyId == 0 && worker.Money < amount)
+                {
+                    count--;
+                    worker.Money += amount;
                 }
             }
         }

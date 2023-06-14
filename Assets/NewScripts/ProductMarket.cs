@@ -89,35 +89,26 @@ namespace NewScripts
             foreach (var company in matches)
             {
                 var product = company.ProducedProduct;
-                if (product.Price <= maxSpending - amountSpent)
+                if (countFullfilled == demand || amountSpent + product.Price > maxSpending)
                 {
-                    if (type != ProductType.Food)
-                    {
-                        Debug.Log("");
-                    }
-                    while (countFullfilled < demand && amountSpent + product.Price < maxSpending && company.ProducedProduct.Amount > 0)
-                    {
-                        countFullfilled++;
-                        amountSpent += company.BuyFromCompany();
-                        //payCompanyEvent.Invoke(offer.OfferedBy.Name);
-                    }
+                    break;
                 }
-                else
+                int maxBySpending = (int)Math.Floor((maxSpending - amountSpent) / product.Price);
+                int maxBySupply = demand > product.Amount ? product.Amount : demand;
+                int buyAmount = maxBySpending >= maxBySupply ? maxBySupply : maxBySpending;
+                amountSpent += company.BuyFromCompany(buyAmount);
+                countFullfilled += buyAmount;
+                if (amountSpent > maxSpending)
                 {
-                    //Debug.Log($"Offer for {type} with demand {demand} and max pending {maxSpending} rejected.");
+                    throw new Exception();
                 }
             }
 
             if (amountSpent > maxSpending)
             {
-                throw new Exception("NOT POSSIBLE");
+                throw new Exception();
             }
 
-            if (countFullfilled > 0 && type != ProductType.Food)
-            {
-                //Debug.Log($"Offer for {type} completed. Bought: {countFullfilled}, Spent: {amountSpent}. Demand: {demand}, Max: {maxSpending}");
-                
-            }
             return new Receipt
             {
                 AmountPaid = amountSpent,
