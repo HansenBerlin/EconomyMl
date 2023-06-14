@@ -67,34 +67,29 @@ namespace NewScripts
             //Academy.Instance.OnEnvironmentReset += EnvironmentReset;
             ServiceLocator.Instance.LaborMarketService.InitWorkers();
             ProductTemplateFactory.CompanysPerType = companysPerType;
+            int xPos = 0;
             for (var i = 0; i < companysPerType; i++)
             {
+                if (i != 0 && i % 10 == 0)
+                {
+                    xPos--;
+                }
                 var go = Instantiate(foodCompanyPrefab);
-                float zPos = i == 0 ? 0 : i == 2 ? GridGap : GridGap * -1;
-                Company company = GetFromGameObject(GridGap * -1, zPos, go);
-                var productTemplate = ProductTemplateFactory.Create(ProductType.Food); 
-                company.Init(productTemplate);
+                float zPos = i * GridGap;
+                Company company = GetFromGameObject(GridGap * xPos, zPos, go);
+                company.Init();
                 ServiceLocator.Instance.Companys.Add(company);
             }
-            
-            for (var i = 0; i < companysPerType; i++)
+
+            foreach (var worker in ServiceLocator.Instance.LaborMarketService.Workers)
             {
-                var go = Instantiate(interCompanyPrefab);
-                float zPos = i == 0 ? 0 : i == 2 ? GridGap : GridGap * -1;
-                Company company = GetFromGameObject(0, zPos, go);
-                var productTemplate = ProductTemplateFactory.Create(ProductType.Intermediate);
-                company.Init(productTemplate);
-                ServiceLocator.Instance.Companys.Add(company);
-            }
-            
-            for (var i = 0; i < companysPerType; i++)
-            {
-                var go = Instantiate(luxuryCompanyPrefab);
-                float zPos = i == 0 ? 0 : i == 2 ? GridGap : GridGap * -1;
-                Company company = GetFromGameObject(GridGap, zPos, go);
-                var productTemplate = ProductTemplateFactory.Create(ProductType.Luxury);
-                company.Init(productTemplate);
-                ServiceLocator.Instance.Companys.Add(company);
+                var randomIndices = Utilitis.GenerateRandomArray(0, 1000, 7);
+                List<Company> suppliers = new();
+                foreach (int i in randomIndices)
+                {
+                    suppliers.Add(ServiceLocator.Instance.Companys[i]);
+                }
+                worker.InitialSuppliersSetup(suppliers);
             }
 
             _isInitDone = true;
@@ -116,48 +111,49 @@ namespace NewScripts
         {
             roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
 
-            if (ServiceLocator.Instance.FlowController.Year == 10)
-            {
-                foreach (var company in ServiceLocator.Instance.Companys)
-                {
-                    company.EndCompanyEpisode();
-                }
-                
-                ServiceLocator.Instance.FlowController.Reset();
-                foreach (var worker in ServiceLocator.Instance.LaborMarketService.Workers)
-                {
-                    float money = worker.IsCeo ? 2000 : 800;
-                    worker.Money = money;
-                    worker.Health = 1000;
-                }
-                            
-                yield return new WaitForFixedUpdate();
-            }
-
             var companies = GenerateRandomLoop(ServiceLocator.Instance.Companys);
             foreach (var company in companies)
             {
-                company.RequestNextStep();
+                company.StartMonth();
             }
-            
-            if (ServiceLocator.Instance.FlowController.Day == 29)
+
+            var workers = GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
+            foreach (var worker in workers)
             {
-                foreach (var company in ServiceLocator.Instance.Companys)
+                worker.SearchNewSupplier();
+                worker.SearchJob();
+                worker.SetDailySpending();
+            }
+
+            while (ServiceLocator.Instance.FlowController.Day != 21)
+            {
+                companies = GenerateRandomLoop(ServiceLocator.Instance.Companys);
+                foreach (var company in companies)
                 {
-                    company.PayWorkers();
+                    company.StartDay();
                 }
+
+                workers = GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
+                foreach (var worker in workers)
+                {
+                    worker.Buy();
+                }
+                ServiceLocator.Instance.FlowController.Increment();
             }
             
-            ServiceLocator.Instance.LaborMarketService.PaySocialWelfare(
-                ServiceLocator.Instance.ProductMarketService.AveragePrice(ProductType.Food) * 10, 100);
-            ServiceLocator.Instance.ProductMarketService.SimulateDemand();
-            foreach (var company in ServiceLocator.Instance.Companys)
+            companies = GenerateRandomLoop(ServiceLocator.Instance.Companys);
+            foreach (var company in companies)
             {
-                company.EndRound();
+                company.EndMonth();
+            }
+
+            workers = GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
+            foreach (var worker in workers)
+            {
+                worker.SetReservationWage();
             }
 
             ServiceLocator.Instance.LaborMarketService.NewRound();
-            ServiceLocator.Instance.FlowController.Increment();
             yield return new WaitForFixedUpdate();
 
         }
@@ -168,50 +164,9 @@ namespace NewScripts
             StartCoroutine(RunAiSequence());
         }
 
-        private IEnumerator RunCompanies()
-        {
-            var companies = GenerateRandomLoop(ServiceLocator.Instance.Companys);
-            foreach (var company in companies)
-            {
-                company.RequestNextStep();
-            }
-            yield return new WaitForFixedUpdate();
-        }
         
-        private IEnumerator EndEpisode()
-        {
-            foreach (var company in ServiceLocator.Instance.Companys)
-            {
-                company.EndCompanyEpisode();
-            }
-            yield return new WaitForFixedUpdate();
-        }
 
-        private void SimulateDemand()
-        {
-            ServiceLocator.Instance.ProductMarketService.SimulateDemand();
-            ServiceLocator.Instance.LaborMarketService.NewRound();
-        }
-
-        private void BookKeeping()
-        {
-            foreach (var company in ServiceLocator.Instance.Companys)
-            {
-                company.EndRound();
-            }
-            //ServiceLocator.Instance.LaborMarketService.NewRound();
-        }
-        
-        private void PayWorkers()
-        {
-            foreach (var company in ServiceLocator.Instance.Companys)
-            {
-                company.PayWorkers();
-            }
-            ServiceLocator.Instance.LaborMarketService.NewRound();
-        }
-
-        public List<Company> GenerateRandomLoop(List<Company> listToShuffle)
+        private List<T> GenerateRandomLoop<T>(List<T> listToShuffle)
         {
             for (int i = listToShuffle.Count - 1; i > 0; i--)
             {

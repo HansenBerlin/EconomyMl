@@ -15,7 +15,7 @@ namespace NewScripts
                 Year++;
                 Month = 1;
             }
-            if (Day == 30)
+            if (Day == 21)
             {
                 Day = 1;
                 Month++;
@@ -36,6 +36,38 @@ namespace NewScripts
         public string Current()
         {
             return $"{Day}.{Month}.{Year}";
+        }
+        
+        public void StartMonth()
+        {
+            // Unternehmen:
+            // Lohnsatz anpassen
+            // Verkaufspreis anpassen
+            // Mitarbeiterzahl anpassen (offene Stellen)
+            
+            // Privathaushalte:
+            // Arbeitsstelle suchen (wenn arbeitslos)
+            // Arbeitsstelle wechseln (wenn beschäftigt)
+            // jeweils beste Bezahlung
+            // billigere Anbieter suchen
+            // Budget anpassen (Anteil an Einkommen)
+        }
+
+        public void StartDay()
+        {
+            // PH:
+            // Kauf Güter
+            
+            // UN:
+            // Produktion Konsumgüter, nach Anzahl Bschäftigte
+        }
+
+        public void EndMonth()
+        {
+            // UN
+            // Gewinne verteilen??
+            // MA bezahlen
+            // Entlassung
         }
     }
 }
