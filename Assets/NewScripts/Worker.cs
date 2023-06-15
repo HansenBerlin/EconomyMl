@@ -66,6 +66,11 @@ namespace NewScripts
                 {
                     break;
                 }
+
+                if (company.ProductPrice == 0)
+                {
+                    Debug.Log("");
+                }
                 int maxBySpending = (int)Math.Floor((DailySpending - amountSpent) / company.ProductPrice);
                 int maxBySupply = Demand > company.ProductStock ? company.ProductStock : Demand;
                 int buyAmount = maxBySpending >= maxBySupply ? maxBySupply : maxBySpending;

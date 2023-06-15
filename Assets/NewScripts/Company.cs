@@ -20,12 +20,29 @@ namespace NewScripts
         public GameObject stageThreeBuilding;
         private int currentActiveIndex = 0;
         public int id = 0;
-        public int OpenPositions = 0;
+        public int OpenPositions { get; private set; } = 0;
         private int ProductionInMonth = 0;
         private int SalesInMonth = 0;
         private int SalesLastMonth = 0;
         public int ProductStock { get; private set; } = 0;
-        public decimal ProductPrice = 0;
+
+        public decimal ProductPrice
+        {
+            get => _productPrice;
+            private set
+            {
+                if (value == 0)
+                {
+                    //Debug.LogError("NOT ALLOWED");
+                }
+                else
+                {
+                    _productPrice = value;
+                }
+            }
+        }
+
+        private decimal _productPrice;
         public decimal WageRate { get; private set; } = 0;
         //public float ReserveAmount { get; private set; } = 0;
 
@@ -41,8 +58,8 @@ namespace NewScripts
         
         private int Id => GetInstanceID();
 
-        public decimal Liquidity;
-        public decimal ProfitInMonth;
+        public decimal Liquidity { get; private set; }
+        public decimal ProfitInMonth { get; private set; }
         public TextMeshProUGUI CapitalText;
         public TextMeshProUGUI WorkersText;
         private int initialWorkers;
@@ -69,7 +86,9 @@ namespace NewScripts
             //ProductStock = 100;
             WageRate = 25 + (decimal)_rand.NextDouble() - 0.1M;
             ProductPrice = 1 + (decimal) _rand.Next(-100, 101) / 100;
-            SetBuilding();
+            stageOneBuilding.SetActive(true);
+            stageTwoBuilding.SetActive(false);
+            stageThreeBuilding.SetActive(false);
         }
 
         private void SetBuilding()
@@ -110,7 +129,7 @@ namespace NewScripts
             ProductStock -= amount;
             SalesInMonth += amount;
             
-            if (ProductPrice < 0)
+            if (ProductPrice <= 0)
             {
                 throw new Exception("Less than zero.");
             }
@@ -151,7 +170,7 @@ namespace NewScripts
         
         public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
-            if (Liquidity > _workers.Count * WageRate || _workers.Count == 0)
+            if (Liquidity > _workers.Count * WageRate || _workers.Count < 2)
             {
                 actionMask.SetActionEnabled(2, 0, false);
             }
@@ -191,7 +210,7 @@ namespace NewScripts
         public void StartDay()
         {
             CurrentPhase = ActionPhase.BeginDay;
-            ProductStock += _workers.Count * 2;
+            ProductStock += _workers.Count * 1;
         }
 
         private void LiquidityCheck()
@@ -281,7 +300,7 @@ namespace NewScripts
             CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Liquidity:0.##}";
             SetBuilding();
             
-            if (ProductStock == 0 && SalesLastMonth == 0 && (Liquidity <= WageRate * _workers.Count || _workers.Count == 0))
+            if (SalesInMonth == 0 && SalesLastMonth == 0 && (Liquidity <= WageRate * _workers.Count || _workers.Count == 0))
             {
                 SetReward(-1F);
                 Academy.Instance.StatsRecorder.Add("Company/Extinctions", LifetimeMonths);
@@ -331,14 +350,14 @@ namespace NewScripts
             {
                 WageRate = 1;
             }
-            ProductPrice = priceChangeRate == 0 ? ProductPrice * 0.95M : priceChangeRate == 2 ? ProductPrice * 1.05M : ProductPrice;
-            ProductPrice = ProductPrice < 0.1M ? 0.1M : ProductPrice;
+            decimal newPrice = priceChangeRate == 0 ? ProductPrice * 0.95M : priceChangeRate == 2 ? ProductPrice * 1.05M : ProductPrice;
+            ProductPrice = newPrice < 0.1M ? 0.1M : newPrice;
             if (workerChangeRate == 2)
             {
                 OpenPositions = (int) Math.Ceiling(_workers.Count * 1.1);
                 OpenPositions = OpenPositions == 0 ? 1 : OpenPositions;
             }
-            else if (workerChangeRate == 0)
+            else if (workerChangeRate == 0 && _workers.Count > 1)
             {
                 int fireWorkers = (int)Math.Floor(_workers.Count * 1.1);
                 if (fireWorkers > 1)

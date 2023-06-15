@@ -98,7 +98,7 @@ namespace NewScripts
             _isInitDone = true;
         }
         
-        public void FixedUpdate()
+        public void Update()
         {
             if (_isInitDone == false)
             {
@@ -170,7 +170,9 @@ namespace NewScripts
         private IEnumerator RunAiSequence()
         {
             StartCoroutine(StartMonthStep());
+            ServiceLocator.Instance.Stats.UpdateStats();
             StartDaysStep();
+            ServiceLocator.Instance.Stats.UpdateStats();
             EndMonthStep();
             ServiceLocator.Instance.Stats.UpdateStats();
             yield return new WaitForFixedUpdate();

@@ -23,12 +23,10 @@ namespace NewScripts
                 int j = Random.Next(i, length);
                 (array[i], array[j]) = (array[j], array[i]);
             }
-
-            int range = maxElements == -1 ? length : maxElements > length ? length : maxElements;
-
-            return array
+            
+            return maxElements == -1 ? array : array
                 .ToList()
-                .GetRange(0, range)
+                .GetRange(0, maxElements)
                 .ToArray();
         }
         
