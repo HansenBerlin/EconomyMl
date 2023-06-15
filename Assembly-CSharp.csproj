@@ -161,6 +161,7 @@
      <Compile Include="Assets\Scripts\Factories\PopulationDataTemplateModel.cs" />
      <Compile Include="Assets\Scripts\Agents\CentralBankAgent.cs" />
      <Compile Include="Assets\Scripts\Agents\GovernmentAgent.cs" />
+     <Compile Include="Assets\NewScripts\Http\CompanyEvent.cs" />
      <Compile Include="Assets\Scripts\Models\BankingMarkets.cs" />
      <Compile Include="Assets\Scripts\Policies\PoliciesWrapper.cs" />
      <Compile Include="Assets\Scripts\Policies\EducationBoundaryPolicy.cs" />
@@ -192,6 +193,7 @@
      <Compile Include="Assets\NewScripts\ServiceLocator.cs" />
      <Compile Include="Assets\Scripts\Factories\ActionsFactory.cs" />
      <Compile Include="Assets\Scripts\Enums\CreditRating.cs" />
+     <Compile Include="Assets\NewScripts\Http\CompanyLedger.cs" />
      <Compile Include="Assets\Scripts\Models\ReceiptModel.cs" />
      <Compile Include="Assets\Scripts\Repositories\StatisticalDataRepository.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\SpawnObject.cs" />

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Agents;
+using NewScripts.Http;
 using TMPro;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -26,25 +27,9 @@ namespace NewScripts
         private int SalesLastMonth = 0;
         public int ProductStock { get; private set; } = 0;
 
-        public decimal ProductPrice
-        {
-            get => _productPrice;
-            private set
-            {
-                if (value == 0)
-                {
-                    //Debug.LogError("NOT ALLOWED");
-                }
-                else
-                {
-                    _productPrice = value;
-                }
-            }
-        }
+        public decimal ProductPrice { get; private set; }
 
-        private decimal _productPrice;
         public decimal WageRate { get; private set; } = 0;
-        //public float ReserveAmount { get; private set; } = 0;
 
         private readonly List<Worker> _workers = new();
 
@@ -78,6 +63,7 @@ namespace NewScripts
             }
             WorkersText.GetComponent<TextMeshProUGUI>().text = _workers.Count.ToString();
             SetupAgent();
+            LifetimeMonths = 1;
             _initDone = true;
         }
 
@@ -237,6 +223,22 @@ namespace NewScripts
 
         public void EndMonth()
         {
+            var ledger = new CompanyLedger
+            {
+                companyId = Id,
+                extinct = LifetimeMonths == 0,
+                month = ServiceLocator.Instance.FlowController.Month,
+                year = ServiceLocator.Instance.FlowController.Year,
+                liquidity = Liquidity,
+                profit = ProfitInMonth,
+                workers = _workers.Count,
+                wage = WageRate,
+                sales = SalesInMonth,
+                stock = ProductStock,
+                lifetime = LifetimeMonths
+            };
+            StartCoroutine(HttpService.Insert("http://localhost:5002/companies/ledger", ledger));
+            
             decimal liquidityOld = Liquidity;
             decimal profitOld = ProfitInMonth;
             
@@ -335,6 +337,7 @@ namespace NewScripts
         
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
+            
             // monthly decisions
             //float wageChangeRate = (actionBuffers.ContinuousActions[0] + 1) / 2 * 1.5F + 0.5F;
             //float wageChangeRate = ScaleAction(actionBuffers.ContinuousActions[0], 0.5F, 2);
