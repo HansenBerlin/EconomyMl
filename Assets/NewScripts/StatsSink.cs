@@ -7,6 +7,8 @@ namespace NewScripts
     public class StatsSink : MonoBehaviour
     {
         public TextMeshProUGUI workerMoneyText;
+        public TextMeshProUGUI workerDemandFullfilledText;
+        public TextMeshProUGUI workerEmploymentQuoteText;
         public TextMeshProUGUI companyReservesText;
         public TextMeshProUGUI companyLifetimeText;
         public TextMeshProUGUI companyWagesText;
@@ -22,7 +24,7 @@ namespace NewScripts
             SetCompanyReservesText();
             SetCompanyStockText();
             SetCompanyWagesText();
-            SetWorkerMoneyText();
+            SetWorkerTexts();
         }
         
         private void SetCirculatingMoneyText()
@@ -30,18 +32,30 @@ namespace NewScripts
             var workers = ServiceLocator.Instance.LaborMarketService.Workers;
             var companys = ServiceLocator.Instance.Companys;
             decimal workersTotal = workers.Select(x => x.Money).Sum();
-            decimal companiesTotal = companys.Select(x => x.ProfitInMonth).Sum();
+            decimal companiesTotalProfit = companys.Select(x => x.ProfitInMonth).Sum();
+            decimal companiesTotalLiquidity = companys.Select(x => x.Liquidity).Sum();
+            decimal companiesTotal = companiesTotalLiquidity + companiesTotalProfit;
             string text = $"{workersTotal:0} | {companiesTotal:0} | {workersTotal + companiesTotal:0}";
             circulatingMoneyText.GetComponent<TextMeshProUGUI>().text = text;
         }
 
-        private void SetWorkerMoneyText()
+        private void SetWorkerTexts()
         {
             var workers = ServiceLocator.Instance.LaborMarketService.Workers;
             decimal avg = workers.Select(x => x.Money).Average();
             decimal min = workers.Select(x => x.Money).Min();
             decimal max = workers.Select(x => x.Money).Max();
             BuildText(workerMoneyText, min, max, avg, true);
+
+            decimal employed = workers.Count(x => x.HasJob);
+            decimal quote = employed / workers.Count;
+            string quoteText = $"{quote * 100:0.##} %";
+            workerEmploymentQuoteText.GetComponent<TextMeshProUGUI>().text = quoteText;
+            
+            decimal avgB = workers.Select(x => (decimal)x.DemandFulfilled).Average();
+            decimal minB = workers.Select(x => (decimal)x.DemandFulfilled).Min();
+            decimal maxB = workers.Select(x => (decimal)x.DemandFulfilled).Max();
+            BuildText(workerDemandFullfilledText, minB, maxB, avgB);
         }
         
         private void SetCompanyWagesText()

@@ -57,7 +57,7 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 5022602860645237092, guid: ecb34d36ba847ad4095519cd776178c1, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 2
+  m_BehaviorType: 0
   m_BehaviorName: Company
   TeamId: 0
   m_UseChildSensors: 1
@@ -82,8 +82,6 @@ MonoBehaviour:
   MaxStep: 0
   id: 0
   OpenPositions: 0
-  ProductPrice: 0
   CurrentPhase: 0
-  Liquidity: 0
   CapitalText: {fileID: 0}
   WorkersText: {fileID: 0}

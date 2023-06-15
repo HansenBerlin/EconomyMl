@@ -248,8 +248,10 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Buildings_M" />
      <Folder Include="Assets\TextMesh Pro\Resources\Sprite Assets" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\- Materials\Colors\Emission" />
+     <None Include="Assets\results\company-v2-9\run_logs\timers.json" />
      <Folder Include="Assets\Scenes\SimpleSupplyChain" />
      <Folder Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\Textures\SMAA" />
+     <Folder Include="Assets\results\company-v2-9\run_logs" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Medieval_T" />
      <None Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents.extensions\package.json" />
      <Folder Include="Assets\NewScripts\Camera" />
@@ -259,6 +261,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Vehicles_M\Cars_M" />
      <None Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents\package.json" />
      <None Include="Library\PackageCache\com.unity.modules.assetbundle@1.0.0\package.json" />
+     <Folder Include="Assets\results\company-v2-9" />
      <None Include="Assets\Brains\company-v2-8\run_logs\timers.json" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
      <Folder Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\Textures\BlueNoise64" />
@@ -338,6 +341,7 @@
      <None Include="Library\PackageCache\com.unity.modules.unitywebrequestassetbundle@1.0.0\package.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Nature_M\Mushrooms_M" />
      <Folder Include="Library\PackageCache\com.unity.feature.development@1.0.1" />
+     <Folder Include="Assets\results\company-v2-10\Company" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Nature_T\Grass_T" />
      <Folder Include="Assets\Packages\System.Drawing.Common.4.7.2" />
      <Folder Include="Assets\polyperfect\Low Poly Ultimate Pack" />
@@ -438,6 +442,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Vehicles_T\Trains_T" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
      <Folder Include="Assets\polyperfect" />
+     <Folder Include="Assets\results\company-v2-10" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Terrains_T" />
      <None Include="Library\PackageCache\com.unity.modules.vr@1.0.0\package.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Terrains_T\Hexagons_T" />
@@ -559,10 +564,12 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Nature_M\Ice_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Tiles_M\Tunnels_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Tiles_M\Runway_M" />
+     <None Include="Assets\results\company-v2-10\run_logs\timers.json" />
      <None Include="Assets\Packages\System.Drawing.Common.4.7.2\version.txt" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Tiles_T\Roads_T" />
      <Folder Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\Textures\BlueNoise16" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Terrains_T\Hexagons_T" />
+     <None Include="Assets\results\company-v2-9\run_logs\training_status.json" />
      <Folder Include="Assets\TextMesh Pro\Examples &amp; Extras\Scenes" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Survival_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Egypt_M" />
@@ -626,6 +633,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T" />
      <None Include="Assets\results\company-v2-8\run_logs\training_status.json" />
      <Folder Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\Textures\BlueNoise16\L" />
+     <Folder Include="Assets\results\company-v2-10\run_logs" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Buildings_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\WW2_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Music_T" />
@@ -653,6 +661,7 @@
      <Folder Include="Assets\Packages\MathNet.Numerics.5.0.0\lib\netstandard2.0" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Weapons_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Japan_T" />
+     <None Include="Assets\results\company-v2-10\run_logs\training_status.json" />
      <None Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\ValidationConfig.json" />
      <None Include="Library\PackageCache\com.unity.modules.unitywebrequest@1.0.0\package.json" />
      <Folder Include="Assets\TextMesh Pro\Examples &amp; Extras\Resources\Fonts &amp; Materials" />

@@ -24,9 +24,11 @@ namespace NewScripts
                 (array[i], array[j]) = (array[j], array[i]);
             }
 
-            return maxElements == -1 ? array : array
+            int range = maxElements == -1 ? length : maxElements > length ? length : maxElements;
+
+            return array
                 .ToList()
-                .GetRange(0, maxElements)
+                .GetRange(0, range)
                 .ToArray();
         }
         

@@ -66,7 +66,7 @@ namespace NewScripts
         private void SetupGameObjects()
         {
             //Academy.Instance.OnEnvironmentReset += EnvironmentReset;
-            ServiceLocator.Instance.LaborMarketService.InitWorkers(companysPerType * 10);
+            ServiceLocator.Instance.LaborMarketService.InitWorkers(1000);
             //ProductTemplateFactory.CompanysPerType = companysPerType;
             int zPos = 0;
             int xPos = 0;
@@ -79,7 +79,7 @@ namespace NewScripts
                 }
                 var go = Instantiate(foodCompanyPrefab);
                 Company company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go);
-                company.Init((int)Math.Floor((decimal)companysPerType / 11));
+                company.Init((int)Math.Floor((decimal)900 / companysPerType));
                 ServiceLocator.Instance.Companys.Add(company);
                 xPos++;
             }

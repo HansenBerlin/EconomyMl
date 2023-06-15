@@ -15,6 +15,10 @@ namespace NewScripts
 {
     public class Company : Agent
     {
+        public GameObject stageOneBuilding;
+        public GameObject stageTwoBuilding;
+        public GameObject stageThreeBuilding;
+        private int currentActiveIndex = 0;
         public int id = 0;
         public int OpenPositions = 0;
         private int ProductionInMonth = 0;
@@ -65,7 +69,28 @@ namespace NewScripts
             //ProductStock = 100;
             WageRate = 25 + (decimal)_rand.NextDouble() - 0.1M;
             ProductPrice = 1 + (decimal) _rand.Next(-100, 101) / 100;
-            
+            SetBuilding();
+        }
+
+        private void SetBuilding()
+        {
+            var buildings = new List<GameObject>
+            {
+                stageOneBuilding, stageTwoBuilding, stageThreeBuilding
+            };
+            decimal companycount = ServiceLocator.Instance.Companys.Count;
+            decimal personCount = ServiceLocator.Instance.LaborMarketService.Workers.Count;
+            decimal ratio = personCount / companycount;
+            int activeIndex = _workers.Count < ratio ? 0 : _workers.Count > ratio * companycount / 4 ? 2 : 1;
+            if (activeIndex != currentActiveIndex)
+            {
+                for (var i = 0; i < buildings.Count; i++)
+                {
+                    buildings[i].SetActive(i == activeIndex);
+                }
+
+                currentActiveIndex = activeIndex;
+            }
         }
 
         public override void OnEpisodeBegin()
@@ -169,9 +194,34 @@ namespace NewScripts
             ProductStock += _workers.Count * 2;
         }
 
+        private void LiquidityCheck()
+        {
+            if (Liquidity is < 0 and > -0.0001M)
+            {
+                Debug.LogWarning("Liquidity below Zero");
+                Liquidity = 0;
+            }
+            else if (Liquidity < -0.0001M)
+            {
+                throw new Exception("Liquidity below Zero");
+            }
+            if (ProfitInMonth is < 0 and > -0.0001M)
+            {
+                Debug.LogWarning("Profit below Zero");
+                ProfitInMonth = 0;
+            }
+            else if (ProfitInMonth < -0.0001M)
+            {
+                throw new Exception("Profit below Zero");
+            }
+        }
+
         public void EndMonth()
         {
-
+            decimal liquidityOld = Liquidity;
+            decimal profitOld = ProfitInMonth;
+            
+            LiquidityCheck();
             if (SalesInMonth == 0)
             {
                 AddReward(-0.1F);
@@ -186,16 +236,18 @@ namespace NewScripts
 
             if (estimatedWorkerPayments < Liquidity + ProfitInMonth && estimatedWorkerPayments > Liquidity)
             {
-                decimal diff = ProfitInMonth + Liquidity - estimatedWorkerPayments;
+                decimal diff = (Liquidity - estimatedWorkerPayments) * -1;
                 Liquidity += diff;
                 ProfitInMonth -= diff;
+                LiquidityCheck();
             }
             else if (estimatedWorkerPayments > Liquidity + ProfitInMonth)
             {
-                WageRate = (ProfitInMonth + Liquidity) / _workers.Count * 1.1M;
+                WageRate = (ProfitInMonth + Liquidity) / _workers.Count * 0.9M;
                 Liquidity += ProfitInMonth;
                 ProfitInMonth = 0;
                 AddReward(-0.1F);
+                LiquidityCheck();
             }
             
             foreach (var worker in _workers)
@@ -203,8 +255,9 @@ namespace NewScripts
                 worker.Pay(WageRate);
                 Liquidity -= WageRate;
             }
+            LiquidityCheck();
             
-            if (ProfitInMonth > 0)
+            if (ProfitInMonth > _workers.Count * WageRate / 10 && _workers.Count > 0)
             {
                 decimal companyReserve = ProfitInMonth * 0.1M;
                 ProfitInMonth -= companyReserve;
@@ -217,13 +270,27 @@ namespace NewScripts
                     worker.Pay(societyShare);
                 }
             }
+            else if (ProfitInMonth > 0)
+            {
+                Liquidity += ProfitInMonth;
+            }
+            ProfitInMonth = 0;
+            LiquidityCheck();
             
             Academy.Instance.StatsRecorder.Add("Company/Liquidity", (float)Liquidity);
+            CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Liquidity:0.##}";
+            SetBuilding();
             
-            if (ProductStock == 0 && SalesLastMonth == 0 && Liquidity <= WageRate * _workers.Count())
+            if (ProductStock == 0 && SalesLastMonth == 0 && (Liquidity <= WageRate * _workers.Count || _workers.Count == 0))
             {
                 SetReward(-1F);
                 Academy.Instance.StatsRecorder.Add("Company/Extinctions", LifetimeMonths);
+                for (int i = _workers.Count - 1; i >= 0; i--)
+                {
+                    var worker = _workers[i];
+                    worker.Fire();
+                    _workers.Remove(worker);
+                }
                 EndEpisode();
                 LifetimeMonths = 0;
             }
