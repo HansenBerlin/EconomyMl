@@ -60,7 +60,7 @@ MonoBehaviour:
   m_BehaviorType: 2
   m_BehaviorName: Company
   TeamId: 0
-  m_UseChildSensors: 0
+  m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_DeterministicInference: 0
   m_ObservableAttributeHandling: 0
@@ -82,10 +82,7 @@ MonoBehaviour:
   MaxStep: 0
   id: 0
   OpenPositions: 0
-  ProductStock: 0
   ProductPrice: 0
-  WageRate: 0
-  ReserveAmount: 0
   CurrentPhase: 0
   Liquidity: 0
   CapitalText: {fileID: 0}

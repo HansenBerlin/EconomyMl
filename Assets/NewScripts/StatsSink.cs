@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace NewScripts
 {
@@ -30,8 +29,8 @@ namespace NewScripts
         {
             var workers = ServiceLocator.Instance.LaborMarketService.Workers;
             var companys = ServiceLocator.Instance.Companys;
-            double workersTotal = workers.Select(x => x.Money).Sum();
-            double companiesTotal = companys.Select(x => x.ReserveAmount).Sum();
+            decimal workersTotal = workers.Select(x => x.Money).Sum();
+            decimal companiesTotal = companys.Select(x => x.ProfitInMonth).Sum();
             string text = $"{workersTotal:0} | {companiesTotal:0} | {workersTotal + companiesTotal:0}";
             circulatingMoneyText.GetComponent<TextMeshProUGUI>().text = text;
         }
@@ -39,64 +38,61 @@ namespace NewScripts
         private void SetWorkerMoneyText()
         {
             var workers = ServiceLocator.Instance.LaborMarketService.Workers;
-            double avg = workers.Select(x => x.Money).Average();
-            double min = workers.Select(x => x.Money).Min();
-            double max = workers.Select(x => x.Money).Max();
+            decimal avg = workers.Select(x => x.Money).Average();
+            decimal min = workers.Select(x => x.Money).Min();
+            decimal max = workers.Select(x => x.Money).Max();
             BuildText(workerMoneyText, min, max, avg, true);
         }
         
         private void SetCompanyWagesText()
         {
             var companys = ServiceLocator.Instance.Companys;
-            double avg = companys.Select(x => x.WageRate).Average();
-            double min = companys.Select(x => x.WageRate).Min();
-            double max = companys.Select(x => x.WageRate).Max();
+            decimal avg = companys.Select(x => x.WageRate).Average();
+            decimal min = companys.Select(x => x.WageRate).Min();
+            decimal max = companys.Select(x => x.WageRate).Max();
             BuildText(companyWagesText, min, max, avg, true);
         }
         
         private void SetCompanyStockText()
         {
             var companys = ServiceLocator.Instance.Companys;
-            double avg = companys.Select(x => x.ProductStock).Average();
-            double min = companys.Select(x => x.ProductStock).Min();
-            double max = companys.Select(x => x.ProductStock).Max();
+            decimal avg = companys.Select(x => (decimal)x.ProductStock).Average();
+            decimal min = companys.Select(x => x.ProductStock).Min();
+            decimal max = companys.Select(x => x.ProductStock).Max();
             BuildText(companyStockText, min, max, avg);
         }
         
         private void SetCompanyPricesText()
         {
             var companys = ServiceLocator.Instance.Companys;
-            double avg = companys.Select(x => x.ProductPrice).Average();
-            double min = companys.Select(x => x.ProductPrice).Min();
-            double max = companys.Select(x => x.ProductPrice).Max();
+            decimal avg = companys.Select(x => x.ProductPrice).Average();
+            decimal min = companys.Select(x => x.ProductPrice).Min();
+            decimal max = companys.Select(x => x.ProductPrice).Max();
             BuildText(companyPricesText, min, max, avg, true);
         }
         
         private void SetCompanyReservesText()
         {
             var companys = ServiceLocator.Instance.Companys;
-            double avg = companys.Select(x => x.ReserveAmount).Average();
-            double min = companys.Select(x => x.ReserveAmount).Min();
-            double max = companys.Select(x => x.ReserveAmount).Max();
-            BuildText(companyReservesText, min, max, avg);
+            decimal avgR = companys.Select(x => x.ProfitInMonth).Average();
+            decimal minR = companys.Select(x => x.ProfitInMonth).Min();
+            decimal maxR = companys.Select(x => x.ProfitInMonth).Max();
+            decimal avgL = companys.Select(x => x.Liquidity).Average();
+            decimal minL = companys.Select(x => x.Liquidity).Min();
+            decimal maxL = companys.Select(x => x.Liquidity).Max();
+            BuildText(companyReservesText, minR + minL, maxR + maxL, avgR + avgL);
         }
 
         private void SetCompanyLifetimeText()
         {
             var companys = ServiceLocator.Instance.Companys;
-            double totalLifetime = 0;
-            foreach (var company in companys)
-            {
-                totalLifetime += company.LifetimeMonths;
-            }
-
-            double avg = totalLifetime / companys.Count;
-            double min = companys.Select(x => x.LifetimeMonths).Min();
-            double max = companys.Select(x => x.LifetimeMonths).Max();
-            BuildText(companyLifetimeText, min, max, avg);
+            decimal avg = companys.Select(x => (decimal)x.LifetimeMonths).Average();
+            decimal min = companys.Select(x => x.LifetimeMonths).Min();
+            decimal max = companys.Select(x => x.LifetimeMonths).Max();
+            BuildText(companyLifetimeText, min, max, avg, true);
         }
 
-        private void BuildText(TextMeshProUGUI textField, double min, double max, double avg, bool roundTwoDecimals = false)
+        private void BuildText(TextMeshProUGUI textField, decimal min, decimal max, decimal avg, bool roundTwoDecimals = false)
         {
             string text;
             if (roundTwoDecimals)

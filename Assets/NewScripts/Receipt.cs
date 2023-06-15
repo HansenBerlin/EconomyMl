@@ -2,7 +2,7 @@
 {
     public class Receipt
     {
-        public float AmountPaid { get; set; }
+        public decimal AmountPaid { get; set; }
         public int CountBought { get; set; }
     }
 }

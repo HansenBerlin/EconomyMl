@@ -21,6 +21,7 @@ namespace NewScripts
         private int _step = 0;
         private const int GridGap = 30;
         private bool _isInitDone;
+        public TextMeshProUGUI buttonText;
 
         
 
@@ -65,7 +66,7 @@ namespace NewScripts
         private void SetupGameObjects()
         {
             //Academy.Instance.OnEnvironmentReset += EnvironmentReset;
-            ServiceLocator.Instance.LaborMarketService.InitWorkers();
+            ServiceLocator.Instance.LaborMarketService.InitWorkers(companysPerType * 10);
             //ProductTemplateFactory.CompanysPerType = companysPerType;
             int zPos = 0;
             int xPos = 0;
@@ -78,7 +79,7 @@ namespace NewScripts
                 }
                 var go = Instantiate(foodCompanyPrefab);
                 Company company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go);
-                company.Init();
+                company.Init((int)Math.Floor((decimal)companysPerType / 11));
                 ServiceLocator.Instance.Companys.Add(company);
                 xPos++;
             }
@@ -109,7 +110,7 @@ namespace NewScripts
             }
         }
 
-        private IEnumerator RunAiSequence()
+        private IEnumerator StartMonthStep()
         {
             roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
 
@@ -126,30 +127,37 @@ namespace NewScripts
                 worker.SearchJob();
                 worker.SetDailySpending();
             }
+            yield return new WaitForFixedUpdate();
+        }
 
+        private void StartDaysStep()
+        {
             while (ServiceLocator.Instance.FlowController.Day != 21)
             {
-                companies = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.Companys);
+                var companies = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.Companys);
                 foreach (var company in companies)
                 {
                     company.StartDay();
                 }
 
-                workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
+                var workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
                 foreach (var worker in workers)
                 {
                     worker.Buy();
                 }
                 ServiceLocator.Instance.FlowController.Increment();
             }
-            
-            companies = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.Companys);
+        }
+
+        private void EndMonthStep()
+        {
+            var companies = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.Companys);
             foreach (var company in companies)
             {
                 company.EndMonth();
             }
 
-            workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
+            var workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
             foreach (var worker in workers)
             {
                 worker.SetReservationWage();
@@ -157,15 +165,40 @@ namespace NewScripts
 
             ServiceLocator.Instance.FlowController.Increment();
             //ServiceLocator.Instance.LaborMarketService.NewRound();
+        }
+
+        private IEnumerator RunAiSequence()
+        {
+            StartCoroutine(StartMonthStep());
+            StartDaysStep();
+            EndMonthStep();
             ServiceLocator.Instance.Stats.UpdateStats();
             yield return new WaitForFixedUpdate();
-
         }
 
 
         public void RequestStep()
         {
-            StartCoroutine(RunAiSequence());
+            if (_step == 0)
+            {
+                StartCoroutine(StartMonthStep());
+                ServiceLocator.Instance.Stats.UpdateStats();
+            }
+
+            if (_step == 1)
+            {
+                StartDaysStep();
+                ServiceLocator.Instance.Stats.UpdateStats();
+            }
+            if (_step == 2)
+            {
+                EndMonthStep();
+                ServiceLocator.Instance.Stats.UpdateStats();
+            }
+
+            _step = _step == 2 ? 0 : _step + 1;
+            string buttonCaption = _step == 1 ? "Tagesphase starten" : _step == 2 ? "Monat beenden" : "Neuer Monat";
+            buttonText.GetComponent<TextMeshProUGUI>().text = buttonCaption;
         }
     }
 }

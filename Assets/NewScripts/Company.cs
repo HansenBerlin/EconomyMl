@@ -21,14 +21,14 @@ namespace NewScripts
         private int SalesInMonth = 0;
         private int SalesLastMonth = 0;
         public int ProductStock { get; private set; } = 0;
-        public float ProductPrice = 0;
-        public float WageRate { get; private set; } = 0;
-        public float ReserveAmount { get; private set; } = 0;
+        public decimal ProductPrice = 0;
+        public decimal WageRate { get; private set; } = 0;
+        //public float ReserveAmount { get; private set; } = 0;
 
         private readonly List<Worker> _workers = new();
 
-        private float PercentageSoldLastMonth = 0;
-        private float PercentageSold = 0;
+        private decimal PercentageSoldLastMonth = 0;
+        private decimal PercentageSold = 0;
         private readonly System.Random _rand = new(42);
         public int LifetimeMonths { get; private set; } = 0;
 
@@ -37,18 +37,20 @@ namespace NewScripts
         
         private int Id => GetInstanceID();
 
-        public float Liquidity;
+        public decimal Liquidity;
+        public decimal ProfitInMonth;
         public TextMeshProUGUI CapitalText;
         public TextMeshProUGUI WorkersText;
-        
+        private int initialWorkers;
 
         private bool _initDone;
 
-        public void Init()
+        public void Init(int workerCount)
         {
             id = Id;
+            initialWorkers = workerCount;
             var availableWorkers = ServiceLocator.Instance.LaborMarketService.Workers.Where(x => x.HasJob == false).ToList();
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < workerCount; i++)
             {
                 availableWorkers[i].InitialJobSetup(this);
                 _workers.Add(availableWorkers[i]);
@@ -60,9 +62,9 @@ namespace NewScripts
 
         private void SetupAgent()
         {
-            ProductStock = 100;
-            WageRate = 25 + (float) _rand.NextDouble() - 0.1F;
-            ProductPrice = 1 + (float) _rand.Next(-100, 101) / 100;
+            //ProductStock = 100;
+            WageRate = 25 + (decimal)_rand.NextDouble() - 0.1M;
+            ProductPrice = 1 + (decimal) _rand.Next(-100, 101) / 100;
             
         }
 
@@ -70,10 +72,10 @@ namespace NewScripts
         {
             if (_initDone)
             {
-                ProductStock = 50;
-                WageRate = 25 + (float) _rand.NextDouble() - 0.1F;
-                ProductPrice = 1 + (float) _rand.Next(-100, 101) / 100;
-                OpenPositions = 5;
+                //ProductStock = 50;
+                WageRate = 25 + (decimal) _rand.NextDouble() - 0.1M;
+                ProductPrice = 1 + (decimal) _rand.Next(-100, 101) / 100;
+                OpenPositions = initialWorkers / 2;
             }
         }
 
@@ -87,7 +89,7 @@ namespace NewScripts
             {
                 throw new Exception("Less than zero.");
             }
-            Liquidity += ProductPrice * amount;
+            ProfitInMonth += ProductPrice * amount;
             //CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Liquidity:0}";
             
             AddReward(amount * 0.0001F);
@@ -110,13 +112,13 @@ namespace NewScripts
         
         public override void CollectObservations(VectorSensor sensor)
         {
-            sensor.AddObservation(Liquidity);
+            sensor.AddObservation((float)Liquidity);
             sensor.AddObservation(_workers.Count);
-            sensor.AddObservation(ProductPrice);
+            sensor.AddObservation((float)ProductPrice);
             sensor.AddObservation(ProductStock);
             sensor.AddObservation(OpenPositions);
-            sensor.AddObservation(ReserveAmount);
-            sensor.AddObservation(WageRate);
+            sensor.AddObservation((float)ProfitInMonth);
+            sensor.AddObservation((float)WageRate);
             sensor.AddObservation(SalesLastMonth);
             sensor.AddObservation(SalesInMonth);
         }
@@ -124,7 +126,7 @@ namespace NewScripts
         
         public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
-            if (ReserveAmount > _workers.Count * WageRate || _workers.Count == 0)
+            if (Liquidity > _workers.Count * WageRate || _workers.Count == 0)
             {
                 actionMask.SetActionEnabled(2, 0, false);
             }
@@ -145,17 +147,18 @@ namespace NewScripts
         {
             Academy.Instance.StatsRecorder.Add("Company/LastSales", SalesLastMonth);
             Academy.Instance.StatsRecorder.Add("Company/CurrentSales", SalesInMonth);
-            Academy.Instance.StatsRecorder.Add("Company/Reserve", ReserveAmount);
+            Academy.Instance.StatsRecorder.Add("Company/ProfitMonth", (float)ProfitInMonth);
             
-            Academy.Instance.StatsRecorder.Add("Product/Price", ProductPrice);
+            Academy.Instance.StatsRecorder.Add("Product/Price", (float)ProductPrice);
             Academy.Instance.StatsRecorder.Add("Product/Stock", ProductStock);
             
             Academy.Instance.StatsRecorder.Add("Labor/Workers", _workers.Count);
             Academy.Instance.StatsRecorder.Add("Labor/Open", OpenPositions);
-            Academy.Instance.StatsRecorder.Add("Labor/Wage", WageRate);
+            Academy.Instance.StatsRecorder.Add("Labor/Wage", (float)WageRate);
 
             SalesLastMonth = SalesInMonth;
             SalesInMonth = 0;
+            ProfitInMonth = 0;
             CurrentPhase = ActionPhase.BeginMonth;
             RequestDecision();
         }
@@ -168,7 +171,6 @@ namespace NewScripts
 
         public void EndMonth()
         {
-            Academy.Instance.StatsRecorder.Add("Company/Liquidity", Liquidity);
 
             if (SalesInMonth == 0)
             {
@@ -180,83 +182,55 @@ namespace NewScripts
             }
            
             CurrentPhase = ActionPhase.EndMonth;
-            if (Liquidity < _workers.Count * WageRate)
-            {
-                AddReward(-0.01F);
-                if (ReserveAmount + Liquidity < _workers.Count * WageRate)
-                {
-                    AddReward(-0.05F);
-                    WageRate = (ReserveAmount + Liquidity) / _workers.Count;
-                    foreach (var worker in _workers)
-                    {
-                        worker.Fire();
-                        worker.Pay(WageRate);
-                    }
-                    _workers.Clear();
-                    Liquidity = 0;
-                    ReserveAmount = 0;
-                    WageRate = 1;
-                    if (ProductStock == 0 || SalesLastMonth == 0)
-                    {
-                        SetReward(-1F);
-                        Academy.Instance.StatsRecorder.Add("Company/Extinctions", 1);
-                        EndEpisode();
-                        LifetimeMonths = 0;
-                        return;
-                    }
-                }
-                else
-                {
-                    float diff = _workers.Count * WageRate - Liquidity;
-                    Liquidity += diff;
-                    ReserveAmount -= diff;
-                }
-            }
+            decimal estimatedWorkerPayments = WageRate * _workers.Count;
 
-            var old = Liquidity;
+            if (estimatedWorkerPayments < Liquidity + ProfitInMonth && estimatedWorkerPayments > Liquidity)
+            {
+                decimal diff = ProfitInMonth + Liquidity - estimatedWorkerPayments;
+                Liquidity += diff;
+                ProfitInMonth -= diff;
+            }
+            else if (estimatedWorkerPayments > Liquidity + ProfitInMonth)
+            {
+                WageRate = (ProfitInMonth + Liquidity) / _workers.Count * 1.1M;
+                Liquidity += ProfitInMonth;
+                ProfitInMonth = 0;
+                AddReward(-0.1F);
+            }
             
             foreach (var worker in _workers)
             {
                 worker.Pay(WageRate);
                 Liquidity -= WageRate;
             }
-            if (Liquidity < 0)
+            
+            if (ProfitInMonth > 0)
             {
-                if (Liquidity > -1)
+                decimal companyReserve = ProfitInMonth * 0.1M;
+                ProfitInMonth -= companyReserve;
+                Liquidity += companyReserve;
+                
+                decimal societyShare = ProfitInMonth / 1000;
+                AddReward((float)societyShare);
+                foreach (var worker in ServiceLocator.Instance.LaborMarketService.Workers)
                 {
-                    Liquidity = 0;
-                }
-                else
-                {
-                    throw new Exception($"{old - WageRate * _workers.Count:0.##} // {Liquidity:0.##}");
+                    worker.Pay(societyShare);
                 }
             }
             
-            if (Liquidity > 0)
+            Academy.Instance.StatsRecorder.Add("Company/Liquidity", (float)Liquidity);
+            
+            if (ProductStock == 0 && SalesLastMonth == 0 && Liquidity <= WageRate * _workers.Count())
             {
-                AddReward(0.01F);
-                float reserve = Liquidity * 0.5F;
-                ReserveAmount += reserve;
-                Liquidity -= reserve;
-                if (Liquidity < 0)
-                {
-                    throw new Exception($"{old - WageRate * _workers.Count:0.##} // {Liquidity:0.##}");
-                }
+                SetReward(-1F);
+                Academy.Instance.StatsRecorder.Add("Company/Extinctions", LifetimeMonths);
+                EndEpisode();
+                LifetimeMonths = 0;
             }
-
-            if (Liquidity > 0)
+            else
             {
-                float share = Liquidity / 1000;
-                AddReward(share);
-                foreach (var worker in ServiceLocator.Instance.LaborMarketService.Workers)
-                {
-                    worker.Pay(share);
-                }
+                LifetimeMonths++;
             }
-
-            LifetimeMonths++;
-            CapitalText.GetComponent<TextMeshProUGUI>().text = $"{ReserveAmount:0}";
-
         }
 
         public void SignJobOffer(Worker worker)
@@ -285,13 +259,13 @@ namespace NewScripts
             int priceChangeRate = actionBuffers.DiscreteActions[1];
             int workerChangeRate = actionBuffers.DiscreteActions[2];
 
-            WageRate = wageChangeRate == 0 ? WageRate * 0.95F : wageChangeRate == 2 ? WageRate * 1.05F : WageRate;
+            WageRate = wageChangeRate == 0 ? WageRate * 0.95M : wageChangeRate == 2 ? WageRate * 1.05M : WageRate;
             if (WageRate <= 1)
             {
                 WageRate = 1;
             }
-            ProductPrice = priceChangeRate == 0 ? ProductPrice * 0.95F : priceChangeRate == 2 ? ProductPrice * 1.05F : ProductPrice;
-            ProductPrice = ProductPrice < 0.1F ? 0.1F : ProductPrice;
+            ProductPrice = priceChangeRate == 0 ? ProductPrice * 0.95M : priceChangeRate == 2 ? ProductPrice * 1.05M : ProductPrice;
+            ProductPrice = ProductPrice < 0.1M ? 0.1M : ProductPrice;
             if (workerChangeRate == 2)
             {
                 OpenPositions = (int) Math.Ceiling(_workers.Count * 1.1);

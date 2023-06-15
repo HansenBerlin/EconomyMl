@@ -8,9 +8,9 @@ namespace NewScripts
 {
     public class Worker
     {
-        public float Money { get; set; } = 100;
-        public float DailySpending { get; set; } = 0;
-        public float ReservationWage { get; set; } = 0;
+        public decimal Money { get; set; } = 100;
+        public decimal DailySpending { get; set; } = 0;
+        public decimal ReservationWage { get; set; } = 0;
         public int Health { get; set; } = 1000;
         public int DemandFulfilled { get; set; } = 0;
 
@@ -27,7 +27,7 @@ namespace NewScripts
         {
             var randomKnownSupplier = _typeAConnections[_rand.Next(0, _typeAConnections.Count - 1)];
             var randomNewSupplier = ServiceLocator.Instance.Companys[_rand.Next(0, ServiceLocator.Instance.Companys.Count - 1)];
-            if (randomNewSupplier.ProductPrice < randomKnownSupplier.ProductPrice * 1.2 && _typeAConnections.Contains(randomNewSupplier) == false)
+            if (randomNewSupplier.ProductPrice < randomKnownSupplier.ProductPrice * 1.2M && _typeAConnections.Contains(randomNewSupplier) == false)
             {
                 _typeAConnections.Remove(randomKnownSupplier);
                 _typeAConnections.Add(randomNewSupplier);
@@ -47,7 +47,7 @@ namespace NewScripts
             _jobChangeIntensity = JobChangeLevel.Satisfied;
         }
 
-        public void Pay(float wage)
+        public void Pay(decimal wage)
         {
             Money += wage;
         }
@@ -55,7 +55,7 @@ namespace NewScripts
         public void Buy()
         {
             int countFullfilled = 0;
-            float amountSpent = 0;
+            decimal amountSpent = 0;
 
             var randomIndices = Utilitis.GenerateRandomArray(0, _typeAConnections.Count);
 
@@ -74,17 +74,18 @@ namespace NewScripts
                 countFullfilled += receipt.CountBought;
             }
 
+            Money -= amountSpent;
             DemandFulfilled += countFullfilled;
         }
 
         public void SetDailySpending()
         {
-            DailySpending = Money * 0.98F / 21;
+            DailySpending = Money * 0.98M / 21;
         }
 
         public void SetReservationWage()
         {
-            Academy.Instance.StatsRecorder.Add("Worker/Money", Money);
+            Academy.Instance.StatsRecorder.Add("Worker/Money", (float)Money);
             Academy.Instance.StatsRecorder.Add("Worker/Bought", DemandFulfilled);
             DemandFulfilled = 0;
 
@@ -103,7 +104,7 @@ namespace NewScripts
             else
             {
                 _jobChangeIntensity = JobChangeLevel.Unmployed;
-                ReservationWage *= 0.95F;
+                ReservationWage *= 0.95M;
             }
         }
 
