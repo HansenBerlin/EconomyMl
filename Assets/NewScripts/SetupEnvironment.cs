@@ -14,7 +14,7 @@ namespace NewScripts
         public GameObject foodCompanyPrefab;
         public GameObject interCompanyPrefab;
         public GameObject luxuryCompanyPrefab;
-        public int companysPerType = 3;
+        public int companysPerType = 100;
         public bool isThrottled;
         public TextMeshProUGUI roundText;
         private readonly Random _rand = new();
@@ -66,24 +66,26 @@ namespace NewScripts
         {
             //Academy.Instance.OnEnvironmentReset += EnvironmentReset;
             ServiceLocator.Instance.LaborMarketService.InitWorkers();
-            ProductTemplateFactory.CompanysPerType = companysPerType;
+            //ProductTemplateFactory.CompanysPerType = companysPerType;
+            int zPos = 0;
             int xPos = 0;
             for (var i = 0; i < companysPerType; i++)
             {
                 if (i != 0 && i % 10 == 0)
                 {
-                    xPos--;
+                    zPos++;
+                    xPos = 0;
                 }
                 var go = Instantiate(foodCompanyPrefab);
-                float zPos = i * GridGap;
-                Company company = GetFromGameObject(GridGap * xPos, zPos, go);
+                Company company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go);
                 company.Init();
                 ServiceLocator.Instance.Companys.Add(company);
+                xPos++;
             }
 
             foreach (var worker in ServiceLocator.Instance.LaborMarketService.Workers)
             {
-                var randomIndices = Utilitis.GenerateRandomArray(0, 1000, 7);
+                var randomIndices = Utilitis.GenerateRandomArray(0, ServiceLocator.Instance.Companys.Count, 7);
                 List<Company> suppliers = new();
                 foreach (int i in randomIndices)
                 {
@@ -95,7 +97,7 @@ namespace NewScripts
             _isInitDone = true;
         }
         
-        public void Update()
+        public void FixedUpdate()
         {
             if (_isInitDone == false)
             {
@@ -111,13 +113,13 @@ namespace NewScripts
         {
             roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
 
-            var companies = GenerateRandomLoop(ServiceLocator.Instance.Companys);
+            var companies = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.Companys);
             foreach (var company in companies)
             {
                 company.StartMonth();
             }
 
-            var workers = GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
+            var workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
             foreach (var worker in workers)
             {
                 worker.SearchNewSupplier();
@@ -127,13 +129,13 @@ namespace NewScripts
 
             while (ServiceLocator.Instance.FlowController.Day != 21)
             {
-                companies = GenerateRandomLoop(ServiceLocator.Instance.Companys);
+                companies = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.Companys);
                 foreach (var company in companies)
                 {
                     company.StartDay();
                 }
 
-                workers = GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
+                workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
                 foreach (var worker in workers)
                 {
                     worker.Buy();
@@ -141,19 +143,21 @@ namespace NewScripts
                 ServiceLocator.Instance.FlowController.Increment();
             }
             
-            companies = GenerateRandomLoop(ServiceLocator.Instance.Companys);
+            companies = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.Companys);
             foreach (var company in companies)
             {
                 company.EndMonth();
             }
 
-            workers = GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
+            workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
             foreach (var worker in workers)
             {
                 worker.SetReservationWage();
             }
 
-            ServiceLocator.Instance.LaborMarketService.NewRound();
+            ServiceLocator.Instance.FlowController.Increment();
+            //ServiceLocator.Instance.LaborMarketService.NewRound();
+            ServiceLocator.Instance.Stats.UpdateStats();
             yield return new WaitForFixedUpdate();
 
         }
@@ -162,18 +166,6 @@ namespace NewScripts
         public void RequestStep()
         {
             StartCoroutine(RunAiSequence());
-        }
-
-        
-
-        private List<T> GenerateRandomLoop<T>(List<T> listToShuffle)
-        {
-            for (int i = listToShuffle.Count - 1; i > 0; i--)
-            {
-                var k = _rand.Next(i + 1);
-                (listToShuffle[k], listToShuffle[i]) = (listToShuffle[i], listToShuffle[k]);
-            }
-            return listToShuffle;
         }
     }
 }

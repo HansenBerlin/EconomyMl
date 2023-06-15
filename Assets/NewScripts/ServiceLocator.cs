@@ -11,6 +11,7 @@ namespace NewScripts
         public LaborMarket LaborMarketService { get; private set; }
         public List<Company> Companys { get; private set; } = new();
         public FlowController FlowController { get; } = new();
+        public StatsSink Stats { get; private set; }
 
         
         private void Awake()
@@ -23,6 +24,7 @@ namespace NewScripts
             Instance = this;
             ProductMarketService = GetComponentInChildren<ProductMarket>();
             LaborMarketService = GetComponentInChildren<LaborMarket>();
+            Stats = GetComponentInChildren<StatsSink>();
         }
     }
 }

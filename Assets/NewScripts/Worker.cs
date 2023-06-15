@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.MLAgents;
 using UnityEngine;
 
 namespace NewScripts
@@ -11,6 +12,7 @@ namespace NewScripts
         public float DailySpending { get; set; } = 0;
         public float ReservationWage { get; set; } = 0;
         public int Health { get; set; } = 1000;
+        public int DemandFulfilled { get; set; } = 0;
 
         public int Demand { get; set; } = int.MaxValue;
         //public int CompanyId { get; set; }
@@ -60,17 +62,19 @@ namespace NewScripts
             for (int i = 0; i < randomIndices.Length; i++)
             {
                 var company = _typeAConnections[i];
-                if (countFullfilled == Demand || amountSpent + company.ProductPrice > Money)
+                if (countFullfilled == Demand || amountSpent + company.ProductPrice > DailySpending)
                 {
                     break;
                 }
-                int maxBySpending = (int)Math.Floor((Money - amountSpent) / company.ProductPrice);
+                int maxBySpending = (int)Math.Floor((DailySpending - amountSpent) / company.ProductPrice);
                 int maxBySupply = Demand > company.ProductStock ? company.ProductStock : Demand;
                 int buyAmount = maxBySpending >= maxBySupply ? maxBySupply : maxBySpending;
                 Receipt receipt = company.BuyFromCompany(buyAmount);
                 amountSpent += receipt.AmountPaid;
                 countFullfilled += receipt.CountBought;
             }
+
+            DemandFulfilled += countFullfilled;
         }
 
         public void SetDailySpending()
@@ -80,6 +84,10 @@ namespace NewScripts
 
         public void SetReservationWage()
         {
+            Academy.Instance.StatsRecorder.Add("Worker/Money", Money);
+            Academy.Instance.StatsRecorder.Add("Worker/Bought", DemandFulfilled);
+            DemandFulfilled = 0;
+
             if (HasJob)
             {
                 if (ReservationWage > _employedAtCompany.WageRate)
@@ -95,7 +103,7 @@ namespace NewScripts
             else
             {
                 _jobChangeIntensity = JobChangeLevel.Unmployed;
-                ReservationWage += 0.95F;
+                ReservationWage *= 0.95F;
             }
         }
 
