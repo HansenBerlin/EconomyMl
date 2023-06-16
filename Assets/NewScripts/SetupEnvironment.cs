@@ -15,7 +15,7 @@ namespace NewScripts
         public GameObject foodCompanyPrefab;
         public GameObject interCompanyPrefab;
         public GameObject luxuryCompanyPrefab;
-        public int companysPerType = 100;
+        [FormerlySerializedAs("companysPerType")] public int companiesPerType = 100;
         public bool isThrottled;
         public TextMeshProUGUI roundText;
         private readonly Random _rand = new();
@@ -71,7 +71,7 @@ namespace NewScripts
             //ProductTemplateFactory.CompanysPerType = companysPerType;
             int zPos = 0;
             int xPos = 0;
-            for (var i = 0; i < companysPerType; i++)
+            for (var i = 0; i < companiesPerType; i++)
             {
                 if (i != 0 && i % 10 == 0)
                 {
@@ -80,14 +80,16 @@ namespace NewScripts
                 }
                 var go = Instantiate(foodCompanyPrefab);
                 Company company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go);
-                company.Init((int)Math.Floor((decimal)900 / companysPerType));
+                company.Init(companiesPerType);
                 ServiceLocator.Instance.Companys.Add(company);
                 xPos++;
             }
 
             foreach (var worker in ServiceLocator.Instance.LaborMarketService.Workers)
             {
-                var randomIndices = Utilitis.GenerateRandomArray(0, ServiceLocator.Instance.Companys.Count, 7);
+                var randomIndices = Utilitis.GenerateRandomArray(0, 
+                    ServiceLocator.Instance.Companys.Count, 
+                    (int)Math.Ceiling((decimal)companiesPerType / 14));
                 List<Company> suppliers = new();
                 foreach (int i in randomIndices)
                 {
@@ -99,7 +101,7 @@ namespace NewScripts
             _isInitDone = true;
         }
         
-        public void Update()
+        public void FixedUpdate()
         {
             if (_isInitDone == false)
             {
@@ -128,11 +130,13 @@ namespace NewScripts
                 worker.SearchJob();
                 worker.SetDailySpending();
             }
+            ServiceLocator.Instance.Stats.UpdateStats();
             yield return new WaitForFixedUpdate();
         }
 
         private void StartDaysStep()
         {
+            ServiceLocator.Instance.FlowController.IncrementDay();
             while (ServiceLocator.Instance.FlowController.Day != 21)
             {
                 var companies = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.Companys);
@@ -146,8 +150,9 @@ namespace NewScripts
                 {
                     worker.Buy();
                 }
-                ServiceLocator.Instance.FlowController.Increment();
+                ServiceLocator.Instance.FlowController.IncrementDay();
             }
+            ServiceLocator.Instance.Stats.UpdateStats();
         }
 
         private void EndMonthStep()
@@ -164,18 +169,16 @@ namespace NewScripts
                 worker.SetReservationWage();
             }
 
-            ServiceLocator.Instance.FlowController.Increment();
+            ServiceLocator.Instance.Stats.UpdateStats();
+            ServiceLocator.Instance.FlowController.IncrementMonth();
             //ServiceLocator.Instance.LaborMarketService.NewRound();
         }
 
         private IEnumerator RunAiSequence()
         {
-            StartCoroutine(StartMonthStep());
-            ServiceLocator.Instance.Stats.UpdateStats();
+            yield return StartCoroutine(StartMonthStep());
             StartDaysStep();
-            ServiceLocator.Instance.Stats.UpdateStats();
             EndMonthStep();
-            ServiceLocator.Instance.Stats.UpdateStats();
             yield return new WaitForFixedUpdate();
         }
 
@@ -185,18 +188,14 @@ namespace NewScripts
             if (_step == 0)
             {
                 StartCoroutine(StartMonthStep());
-                ServiceLocator.Instance.Stats.UpdateStats();
             }
-
             if (_step == 1)
             {
                 StartDaysStep();
-                ServiceLocator.Instance.Stats.UpdateStats();
             }
             if (_step == 2)
             {
                 EndMonthStep();
-                ServiceLocator.Instance.Stats.UpdateStats();
             }
 
             _step = _step == 2 ? 0 : _step + 1;

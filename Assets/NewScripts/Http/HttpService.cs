@@ -13,9 +13,8 @@ namespace NewScripts.Http
 {
     public static class HttpService
     {
-        public static IEnumerator Insert(string url, CompanyLedger requestModel)
+        public static IEnumerator Insert<T>(string url, T requestModel)
         {
-            requestModel.sessionId = ServiceLocator.Instance.SessionId;
             string body = JsonUtility.ToJson(requestModel);
             UnityWebRequest request = UnityWebRequest.Post(url, body, "application/json");
             request.SetRequestHeader("content-Type", "application/json");

@@ -1,15 +1,225 @@
 {
   "version": 3,
   "targets": {
-    ".NETFramework,Version=v4.7.1": {},
-    ".NETFramework,Version=v4.7.1/win": {},
-    ".NETFramework,Version=v4.7.1/win-arm64": {},
-    ".NETFramework,Version=v4.7.1/win-x64": {},
-    ".NETFramework,Version=v4.7.1/win-x86": {}
+    ".NETFramework,Version=v4.7.1": {
+      "Unity.RenderPipelines.Core.Runtime/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEditor.UI": "1.0.0",
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Unity.RenderPipelines.Core.Runtime.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Unity.RenderPipelines.Core.Runtime.dll": {}
+        }
+      },
+      "UnityEditor.UI/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/UnityEditor.UI.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/UnityEditor.UI.dll": {}
+        }
+      },
+      "UnityEngine.UI/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "compile": {
+          "bin/placeholder/UnityEngine.UI.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/UnityEngine.UI.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.7.1/win": {
+      "Unity.RenderPipelines.Core.Runtime/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEditor.UI": "1.0.0",
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Unity.RenderPipelines.Core.Runtime.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Unity.RenderPipelines.Core.Runtime.dll": {}
+        }
+      },
+      "UnityEditor.UI/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/UnityEditor.UI.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/UnityEditor.UI.dll": {}
+        }
+      },
+      "UnityEngine.UI/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "compile": {
+          "bin/placeholder/UnityEngine.UI.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/UnityEngine.UI.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.7.1/win-arm64": {
+      "Unity.RenderPipelines.Core.Runtime/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEditor.UI": "1.0.0",
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Unity.RenderPipelines.Core.Runtime.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Unity.RenderPipelines.Core.Runtime.dll": {}
+        }
+      },
+      "UnityEditor.UI/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/UnityEditor.UI.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/UnityEditor.UI.dll": {}
+        }
+      },
+      "UnityEngine.UI/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "compile": {
+          "bin/placeholder/UnityEngine.UI.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/UnityEngine.UI.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.7.1/win-x64": {
+      "Unity.RenderPipelines.Core.Runtime/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEditor.UI": "1.0.0",
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Unity.RenderPipelines.Core.Runtime.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Unity.RenderPipelines.Core.Runtime.dll": {}
+        }
+      },
+      "UnityEditor.UI/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/UnityEditor.UI.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/UnityEditor.UI.dll": {}
+        }
+      },
+      "UnityEngine.UI/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "compile": {
+          "bin/placeholder/UnityEngine.UI.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/UnityEngine.UI.dll": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.7.1/win-x86": {
+      "Unity.RenderPipelines.Core.Runtime/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEditor.UI": "1.0.0",
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Unity.RenderPipelines.Core.Runtime.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Unity.RenderPipelines.Core.Runtime.dll": {}
+        }
+      },
+      "UnityEditor.UI/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "dependencies": {
+          "UnityEngine.UI": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/UnityEditor.UI.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/UnityEditor.UI.dll": {}
+        }
+      },
+      "UnityEngine.UI/1.0.0": {
+        "type": "project",
+        "framework": ".NETFramework,Version=v4.7.1",
+        "compile": {
+          "bin/placeholder/UnityEngine.UI.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/UnityEngine.UI.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "Unity.RenderPipelines.Core.Runtime/1.0.0": {
+      "type": "project",
+      "path": "Unity.RenderPipelines.Core.Runtime.csproj",
+      "msbuildProject": "Unity.RenderPipelines.Core.Runtime.csproj"
+    },
+    "UnityEditor.UI/1.0.0": {
+      "type": "project",
+      "path": "UnityEditor.UI.csproj",
+      "msbuildProject": "UnityEditor.UI.csproj"
+    },
+    "UnityEngine.UI/1.0.0": {
+      "type": "project",
+      "path": "UnityEngine.UI.csproj",
+      "msbuildProject": "UnityEngine.UI.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    ".NETFramework,Version=v4.7.1": []
+    ".NETFramework,Version=v4.7.1": [
+      "Unity.RenderPipelines.Core.Runtime >= 1.0.0",
+      "UnityEditor.UI >= 1.0.0",
+      "UnityEngine.UI >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\Hannes\\.nuget\\packages\\": {},
@@ -18,9 +228,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEngine.UI.Tests.csproj",
-      "projectName": "UnityEngine.UI.Tests",
-      "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEngine.UI.Tests.csproj",
+      "projectUniqueName": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\Unity.RenderPipelines.Core.Editor.csproj",
+      "projectName": "Unity.RenderPipelines.Core.Editor",
+      "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\Unity.RenderPipelines.Core.Editor.csproj",
       "packagesPath": "C:\\Users\\Hannes\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\obj\\",
       "projectStyle": "PackageReference",
@@ -42,7 +252,17 @@
       },
       "frameworks": {
         "net471": {
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\Unity.RenderPipelines.Core.Runtime.csproj": {
+              "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\Unity.RenderPipelines.Core.Runtime.csproj"
+            },
+            "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEditor.UI.csproj": {
+              "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEditor.UI.csproj"
+            },
+            "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEngine.UI.csproj": {
+              "projectPath": "C:\\Users\\Hannes\\source\\repos\\EconomyMl\\UnityEngine.UI.csproj"
+            }
+          }
         }
       }
     },

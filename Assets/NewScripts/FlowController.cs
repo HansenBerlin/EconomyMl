@@ -8,21 +8,28 @@ namespace NewScripts
         public int Month { get; set; } = 1;
         public int Day { get; set; } = 1;
 
-        public void Increment()
+        public void IncrementDay()
+        {
+            if (Day == 21)
+            {
+                Day = 1;
+            }
+            else
+            {
+                Day++;
+            }
+        }
+
+        public void IncrementMonth()
         {
             if (Month == 12)
             {
                 Year++;
                 Month = 1;
             }
-            if (Day == 21)
-            {
-                Day = 1;
-                Month++;
-            }
             else
             {
-                Day++;
+                Month++;
             }
         }
 

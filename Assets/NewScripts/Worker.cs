@@ -8,7 +8,7 @@ namespace NewScripts
 {
     public class Worker
     {
-        public decimal Money { get; set; } = 100;
+        public decimal Money { get; set; } = 21;
         public decimal DailySpending { get; set; } = 0;
         public decimal ReservationWage { get; set; } = 0;
         public int Health { get; set; } = 1000;
@@ -26,8 +26,14 @@ namespace NewScripts
         public void SearchNewSupplier()
         {
             var randomKnownSupplier = _typeAConnections[_rand.Next(0, _typeAConnections.Count - 1)];
-            var randomNewSupplier = ServiceLocator.Instance.Companys[_rand.Next(0, ServiceLocator.Instance.Companys.Count - 1)];
-            if (randomNewSupplier.ProductPrice < randomKnownSupplier.ProductPrice * 1.2M && _typeAConnections.Contains(randomNewSupplier) == false)
+            var unknownSuppliers = _typeAConnections
+                .Except(ServiceLocator.Instance.Companys)
+                .Concat(ServiceLocator.Instance.Companys
+                    .Except(_typeAConnections)
+                    .Except(new List<Company>{_employedAtCompany})
+                .ToList()).ToList();
+            var randomNewSupplier = unknownSuppliers[_rand.Next(0, unknownSuppliers.Count - 1)];
+            if (randomNewSupplier.ProductPrice * 1.2M < randomKnownSupplier.ProductPrice)
             {
                 _typeAConnections.Remove(randomKnownSupplier);
                 _typeAConnections.Add(randomNewSupplier);
@@ -54,38 +60,49 @@ namespace NewScripts
 
         public void Buy()
         {
-            int countFullfilled = 0;
-            decimal amountSpent = 0;
-
             var randomIndices = Utilitis.GenerateRandomArray(0, _typeAConnections.Count);
-
+            List<Company> suppliers = new();
+            
+            if (HasJob)
+            {
+                suppliers.Add(_employedAtCompany);
+            }
+            
             for (int i = 0; i < randomIndices.Length; i++)
             {
-                var company = _typeAConnections[i];
-                if (countFullfilled == Demand || amountSpent + company.ProductPrice > DailySpending)
-                {
-                    break;
-                }
+                suppliers.Add(_typeAConnections[i]);
+            }
+            
+            suppliers.AddRange(ServiceLocator.Instance.Companys.Where(x => x.IsOnEmergencySaleRounds > 0));
+            suppliers = suppliers.OrderBy(x => x.ProductPrice).ToList();
 
+            decimal amountSpent = 0;
+
+            foreach (var company in suppliers)
+            {
                 if (company.ProductPrice == 0)
                 {
-                    Debug.Log("");
+                    Debug.LogError("");
+                    continue;
                 }
-                int maxBySpending = (int)Math.Floor((DailySpending - amountSpent) / company.ProductPrice);
-                int maxBySupply = Demand > company.ProductStock ? company.ProductStock : Demand;
-                int buyAmount = maxBySpending >= maxBySupply ? maxBySupply : maxBySpending;
+                
+                int buyAmount = (int)Math.Floor((DailySpending - amountSpent) / company.ProductPrice);
+                if (buyAmount == 0)
+                {
+                    continue;
+                }
+
                 Receipt receipt = company.BuyFromCompany(buyAmount);
                 amountSpent += receipt.AmountPaid;
-                countFullfilled += receipt.CountBought;
+                DemandFulfilled += receipt.CountBought;
             }
 
             Money -= amountSpent;
-            DemandFulfilled += countFullfilled;
         }
 
         public void SetDailySpending()
         {
-            DailySpending = Money * 0.98M / 21;
+            DailySpending = Money / 21;
         }
 
         public void SetReservationWage()
