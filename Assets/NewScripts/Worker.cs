@@ -77,9 +77,11 @@ namespace NewScripts
             suppliers = suppliers.OrderBy(x => x.ProductPrice).ToList();
 
             decimal amountSpent = 0;
+            decimal averagePrice = 0;
 
             foreach (var company in suppliers)
             {
+                averagePrice += company.ProductPrice;
                 if (company.ProductPrice == 0)
                 {
                     Debug.LogError("");
@@ -89,6 +91,7 @@ namespace NewScripts
                 int buyAmount = (int)Math.Floor((DailySpending - amountSpent) / company.ProductPrice);
                 if (buyAmount == 0)
                 {
+                    //ReservationWage *= 1.01M;
                     continue;
                 }
 
@@ -98,6 +101,10 @@ namespace NewScripts
             }
 
             Money -= amountSpent;
+            if (averagePrice / suppliers.Count > DailySpending)
+            {
+                ReservationWage = averagePrice / suppliers.Count;
+            }
         }
 
         public void SetDailySpending()
@@ -109,7 +116,6 @@ namespace NewScripts
         {
             Academy.Instance.StatsRecorder.Add("Worker/Money", (float)Money);
             Academy.Instance.StatsRecorder.Add("Worker/Bought", DemandFulfilled);
-            DemandFulfilled = 0;
 
             if (HasJob)
             {
@@ -128,6 +134,7 @@ namespace NewScripts
                 _jobChangeIntensity = JobChangeLevel.Unmployed;
                 ReservationWage *= 0.95M;
             }
+            DemandFulfilled = 0;
         }
 
         public void Fire()

@@ -101,7 +101,7 @@ namespace NewScripts
             _isInitDone = true;
         }
         
-        public void FixedUpdate()
+        public void Update()
         {
             if (_isInitDone == false)
             {
@@ -176,10 +176,10 @@ namespace NewScripts
 
         private IEnumerator RunAiSequence()
         {
-            yield return StartCoroutine(StartMonthStep());
+            StartCoroutine(StartMonthStep());
             StartDaysStep();
             EndMonthStep();
-            //yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
         }
 
 

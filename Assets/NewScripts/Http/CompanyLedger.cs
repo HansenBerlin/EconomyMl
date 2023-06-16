@@ -12,6 +12,7 @@ namespace NewScripts.Http
         public int year;
         public double liquidity;
         public double profit;
+        public double price;
         public int workers;
         public double wage;
         public int sales;
