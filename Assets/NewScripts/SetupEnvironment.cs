@@ -160,7 +160,7 @@ namespace NewScripts
             var companies = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.Companys);
             foreach (var company in companies)
             {
-                company.EndMonth();
+               company.EndMonth();
             }
 
             var workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
@@ -179,7 +179,7 @@ namespace NewScripts
             yield return StartCoroutine(StartMonthStep());
             StartDaysStep();
             EndMonthStep();
-            yield return new WaitForFixedUpdate();
+            //yield return new WaitForFixedUpdate();
         }
 
 

@@ -9,7 +9,7 @@ namespace NewScripts
 {
     public class ServiceLocator : MonoBehaviour
     {
-        public string SessionId = Guid.NewGuid().ToString();
+        public string SessionId { get; } = Guid.NewGuid().ToString();
         public static ServiceLocator Instance { get; private set; }
         public ProductMarket ProductMarketService { get; private set; }
         public LaborMarket LaborMarketService { get; private set; }

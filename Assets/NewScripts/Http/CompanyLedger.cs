@@ -10,14 +10,15 @@ namespace NewScripts.Http
         public int companyId;
         public int month;
         public int year;
-        public decimal liquidity;
-        public decimal profit;
+        public double liquidity;
+        public double profit;
         public int workers;
-        public decimal wage;
+        public double wage;
         public int sales;
         public int stock;
         public int lifetime;
         public bool extinct;
+        public int emergencyRounds;
     }
 }
 

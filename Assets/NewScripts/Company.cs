@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Agents;
@@ -235,17 +236,18 @@ namespace NewScripts
                 extinct = LifetimeMonths == 0,
                 month = ServiceLocator.Instance.FlowController.Month,
                 year = ServiceLocator.Instance.FlowController.Year,
-                liquidity = Liquidity,
-                profit = ProfitInMonth,
+                liquidity = (double)Liquidity,
+                profit = (double)ProfitInMonth,
                 workers = _workers.Count,
-                wage = WageRate,
+                wage = (double)WageRate,
                 sales = SalesInMonth,
                 stock = ProductStock,
                 lifetime = LifetimeMonths,
-                sessionId = ServiceLocator.Instance.SessionId
+                sessionId = ServiceLocator.Instance.SessionId,
+                emergencyRounds = IsOnEmergencySaleRounds
             };
             
-            //StartCoroutine(HttpService.Insert("http://localhost:5000/companies/ledger", ledger));
+            StartCoroutine(HttpService.Insert("http://localhost:5000/companies/ledger", ledger));
 
             LiquidityCheck();
             AddReward((float)LifetimeMonths / 1000);
@@ -270,7 +272,7 @@ namespace NewScripts
             }
             else if (estimatedWorkerPayments > Liquidity + ProfitInMonth)
             {
-                WageRate = (ProfitInMonth + Liquidity) / _workers.Count * 0.9M;
+                WageRate = (ProfitInMonth + Liquidity) / _workers.Count * 0.95M;
                 Liquidity += ProfitInMonth;
                 ProfitInMonth = 0;
                 AddReward(-0.1F);
@@ -284,7 +286,7 @@ namespace NewScripts
             }
             LiquidityCheck();
             
-            if (ProfitInMonth > _workers.Count * WageRate / 10 && _workers.Count > 0)
+            if (ProfitInMonth > (_workers.Count + 1) * WageRate / 12)
             {
                 decimal companyReserve = ProfitInMonth * 0.8M;
                 ProfitInMonth -= companyReserve;
@@ -296,20 +298,21 @@ namespace NewScripts
                 {
                     worker.Pay(societyShare);
                 }
+
+                ProfitInMonth = 0;
             }
             else if (ProfitInMonth > 0)
             {
                 Liquidity += ProfitInMonth;
+                ProfitInMonth = 0;
             }
-            ProfitInMonth = 0;
-            LiquidityCheck();
             
+            LiquidityCheck();
             Academy.Instance.StatsRecorder.Add("Company/Liquidity", (float)Liquidity);
             CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Liquidity:0.##}";
             SetBuilding();
             
-            if (SalesInMonth == 0 && SalesLastMonth == 0 
-                                  && (Liquidity <= WageRate * _workers.Count || _workers.Count == 0))
+            if (Liquidity == 0 && ProductStock > SalesLastMonth + SalesInMonth && _workers.Count == 0)
             {
                 if (IsOnEmergencySaleRounds == 6)
                 {
@@ -339,6 +342,8 @@ namespace NewScripts
                 IsOnEmergencySaleRounds = 0;
                 emergencySign.SetActive(false);
             }
+
+            //yield return new WaitForFixedUpdate();
         }
 
         public void SignJobOffer(Worker worker)
