@@ -248,6 +248,7 @@
      <Folder Include="Assets\Scripts\Models" />
      <None Include="Library\PackageCache\com.unity.ugui@1.0.0\package.json" />
      <Folder Include="Assets\Brains\company-three" />
+     <Folder Include="Assets\Brains\company-v2-5-66d33bd1-aeaa-42f5-9740-25328234e212" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\People_T" />
      <Folder Include="Library\PackageCache\com.unity.modules.xr@1.0.0" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Buildings_M" />
@@ -296,6 +297,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T" />
      <Folder Include="Assets\results\company-v2-5" />
      <Folder Include="Assets\Brains\company-four" />
+     <None Include="Assets\Brains\company-v2-5-66d33bd1-aeaa-42f5-9740-25328234e212\run_logs\timers.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Vehicles_T\Trains_AI_T" />
      <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Oswald-Bold - OFL.txt" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Nature_M\Trees_M" />
@@ -304,6 +306,7 @@
      <Folder Include="Assets\Resources\Prefabs\BaVersion\Agents" />
      <Folder Include="Assets\Scripts\Agents" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Western_T" />
+     <None Include="Assets\Brains\company-v2-5-66d33bd1-aeaa-42f5-9740-25328234e212\run_logs\training_status.json" />
      <Folder Include="Assets\Resources\Prefabs" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Nature_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Props_M\City_M" />
@@ -370,6 +373,7 @@
      <Folder Include="Library\PackageCache\com.unity.modules.terrainphysics@1.0.0" />
      <None Include="Library\PackageCache\com.unity.modules.imageconversion@1.0.0\package.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Terrains_T" />
+     <Folder Include="Assets\Brains\company-v2-5-66d33bd1-aeaa-42f5-9740-25328234e212\run_logs" />
      <Folder Include="Library\PackageCache\com.unity.modules.unitywebrequest@1.0.0" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Beach_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Nature_M\Stones_M" />
@@ -651,6 +655,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Egypt_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T" />
      <Folder Include="Assets\Brains\company-v2-7" />
+     <Folder Include="Assets\Brains\company-v2-5-66d33bd1-aeaa-42f5-9740-25328234e212\Company" />
      <Folder Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\Textures\BlueNoise16\L" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Buildings_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\WW2_M" />

@@ -19,6 +19,8 @@ namespace NewScripts.Http
         public int stock;
         public int lifetime;
         public bool extinct;
+        public bool isTraining;
+        public bool isStartup;
         public int emergencyRounds;
     }
 }

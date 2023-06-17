@@ -55,7 +55,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: ecb34d36ba847ad4095519cd776178c1, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 590e859e9aadda64dba677f09cce5c21, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Company
@@ -80,8 +80,12 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
+  stageOneBuilding: {fileID: 0}
+  stageTwoBuilding: {fileID: 0}
+  stageThreeBuilding: {fileID: 0}
+  emergencySign: {fileID: 0}
+  startupSign: {fileID: 0}
   id: 0
-  OpenPositions: 0
   CurrentPhase: 0
   CapitalText: {fileID: 0}
   WorkersText: {fileID: 0}

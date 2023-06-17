@@ -53,13 +53,15 @@ namespace NewScripts
         private int _initialWorkers;
 
         private bool _initDone;
+        private bool _isTraining;
         public int IsOnEmergencySaleRounds { get; private set; }
         public int StartUpRounds { get; private set; } = 6;
 
         private decimal _initialMoney;
 
-        public void Init(int companiesPerType)
+        public void Init(int companiesPerType, bool isTraining)
         {
+            _isTraining = isTraining;
             id = Id;
             _initialWorkers = (int)Math.Floor(1000 / (decimal)companiesPerType);
             _initialMoney = 79000 / (decimal)companiesPerType;
@@ -80,8 +82,8 @@ namespace NewScripts
         private void SetupAgent()
         {
             //ProductStock = 100;
-            WageRate = 21 + (decimal)_rand.NextDouble() - 0.1M;
-            ProductPrice = 1 + (decimal) _rand.Next(-100, 101) / 100;
+            WageRate = 21 + (decimal)_rand.Next(-100, 101) / 100;
+            ProductPrice = 1 + (decimal) _rand.Next(-10, 11) / 100;
             stageOneBuilding.SetActive(true);
             stageTwoBuilding.SetActive(false);
             stageThreeBuilding.SetActive(false);
@@ -116,8 +118,8 @@ namespace NewScripts
             if (_initDone)
             {
                 //ProductStock = 50;
-                WageRate = 21 + (decimal) _rand.NextDouble() - 0.1M;
-                ProductPrice = 1 + (decimal) _rand.Next(-100, 101) / 100;
+                WageRate = 21 + (decimal) _rand.Next(-100, 101) / 100;
+                ProductPrice = 1 + (decimal) _rand.Next(-10, 11) / 100;
                 OpenPositions = _initialWorkers / 2;
                 emergencySign.SetActive(false);
                 IsOnEmergencySaleRounds = 0;
@@ -249,7 +251,9 @@ namespace NewScripts
                 stock = ProductStock,
                 lifetime = LifetimeMonths,
                 sessionId = ServiceLocator.Instance.SessionId,
-                emergencyRounds = IsOnEmergencySaleRounds
+                emergencyRounds = IsOnEmergencySaleRounds,
+                isStartup = StartUpRounds > 0,
+                isTraining = _isTraining
             };
             
             StartCoroutine(HttpService.Insert("http://localhost:5000/companies/ledger", ledger));
@@ -345,6 +349,7 @@ namespace NewScripts
                 IsOnEmergencySaleRounds++;
                 AddReward(-0.01F);
                 ProductPrice *= 0.95M;
+                //ProductPrice = ProductPrice < 0.01M ? 0.01M : ProductPrice;
             }
             else
             {

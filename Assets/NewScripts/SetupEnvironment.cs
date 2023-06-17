@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NewScripts.Http;
 using TMPro;
 using Unity.MLAgents;
+using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = System.Random;
@@ -16,7 +17,9 @@ namespace NewScripts
         public GameObject interCompanyPrefab;
         public GameObject luxuryCompanyPrefab;
         [FormerlySerializedAs("companysPerType")] public int companiesPerType = 100;
+        
         public bool isThrottled;
+        public bool isTraining;
         public TextMeshProUGUI roundText;
         private readonly Random _rand = new();
         private int _step = 0;
@@ -38,6 +41,8 @@ namespace NewScripts
                 company = transform.GetComponent<Company>();
                 if (company is not null)
                 {
+                    var agent = transform.GetComponent<BehaviorParameters>();
+                    agent.BehaviorType = isTraining ? BehaviorType.Default : BehaviorType.InferenceOnly;
                     break;
                 }
             }
@@ -80,7 +85,7 @@ namespace NewScripts
                 }
                 var go = Instantiate(foodCompanyPrefab);
                 Company company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go);
-                company.Init(companiesPerType);
+                company.Init(companiesPerType, isTraining);
                 ServiceLocator.Instance.Companys.Add(company);
                 xPos++;
             }
