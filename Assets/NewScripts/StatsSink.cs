@@ -52,10 +52,10 @@ namespace NewScripts
             string quoteText = $"{quote * 100:0.##} %";
             workerEmploymentQuoteText.GetComponent<TextMeshProUGUI>().text = quoteText;
             
-            double avgB = workers.Select(x => x.DemandFulfilled).Average();
-            double minB = workers.Select(x => x.DemandFulfilled).Min();
-            double maxB = workers.Select(x => x.DemandFulfilled).Max();
-            BuildText(workerDemandFullfilledText, minB, maxB, avgB);
+            //double avgB = workers.Select(x => x.DemandFulfilled).Average();
+            //double minB = workers.Select(x => x.DemandFulfilled).Min();
+            //double maxB = workers.Select(x => x.DemandFulfilled).Max();
+            //BuildText(workerDemandFullfilledText, minB, maxB, avgB);
         }
         
         private void SetCompanyWagesText()

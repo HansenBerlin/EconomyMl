@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Agents;
 using NewScripts.Http;
@@ -17,11 +18,13 @@ namespace NewScripts
 {
     public class Company : Agent
     {
+        //public GameObject canvasInfo;
         public GameObject stageOneBuilding;
         public GameObject stageTwoBuilding;
         public GameObject stageThreeBuilding;
         public GameObject emergencySign;
         public GameObject startupSign;
+        private BoxCollider _boxCollider;
         private int currentActiveIndex = 0;
         public int id = 0;
         public int OpenPositions { get; private set; } = 0;
@@ -49,8 +52,6 @@ namespace NewScripts
 
         public double Liquidity { get; private set; }
         public double ProfitInMonth { get; private set; }
-        public TextMeshProUGUI CapitalText;
-        public TextMeshProUGUI WorkersText;
         //private int _initialWorkers;
 
         private bool _initDone;
@@ -75,16 +76,38 @@ namespace NewScripts
                 availableWorkers[i].InitialJobSetup(this);
                 _workers.Add(availableWorkers[i]);
             }
-            WorkersText.GetComponent<TextMeshProUGUI>().text = _workers.Count.ToString();
             SetupAgent();
             LifetimeMonths = 1;
             emergencySign.SetActive(false);
             _initDone = true;
+            _boxCollider = GetComponent<BoxCollider>();
+        }
+
+        private bool _canvasActive = false;
+        
+        void Update() {  
+            if (Input.GetMouseButtonDown(0)) {  
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out var hit)) {  
+                    if (hit.transform == transform) {  
+                        UpdateCanvasText(true);
+                    }  
+                }  
+            }  
         }
         
-        private void OnMouseDown()
+        private void UpdateCanvasText(bool isClick)
         {
-            Debug.Log("Mouse Click Detected");
+            if (ServiceLocator.Instance.PopupInfoService.CurrentlyActive == Id || isClick)
+            {
+                ServiceLocator.Instance.PopupInfoService.SetTexts(new List<string>
+                {
+                    $"{Liquidity:0.##}", SalesInMonth.ToString(),
+                    _workers.Count.ToString(), ProductStock.ToString(),
+                    $"{WageRate:0}", $"{RealwageRate:0}", 
+                    $"{ProductPrice:0.##}", LifetimeMonths.ToString()
+                }, Id);
+            }
         }
 
         private void SetupAgent()
@@ -111,7 +134,7 @@ namespace NewScripts
             double companycount = ServiceLocator.Instance.Companys.Count;
             double personCount = ServiceLocator.Instance.LaborMarketService.Workers.Count;
             double ratio = personCount / companycount;
-            int activeIndex = _workers.Count < ratio * 2 ? 0 : _workers.Count > ratio * companycount / 4 ? 2 : 1;
+            int activeIndex = _workers.Count < ratio * 2 ? 0 : _workers.Count > ratio * 5 ? 2 : 1;
             if (activeIndex != currentActiveIndex)
             {
                 for (var i = 0; i < buildings.Count; i++)
@@ -315,11 +338,12 @@ namespace NewScripts
                 }
                 //LiquidityCheck();
                 //AddReward((float)(Liquidity - estimatedWorkerPayments));
-                EmergencyRounds++;
+                //EmergencyRounds++;
+                EmergencyRounds = StartUpRounds == 0 ? EmergencyRounds + 1 : 0;
             }
             else if (_workers.Count == 0 && SalesInMonth == 0)
             {
-                EmergencyRounds++;
+                EmergencyRounds = StartUpRounds == 0 ? EmergencyRounds + 1 : 0;
             }
             else
             {
@@ -347,6 +371,8 @@ namespace NewScripts
 
                     Liquidity = companyReserve;
                 }
+
+                EmergencyRounds = 0;
             }
 
             LiquidityCheck();
@@ -376,8 +402,8 @@ namespace NewScripts
             LifetimeMonths++;
             StartUpRounds = StartUpRounds > 0 ? StartUpRounds - 1 : 0;
             Academy.Instance.StatsRecorder.Add("Company/Liquidity", (float)Liquidity);
-            CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Liquidity:0.##}";
             SetBuilding();
+            UpdateCanvasText(false);
 
             if (CumulatedReward >= 1_000_000)
             {
@@ -387,7 +413,7 @@ namespace NewScripts
                 EmergencyRounds = 0;
                 EndEpisode();
             }
-            else if (EmergencyRounds == 24 && StartUpRounds == 0)
+            else if (EmergencyRounds == 12 && StartUpRounds == 0)
             {
                 Academy.Instance.StatsRecorder.Add("Company/Lifetime", LifetimeMonths);
                 Academy.Instance.StatsRecorder.Add("Company/Reward", (float)CumulatedReward);
@@ -411,13 +437,11 @@ namespace NewScripts
         {
             _workers.Add(worker);
             OpenPositions--;
-            WorkersText.GetComponent<TextMeshProUGUI>().text = _workers.Count.ToString();
         }
         
         public void QuitJob(Worker worker)
         {
             _workers.Remove(worker);
-            WorkersText.GetComponent<TextMeshProUGUI>().text = _workers.Count.ToString();
             //OpenPositions++;
         }
         
@@ -468,8 +492,6 @@ namespace NewScripts
                         worker.Fire();
                         fireWorkers--;
                     }
-
-                    WorkersText.GetComponent<TextMeshProUGUI>().text = _workers.Count.ToString();
                 }
             }
 
@@ -480,6 +502,8 @@ namespace NewScripts
             OpenPositions = _workers.Count == 0 && OpenPositions == 0 ? 1 : OpenPositions;
             ServiceLocator.Instance.FlowController.CommitDecision();
             SetBuilding();
+            UpdateCanvasText(false);
+            
         }
     }
 }

@@ -12,9 +12,9 @@ namespace NewScripts
         public double DailySpending { get; set; } = 0;
         public double ReservationWage { get; set; } = 0;
         public int Health { get; set; } = 1000;
-        public int DemandFulfilled { get; set; } = 0;
+        //public int DemandFulfilled { get; set; } = 0;
 
-        public int Demand { get; set; } = int.MaxValue;
+        //public int Demand { get; set; } = int.MaxValue;
         //public int CompanyId { get; set; }
         private readonly System.Random _rand = new();
         
@@ -74,7 +74,7 @@ namespace NewScripts
                 }
 
                 int buyAmount = (int)Math.Floor((DailySpending - amountSpent) / company.ProductPrice);
-                buyAmount = Demand - countBought < buyAmount ? Demand - countBought : buyAmount;
+                //buyAmount = Demand - countBought < buyAmount ? Demand - countBought : buyAmount;
                 if (Money - buyAmount * company.ProductPrice < 0)
                 {
                     continue;
@@ -86,7 +86,7 @@ namespace NewScripts
                 countBought += receipt.CountBought;
                 
             }
-            DemandFulfilled += countBought;
+            //DemandFulfilled += countBought;
             Money -= amountSpent;
             //if (averagePrice / _typeAConnections.Count > DailySpending)
             //{
@@ -98,13 +98,13 @@ namespace NewScripts
         public void SetDailySpending()
         {
             DailySpending = Money / 20;
-            Demand = 10 + new System.Random().Next(-30, 71) / 100;
+            //Demand = 10 + new System.Random().Next(-30, 71) / 100;
         }
 
         public void SetReservationWage()
         {
             Academy.Instance.StatsRecorder.Add("Worker/Money", (float)Money);
-            Academy.Instance.StatsRecorder.Add("Worker/Bought", DemandFulfilled);
+            //Academy.Instance.StatsRecorder.Add("Worker/Bought", DemandFulfilled);
 
             if (HasJob)
             {
@@ -125,7 +125,7 @@ namespace NewScripts
             }
 
             ReservationWage = ReservationWage < 5 ? 5 : ReservationWage;
-            DemandFulfilled = 0;
+            //DemandFulfilled = 0;
         }
 
         public void Fire()
