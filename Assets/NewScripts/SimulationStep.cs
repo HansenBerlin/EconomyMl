@@ -2,8 +2,11 @@
 {
     public enum SimulationStep
     {
-        BusinessDecisions,
-        Demand,
-        Bookeeping
+        StartMonthBusiness,
+        StartMonthHouseholds,
+        StartDaysBusiness,
+        StartDaysHouseholds,
+        EndMonthBusiness,
+        EndMonthHouseholds
     }
 }

@@ -28,46 +28,49 @@ namespace NewScripts
         private int ProductionInMonth = 0;
         private int SalesInMonth = 0;
         private int SalesLastMonth = 0;
+        private const int Days = 20;
+        public double CumulatedReward { get; private set; }
         public int ProductStock { get; private set; } = 0;
 
-        public decimal ProductPrice { get; private set; }
+        public double ProductPrice { get; private set; }
 
-        public decimal WageRate { get; private set; } = 0;
+        public double WageRate { get; private set; } = 0;
+        public double RealwageRate { get; private set; } = 0;
 
         private readonly List<Worker> _workers = new();
 
-        private decimal PercentageSoldLastMonth = 0;
-        private decimal PercentageSold = 0;
-        private readonly System.Random _rand = new(42);
+        public int WorkersCount => _workers.Count;
+
+        
+        private readonly System.Random _rand = new();
         public int LifetimeMonths { get; private set; } = 0;
 
-        public ActionPhase CurrentPhase;
-        
-        
         private int Id => GetInstanceID();
 
-        public decimal Liquidity { get; private set; }
-        public decimal ProfitInMonth { get; private set; }
+        public double Liquidity { get; private set; }
+        public double ProfitInMonth { get; private set; }
         public TextMeshProUGUI CapitalText;
         public TextMeshProUGUI WorkersText;
-        private int _initialWorkers;
+        //private int _initialWorkers;
 
         private bool _initDone;
         private bool _isTraining;
-        public int IsOnEmergencySaleRounds { get; private set; }
-        public int StartUpRounds { get; private set; } = 6;
+        private bool _writeToDatabase;
+        public int EmergencyRounds { get; private set; }
+        public int StartUpRounds { get; private set; } = 12;
 
-        private decimal _initialMoney;
+        //private double _initialMoney;
 
-        public void Init(int companiesPerType, bool isTraining)
+        public void Init(int companiesPerType, bool isTraining, bool writeToDatabase)
         {
             _isTraining = isTraining;
+            _writeToDatabase = writeToDatabase;
             id = Id;
-            _initialWorkers = (int)Math.Floor(1000 / (decimal)companiesPerType);
-            _initialMoney = 79000 / (decimal)companiesPerType;
-            Liquidity = _initialMoney;
+            var initialWorkers = (int)Math.Floor(1000 / (double)companiesPerType);
+            //_initialMoney = 79000 / (double)companiesPerType;
+            //Liquidity = _initialMoney;
             var availableWorkers = ServiceLocator.Instance.LaborMarketService.Workers.Where(x => x.HasJob == false).ToList();
-            for (int i = 0; i < _initialWorkers; i++)
+            for (int i = 0; i < initialWorkers; i++)
             {
                 availableWorkers[i].InitialJobSetup(this);
                 _workers.Add(availableWorkers[i]);
@@ -78,15 +81,25 @@ namespace NewScripts
             emergencySign.SetActive(false);
             _initDone = true;
         }
+        
+        private void OnMouseDown()
+        {
+            Debug.Log("Mouse Click Detected");
+        }
 
         private void SetupAgent()
         {
             //ProductStock = 100;
-            WageRate = 21 + (decimal)_rand.Next(-100, 101) / 100;
-            ProductPrice = 1 + (decimal) _rand.Next(-10, 11) / 100;
+            WageRate = 100 + (double)_rand.Next(-100, 101) / 100;
+            RealwageRate = WageRate;
+            ProductPrice = 0.5 + (double) _rand.Next(-10, 11) / 100;
             stageOneBuilding.SetActive(true);
             stageTwoBuilding.SetActive(false);
             stageThreeBuilding.SetActive(false);
+            OpenPositions = 2;
+            EmergencyRounds = 0;
+            StartUpRounds = 12;
+            CumulatedReward = 0;
         }
 
         private void SetBuilding()
@@ -95,9 +108,9 @@ namespace NewScripts
             {
                 stageOneBuilding, stageTwoBuilding, stageThreeBuilding
             };
-            decimal companycount = ServiceLocator.Instance.Companys.Count;
-            decimal personCount = ServiceLocator.Instance.LaborMarketService.Workers.Count;
-            decimal ratio = personCount / companycount;
+            double companycount = ServiceLocator.Instance.Companys.Count;
+            double personCount = ServiceLocator.Instance.LaborMarketService.Workers.Count;
+            double ratio = personCount / companycount;
             int activeIndex = _workers.Count < ratio * 2 ? 0 : _workers.Count > ratio * companycount / 4 ? 2 : 1;
             if (activeIndex != currentActiveIndex)
             {
@@ -110,19 +123,20 @@ namespace NewScripts
             }
 
             startupSign.SetActive(StartUpRounds > 0);
-            emergencySign.SetActive(IsOnEmergencySaleRounds > 0);
+            emergencySign.SetActive(EmergencyRounds > 0);
         }
 
         public override void OnEpisodeBegin()
         {
+            SetupAgent();
             if (_initDone)
             {
                 //ProductStock = 50;
-                WageRate = 21 + (decimal) _rand.Next(-100, 101) / 100;
-                ProductPrice = 1 + (decimal) _rand.Next(-10, 11) / 100;
-                OpenPositions = _initialWorkers / 2;
-                emergencySign.SetActive(false);
-                IsOnEmergencySaleRounds = 0;
+                //WageRate = 21 + (double) _rand.Next(-100, 101) / 100;
+                //ProductPrice = 1 + (double) _rand.Next(-10, 11) / 100;
+                
+                //emergencySign.SetActive(false);
+                
             }
         }
 
@@ -137,9 +151,14 @@ namespace NewScripts
                 throw new Exception("Less than zero.");
             }
             ProfitInMonth += ProductPrice * amount;
+            LiquidityCheck();
             //CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Liquidity:0}";
             
-            AddReward(amount * 0.0001F);
+            //
+            float reward = amount * (float) ProductPrice * 1F;
+            CumulatedReward += reward;
+            AddReward(reward);
+            //RequestDecision();
 
             return new Receipt
             {
@@ -159,6 +178,8 @@ namespace NewScripts
             sensor.AddObservation((float)WageRate);
             sensor.AddObservation(SalesLastMonth);
             sensor.AddObservation(SalesInMonth);
+            sensor.AddObservation(EmergencyRounds);
+            sensor.AddObservation((float)RealwageRate);
         }
 
         
@@ -169,9 +190,17 @@ namespace NewScripts
                 actionMask.SetActionEnabled(2, 0, false);
             }
 
-            if (IsOnEmergencySaleRounds > 0)
+            if (EmergencyRounds > 0)
             {
-                actionMask.SetActionEnabled(1, 2, false);
+                //actionMask.SetActionEnabled(1, 2, false);
+            }
+
+            if (ServiceLocator.Instance.FlowController.Step == SimulationStep.StartDaysBusiness)
+            {
+                //actionMask.SetActionEnabled(0, 0, false);
+                //actionMask.SetActionEnabled(0, 2, false);
+                //actionMask.SetActionEnabled(2, 0, false);
+                //actionMask.SetActionEnabled(2, 2, false);
             }
             return;
             //if (CurrentPhase != ActionPhase.BeginMonth)
@@ -201,167 +230,180 @@ namespace NewScripts
 
             SalesLastMonth = SalesInMonth;
             SalesInMonth = 0;
-            ProfitInMonth = 0;
-            CurrentPhase = ActionPhase.BeginMonth;
+            //ProfitInMonth = 0;
             RequestDecision();
         }
 
         public void StartDay()
         {
-            CurrentPhase = ActionPhase.BeginDay;
-            ProductStock += _workers.Count * 1;
+            if (ProductStock < _workers.Count * 20 * 10)
+            {
+                ProductStock += _workers.Count * 10;
+                //Debug.LogError("Produced " + _workers.Count * 10 + " Stock: " + ProductStock);
+            }
+            else
+            {
+                //Debug.LogWarning("No production. Stock: " + ProductStock);
+            }
+            //RequestDecision();
         }
 
         private void LiquidityCheck()
         {
-            if (Liquidity is < 0 and > -0.0001M)
+            if (Liquidity is < 0 and > -0.0001)
             {
                 Debug.LogWarning("Liquidity below Zero");
                 Liquidity = 0;
             }
-            else if (Liquidity < -0.0001M)
+            else if (Liquidity < -0.0001)
             {
-                throw new Exception("Liquidity below Zero");
+                //Debug.LogError("Liquidity below Zero");
+                throw new Exception("Liquidity below Zero: " + Liquidity);
             }
-            if (ProfitInMonth is < 0 and > -0.0001M)
+            if (ProfitInMonth is < 0 and > -0.0001)
             {
                 Debug.LogWarning("Profit below Zero");
                 ProfitInMonth = 0;
             }
-            else if (ProfitInMonth < -0.0001M)
+            else if (ProfitInMonth < -0.0001)
             {
-                throw new Exception("Profit below Zero");
+                //Debug.LogError("Profit below Zero");
+                throw new Exception("Profit below Zero: " + ProfitInMonth);
             }
         }
 
         public void EndMonth()
         {
-            var ledger = new CompanyLedger
+            if (_writeToDatabase)
             {
-                companyId = Id,
-                extinct = LifetimeMonths == 0,
-                month = ServiceLocator.Instance.FlowController.Month,
-                year = ServiceLocator.Instance.FlowController.Year,
-                liquidity = (double)Liquidity,
-                profit = (double)ProfitInMonth,
-                workers = _workers.Count,
-                price = (double)ProductPrice,
-                wage = (double)WageRate,
-                sales = SalesInMonth,
-                stock = ProductStock,
-                lifetime = LifetimeMonths,
-                sessionId = ServiceLocator.Instance.SessionId,
-                emergencyRounds = IsOnEmergencySaleRounds,
-                isStartup = StartUpRounds > 0,
-                isTraining = _isTraining
-            };
-            
-            StartCoroutine(HttpService.Insert("http://localhost:5000/companies/ledger", ledger));
-
-            LiquidityCheck();
-            AddReward((float)LifetimeMonths / 1000);
-            
-            if (SalesInMonth == 0 && SalesLastMonth == 0)
-            {
-                AddReward(-0.02F);
-            }
-            if (SalesInMonth > SalesLastMonth && SalesLastMonth != 0)
-            {
-                AddReward(0.1F);   
-            }
-           
-            decimal estimatedWorkerPayments = WageRate * _workers.Count;
-
-            if (estimatedWorkerPayments < Liquidity + ProfitInMonth && estimatedWorkerPayments > Liquidity)
-            {
-                decimal diff = (Liquidity - estimatedWorkerPayments) * -1;
-                Liquidity += diff;
-                ProfitInMonth -= diff;
-                LiquidityCheck();
-            }
-            else if (estimatedWorkerPayments > Liquidity + ProfitInMonth)
-            {
-                WageRate = (ProfitInMonth + Liquidity) / _workers.Count * 0.95M;
-                Liquidity += ProfitInMonth;
-                ProfitInMonth = 0;
-                AddReward(-0.1F);
-                LiquidityCheck();
-            }
-            
-            foreach (var worker in _workers)
-            {
-                worker.Pay(WageRate);
-                Liquidity -= WageRate;
-                AddReward((float)(WageRate / 100));
-            }
-            LiquidityCheck();
-            
-            if (ProfitInMonth > 0)
-            {
-                decimal companyReserve = ProfitInMonth * 0.1M;
-                ProfitInMonth -= companyReserve;
-                Liquidity += companyReserve;
-                
-                decimal societyShare = ProfitInMonth / 1000;
-                AddReward((float)societyShare);
-                
-                foreach (var worker in ServiceLocator.Instance.LaborMarketService.Workers)
+                var ledger = new CompanyLedger
                 {
-                    worker.Pay(societyShare);
-                }
-
-                ProfitInMonth = 0;
+                    companyId = Id,
+                    extinct = LifetimeMonths == 0,
+                    month = ServiceLocator.Instance.FlowController.Month,
+                    year = ServiceLocator.Instance.FlowController.Year,
+                    liquidity = Liquidity,
+                    profit = ProfitInMonth,
+                    workers = _workers.Count,
+                    price = ProductPrice,
+                    wage = WageRate,
+                    sales = SalesInMonth,
+                    stock = ProductStock,
+                    lifetime = LifetimeMonths,
+                    sessionId = ServiceLocator.Instance.SessionId,
+                    emergencyRounds = EmergencyRounds,
+                    isStartup = StartUpRounds > 0,
+                    isTraining = _isTraining
+                };
+                StartCoroutine(HttpService.Insert("http://localhost:5000/companies/ledger", ledger));
             }
 
             LiquidityCheck();
             
-            if (Liquidity > 0 && ProductStock > 0)
-            {
-                decimal storageCosts = Liquidity / ProductStock * 0.9M;
-                foreach (var worker in ServiceLocator.Instance.LaborMarketService.Workers)
-                {
-                    worker.Pay(storageCosts / 1000);
-                }
+            double estimatedWorkerPayments = WageRate * _workers.Count;
+            Liquidity += ProfitInMonth;
+            ProfitInMonth = 0;
 
-                Liquidity -= storageCosts;
-                LiquidityCheck();
-            }
-            
-            
-            if (Liquidity < _initialMoney / 12 && ProductStock == 0 && _workers.Count == 0 && StartUpRounds == 0)
+            if (estimatedWorkerPayments > Liquidity && _workers.Count > 0)
             {
-                AddReward(-2F);
+                RealwageRate = Liquidity / _workers.Count * 0.95;
+                foreach (var worker in _workers)
+                {
+                    worker.Pay(RealwageRate);
+                    Liquidity -= RealwageRate;
+                    //AddReward((float)(WageRate / 100));
+                }
+                //LiquidityCheck();
+                //AddReward((float)(Liquidity - estimatedWorkerPayments));
+                EmergencyRounds++;
+            }
+            else if (_workers.Count == 0 && SalesInMonth == 0)
+            {
+                EmergencyRounds++;
+            }
+            else
+            {
+                RealwageRate = WageRate;
+                foreach (var worker in _workers)
+                {
+                    worker.Pay(WageRate);
+                    Liquidity -= WageRate;
+                    //AddReward((float)(WageRate / 100));
+                }
+                LiquidityCheck();
+            
+                if (Liquidity > 0)
+                {
+                    CumulatedReward += (float) Liquidity;
+                    AddReward((float)Liquidity * 10);
+                    double companyReserve = Liquidity * 0.1;
+                    double societyShare = (Liquidity - companyReserve) / 1000;
+                    //AddReward((float)societyShare);
+                
+                    foreach (var worker in ServiceLocator.Instance.LaborMarketService.Workers)
+                    {
+                        worker.Pay(societyShare);
+                    }
+
+                    Liquidity = companyReserve;
+                }
+            }
+
+            LiquidityCheck();
+            
+            //if (Liquidity > 0 && ProductStock > 0)
+            //{
+            //    double storageCosts = Liquidity / ProductStock * 0.9;
+            //    foreach (var worker in _workers)
+            //    {
+            //        worker.Pay(storageCosts / _workers.Count);
+            //    }
+//
+            //    WageRate += storageCosts / _workers.Count;
+            //    Liquidity -= storageCosts;
+            //    LiquidityCheck();
+            //}
+
+            //if (SalesInMonth == 0 && SalesLastMonth == 0 && (_workers.Count == 0 || Liquidity == 0))
+            //{
+            //    EmergencyRounds++;
+            //}
+            //else
+            //{
+            //    EmergencyRounds = 0;
+            //}
+            
+            LifetimeMonths++;
+            StartUpRounds = StartUpRounds > 0 ? StartUpRounds - 1 : 0;
+            Academy.Instance.StatsRecorder.Add("Company/Liquidity", (float)Liquidity);
+            CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Liquidity:0.##}";
+            SetBuilding();
+
+            if (CumulatedReward >= 1_000_000)
+            {
+                SetReward((float)CumulatedReward * 1.5F);
+                Academy.Instance.StatsRecorder.Add("Company/Reward", (float)CumulatedReward);
                 Academy.Instance.StatsRecorder.Add("Company/Lifetime", LifetimeMonths);
+                EmergencyRounds = 0;
+                EndEpisode();
+            }
+            else if (EmergencyRounds == 24 && StartUpRounds == 0)
+            {
+                Academy.Instance.StatsRecorder.Add("Company/Lifetime", LifetimeMonths);
+                Academy.Instance.StatsRecorder.Add("Company/Reward", (float)CumulatedReward);
                 for (int i = _workers.Count - 1; i >= 0; i--)
                 {
                     var worker = _workers[i];
                     worker.Fire();
                     _workers.Remove(worker);
                 }
-
-                StartUpRounds = 7;
+                
+                SetReward((float)CumulatedReward / 10 - 100_000);
+                WageRate = RealwageRate * 1.5;
+                EmergencyRounds = 0;
                 LifetimeMonths = 0;
                 EndEpisode();
             }
-            
-            if (ProductStock > SalesLastMonth + SalesInMonth && _workers.Count < _initialWorkers)
-            {
-                IsOnEmergencySaleRounds++;
-                AddReward(-0.01F);
-                ProductPrice *= 0.95M;
-                //ProductPrice = ProductPrice < 0.01M ? 0.01M : ProductPrice;
-            }
-            else
-            {
-                IsOnEmergencySaleRounds = 0;
-            }
-
-            LifetimeMonths = StartUpRounds == 7 ? 0 : LifetimeMonths + 1;
-            StartUpRounds = StartUpRounds > 0 ? StartUpRounds - 1 : StartUpRounds;
-            Academy.Instance.StatsRecorder.Add("Company/Liquidity", (float)Liquidity);
-            CapitalText.GetComponent<TextMeshProUGUI>().text = $"{Liquidity:0.##}";
-            SetBuilding();
-
             //yield return new WaitForFixedUpdate();
         }
 
@@ -379,8 +421,13 @@ namespace NewScripts
             //OpenPositions++;
         }
         
+        
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
+            if (ServiceLocator.Instance.FlowController.Step != SimulationStep.StartMonthBusiness)
+            {
+                Debug.LogError("");
+            }
             // monthly decisions
             //float wageChangeRate = (actionBuffers.ContinuousActions[0] + 1) / 2 * 1.5F + 0.5F;
             //float wageChangeRate = ScaleAction(actionBuffers.ContinuousActions[0], 0.5F, 2);
@@ -391,23 +438,22 @@ namespace NewScripts
             int priceChangeRate = actionBuffers.DiscreteActions[1];
             int workerChangeRate = actionBuffers.DiscreteActions[2];
 
-            WageRate = wageChangeRate == 0 ? WageRate * 0.95M : wageChangeRate == 2 ? WageRate * 1.05M : WageRate;
-            if (WageRate <= 1)
-            {
-                WageRate = 1;
-            }
-            
-            decimal newPrice = priceChangeRate == 0 ? ProductPrice * 0.95M : priceChangeRate == 2 ? ProductPrice * 1.05M : ProductPrice;
-            ProductPrice = newPrice < 0.1M ? 0.1M : newPrice;
+            WageRate = wageChangeRate == 0 ? WageRate * 0.99 : wageChangeRate == 2 ? WageRate * 1.01 : WageRate;
+            WageRate = WageRate < 10 ? 10 : WageRate > 100_000 ? 100_000 : WageRate;
+
+            double newPrice = priceChangeRate == 0 ? ProductPrice * 0.99 : priceChangeRate == 2 ? ProductPrice * 1.01 : ProductPrice;
+            ProductPrice = newPrice;
+            ProductPrice = ProductPrice < 0.05 ? 0.05 : ProductPrice > 1000 ? 1000 : ProductPrice;
+            int lastworkers = _workers.Count;
             
             if (workerChangeRate == 2)
             {
-                OpenPositions = (int) Math.Ceiling(_workers.Count * 1.1);
+                OpenPositions = (int) Math.Ceiling(_workers.Count * 0.1);
                 OpenPositions = OpenPositions == 0 ? 1 : OpenPositions;
             }
             else if (workerChangeRate == 0 && _workers.Count > 1)
             {
-                int fireWorkers = (int)Math.Floor(_workers.Count * 1.1);
+                int fireWorkers = (int)Math.Floor(_workers.Count * 0.1);
                 if (fireWorkers > _workers.Count)
                 {
                     OpenPositions = 0;
@@ -427,7 +473,13 @@ namespace NewScripts
                 }
             }
 
+            if (lastworkers > _workers.Count * 2)
+            {
+                Debug.LogError("");
+            }
             OpenPositions = _workers.Count == 0 && OpenPositions == 0 ? 1 : OpenPositions;
+            ServiceLocator.Instance.FlowController.CommitDecision();
+            SetBuilding();
         }
     }
 }

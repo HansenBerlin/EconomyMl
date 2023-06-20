@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NewScripts.Http;
 using TMPro;
 using Unity.MLAgents;
@@ -20,6 +21,7 @@ namespace NewScripts
         
         public bool isThrottled;
         public bool isTraining;
+        public bool writeToDatabase;
         public TextMeshProUGUI roundText;
         private readonly Random _rand = new();
         private int _step = 0;
@@ -85,7 +87,7 @@ namespace NewScripts
                 }
                 var go = Instantiate(foodCompanyPrefab);
                 Company company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go);
-                company.Init(companiesPerType, isTraining);
+                company.Init(companiesPerType, isTraining, writeToDatabase);
                 ServiceLocator.Instance.Companys.Add(company);
                 xPos++;
             }
@@ -94,7 +96,7 @@ namespace NewScripts
             {
                 var randomIndices = Utilitis.GenerateRandomArray(0, 
                     ServiceLocator.Instance.Companys.Count, 
-                    (int)Math.Ceiling((decimal)companiesPerType / 14));
+                    (int)Math.Ceiling((decimal)companiesPerType / 10));
                 List<Company> suppliers = new();
                 foreach (int i in randomIndices)
                 {
@@ -127,37 +129,45 @@ namespace NewScripts
             {
                 company.StartMonth();
             }
-
-            var workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
-            foreach (var worker in workers)
+            
+            StartCoroutine (ServiceLocator.Instance.FlowController.WaitUntilStartMonthHouseholdPhase(() =>
             {
-                worker.SearchNewSupplier();
-                worker.SearchJob();
-                worker.SetDailySpending();
-            }
-            ServiceLocator.Instance.Stats.UpdateStats();
+                var workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
+                foreach (var worker in workers)
+                {
+                    ServiceLocator.Instance.Companys = ServiceLocator.Instance.Companys.OrderBy(x => x.ProductPrice).ToList();
+                    worker.SearchNewSupplier();
+                    
+                    ServiceLocator.Instance.Companys = ServiceLocator.Instance.Companys.OrderByDescending(x => x.WorkersCount).ToList();
+                    worker.SearchJob();
+                    worker.SetDailySpending();
+                }
+                ServiceLocator.Instance.Stats.UpdateStats();
+            }));
             yield return new WaitForFixedUpdate();
         }
 
-        private void StartDaysStep()
+        private void StartDaysStep(List<Company> companies, List<Worker> workers)
         {
             ServiceLocator.Instance.FlowController.IncrementDay();
-            while (ServiceLocator.Instance.FlowController.Day != 21)
+            while (ServiceLocator.Instance.FlowController.Day != 20)
             {
-                var companies = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.Companys);
                 foreach (var company in companies)
                 {
                     company.StartDay();
                 }
 
-                var workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
-                foreach (var worker in workers)
-                {
-                    worker.Buy();
-                }
+                    foreach (var worker in workers)
+                    {
+                        worker.Buy();
+                    }
+                //StartCoroutine(ServiceLocator.Instance.FlowController.WaitUntilStartDaysHouseholdPhase(() =>
+                //{
+                //}));
                 ServiceLocator.Instance.FlowController.IncrementDay();
             }
             ServiceLocator.Instance.Stats.UpdateStats();
+            //yield return new WaitForFixedUpdate();
         }
 
         private void EndMonthStep()
@@ -182,7 +192,10 @@ namespace NewScripts
         private IEnumerator RunAiSequence()
         {
             StartCoroutine(StartMonthStep());
-            StartDaysStep();
+            var companies = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.Companys);
+            var workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
+            ServiceLocator.Instance.Companys = ServiceLocator.Instance.Companys.OrderBy(x => x.ProductPrice).ToList();
+            StartDaysStep(companies, workers);
             EndMonthStep();
             yield return new WaitForFixedUpdate();
         }
@@ -196,7 +209,10 @@ namespace NewScripts
             }
             if (_step == 1)
             {
-                StartDaysStep();
+                var companies = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.Companys);
+                var workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
+                ServiceLocator.Instance.Companys = ServiceLocator.Instance.Companys.OrderBy(x => x.ProductPrice).ToList();
+                StartDaysStep(companies, workers);
             }
             if (_step == 2)
             {

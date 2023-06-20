@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace NewScripts
 {
@@ -7,10 +11,48 @@ namespace NewScripts
         public int Year { get; set; } = 1;
         public int Month { get; set; } = 1;
         public int Day { get; set; } = 1;
+        public int StartMonthBusinessDecisionsMade
+        {
+            get => _startMonthBusinessDecisionsMade;
+            set
+            {
+                _startMonthBusinessDecisionsMade = value;
+                if (_startMonthBusinessDecisionsMade == ServiceLocator.Instance.Companys.Count)
+                {
+                    Step = SimulationStep.StartMonthHouseholds;
+                }
+                else if (_startMonthBusinessDecisionsMade == 0)
+                {
+                    Step = SimulationStep.StartMonthBusiness;
+                }
+            } 
+        }
+        private int _startMonthBusinessDecisionsMade;
+        
+        public int StartDayBusinessDecisionsMade
+        {
+            get => _startDayBusinessDecisionsMade;
+            set
+            {
+                _startDayBusinessDecisionsMade = value;
+                if (_startDayBusinessDecisionsMade == ServiceLocator.Instance.Companys.Count)
+                {
+                    Step = SimulationStep.StartDaysHouseholds;
+                }
+                else if (_startDayBusinessDecisionsMade == 0)
+                {
+                    Step = SimulationStep.StartDaysBusiness;
+                }
+            } 
+        }
+        private int _startDayBusinessDecisionsMade;
+        public SimulationStep Step = SimulationStep.StartMonthBusiness;
 
         public void IncrementDay()
         {
-            if (Day == 21)
+            StartDayBusinessDecisionsMade = 0;
+            //Step = SimulationStep.StartDaysBusiness;
+            if (Day == 20)
             {
                 Day = 1;
             }
@@ -22,6 +64,8 @@ namespace NewScripts
 
         public void IncrementMonth()
         {
+            StartMonthBusinessDecisionsMade = 0;
+            Step = SimulationStep.StartMonthBusiness;
             if (Month == 12)
             {
                 Year++;
@@ -45,36 +89,28 @@ namespace NewScripts
             return $"{Day}.{Month}.{Year}";
         }
         
-        public void StartMonth()
+        public IEnumerator WaitUntilStartMonthHouseholdPhase (Action whenDone)
         {
-            // Unternehmen:
-            // Lohnsatz anpassen
-            // Verkaufspreis anpassen
-            // Mitarbeiterzahl anpassen (offene Stellen)
-            
-            // Privathaushalte:
-            // Arbeitsstelle suchen (wenn arbeitslos)
-            // Arbeitsstelle wechseln (wenn beschäftigt)
-            // jeweils beste Bezahlung
-            // billigere Anbieter suchen
-            // Budget anpassen (Anteil an Einkommen)
+            yield return new WaitUntil(()=>Step == SimulationStep.StartMonthHouseholds);
+            whenDone?.Invoke();
+        }
+        
+        public IEnumerator WaitUntilStartDaysHouseholdPhase (Action whenDone)
+        {
+            yield return new WaitUntil(()=>Step == SimulationStep.StartDaysHouseholds);
+            whenDone?.Invoke();
         }
 
-        public void StartDay()
+        public void CommitDecision()
         {
-            // PH:
-            // Kauf Güter
-            
-            // UN:
-            // Produktion Konsumgüter, nach Anzahl Bschäftigte
-        }
-
-        public void EndMonth()
-        {
-            // UN
-            // Gewinne verteilen??
-            // MA bezahlen
-            // Entlassung
+            if (Step == SimulationStep.StartMonthBusiness)
+            {
+                StartMonthBusinessDecisionsMade++;
+            }
+            else if (Step == SimulationStep.StartDaysBusiness)
+            {
+                StartDayBusinessDecisionsMade++;
+            }
         }
     }
 }
