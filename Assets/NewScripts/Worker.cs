@@ -9,123 +9,69 @@ namespace NewScripts
     public class Worker
     {
         public double Money { get; set; } = 100;
-        public double DailySpending { get; set; } = 0;
-        public double ReservationWage { get; set; } = 0;
+        public double Wage { get; set; } = 0;
         public int Health { get; set; } = 1000;
-        public int DemandFulfilled { get; set; } = 0;
 
-        public int MonthlyDemand { get; set; } = 10;
+        public List<InventoryItem> Inventory { get; set; } = new();
         //public int CompanyId { get; set; }
         private readonly System.Random _rand = new();
         
-        private Company _employedAtCompany = null;
+        //private Company _employedAtCompany = null;
         private readonly List<Company> _typeAConnections = new();
-        public bool HasJob { get; private set; }
+        //public bool HasJob { get; private set; }
         private JobChangeLevel _jobChangeIntensity = JobChangeLevel.Unmployed;
 
-        public void SearchNewSupplier()
+        private JobContract _jobContract;
+
+        public Worker()
         {
-            var randomKnownSupplier = _typeAConnections[_rand.Next(0, _typeAConnections.Count - 1)];
-            var unknownSuppliers = _typeAConnections
-                .Except(ServiceLocator.Instance.Companys)
-                .Concat(ServiceLocator.Instance.Companys
-                    .Except(_typeAConnections)
-                    .Except(new List<Company>{_employedAtCompany})
-                .ToList()).ToList();
-            var randomNewSupplier = unknownSuppliers[_rand.Next(0, unknownSuppliers.Count - 1)];
-            if (randomNewSupplier.ProductPrice * 1.2 < randomKnownSupplier.ProductPrice)
+            Inventory.Add(new InventoryItem
             {
-                _typeAConnections.Remove(randomKnownSupplier);
-                _typeAConnections.Add(randomNewSupplier);
-            }
-        }
-
-        public void InitialSuppliersSetup(List<Company> companies)
-        {
-            _typeAConnections.AddRange(companies);
-        }
-
-        public void InitialJobSetup(Company startAtCompany)
-        {
-            _employedAtCompany = startAtCompany;
-            HasJob = true;
-            ReservationWage = _employedAtCompany.WageRate;
-            _jobChangeIntensity = JobChangeLevel.Satisfied;
-        }
-
-        public void Pay(double wage)
-        {
-            Money += wage;
+                AvgPaid = 0.5, 
+                Count = 0, 
+                Product = ProductType.Food
+            });
         }
         
-        
-
-        public void Buy()
+        public void AddContract(JobContract contract)
         {
-            //var randomIndices = Utilitis.GenerateRandomArray(0, _typeAConnections.Count);
-            
-
-            double amountSpent = 0;
-            int countBought = 0;
-
-            foreach (var company in _typeAConnections.Where(x => x.IsBlocked == false))
-            {
-                if (DailySpending - amountSpent < company.ProductPrice)
-                {
-                    continue;
-                }
-
-                int buyAmount = (int)Math.Floor((DailySpending - amountSpent) / company.ProductPrice);
-                buyAmount = MonthlyDemand - countBought < buyAmount ? MonthlyDemand - countBought : buyAmount;
-                if (Money - buyAmount * company.ProductPrice < 0)
-                {
-                    continue;
-                    Debug.LogWarning("Buy Below zero");
-                }
-                
-                Receipt receipt = company.BuyFromCompany(buyAmount);
-                amountSpent += receipt.AmountPaid;
-                countBought += receipt.CountBought;
-                
-            }
-            DemandFulfilled += countBought;
-            Money -= amountSpent;
-            //if (averagePrice / _typeAConnections.Count > DailySpending)
-            //{
-            //    var newReservationWage = averagePrice / _typeAConnections.Count * 21;
-            //    ReservationWage = newReservationWage > ReservationWage ? newReservationWage : ReservationWage;
-            //}
+            _jobContract = contract;
         }
 
-        public void SetDailySpending()
+        public double Pay()
         {
-            var paymentsForSixMonths = ReservationWage * 6;
-            if (Money > paymentsForSixMonths)
+            Money += Wage;
+            return Wage;
+        }
+        
+        public void AddBuyOffers()
+        {
+            int demand = 10 + _rand.Next(-5, 6);
+            if (Inventory[0].Count - demand < 5)
             {
-                if (HasJob)
-                {
-                    _employedAtCompany.InvestInCompany(Money - paymentsForSixMonths);
-                }
-                else
-                {
-                    _typeAConnections[_rand.Next(0, _typeAConnections.Count)]
-                        .InvestInCompany(Money - paymentsForSixMonths);
-                }
-
-                Money = paymentsForSixMonths;
+                // above avg price
             }
-            DailySpending = Money * 0.98 / 20;
-            if (DemandFulfilled >= MonthlyDemand)
+            else if (Inventory[0].Count - demand < 15)
             {
-                MonthlyDemand += new System.Random().Next(1, 3) * 20;
+                // avg price
+            }
+            else if (Inventory[0].Count - demand < 25)
+            {
+                // below avg price
             }
             else
             {
-                MonthlyDemand -= new System.Random().Next(1, 3) * 20;
+                // skip
             }
-
-            MonthlyDemand = MonthlyDemand < 100 ? 100 : MonthlyDemand > 300 ? 300 : MonthlyDemand;
         }
+
+        public void FullfillBid(ProductType product, int count, double price)
+        {
+            Inventory.Where(x => x.Product == product).ToArray()[0].Add(count, price);
+            Money -= count * price;
+        }
+
+        
 
         public void SetReservationWage()
         {
@@ -135,30 +81,24 @@ namespace NewScripts
 
             if (HasJob)
             {
-                if (ReservationWage > _employedAtCompany.RealwageRate)
+                if (Wage > _employedAtCompany.RealwageRate)
                 {
                     _jobChangeIntensity = JobChangeLevel.Underpaid;
                 }
                 else
                 {
                     _jobChangeIntensity = JobChangeLevel.Satisfied;
-                    ReservationWage = _employedAtCompany.WageRate;
+                    Wage = _employedAtCompany.OfferedWageRate;
                 }
             }
             else
             {
                 _jobChangeIntensity = JobChangeLevel.Unmployed;
-                ReservationWage *= 0.95;
+                Wage *= 0.95;
             }
 
-            ReservationWage = ReservationWage < 5 ? 5 : ReservationWage;
+            Wage = Wage < 5 ? 5 : Wage;
             //DemandFulfilled = 0;
-        }
-
-        public void Fire()
-        {
-            HasJob = false;
-            _employedAtCompany = null;
         }
 
         public void SearchJob()
@@ -222,7 +162,7 @@ namespace NewScripts
                 searches--;
 
                 var potentialCompany = ServiceLocator.Instance.Companys[i];
-                if (potentialCompany.OpenPositions > 0 && potentialCompany.WageRate >= ReservationWage)
+                if (potentialCompany.OpenPositions > 0 && potentialCompany.OfferedWageRate >= Wage)
                 {
                     potentialCompany.SignJobOffer(this);
                     _employedAtCompany = potentialCompany;

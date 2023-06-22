@@ -29,7 +29,7 @@ namespace NewScripts
         
         private void SetCirculatingMoneyText()
         {
-            var workers = ServiceLocator.Instance.LaborMarketService.Workers;
+            var workers = ServiceLocator.Instance.LaborMarket.Workers;
             var companys = ServiceLocator.Instance.Companys;
             double workersTotal = workers.Select(x => x.Money).Sum();
             double companiesTotalLiquidity = companys.Select(x => x.Liquidity).Sum();
@@ -40,7 +40,7 @@ namespace NewScripts
 
         private void SetWorkerTexts()
         {
-            var workers = ServiceLocator.Instance.LaborMarketService.Workers;
+            var workers = ServiceLocator.Instance.LaborMarket.Workers;
             double avg = workers.Select(x => x.Money).Average();
             double min = workers.Select(x => x.Money).Min();
             double max = workers.Select(x => x.Money).Max();
@@ -60,9 +60,9 @@ namespace NewScripts
         private void SetCompanyWagesText()
         {
             var companys = ServiceLocator.Instance.Companys;
-            double avg = companys.Select(x => x.WageRate).Average();
-            double min = companys.Select(x => x.WageRate).Min();
-            double max = companys.Select(x => x.WageRate).Max();
+            double avg = companys.Select(x => x.OfferedWageRate).Average();
+            double min = companys.Select(x => x.OfferedWageRate).Min();
+            double max = companys.Select(x => x.OfferedWageRate).Max();
             BuildText(companyWagesText, min, max, avg, true);
         }
         

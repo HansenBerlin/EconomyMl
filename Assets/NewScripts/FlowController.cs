@@ -19,7 +19,7 @@ namespace NewScripts
             set
             {
                 _startMonthHouseholdDecisionMade = value;
-                if (_startMonthHouseholdDecisionMade == ServiceLocator.Instance.LaborMarketService.Workers.Count)
+                if (_startMonthHouseholdDecisionMade == ServiceLocator.Instance.LaborMarket.Workers.Count)
                 {
                     _startMonthHouseholdDecisionMade = 0;
                 }

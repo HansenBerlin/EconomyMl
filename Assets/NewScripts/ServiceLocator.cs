@@ -12,11 +12,12 @@ namespace NewScripts
     {
         public string SessionId { get; } = Guid.NewGuid().ToString();
         public static ServiceLocator Instance { get; private set; }
-        public ProductMarket ProductMarketService { get; private set; }
-        public LaborMarket LaborMarketService { get; private set; }
+        public ProductMarket ProductMarket { get; private set; }
+        public LaborMarket LaborMarket { get; private set; }
         public CompanyInfoPopup PopupInfoService { get; private set; }
         public List<Company> Companys { get; set; } = new();
         public FlowController FlowController { get; } = new();
+        public SetupSettings Settings { get; } = new();
         public StatsSink Stats { get; private set; }
         public long stepsCompany;
         public long stepsWorker;
@@ -33,8 +34,8 @@ namespace NewScripts
                 return;
             }
             Instance = this;
-            ProductMarketService = GetComponentInChildren<ProductMarket>();
-            LaborMarketService = GetComponentInChildren<LaborMarket>();
+            ProductMarket = GetComponentInChildren<ProductMarket>();
+            LaborMarket = GetComponentInChildren<LaborMarket>();
             PopupInfoService = GetComponentInChildren<CompanyInfoPopup>();
             Stats = GetComponentInChildren<StatsSink>();
         }

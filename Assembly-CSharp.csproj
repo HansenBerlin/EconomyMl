@@ -45,6 +45,10 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.0f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\NewScripts\Blacklist.cs" />
+     <Compile Include="Assets\NewScripts\InventoryItem.cs" />
+     <Compile Include="Assets\NewScripts\JobContract.cs" />
+     <Compile Include="Assets\NewScripts\SetupSettings.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\HumanBehavior.cs" />
      <Compile Include="Assets\Scripts\Factories\JobPositionFactory.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\Tile.cs" />
@@ -630,7 +634,6 @@
      <Folder Include="Assets\TextMesh Pro\Examples &amp; Extras\Resources\Sprite Assets" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Racing_T" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Nature_M\Sea_M" />
-     <Folder Include="Assets\NewScripts" />
      <None Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\ValidationExceptions.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Nature_M\Leaves_M" />
      <Folder Include="Assets\TextMesh Pro\Resources\Style Sheets" />

@@ -26,6 +26,17 @@ namespace NewScripts
         private bool _isInitDone;
         public TextMeshProUGUI buttonText;
 
+        private void Awake()
+        {
+            if (ServiceLocator.Instance is not null && _isInitDone == false)
+            {
+
+                ServiceLocator.Instance.Settings.IsTraining = isTraining;
+                ServiceLocator.Instance.Settings.IsThrottled = isThrottled;
+                ServiceLocator.Instance.Settings.WriteToDatabase = writeToDatabase;
+                SetupGameObjects();
+            }
+        }
         
 
         private Company GetFromGameObject(float xPos, float zPos, GameObject instance)
@@ -59,19 +70,10 @@ namespace NewScripts
         //    }
         //}
 
-        
-        public void Awake()
-        {
-            if (ServiceLocator.Instance is not null && _isInitDone == false)
-            {
-                SetupGameObjects();
-            }
-        }
-
         private void SetupGameObjects()
         {
             //Academy.Instance.OnEnvironmentReset += EnvironmentReset;
-            ServiceLocator.Instance.LaborMarketService.InitWorkers(1000);
+            ServiceLocator.Instance.LaborMarket.InitWorkers(1000);
             //ProductTemplateFactory.CompanysPerType = companysPerType;
             int zPos = 0;
             int xPos = 0;
@@ -89,7 +91,7 @@ namespace NewScripts
                 xPos++;
             }
 
-            foreach (var worker in ServiceLocator.Instance.LaborMarketService.Workers)
+            foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
             {
                 var randomIndices = Utilitis.GenerateRandomArray(0, 
                     ServiceLocator.Instance.Companys.Count, 
@@ -130,7 +132,7 @@ namespace NewScripts
             }
             roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
 
-            var workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarketService.Workers);
+            var workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarket.Workers);
             var companies = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.Companys);
             if (ServiceLocator.Instance.FlowController.Day == 20)
             {

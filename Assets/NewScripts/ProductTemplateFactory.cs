@@ -37,7 +37,7 @@ namespace NewScripts
                 {
                     ProductTypeInput = input,
                     ProductTypeOutput = type,
-                    Price = defaultPrice
+                    //Price = defaultPrice
                 },
                 workerSalary, unitsPerWorker, defaultPrice, startCapital, avgConsumptionFromAllWorkers, startWorkerCount);
         }
