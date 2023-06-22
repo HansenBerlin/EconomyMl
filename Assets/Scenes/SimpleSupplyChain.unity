@@ -4016,7 +4016,7 @@ PrefabInstance:
       objectReference: {fileID: 1394210048}
     - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: isTraining
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: IsThrottled
@@ -4029,6 +4029,10 @@ PrefabInstance:
     - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: companysPerType
       value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
+      propertyPath: writeToDatabase
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: companiesPerType

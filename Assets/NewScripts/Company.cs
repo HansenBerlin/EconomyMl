@@ -86,9 +86,7 @@ namespace NewScripts
             _boxCollider = GetComponent<BoxCollider>();
         }
 
-        private bool _canvasActive = false;
-        
-        void Update() {  
+        private void Update() {  
             if (Input.GetMouseButtonDown(0)) {  
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out var hit)) {  
@@ -316,11 +314,11 @@ namespace NewScripts
                 var ledger = new CompanyLedger
                 {
                     companyId = Id,
-                    extinct = OpenPositions > 0,
+                    openPositions = OpenPositions,
                     month = ServiceLocator.Instance.FlowController.Month,
                     year = ServiceLocator.Instance.FlowController.Year,
                     liquidity = Liquidity,
-                    profit = RealwageRate,
+                    realWage = RealwageRate,
                     workers = _workers.Count,
                     price = ProductPrice,
                     wage = WageRate,
@@ -340,6 +338,7 @@ namespace NewScripts
             if (_startUpRounds > 12)
             {
                 _startUpRounds--;
+                UpdateCanvasText(false);
                 return;
             }
             
