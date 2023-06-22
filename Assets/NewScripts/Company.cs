@@ -232,7 +232,7 @@ namespace NewScripts
         {
             if (_workers.Count < 2)
             {
-                actionMask.SetActionEnabled(2, 0, false);
+                //actionMask.SetActionEnabled(2, 0, false);
             }
 
             if (_emergencyRounds > 0)
@@ -254,24 +254,24 @@ namespace NewScripts
             //}
         }
 
-        public void StartMonth()
-        {
-            Academy.Instance.StatsRecorder.Add("Company/LastSales", SalesLastMonth);
-            Academy.Instance.StatsRecorder.Add("Company/CurrentSales", SalesInMonth);
-            Academy.Instance.StatsRecorder.Add("Company/ProfitMonth", (float)Liquidity);
-            
-            Academy.Instance.StatsRecorder.Add("Product/Price", (float)ProductPrice);
-            Academy.Instance.StatsRecorder.Add("Product/Stock", ProductStock);
-            
-            Academy.Instance.StatsRecorder.Add("Labor/Workers", _workers.Count);
-            Academy.Instance.StatsRecorder.Add("Labor/Open", OpenPositions);
-            Academy.Instance.StatsRecorder.Add("Labor/Wage", (float)WageRate);
-
-            SalesLastMonth = SalesInMonth;
-            SalesInMonth = 0;
-            //ProfitInMonth = 0;
-            RequestDecision();
-        }
+        //public void StartMonth()
+        //{
+        //    Academy.Instance.StatsRecorder.Add("Company/LastSales", SalesLastMonth);
+        //    Academy.Instance.StatsRecorder.Add("Company/CurrentSales", SalesInMonth);
+        //    Academy.Instance.StatsRecorder.Add("Company/ProfitMonth", (float)Liquidity);
+        //    
+        //    Academy.Instance.StatsRecorder.Add("Product/Price", (float)ProductPrice);
+        //    Academy.Instance.StatsRecorder.Add("Product/Stock", ProductStock);
+        //    
+        //    Academy.Instance.StatsRecorder.Add("Labor/Workers", _workers.Count);
+        //    Academy.Instance.StatsRecorder.Add("Labor/Open", OpenPositions);
+        //    Academy.Instance.StatsRecorder.Add("Labor/Wage", (float)WageRate);
+//
+        //    SalesLastMonth = SalesInMonth;
+        //    SalesInMonth = 0;
+        //    //ProfitInMonth = 0;
+        //    RequestDecision();
+        //}
 
         public void StartDay()
         {
@@ -506,61 +506,33 @@ namespace NewScripts
                 return;
             }
 
-            
-            // monthly decisions
-            //float wageChangeRate = (actionBuffers.ContinuousActions[0] + 1) / 2 * 1.5F + 0.5F;
-            //float wageChangeRate = ScaleAction(actionBuffers.ContinuousActions[0], 0.5F, 2);
-            //float priceChangeRate = (actionBuffers.ContinuousActions[1] + 1) / 2 * 1.5F + 0.5F;
-            //float workerCountChangeRate = actionBuffers.ContinuousActions[2];
-
-            int wageChangeRate = actionBuffers.DiscreteActions[0];
-            int priceChangeRate = actionBuffers.DiscreteActions[1];
-            int workerChangeRate = actionBuffers.DiscreteActions[2];
-
-            WageRate = wageChangeRate switch
+            float newWage = (actionBuffers.ContinuousActions[0] + 1) / 2 * 100 + 1;
+            float newPrice = (actionBuffers.ContinuousActions[1] + 1 ) / 2 * 10 + 0.01F;
+            if (newPrice < 0 || newWage < 0)
             {
-                0 => WageRate * 0.99,
-                2 => WageRate * 1.01,
-                _ => WageRate
-            };
-            WageRate = WageRate < 10 ? 10 : WageRate > 1000 ? 1000 : WageRate;
+                Debug.LogWarning("NOPE");
+            }
+            int fireWorkers = actionBuffers.DiscreteActions[0];
+            int openPositions = actionBuffers.DiscreteActions[1];
 
-            double newPrice = priceChangeRate switch
-            {
-                0 => ProductPrice * 0.99,
-                2 => ProductPrice * 1.01,
-                _ => ProductPrice
-            };
+            WageRate = newWage;
             ProductPrice = newPrice;
-            ProductPrice = ProductPrice < 0.05 ? 0.05 : ProductPrice > 100 ? 100 : ProductPrice;
-            int lastworkers = _workers.Count;
+            OpenPositions = openPositions;
             
-            if (workerChangeRate == 2)
+            for (var i = _workers.Count - 1; i >= 0; i--)
             {
-                OpenPositions = (int) Math.Ceiling(_workers.Count * 0.1);
-                OpenPositions = OpenPositions == 0 ? 1 : OpenPositions;
-            }
-            else if (workerChangeRate == 0 && _workers.Count > 1)
-            {
-                int fireWorkers = (int)Math.Floor(_workers.Count * 0.1);
-                if (fireWorkers > _workers.Count)
+                if (fireWorkers == 0)
                 {
-                    OpenPositions = 0;
-                    for (var i = _workers.Count - 1; i >= 0; i--)
-                    {
-                        if (fireWorkers == 0)
-                        {
-                            break;
-                        }
-                        var worker = _workers[i];
-                        _workers.Remove(worker);
-                        worker.Fire();
-                        fireWorkers--;
-                    }
+                    break;
                 }
+                var worker = _workers[i];
+                _workers.Remove(worker);
+                worker.Fire();
+                fireWorkers--;
             }
+
             
-            OpenPositions = _workers.Count == 0 && OpenPositions == 0 ? 1 : OpenPositions;
+            //OpenPositions = _workers.Count == 0 && OpenPositions == 0 ? 1 : OpenPositions;
             ServiceLocator.Instance.FlowController.CommitDecision();
             _decisionMade = true;
             SetBuilding();
