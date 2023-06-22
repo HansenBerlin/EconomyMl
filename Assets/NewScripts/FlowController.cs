@@ -11,61 +11,42 @@ namespace NewScripts
         public int Year { get; set; } = 1;
         public int Month { get; set; } = 1;
         public int Day { get; set; } = 1;
-        public int StartMonthBusinessDecisionsMade
-        {
-            get => _startMonthBusinessDecisionsMade;
-            set
-            {
-                _startMonthBusinessDecisionsMade = value;
-                if (_startMonthBusinessDecisionsMade == ServiceLocator.Instance.Companys.Count)
-                {
-                    Step = SimulationStep.StartMonthHouseholds;
-                }
-                else if (_startMonthBusinessDecisionsMade == 0)
-                {
-                    Step = SimulationStep.StartMonthBusiness;
-                }
-            } 
-        }
-        private int _startMonthBusinessDecisionsMade;
+        public int StartMonthBusinessDecisionsMade { get; set; }
         
-        public int StartDayBusinessDecisionsMade
+        public int StartMonthHouseholdDecisionMade
         {
-            get => _startDayBusinessDecisionsMade;
+            get => _startMonthHouseholdDecisionMade;
             set
             {
-                _startDayBusinessDecisionsMade = value;
-                if (_startDayBusinessDecisionsMade == ServiceLocator.Instance.Companys.Count)
+                _startMonthHouseholdDecisionMade = value;
+                if (_startMonthHouseholdDecisionMade == ServiceLocator.Instance.LaborMarketService.Workers.Count)
                 {
-                    Step = SimulationStep.StartDaysHouseholds;
-                }
-                else if (_startDayBusinessDecisionsMade == 0)
-                {
-                    Step = SimulationStep.StartDaysBusiness;
+                    _startMonthHouseholdDecisionMade = 0;
                 }
             } 
         }
-        private int _startDayBusinessDecisionsMade;
-        public SimulationStep Step = SimulationStep.StartMonthBusiness;
+        private int _startMonthHouseholdDecisionMade;
+        //public SimulationStep Step = SimulationStep.StartMonthBusiness;
 
         public void IncrementDay()
         {
-            StartDayBusinessDecisionsMade = 0;
-            //Step = SimulationStep.StartDaysBusiness;
-            if (Day == 20)
+            Day++;
+            if (Day == 21)
             {
                 Day = 1;
+                Month++;
             }
-            else
+            if (Month == 13)
             {
-                Day++;
+                Month = 1;
+                Year++;
             }
         }
 
         public void IncrementMonth()
         {
-            StartMonthBusinessDecisionsMade = 0;
-            Step = SimulationStep.StartMonthBusiness;
+            //StartMonthBusinessDecisionsMade = 0;
+            //Step = SimulationStep.StartMonthBusiness;
             if (Month == 12)
             {
                 Year++;
@@ -91,26 +72,25 @@ namespace NewScripts
         
         public IEnumerator WaitUntilStartMonthHouseholdPhase (Action whenDone)
         {
-            yield return new WaitUntil(()=>Step == SimulationStep.StartMonthHouseholds);
+            yield return new WaitUntil(()=>StartMonthBusinessDecisionsMade == ServiceLocator.Instance.Companys.Count);
             whenDone?.Invoke();
         }
         
-        public IEnumerator WaitUntilStartDaysHouseholdPhase (Action whenDone)
+        public IEnumerator WaitUntilStartDaysPhase (Action whenDone)
         {
-            yield return new WaitUntil(()=>Step == SimulationStep.StartDaysHouseholds);
+            yield return new WaitUntil(()=>StartMonthBusinessDecisionsMade == ServiceLocator.Instance.Companys.Count);
             whenDone?.Invoke();
         }
+        
 
         public void CommitDecision()
         {
-            if (Step == SimulationStep.StartMonthBusiness)
-            {
-                StartMonthBusinessDecisionsMade++;
-            }
-            else if (Step == SimulationStep.StartDaysBusiness)
-            {
-                StartDayBusinessDecisionsMade++;
-            }
+            StartMonthBusinessDecisionsMade++;
+        }
+        
+        public void ResetCounter()
+        {
+            StartMonthBusinessDecisionsMade = 0;
         }
     }
 }

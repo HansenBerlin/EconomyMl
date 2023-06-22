@@ -4016,7 +4016,7 @@ PrefabInstance:
       objectReference: {fileID: 1394210048}
     - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: isTraining
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: IsThrottled
@@ -4024,7 +4024,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: isThrottled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: companysPerType
@@ -4032,7 +4032,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: companiesPerType
-      value: 100
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: FoodCompanyPrefab
@@ -4841,6 +4841,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed21f10d9ce047d8badd34db6a241d06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stepsCompany: 0
+  stepsWorker: 0
 --- !u!4 &1135588883
 Transform:
   m_ObjectHideFlags: 0

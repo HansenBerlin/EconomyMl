@@ -32,9 +32,8 @@ namespace NewScripts
             var workers = ServiceLocator.Instance.LaborMarketService.Workers;
             var companys = ServiceLocator.Instance.Companys;
             double workersTotal = workers.Select(x => x.Money).Sum();
-            double companiesTotalProfit = companys.Select(x => x.ProfitInMonth).Sum();
             double companiesTotalLiquidity = companys.Select(x => x.Liquidity).Sum();
-            double companiesTotal = companiesTotalLiquidity + companiesTotalProfit;
+            double companiesTotal = companiesTotalLiquidity;
             string text = $"{workersTotal:0} | {companiesTotal:0} | {workersTotal + companiesTotal:0}";
             circulatingMoneyText.GetComponent<TextMeshProUGUI>().text = text;
         }
@@ -88,13 +87,10 @@ namespace NewScripts
         private void SetCompanyReservesText()
         {
             var companys = ServiceLocator.Instance.Companys;
-            double avgR = companys.Select(x => x.ProfitInMonth).Average();
-            double minR = companys.Select(x => x.ProfitInMonth).Min();
-            double maxR = companys.Select(x => x.ProfitInMonth).Max();
             double avgL = companys.Select(x => x.Liquidity).Average();
             double minL = companys.Select(x => x.Liquidity).Min();
             double maxL = companys.Select(x => x.Liquidity).Max();
-            BuildText(companyReservesText, minR + minL, maxR + maxL, avgR + avgL);
+            BuildText(companyReservesText,  minL, maxL,  avgL);
         }
 
         private void SetCompanyLifetimeText()

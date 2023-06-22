@@ -18,9 +18,12 @@ namespace NewScripts
         public List<Company> Companys { get; set; } = new();
         public FlowController FlowController { get; } = new();
         public StatsSink Stats { get; private set; }
+        public long stepsCompany;
+        public long stepsWorker;
+        
         
 
-        
+
         private void Awake()
         {
            
