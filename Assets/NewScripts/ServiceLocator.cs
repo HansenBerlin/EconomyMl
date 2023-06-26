@@ -19,8 +19,7 @@ namespace NewScripts
         public FlowController FlowController { get; } = new();
         public SetupSettings Settings { get; } = new();
         public StatsSink Stats { get; private set; }
-        public long stepsCompany;
-        public long stepsWorker;
+        
         
         
 

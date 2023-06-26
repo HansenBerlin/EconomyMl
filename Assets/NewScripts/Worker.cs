@@ -8,26 +8,29 @@ namespace NewScripts
 {
     public class Worker
     {
-        public double Money { get; set; } = 100;
-        public double Wage { get; set; } = 0;
+        public decimal Money { get; set; } = 30;
+        //public double Wage { get; set; } = 0;
         public int Health { get; set; } = 1000;
+        public int UnemployedForMonth { get; set; } = 0;
+        private const int MonthlyDemand = 100;
+        private const int MonthlyMinimumDemand = MonthlyDemand / 2;
+        private int _consumeInMonth;
 
         public List<InventoryItem> Inventory { get; set; } = new();
         //public int CompanyId { get; set; }
         private readonly System.Random _rand = new();
         
         //private Company _employedAtCompany = null;
-        private readonly List<Company> _typeAConnections = new();
         //public bool HasJob { get; private set; }
-        private JobChangeLevel _jobChangeIntensity = JobChangeLevel.Unmployed;
+        public bool HasJob => _jobContract != null;
 
-        private JobContract _jobContract;
+        private JobContract _jobContract = null;
 
         public Worker()
         {
             Inventory.Add(new InventoryItem
             {
-                AvgPaid = 0.5, 
+                AvgPaid = 1, 
                 Count = 0, 
                 Product = ProductType.Food
             });
@@ -35,142 +38,143 @@ namespace NewScripts
         
         public void AddContract(JobContract contract)
         {
+            _jobContract?.QuitContract();
             _jobContract = contract;
+            UnemployedForMonth = 0;
         }
 
-        public double Pay()
+        public void Give(decimal sum)
         {
-            Money += Wage;
-            return Wage;
+            Money += sum;
         }
-        
-        public void AddBuyOffers()
+
+        public void EndMonth()
         {
-            int demand = 10 + _rand.Next(-5, 6);
-            if (Inventory[0].Count - demand < 5)
+            Inventory[0].Count = Inventory[0].Count >= _consumeInMonth 
+                ? Inventory[0].Count -= _consumeInMonth 
+                : Inventory[0].Count = 0;
+        }
+
+        public void AddProductBids()
+        {
+            Academy.Instance.StatsRecorder.Add("Worker/Money", (float)Money);
+
+            _consumeInMonth = MonthlyDemand + _rand.Next(MonthlyMinimumDemand * -1, MonthlyMinimumDemand + 1);
+            decimal bidPrice = 0;
+            if (Inventory[0].Count - _consumeInMonth < MonthlyMinimumDemand)
             {
-                // above avg price
+                bidPrice = Inventory[0].AvgPaid * 1.1M;
             }
-            else if (Inventory[0].Count - demand < 15)
+            else if (Inventory[0].Count - _consumeInMonth < MonthlyDemand)
             {
-                // avg price
+                bidPrice = Inventory[0].AvgPaid;
             }
-            else if (Inventory[0].Count - demand < 25)
+            else if (Inventory[0].Count - _consumeInMonth < MonthlyDemand * 1.5)
             {
-                // below avg price
+                bidPrice = Inventory[0].AvgPaid * 0.9M;
             }
             else
             {
-                // skip
+                return;
+            }
+
+            bidPrice = bidPrice < 0.1M ? 0.1M : bidPrice > 5 ? 5 : bidPrice;
+            var bpold = bidPrice;
+            if (_consumeInMonth * bidPrice > Money)
+            {
+                bidPrice = RoundDown(Money / _consumeInMonth, 2);
+            }
+            if (_consumeInMonth < MonthlyMinimumDemand)
+            {
+                bidPrice = RoundDown(Money / MonthlyMinimumDemand, 2);
+                _consumeInMonth = MonthlyMinimumDemand;
+            }
+            if (_consumeInMonth > 0 && bidPrice > 0)
+            {
+                if (Money - bidPrice * _consumeInMonth < 0)
+                {
+                    Debug.LogError("Not enough money");
+                }
+                var bid = new ProductBid(ProductType.Food, this, bidPrice, _consumeInMonth);
+                ServiceLocator.Instance.ProductMarket.AddBid(bid);
+                Academy.Instance.StatsRecorder.Add("Market/P-Bid-Make-Count", _consumeInMonth);
+                Academy.Instance.StatsRecorder.Add("Market/P-Bid-Make-Price", (float)bidPrice);
             }
         }
+        
+        public decimal RoundDown(decimal i, double decimalPlaces)
+        {
+            var power = Convert.ToDecimal(Math.Pow(10, decimalPlaces));
+            return Math.Floor(i * power) / power;
+        }
 
-        public void FullfillBid(ProductType product, int count, double price)
+        public void FullfillBid(ProductType product, int count, decimal price)
         {
             Inventory.Where(x => x.Product == product).ToArray()[0].Add(count, price);
             Money -= count * price;
         }
+        
+        public void RemoveJobContract(JobContract contract, bool isQuitByEmployer)
+        {
+            if (_jobContract != contract)
+            {
+                throw new Exception("Wrong contract: " + contract.Employer.Id);
+            }
+
+            if (isQuitByEmployer)
+            {
+                // blacklist
+            }
+            _jobContract = null;
+        }
 
         
 
-        public void SetReservationWage()
+        public void SearchForJob(decimal averageIncome, decimal averageFoodPrice)
         {
-            ServiceLocator.Instance.stepsWorker++;
-            Academy.Instance.StatsRecorder.Add("Worker/Money", (float)Money);
             //Academy.Instance.StatsRecorder.Add("Worker/Bought", DemandFulfilled);
-
             if (HasJob)
             {
-                if (Wage > _employedAtCompany.RealwageRate)
+                _jobContract.RunsFor++;
+                if (_jobContract.RunsFor <= 3 && _jobContract.IsForceReduced == false)
                 {
-                    _jobChangeIntensity = JobChangeLevel.Underpaid;
-                }
-                else
-                {
-                    _jobChangeIntensity = JobChangeLevel.Satisfied;
-                    Wage = _employedAtCompany.OfferedWageRate;
-                }
-            }
-            else
-            {
-                _jobChangeIntensity = JobChangeLevel.Unmployed;
-                Wage *= 0.95;
-            }
-
-            Wage = Wage < 5 ? 5 : Wage;
-            //DemandFulfilled = 0;
-        }
-
-        public void SearchJob()
-        {
-            
-            int searches = (int) _jobChangeIntensity;
-            
-            if (HasJob)
-            {
-                if (_employedAtCompany.RealwageRate < 5)
-                {
-                    _employedAtCompany.QuitJob(this);
-                    _employedAtCompany = null;
-                    _jobChangeIntensity = JobChangeLevel.Unmployed;
-                    HasJob = false;
-                    searches = (int) _jobChangeIntensity;
-                    SearchForNewJob(searches);
                     return;
                 }
-                var potentialCompanys = ServiceLocator.Instance.Companys
-                    .Where(x => x != _employedAtCompany && x.IsBlocked == false)
-                    .ToArray();
-                for (int i = 0; i < potentialCompanys.Length; i++)
+            }
+            UnemployedForMonth = HasJob ? 0 : UnemployedForMonth + 1;
+
+            averageFoodPrice *= MonthlyMinimumDemand;
+            decimal criticalBoundary = averageIncome > averageFoodPrice ? averageIncome : averageFoodPrice;
+            double demand = ServiceLocator.Instance.LaborMarket.DemandForWorkforce;
+            double demandModifier = (demand + 1001) / 1000;
+
+            decimal wage;
+            if (HasJob)
+            {
+                if (_jobContract.Wage >= criticalBoundary)
                 {
-                    if (searches == 0)
-                    {
-                        break;
-                    }
-
-                    searches--;
-
-                    var potentialCompany = potentialCompanys[i];
-                    if (potentialCompany.OpenPositions > 0 && potentialCompany.RealwageRate > _employedAtCompany.RealwageRate * 1.1)
-                    {
-                        _employedAtCompany.QuitJob(this);
-                        potentialCompany.SignJobOffer(this);
-                        _employedAtCompany = potentialCompany;
-                        _jobChangeIntensity = JobChangeLevel.Satisfied;
-                        searches = 0;
-                    }
+                    return;
                 }
+
+                wage = criticalBoundary;
+                //wage = criticalBoundary * demandModifier;
             }
             else
             {
-                SearchForNewJob(searches);
+                decimal modifier = UnemployedForMonth < 2 ? 0.95M : UnemployedForMonth < 6 ? 0.85M : UnemployedForMonth < 12 ? 0.75M : 0.5M;
+                wage = criticalBoundary * modifier;
+                //wage = criticalBoundary * modifier * demandModifier;
             }
-        }
+            
+            //Debug.Log("WORKER Wage set to " + wage + " with " + UnemployedForMonth + " months unemployed");
+            
+            wage = wage < 40 ? 40 : wage > 150 ? 150 : wage;
 
-        private void SearchForNewJob(int searches)
-        {
-            var potentialCompanys = ServiceLocator.Instance.Companys
-                .Where(x => x.IsBlocked == false)
-                .ToArray();
-            for (int i = 0; i < potentialCompanys.Length; i++)
-            {
-                if (searches == 0)
-                {
-                    break;
-                }
+            
+            var offer = new JobOffer(this, wage);
+            ServiceLocator.Instance.LaborMarket.AddJobOffer(offer);
+            Academy.Instance.StatsRecorder.Add("Market/Job-Offer-Price", (float)wage);
 
-                searches--;
-
-                var potentialCompany = ServiceLocator.Instance.Companys[i];
-                if (potentialCompany.OpenPositions > 0 && potentialCompany.OfferedWageRate >= Wage)
-                {
-                    potentialCompany.SignJobOffer(this);
-                    _employedAtCompany = potentialCompany;
-                    _jobChangeIntensity = JobChangeLevel.Satisfied;
-                    HasJob = true;
-                    searches = 0;
-                }
-            }
         }
     }
 }

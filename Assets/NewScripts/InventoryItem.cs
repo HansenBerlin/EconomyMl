@@ -4,13 +4,17 @@ namespace NewScripts
     {
         public ProductType Product { get; set; }
         public int Count { get; set; }
-        public double AvgPaid { get; set; }
+        public decimal AvgPaid { get; set; }
 
-        private long _totalBought = 0;
+        private long _totalBought;
 
-        public void Add(int count, double price)
+        public void Add(int count, decimal price)
         {
-            AvgPaid = (AvgPaid * _totalBought + price * count) / _totalBought + count;
+            if (count == 0 || _totalBought + count == 0)
+            {
+                return;
+            }
+            AvgPaid = (AvgPaid * _totalBought + price * count) / (_totalBought + count);
             Count += count;
             _totalBought += count;
         }

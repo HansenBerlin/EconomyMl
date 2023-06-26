@@ -1,24 +1,45 @@
+using Unity.MLAgents;
+
 namespace NewScripts
 {
     public class JobContract
     {
-        private readonly Worker _worker;
-        private readonly Company _employer;
-        private readonly double _wage;
+        private Worker Worker { get; }
+        public Company Employer { get; }
+        public decimal Wage { get; private set; }
+        public int RunsFor { get; set; }
+        public bool IsForceReduced { get; set; }
 
-        public JobContract(Worker worker, Company company, double wage)
+        public JobContract(Worker worker, Company company, decimal wage)
         {
-            _worker = worker;
-            _employer = company;
-            _wage = wage;
-            _employer.AddContract(this);
-            _worker.AddContract(this);
+            Worker = worker;
+            Employer = company;
+            Wage = wage;
+            Employer.AddContract(this);
+            Worker.AddContract(this);
         }
 
         public void PayWorker()
         {
-            _worker.Money += _wage;
-            _employer.Liquidity -= _wage;
+            Worker.Money += Wage;
+            Employer.Liquidity -= Wage;
+            IsForceReduced = false;
+        }
+
+        public void ReduceWage()
+        {
+            Wage = Wage / 2 > 20 ? Wage / 2 : 20;
+            IsForceReduced = true;
+        }
+        
+        
+        
+        public void QuitContract(bool isQuitByEmployer = false)
+        {
+            Academy.Instance.StatsRecorder.Add("Contract/WorkQuit", ++ServiceLocator.Instance.LaborMarket.CountRemoved);
+
+            Employer.RemoveContract(this);
+            Worker.RemoveJobContract(this, isQuitByEmployer);
         }
     }
 }

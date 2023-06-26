@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.MLAgents;
 using UnityEngine;
 using Random = System.Random;
 
@@ -10,11 +11,13 @@ namespace NewScripts
 {
     public class LaborMarket : MonoBehaviour
     {
-        
         public List<Worker> Workers { get; } = new();
         public List<JobOffer> JobOffers { get; } = new();
         public List<JobBid> JobBids { get; } = new();
         public List<JobContract> Contracts { get; } = new();
+        
+        public int CountAdded { get; private set; }
+        public int CountRemoved { get; set; }
 
         public int DemandForWorkforce { get; private set; }
         
@@ -26,10 +29,10 @@ namespace NewScripts
             }
         }
 
-        public double AveragePayment()
+        public decimal AveragePayment()
         {
-            double average = Workers.Select(x => x.Wage).Average();
-            return average == 0 ? 100 : average;
+            decimal average = Contracts.Count > 0 ? Contracts.Select(x => x.Wage).Average() : 100;
+            return average;
         }
 
         public void AddJobOffer(JobOffer offer)
@@ -37,23 +40,27 @@ namespace NewScripts
             JobOffers.Add(offer);
         }
         
-        public void AddJobBids(List<JobBid> bids)
+        public void AddJobBid(JobBid bid)
         {
-            JobBids.AddRange(bids);
+            JobBids.Add(bid);
         }
 
         public void ResolveMarket()
         {
-            var offers = JobOffers.OrderBy(x => x.Price).ToList();
-            var bids = JobBids.OrderByDescending(x => x.Price).ToList();
+            CountAdded = 0;
+            var offers = JobOffers.OrderBy(x => x.Wage).ToList();
+            var bids = JobBids.OrderByDescending(x => x.Wage).ToList();
 
             while (offers.Count > 0 && bids.Count > 0)
             {
                 var offer = offers[0];
                 var bid = bids[0];
-                if (offer.Price < bid.Price)
+                if (offer.Wage < bid.Wage)
                 {
-                    var contract = new JobContract(offer.Worker, bid.Employer, offer.Price);
+                    Academy.Instance.StatsRecorder.Add("Contract/WorkAdd", ++CountAdded);
+
+                    //var contract = new JobContract(offer.Worker, bid.Employer, offer.Wage);
+                    var contract = new JobContract(offer.Worker, bid.Employer, (bid.Wage + offer.Wage) / 2);
                     Contracts.Add(contract);
                     offers.Remove(offer);
                     bids.Remove(bid);
@@ -65,6 +72,8 @@ namespace NewScripts
             }
 
             DemandForWorkforce = bids.Count - offers.Count;
+            Academy.Instance.StatsRecorder.Add("Labor/Demand", DemandForWorkforce);
+
             JobOffers.Clear();
             JobBids.Clear();
         }

@@ -8,7 +8,7 @@ namespace NewScripts
         public const int DaysPerMonth = 20;
         public const int Workers = 1000;
         public const int Companys = 25;
-        public int OutputMultiplier { get; } = 10;
+        public int OutputMultiplier { get; } = 100;
 
     }
 }

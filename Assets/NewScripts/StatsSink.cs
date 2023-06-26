@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using TMPro;
+using Unity.MLAgents;
 using UnityEngine;
 
 namespace NewScripts
@@ -31,8 +32,8 @@ namespace NewScripts
         {
             var workers = ServiceLocator.Instance.LaborMarket.Workers;
             var companys = ServiceLocator.Instance.Companys;
-            double workersTotal = workers.Select(x => x.Money).Sum();
-            double companiesTotalLiquidity = companys.Select(x => x.Liquidity).Sum();
+            double workersTotal = (double)workers.Select(x => x.Money).Sum();
+            double companiesTotalLiquidity = (double)companys.Select(x => x.Liquidity).Sum();
             double companiesTotal = companiesTotalLiquidity;
             string text = $"{workersTotal:0} | {companiesTotal:0} | {workersTotal + companiesTotal:0}";
             circulatingMoneyText.GetComponent<TextMeshProUGUI>().text = text;
@@ -41,14 +42,16 @@ namespace NewScripts
         private void SetWorkerTexts()
         {
             var workers = ServiceLocator.Instance.LaborMarket.Workers;
-            double avg = workers.Select(x => x.Money).Average();
-            double min = workers.Select(x => x.Money).Min();
-            double max = workers.Select(x => x.Money).Max();
+            double avg = (double)workers.Select(x => x.Money).Average();
+            double min = (double)workers.Select(x => x.Money).Min();
+            double max = (double)workers.Select(x => x.Money).Max();
             BuildText(workerMoneyText, min, max, avg, true);
 
             double employed = workers.Count(x => x.HasJob);
             double quote = employed / workers.Count;
             string quoteText = $"{quote * 100:0.##} %";
+            Academy.Instance.StatsRecorder.Add("Labor/WorkPercnt", (float)quote * 100);
+
             workerEmploymentQuoteText.GetComponent<TextMeshProUGUI>().text = quoteText;
             
             //double avgB = workers.Select(x => x.DemandFulfilled).Average();
@@ -60,9 +63,9 @@ namespace NewScripts
         private void SetCompanyWagesText()
         {
             var companys = ServiceLocator.Instance.Companys;
-            double avg = companys.Select(x => x.OfferedWageRate).Average();
-            double min = companys.Select(x => x.OfferedWageRate).Min();
-            double max = companys.Select(x => x.OfferedWageRate).Max();
+            double avg = (double)companys.Select(x => x.OfferedWageRate).Average();
+            double min = (double)companys.Select(x => x.OfferedWageRate).Min();
+            double max = (double)companys.Select(x => x.OfferedWageRate).Max();
             BuildText(companyWagesText, min, max, avg, true);
         }
         
@@ -78,18 +81,18 @@ namespace NewScripts
         private void SetCompanyPricesText()
         {
             var companys = ServiceLocator.Instance.Companys;
-            double avg = companys.Select(x => x.ProductPrice).Average();
-            double min = companys.Select(x => x.ProductPrice).Min();
-            double max = companys.Select(x => x.ProductPrice).Max();
+            double avg = (double)companys.Select(x => x.ProductPrice).Average();
+            double min = (double)companys.Select(x => x.ProductPrice).Min();
+            double max = (double)companys.Select(x => x.ProductPrice).Max();
             BuildText(companyPricesText, min, max, avg, true);
         }
         
         private void SetCompanyReservesText()
         {
             var companys = ServiceLocator.Instance.Companys;
-            double avgL = companys.Select(x => x.Liquidity).Average();
-            double minL = companys.Select(x => x.Liquidity).Min();
-            double maxL = companys.Select(x => x.Liquidity).Max();
+            double avgL = (double)companys.Select(x => x.Liquidity).Average();
+            double minL = (double)companys.Select(x => x.Liquidity).Min();
+            double maxL = (double)companys.Select(x => x.Liquidity).Max();
             BuildText(companyReservesText,  minL, maxL,  avgL);
         }
 

@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8111681685524339272}
   - component: {fileID: 1709818764533265377}
   - component: {fileID: 6541046929888668071}
-  - component: {fileID: 8914454621094123692}
   m_Layer: 0
   m_Name: CompanyAgent
   m_TagString: Untagged
@@ -47,16 +46,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 10
-    NumStackedVectorObservations: 24
+    VectorObservationSize: 12
+    NumStackedVectorObservations: 12
     m_ActionSpec:
-      m_NumContinuousActions: 2
-      BranchSizes: e8030000e8030000
+      m_NumContinuousActions: 4
+      BranchSizes: 03000000
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: e0660840ab07edd4a96aa588cfa29ad8, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Company
@@ -86,19 +85,3 @@ MonoBehaviour:
   stageTwoBuilding: {fileID: 0}
   stageThreeBuilding: {fileID: 0}
   emergencySign: {fileID: 0}
-  startupSign: {fileID: 0}
-  id: 0
---- !u!114 &8914454621094123692
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 288674290692442596}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DecisionPeriod: 1
-  TakeActionsBetweenDecisions: 1

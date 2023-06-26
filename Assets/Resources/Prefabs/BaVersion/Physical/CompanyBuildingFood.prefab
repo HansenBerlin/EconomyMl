@@ -52,7 +52,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4257249363329776455
 Transform:
   m_ObjectHideFlags: 0
@@ -421,7 +421,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1587103107753170142
 Transform:
   m_ObjectHideFlags: 0
@@ -2425,10 +2425,42 @@ PrefabInstance:
     - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 62e4bdaa4f835e648968b31d1c519b50, type: 3}
+      objectReference: {fileID: 5022602860645237092, guid: 8c031379ef38c1b47b61883f7ddb417a, type: 3}
+    - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
+      propertyPath: m_BehaviorName
+      value: Company
+      objectReference: {fileID: 0}
     - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
       propertyPath: m_UseChildSensors
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
+      propertyPath: m_BrainParameters.VectorActionSize.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
+      propertyPath: m_BrainParameters.NumStackedVectorObservations
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
+      propertyPath: m_BrainParameters.VectorActionSize.Array.data[0]
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
+      propertyPath: m_BrainParameters.m_ActionSpec.BranchSizes.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
+      propertyPath: m_BrainParameters.m_ActionSpec.m_NumContinuousActions
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
+      propertyPath: m_BrainParameters.m_ActionSpec.BranchSizes.Array.data[0]
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6541046929888668071, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
       propertyPath: startupSign
@@ -10427,6 +10459,10 @@ PrefabInstance:
     - target: {fileID: 117208, guid: c149960d9485b394e8d52ae30578e3f3, type: 3}
       propertyPath: m_Name
       value: SM_Prop_Barrier_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 117208, guid: c149960d9485b394e8d52ae30578e3f3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 481524, guid: c149960d9485b394e8d52ae30578e3f3, type: 3}
       propertyPath: m_RootOrder

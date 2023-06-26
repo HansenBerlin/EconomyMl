@@ -86,113 +86,145 @@ namespace NewScripts
                 }
                 var go = Instantiate(foodCompanyPrefab);
                 Company company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go);
-                company.Init(companiesPerType, isTraining, writeToDatabase);
+                company.Liquidity = 70000 / (decimal)companiesPerType;
                 ServiceLocator.Instance.Companys.Add(company);
                 xPos++;
             }
 
-            foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
-            {
-                var randomIndices = Utilitis.GenerateRandomArray(0, 
-                    ServiceLocator.Instance.Companys.Count, 
-                    (int)Math.Ceiling((decimal)companiesPerType / 10));
-                List<Company> suppliers = new();
-                foreach (int i in randomIndices)
-                {
-                    suppliers.Add(ServiceLocator.Instance.Companys[i]);
-                }
-                worker.InitialSuppliersSetup(suppliers);
-            }
-
             _isInitDone = true;
         }
-        
-        private int fixedFrames { get; set; }= 0;
 
-        private int lastday;
-        public void FixedUpdate()
+        private bool DecisionRequested;
+        
+        public void Update()
         {
             if (_isInitDone == false)
             {
                 SetupGameObjects();
             }
-            fixedFrames++;
-            if (fixedFrames >= 4)
-            {
-                fixedFrames = 0;
-                if (isThrottled == false)
-                {
-                    ServiceLocator.Instance.FlowController.IncrementDay();
-                }
-            }
-            
-            if (lastday == ServiceLocator.Instance.FlowController.Day)
+
+            if (isThrottled)
             {
                 return;
             }
-            roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
 
-            var workers = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.LaborMarket.Workers);
-            var companies = Utilitis.GenerateRandomLoop(ServiceLocator.Instance.Companys);
-            if (ServiceLocator.Instance.FlowController.Day == 20)
+            if (ServiceLocator.Instance.FlowController.Proceed())
             {
-                foreach (var company in companies)
-                {
-                    company.EndMonth();
-                }
-                foreach (var worker in workers)
-                {
-                    worker.SetReservationWage();
-                }
+                StartCoroutine(Run());
             }
-            else if (ServiceLocator.Instance.FlowController.Day == 2)
+            else if (DecisionRequested == false)
             {
-                foreach (var worker in workers)
+                DecisionRequested = true;
+                foreach (var company in ServiceLocator.Instance.Companys)
                 {
-                    ServiceLocator.Instance.Companys = ServiceLocator.Instance.Companys.OrderBy(x => x.ProductPrice).ToList();
-                    worker.SearchNewSupplier();
-                    
-                    ServiceLocator.Instance.Companys = ServiceLocator.Instance.Companys.OrderByDescending(x => x.WorkersCount).ToList();
-                    worker.SearchJob();
-                    worker.SetDailySpending();
+                    company.RequestDecision();
                 }
             }
-            foreach (var company in companies.Where(x => x.IsBlocked == false))
+        }
+
+        private IEnumerator Run()
+        {
+            decimal averageIncome = ServiceLocator.Instance.LaborMarket.AveragePayment();
+            decimal averageFoodPrice = ServiceLocator.Instance.ProductMarket.AveragePrice();
+            foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
             {
-                company.StartDay();
+                worker.SearchForJob(averageIncome, averageFoodPrice);
             }
-            foreach (var worker in workers)
+                
+            ServiceLocator.Instance.LaborMarket.ResolveMarket();
+                
+            foreach (var company in ServiceLocator.Instance.Companys)
             {
-                worker.Buy();
+                company.Produce();
             }
+                
+            foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
+            {
+                worker.AddProductBids();
+            }
+                
+            ServiceLocator.Instance.ProductMarket.ResolveMarket();
+            
+            foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
+            {
+                worker.EndMonth();
+            }
+                
+            foreach (var company in ServiceLocator.Instance.Companys)
+            {
+                company.EndMonth();
+            }
+                
+            ServiceLocator.Instance.FlowController.IncrementMonth();
             ServiceLocator.Instance.Stats.UpdateStats();
-            lastday = ServiceLocator.Instance.FlowController.Day;
+            roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
+            DecisionRequested = false;
+            yield return new WaitForFixedUpdate();
         }
 
         public void RequestStep()
         {
-            if (_currentActionStep == 0)
+            if (_currentActionStep == 1)
             {
-                //StartCoroutine(StartMonthStep());
-                ServiceLocator.Instance.FlowController.IncrementDay();
-                _currentActionStep++;
-            }
-            else if (_currentActionStep == 1)
-            {
-                ServiceLocator.Instance.FlowController.IncrementDay();
-                if (ServiceLocator.Instance.FlowController.Day == 19)
+                foreach (var company in ServiceLocator.Instance.Companys)
                 {
-                    _currentActionStep++;
+                    company.RequestDecision();
                 }
+                ServiceLocator.Instance.Stats.UpdateStats();
             }
             else if (_currentActionStep == 2)
             {
-                ServiceLocator.Instance.FlowController.IncrementDay();
-                _currentActionStep = 0;
+                decimal averageIncome = ServiceLocator.Instance.LaborMarket.AveragePayment();
+                decimal averageFoodPrice = ServiceLocator.Instance.ProductMarket.AveragePrice();
+                foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
+                {
+                    worker.SearchForJob(averageIncome, averageFoodPrice);
+                }
+                
+                ServiceLocator.Instance.LaborMarket.ResolveMarket();
+                ServiceLocator.Instance.Stats.UpdateStats();
             }
+            else if (_currentActionStep == 3)
+            {
+                foreach (var company in ServiceLocator.Instance.Companys)
+                {
+                    company.Produce();
+                }
+                
+                foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
+                {
+                    worker.AddProductBids();
+                }
+                
+                ServiceLocator.Instance.ProductMarket.ResolveMarket();
+                ServiceLocator.Instance.Stats.UpdateStats();
+            }
+            else if (_currentActionStep == 4)
+            {
+                foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
+                {
+                    worker.EndMonth();
+                }
+                
+                foreach (var company in ServiceLocator.Instance.Companys)
+                {
+                    company.EndMonth();
+                }
+                
+                ServiceLocator.Instance.FlowController.IncrementMonth();
+                ServiceLocator.Instance.Stats.UpdateStats();
+                roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
+            }
+            
 
-            //_currentActionStep = _currentActionStep == 2 ? 0 : _currentActionStep + 1;
-            string buttonCaption = _currentActionStep == 1 ? "Tagesphase starten" : _currentActionStep == 2 ? "Monat beenden" : "Neuer Monat";
+            _currentActionStep = _currentActionStep == 4 ? 1 : _currentActionStep + 1;
+            string buttonCaption = _currentActionStep == 1
+                ? "AI Decision"
+                : _currentActionStep == 2
+                    ? "Arbeitsmarkt"
+                    : _currentActionStep == 3
+                        ? "Gütermarkt"
+                        : "Monatsende";
             buttonText.GetComponent<TextMeshProUGUI>().text = buttonCaption;
         }
     }

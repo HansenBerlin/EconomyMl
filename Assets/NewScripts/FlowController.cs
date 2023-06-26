@@ -10,7 +10,7 @@ namespace NewScripts
     {
         public int Year { get; set; } = 1;
         public int Month { get; set; } = 1;
-        public int Day { get; set; } = 1;
+        //public int Day { get; set; } = 1;
         public int StartMonthBusinessDecisionsMade { get; set; }
         
         public int StartMonthHouseholdDecisionMade
@@ -28,14 +28,14 @@ namespace NewScripts
         private int _startMonthHouseholdDecisionMade;
         //public SimulationStep Step = SimulationStep.StartMonthBusiness;
 
-        public void IncrementDay()
+        public void IncrementMonth()
         {
-            Day++;
-            if (Day == 21)
-            {
-                Day = 1;
-                Month++;
-            }
+            //Day++;
+            Month++;
+            //if (Day == 21)
+            //{
+            //    Day = 1;
+            //}
             if (Month == 13)
             {
                 Month = 1;
@@ -43,31 +43,9 @@ namespace NewScripts
             }
         }
 
-        public void IncrementMonth()
-        {
-            //StartMonthBusinessDecisionsMade = 0;
-            //Step = SimulationStep.StartMonthBusiness;
-            if (Month == 12)
-            {
-                Year++;
-                Month = 1;
-            }
-            else
-            {
-                Month++;
-            }
-        }
-
-        public void Reset()
-        {
-            Year = 1;
-            Month = 1;
-            Day = 1;
-        }
-
         public string Current()
         {
-            return $"{Day}.{Month}.{Year}";
+            return $"{Month}.{Year}";
         }
         
         public IEnumerator WaitUntilStartMonthHouseholdPhase (Action whenDone)
@@ -86,11 +64,19 @@ namespace NewScripts
         public void CommitDecision()
         {
             StartMonthBusinessDecisionsMade++;
+            
         }
         
-        public void ResetCounter()
+        public bool Proceed()
         {
-            StartMonthBusinessDecisionsMade = 0;
+            if (StartMonthBusinessDecisionsMade == ServiceLocator.Instance.Companys.Count)
+            {
+                StartMonthBusinessDecisionsMade = 0;
+                return true;
+                //IncrementMonth();
+            }
+
+            return false;
         }
     }
 }

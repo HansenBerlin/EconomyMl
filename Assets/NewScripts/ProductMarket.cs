@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.MLAgents;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using Random = System.Random;
@@ -14,34 +16,36 @@ namespace NewScripts
     
     public class ProductMarket : MonoBehaviour
     {
-        private List<double> _salesHistory = new();
+        private readonly List<decimal> _salesHistory = new();
         //private LaborMarket _laborMarket;
         //public CompanyPayEvent payCompanyEvent;
-        
-        public List<ProductOffer> ProductOffers { get; } = new();
-        public List<ProductBid> ProductBids { get; } = new();
+
+        private List<ProductOffer> ProductOffers { get; } = new();
+        private List<ProductBid> ProductBids { get; } = new();
         public int DemandForProduct { get; private set; }
 
         private readonly Random _rand = new();
+        private int CountAdded { get; set; }
 
-        public double AveragePrice()
+        public decimal AveragePrice()
         {
-            double average = _salesHistory.Average();
-            return average == 0 ? 1 : average;
+            decimal average = _salesHistory.Count > 0 ? _salesHistory.Average() : 1;
+            return average;
         }
 
-        public void AddBids(List<ProductBid> bids)
+        public void AddBid(ProductBid bid)
         {
-            ProductBids.AddRange(bids);
+            ProductBids.Add(bid);
         }
         
-        public void AddOffers(List<ProductOffer> offers)
+        public void AddOffer(ProductOffer offer)
         {
-            ProductOffers.AddRange(offers);
+            ProductOffers.Add(offer);
         }
         
         public void ResolveMarket()
         {
+            CountAdded = 0;
             var offers = ProductOffers.OrderBy(x => x.Price).ToList();
             var bids = ProductBids.OrderByDescending(x => x.Price).ToList();
 
@@ -53,22 +57,32 @@ namespace NewScripts
                 {
                     if (offer.Amount < bid.Amount)
                     {
+                        Academy.Instance.StatsRecorder.Add("Market/P-Add", CountAdded+=offer.Amount);
+
                         bid.Amount -= offer.Amount;
-                        bid.Buyer.FullfillBid(offer.Product.ProductTypeOutput, offer.Amount, offer.Price);
+                        bid.Buyer.FullfillBid(offer.Product, offer.Amount, offer.Price);
+                        offer.Seller.FullfillBid(offer.Product, offer.Amount, offer.Price);
                         offers.Remove(offer);
                     }
                     else if (offer.Amount > bid.Amount)
                     {
+                        Academy.Instance.StatsRecorder.Add("Market/P-Add", CountAdded+=bid.Amount);
+
                         offer.Amount -= bid.Amount;
-                        bid.Buyer.FullfillBid(offer.Product.ProductTypeOutput, bid.Amount, offer.Price);
+                        bid.Buyer.FullfillBid(offer.Product, bid.Amount, offer.Price);
+                        offer.Seller.FullfillBid(offer.Product, bid.Amount, offer.Price);
                         bids.Remove(bid);
                     }
                     else
                     {
-                        bid.Buyer.FullfillBid(offer.Product.ProductTypeOutput, bid.Amount, offer.Price);
+                        Academy.Instance.StatsRecorder.Add("Market/P-Add", CountAdded+=bid.Amount);
+
+                        bid.Buyer.FullfillBid(offer.Product, bid.Amount, offer.Price);
+                        offer.Seller.FullfillBid(offer.Product, bid.Amount, offer.Price);
                         offers.Remove(offer);
                         bids.Remove(bid);
                     }
+                    _salesHistory.Add(offer.Price);
                 }
                 else
                 {
@@ -77,6 +91,8 @@ namespace NewScripts
             }
 
             DemandForProduct = bids.Count - offers.Count;
+            Academy.Instance.StatsRecorder.Add("Market/Demand", DemandForProduct);
+
             ProductOffers.Clear();
             ProductBids.Clear();
         }
