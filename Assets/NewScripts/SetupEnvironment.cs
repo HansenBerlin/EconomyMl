@@ -15,7 +15,9 @@ namespace NewScripts
     public class SetupEnvironment : MonoBehaviour
     {
         public GameObject foodCompanyPrefab;
-        public int companiesPerType = 100;
+        public GameObject foodCompanyPrefabPlayer;
+        public int aiCompaniesPerType = 100;
+        public int playerCompaniesPerType = 1;
         
         public bool isThrottled;
         public bool isTraining;
@@ -30,7 +32,6 @@ namespace NewScripts
         {
             if (ServiceLocator.Instance is not null && _isInitDone == false)
             {
-
                 ServiceLocator.Instance.Settings.IsTraining = isTraining;
                 ServiceLocator.Instance.Settings.IsThrottled = isThrottled;
                 ServiceLocator.Instance.Settings.WriteToDatabase = writeToDatabase;
@@ -39,20 +40,23 @@ namespace NewScripts
         }
         
 
-        private Company GetFromGameObject(float xPos, float zPos, GameObject instance)
+        private ICompany GetFromGameObject(float xPos, float zPos, GameObject instance, bool isAi)
         {
             //var go = Instantiate(FoodCompanyPrefab);
             instance.transform.position = new Vector3(xPos, 0, zPos);
             Transform[] transforms = instance.GetComponentsInChildren<Transform>();
-            Company company = null;
+            ICompany company = null;
  
             foreach (var transform in transforms)
             {
-                company = transform.GetComponent<Company>();
+                company = transform.GetComponent<ICompany>();
                 if (company is not null)
                 {
-                    var agent = transform.GetComponent<BehaviorParameters>();
-                    agent.BehaviorType = isTraining ? BehaviorType.Default : BehaviorType.InferenceOnly;
+                    if (isAi)
+                    {
+                        var agent = transform.GetComponent<BehaviorParameters>();
+                        agent.BehaviorType = isTraining ? BehaviorType.Default : BehaviorType.InferenceOnly;
+                    }
                     break;
                 }
             }
@@ -77,17 +81,28 @@ namespace NewScripts
             //ProductTemplateFactory.CompanysPerType = companysPerType;
             int zPos = 0;
             int xPos = 0;
-            for (var i = 0; i < companiesPerType; i++)
+            decimal liquidity = 70000 / (decimal) playerCompaniesPerType + playerCompaniesPerType;
+            for (var i = 0; i < aiCompaniesPerType + playerCompaniesPerType; i++)
             {
                 if (i != 0 && i % 10 == 0)
                 {
                     zPos++;
                     xPos = 0;
                 }
-                var go = Instantiate(foodCompanyPrefab);
-                Company company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go);
-                company.Liquidity = 70000 / (decimal)companiesPerType;
-                ServiceLocator.Instance.Companys.Add(company);
+                if(i < aiCompaniesPerType)
+                {
+                    var go = Instantiate(foodCompanyPrefab);
+                    ICompany company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go, true);
+                    company.Liquidity = liquidity;
+                    ServiceLocator.Instance.Companys.Add(company);
+                }
+                else
+                {
+                    var go = Instantiate(foodCompanyPrefabPlayer);
+                    ICompany company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go, false);
+                    company.Liquidity = liquidity;
+                    ServiceLocator.Instance.Companys.Add(company);
+                }
                 xPos++;
             }
 
@@ -117,7 +132,7 @@ namespace NewScripts
                 DecisionRequested = true;
                 foreach (var company in ServiceLocator.Instance.Companys)
                 {
-                    company.RequestDecision();
+                    company.RequestMonthlyDecision();
                 }
             }
         }
@@ -168,7 +183,7 @@ namespace NewScripts
             {
                 foreach (var company in ServiceLocator.Instance.Companys)
                 {
-                    company.RequestDecision();
+                    company.RequestMonthlyDecision();
                 }
                 ServiceLocator.Instance.Stats.UpdateStats();
             }

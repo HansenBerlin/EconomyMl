@@ -15,7 +15,7 @@ namespace NewScripts
         public ProductMarket ProductMarket { get; private set; }
         public LaborMarket LaborMarket { get; private set; }
         public CompanyInfoPopup PopupInfoService { get; private set; }
-        public List<Company> Companys { get; set; } = new();
+        public List<ICompany> Companys { get; set; } = new();
         public FlowController FlowController { get; } = new();
         public SetupSettings Settings { get; } = new();
         public StatsSink Stats { get; private set; }

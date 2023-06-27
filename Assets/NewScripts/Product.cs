@@ -13,11 +13,11 @@ namespace NewScripts
     public class ProductOffer
     {
         public ProductType Product { get; }
-        public Company Seller { get; }
+        public ICompany Seller { get; }
         public decimal Price { get; }
         public int Amount { get; set; }
         
-        public ProductOffer(ProductType product, Company seller, decimal price, int amount)
+        public ProductOffer(ProductType product, ICompany seller, decimal price, int amount)
         {
             Product = product;
             Seller = seller;
@@ -46,10 +46,10 @@ namespace NewScripts
     
     public class JobBid
     {
-        public Company Employer { get; }
+        public ICompany Employer { get; }
         public decimal Wage { get; }
         
-        public JobBid(Company employer, decimal wage)
+        public JobBid(ICompany employer, decimal wage)
         {
             Employer = employer;
             Wage = wage;

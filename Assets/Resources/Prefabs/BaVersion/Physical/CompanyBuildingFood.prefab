@@ -2425,7 +2425,7 @@ PrefabInstance:
     - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 8c031379ef38c1b47b61883f7ddb417a, type: 3}
+      objectReference: {fileID: 5022602860645237092, guid: 51f435a9110ee0d4faf56d0e908ea2f9, type: 3}
     - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
       propertyPath: m_BehaviorName
       value: Company

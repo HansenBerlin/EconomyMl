@@ -5,12 +5,12 @@ namespace NewScripts
     public class JobContract
     {
         private Worker Worker { get; }
-        public Company Employer { get; }
+        public ICompany Employer { get; }
         public decimal Wage { get; private set; }
         public int RunsFor { get; set; }
         public bool IsForceReduced { get; set; }
 
-        public JobContract(Worker worker, Company company, decimal wage)
+        public JobContract(Worker worker, ICompany company, decimal wage)
         {
             Worker = worker;
             Employer = company;

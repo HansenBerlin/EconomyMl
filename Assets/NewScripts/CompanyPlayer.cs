@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using Agents;
 using MathNet.Numerics.LinearAlgebra.Single.Solvers;
+using Mirror;
 using NewScripts.Http;
 using NewScripts.Http;
 using TMPro;
@@ -18,7 +19,7 @@ using UnityEngine.UI;
 
 namespace NewScripts
 {
-    public class Company : Agent, ICompany
+    public class CompanyPlayer : NetworkBehaviour, ICompany
     {
         //public GameObject canvasInfo;
         public GameObject stageZeroBuilding;
@@ -32,7 +33,9 @@ namespace NewScripts
         public decimal OfferedWageRate { get; private set; } = 100;
         public decimal Liquidity { get; set; }
         public int Reputation { get; private set; }
+        public double Reward { get; private set; }
         public int LifetimeMonths { get; private set; } = 1;
+        
         public int Id => GetInstanceID();
         private int _salesInMonth = 0;
         private int _salesLastMonth = 0;
@@ -43,12 +46,13 @@ namespace NewScripts
         private bool _writeToDatabase;
         private int _currentActiveIndex = -1;
         //private int _startUpRounds = 12;
+        public PlayerDecisionRequestEvent DecisionRequestEvent { get; private set; }
         
         private void Start()
         {
             _isTraining = ServiceLocator.Instance.Settings.IsTraining;
             _writeToDatabase = ServiceLocator.Instance.Settings.WriteToDatabase;
-            //SetupAgent();
+            DecisionRequestEvent ??= new PlayerDecisionRequestEvent();
         }
 
         private void Update() {  
@@ -61,8 +65,6 @@ namespace NewScripts
                 }  
             } 
         }
-    
-    
         
         private void UpdateCanvasText(bool isClick)
         {
@@ -111,45 +113,15 @@ namespace NewScripts
             }
         }
 
-        public void RequestMonthlyDecision()
-        {
-            RequestDecision();
-        }
 
-        public override void OnEpisodeBegin()
+        private void AddReward(double reward)
         {
-            SetupAgent();
+            Reward += reward;
         }
         
-        public override void CollectObservations(VectorSensor sensor)
-        {
-            sensor.AddObservation((float)Liquidity);
-            sensor.AddObservation(_jobContracts.Count);
-            sensor.AddObservation((float)ProductPrice);
-            sensor.AddObservation(ProductStock);
-            sensor.AddObservation(OpenPositions);
-            sensor.AddObservation(_salesLastMonth);
-            sensor.AddObservation(_salesInMonth);
-            sensor.AddObservation((float)OfferedWageRate);
-            sensor.AddObservation((float)ServiceLocator.Instance.LaborMarket.AveragePayment());
-            sensor.AddObservation((float)ServiceLocator.Instance.ProductMarket.AveragePrice());
-            sensor.AddObservation((float)ServiceLocator.Instance.ProductMarket.DemandForProduct);
-            sensor.AddObservation((float)ServiceLocator.Instance.LaborMarket.DemandForWorkforce);
-        }
-
-        
-        public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
-        {
-            if (_jobContracts.Count == 0)
-            {
-                actionMask.SetActionEnabled(0, 0, false);
-                actionMask.SetActionEnabled(0, 2, false);
-            }
-        }
-
         private int _lastMonth;
         
-        public override void OnActionReceived(ActionBuffers actionBuffers)
+        public void SendDecision(decimal price, int workerChange, decimal wage)
         {
             UpdateCanvasText(false);
             if (_lastMonth == ServiceLocator.Instance.FlowController.Month)
@@ -159,27 +131,23 @@ namespace NewScripts
             
             _lastMonth = ServiceLocator.Instance.FlowController.Month;
 
-            int workerDecision = actionBuffers.DiscreteActions[0];
-            float newWage = MapValue(actionBuffers.ContinuousActions[0], 20, 200);
-            float newPrice = MapValue(actionBuffers.ContinuousActions[1], 0.1F, 2F);
-            
-            ProductPrice = (decimal)newPrice;
-            OfferedWageRate = (decimal)newWage;
+            ProductPrice = price;
+            OfferedWageRate = wage;
 
-            if (workerDecision == 1)
+            if (workerChange > 0)
             {
-                OpenPositions = (int)MapValue(actionBuffers.ContinuousActions[2], 1, 50);
+                OpenPositions = workerChange;
                 for (int i = 0; i < OpenPositions; i++)
                 {
-                    var jobBid = new JobBid(this, (decimal)newWage);
+                    var jobBid = new JobBid(this, (decimal)wage);
                     ServiceLocator.Instance.LaborMarket.AddJobBid(jobBid);
-                    Academy.Instance.StatsRecorder.Add("Market/Job-Bid-Price", newWage);
+                    Academy.Instance.StatsRecorder.Add("Market/Job-Bid-Price", (float)wage);
                 }
             }
 
-            if (workerDecision == 2 && _jobContracts.Count > 0)
+            if (workerChange < 0 && _jobContracts.Count > 0)
             {
-                int fireWorkers = (int)MapValue(actionBuffers.ContinuousActions[3], 1, _jobContracts.Count);
+                int fireWorkers = workerChange * -1;
                 for (var i = _jobContracts.Count - 1; i >= 0; i--)
                 {
                     if (fireWorkers == 0)
@@ -192,7 +160,6 @@ namespace NewScripts
                         contract.QuitContract();
                         fireWorkers--;
                         Academy.Instance.StatsRecorder.Add("Labor/Fire", 1);
-
                     }
                 }
             }
@@ -202,11 +169,10 @@ namespace NewScripts
             //UpdateCanvasText(false);
             ServiceLocator.Instance.FlowController.CommitDecision();
         }
-        
-        public static float MapValue(float value, float minValue, float maxValue)
+
+        public void RequestMonthlyDecision()
         {
-            float mappedValue = (value + 1f) * 0.5f * (maxValue - minValue) + minValue;
-            return mappedValue;
+            DecisionRequestEvent.Invoke(_jobContracts.Count, OfferedWageRate, ProductPrice);
         }
 
         public void Produce()
@@ -289,16 +255,6 @@ namespace NewScripts
             PaySocialFare();
             
             LifetimeMonths++;
-            Academy.Instance.StatsRecorder.Add("Company/Liquidity", (float)Liquidity);
-            Academy.Instance.StatsRecorder.Add("Company/LastSales", _salesLastMonth);
-            Academy.Instance.StatsRecorder.Add("Company/CurrentSales", _salesInMonth);
-            //Academy.Instance.StatsRecorder.Add("Company/ProfitMonth", (float)Liquidity);
-            Academy.Instance.StatsRecorder.Add("Company/Lifetime", LifetimeMonths);
-            Academy.Instance.StatsRecorder.Add("Company/Rep", Reputation);
-            Academy.Instance.StatsRecorder.Add("Product/Price", (float)ProductPrice);
-            Academy.Instance.StatsRecorder.Add("Product/Stock", ProductStock);
-            Academy.Instance.StatsRecorder.Add("Labor/Workers", _jobContracts.Count);
-            Academy.Instance.StatsRecorder.Add("Labor/Open", OpenPositions);
             _salesLastMonth = _salesInMonth;
             _salesInMonth = 0;
             
@@ -310,7 +266,7 @@ namespace NewScripts
             {
                 AddReward(1000F);
                 //ProductStock = 0;
-                EndEpisode();
+                //EndEpisode();
             }
             else if (Reputation <= -1000)
             {
@@ -319,9 +275,9 @@ namespace NewScripts
                     //var contract = _jobContracts[i];
                     //contract.QuitContract();
                 }
-                SetReward(-100F);
+                AddReward(-100F);
                 //ProductStock = 0;
-                EndEpisode();
+                //EndEpisode();
             }
             
             SetBuilding();
