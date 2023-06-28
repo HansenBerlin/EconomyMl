@@ -4,7 +4,7 @@ namespace NewScripts
     {
         public ProductType Product { get; set; }
         public int Count { get; set; }
-        public decimal AvgPaid { get; set; }
+        public decimal AvgPaid { get; set; } = 1;
 
         private long _totalBought;
 
@@ -21,7 +21,7 @@ namespace NewScripts
 
         public void Consume(int count)
         {
-            Count -= count;
+            Count = Count - count < 0 ? 0 : Count - count;
         }
     }
 }

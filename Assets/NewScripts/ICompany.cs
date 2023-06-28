@@ -30,7 +30,10 @@ namespace NewScripts
         void AddContract(JobContract contract);
         void RemoveContract(JobContract contract);
         void RequestMonthlyDecision();
+        public void SendDecision(decimal price, int workerChange, decimal wage);
         void Produce();
         void EndMonth();
+        PlayerDecisionEvent DecisionRequestEventProp { get; }
+
     }
 }

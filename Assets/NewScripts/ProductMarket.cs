@@ -20,12 +20,19 @@ namespace NewScripts
         //private LaborMarket _laborMarket;
         //public CompanyPayEvent payCompanyEvent;
 
+        public ProductMarketUpdateEvent updateEvent;
+
         private List<ProductOffer> ProductOffers { get; } = new();
         private List<ProductBid> ProductBids { get; } = new();
         public int DemandForProduct { get; private set; }
 
         private readonly Random _rand = new();
         private int CountAdded { get; set; }
+
+        private void Awake()
+        {
+            updateEvent ??= new ProductMarketUpdateEvent();
+        }
 
         public decimal AveragePrice()
         {
@@ -45,6 +52,7 @@ namespace NewScripts
         
         public void ResolveMarket()
         {
+            updateEvent.Invoke(ProductOffers, ProductBids);
             CountAdded = 0;
             var offers = ProductOffers.OrderBy(x => x.Price).ToList();
             var bids = ProductBids.OrderByDescending(x => x.Price).ToList();
@@ -96,15 +104,5 @@ namespace NewScripts
             ProductOffers.Clear();
             ProductBids.Clear();
         }
-
-        public void Awake()
-        {
-            //if (payCompanyEvent == null)
-            //{
-            //    payCompanyEvent = new CompanyPayEvent();
-            //}
-        }
-
-        
     }
 }

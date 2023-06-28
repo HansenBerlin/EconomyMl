@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using TMPro;
 using Unity.MLAgents;
 using UnityEngine;
@@ -7,6 +8,7 @@ namespace NewScripts
 {
     public class StatsSink : MonoBehaviour
     {
+        public TextMeshProUGUI workerBidText;
         public TextMeshProUGUI workerMoneyText;
         public TextMeshProUGUI workerDemandFullfilledText;
         public TextMeshProUGUI workerEmploymentQuoteText;
@@ -54,10 +56,22 @@ namespace NewScripts
 
             workerEmploymentQuoteText.GetComponent<TextMeshProUGUI>().text = quoteText;
             
-            //double avgB = workers.Select(x => x.DemandFulfilled).Average();
-            //double minB = workers.Select(x => x.DemandFulfilled).Min();
-            //double maxB = workers.Select(x => x.DemandFulfilled).Max();
-            //BuildText(workerDemandFullfilledText, minB, maxB, avgB);
+            try
+            {
+                double avgB = workers.Select(x => x._consumeInMonth).Average();
+                double minB = workers.Select(x => x._consumeInMonth).Min();
+                double maxB = workers.Select(x => x._consumeInMonth).Max();
+                BuildText(workerDemandFullfilledText, minB, maxB, avgB);
+                
+                double avgC = (double)workers.Select(x => x.BidPrice).Average();
+                double minC = (double)workers.Select(x => x.BidPrice).Min();
+                double maxC = (double)workers.Select(x => x.BidPrice).Max();
+                BuildText(workerBidText, minC, maxC, avgC, true);
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
         }
         
         private void SetCompanyWagesText()

@@ -19,7 +19,7 @@ using UnityEngine.UI;
 
 namespace NewScripts
 {
-    public class CompanyPlayer : NetworkBehaviour, ICompany
+    public class CompanyPlayer : MonoBehaviour, ICompany
     {
         //public GameObject canvasInfo;
         public GameObject stageZeroBuilding;
@@ -46,13 +46,14 @@ namespace NewScripts
         private bool _writeToDatabase;
         private int _currentActiveIndex = -1;
         //private int _startUpRounds = 12;
-        public PlayerDecisionRequestEvent DecisionRequestEvent { get; private set; }
+        private PlayerDecisionEvent DecisionRequestEvent;
+        public PlayerDecisionEvent DecisionRequestEventProp => DecisionRequestEvent;
         
-        private void Start()
+        private void Awake()
         {
             _isTraining = ServiceLocator.Instance.Settings.IsTraining;
             _writeToDatabase = ServiceLocator.Instance.Settings.WriteToDatabase;
-            DecisionRequestEvent ??= new PlayerDecisionRequestEvent();
+            DecisionRequestEvent ??= new PlayerDecisionEvent();
         }
 
         private void Update() {  
@@ -72,9 +73,9 @@ namespace NewScripts
             {
                 ServiceLocator.Instance.PopupInfoService.SetTexts(new List<string>
                 {
-                    $"{Liquidity:0.##}", $"{_salesInMonth}",
+                    $"{Liquidity:0.##}", $"{_salesLastMonth}",
                     _jobContracts.Count.ToString(), ProductStock.ToString(),
-                    $"{OfferedWageRate:0}", $"{OfferedWageRate:0}", 
+                    $"{OfferedWageRate:0}", $"{(_jobContracts.Count > 0 ? _jobContracts.Select(x => x.Wage).Average() : 100):0}", 
                     $"{ProductPrice:0.##}", $"{LifetimeMonths}"
                 }, Id);
             }
@@ -123,7 +124,6 @@ namespace NewScripts
         
         public void SendDecision(decimal price, int workerChange, decimal wage)
         {
-            UpdateCanvasText(false);
             if (_lastMonth == ServiceLocator.Instance.FlowController.Month)
             {
                 return;
@@ -134,6 +134,14 @@ namespace NewScripts
             ProductPrice = price;
             OfferedWageRate = wage;
 
+            foreach (var contract in _jobContracts)
+            {
+                if (contract.Wage < OfferedWageRate)
+                {
+                    contract.Wage = OfferedWageRate;
+                }
+            }
+            
             if (workerChange > 0)
             {
                 OpenPositions = workerChange;
@@ -141,7 +149,6 @@ namespace NewScripts
                 {
                     var jobBid = new JobBid(this, (decimal)wage);
                     ServiceLocator.Instance.LaborMarket.AddJobBid(jobBid);
-                    Academy.Instance.StatsRecorder.Add("Market/Job-Bid-Price", (float)wage);
                 }
             }
 
@@ -159,7 +166,6 @@ namespace NewScripts
                     {
                         contract.QuitContract();
                         fireWorkers--;
-                        Academy.Instance.StatsRecorder.Add("Labor/Fire", 1);
                     }
                 }
             }
@@ -167,6 +173,8 @@ namespace NewScripts
 
             SetBuilding();
             //UpdateCanvasText(false);
+            UpdateCanvasText(false);
+
             ServiceLocator.Instance.FlowController.CommitDecision();
         }
 
@@ -182,8 +190,6 @@ namespace NewScripts
             {
                 var offer = new ProductOffer(ProductType.Food, this, ProductPrice, ProductStock);
                 ServiceLocator.Instance.ProductMarket.AddOffer(offer);
-                Academy.Instance.StatsRecorder.Add("Market/P-OfferCount", ProductStock);
-                Academy.Instance.StatsRecorder.Add("Market/P-OfferPrice", (float)ProductPrice);
             }
             //UpdateCanvasText(false);
         }
@@ -252,7 +258,7 @@ namespace NewScripts
                 AddReward(-0.11F);
             }
 
-            PaySocialFare();
+            //PaySocialFare();
             
             LifetimeMonths++;
             _salesLastMonth = _salesInMonth;
@@ -281,6 +287,8 @@ namespace NewScripts
             }
             
             SetBuilding();
+            UpdateCanvasText(false);
+
 
             
             //ServiceLocator.Instance.FlowController.CommitDecision();
@@ -308,7 +316,6 @@ namespace NewScripts
                         worker.Give(societyShare);
                     }
                     Liquidity = companyReserve + baseSafety;
-                    Academy.Instance.StatsRecorder.Add("Labor/Social", (float)societyShare * unemployed.Count);
                 }
 
 

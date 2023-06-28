@@ -26,6 +26,8 @@ namespace NewScripts
         public GameObject stageTwoBuilding;
         public GameObject stageThreeBuilding;
         public GameObject emergencySign;
+        public PlayerDecisionEvent DecisionRequestEventProp { get; }
+
         public int OpenPositions { get; private set; } = 0;
         public int ProductStock { get; set; } = 0;
         public decimal ProductPrice { get; private set; } = 1M;
@@ -70,9 +72,9 @@ namespace NewScripts
             {
                 ServiceLocator.Instance.PopupInfoService.SetTexts(new List<string>
                 {
-                    $"{Liquidity:0.##}", $"{_salesInMonth}",
+                    $"{Liquidity:0.##}", $"{_salesLastMonth}",
                     _jobContracts.Count.ToString(), ProductStock.ToString(),
-                    $"{OfferedWageRate:0}", $"{OfferedWageRate:0}", 
+                    $"{OfferedWageRate:0}", $"{(_jobContracts.Count > 0 ? _jobContracts.Select(x => x.Wage).Average() : 100):0}", 
                     $"{ProductPrice:0.##}", $"{LifetimeMonths}"
                 }, Id);
             }
@@ -114,6 +116,11 @@ namespace NewScripts
         public void RequestMonthlyDecision()
         {
             RequestDecision();
+        }
+
+        public void SendDecision(decimal price, int workerChange, decimal wage)
+        {
+            //throw new NotImplementedException();
         }
 
         public override void OnEpisodeBegin()
@@ -165,6 +172,14 @@ namespace NewScripts
             
             ProductPrice = (decimal)newPrice;
             OfferedWageRate = (decimal)newWage;
+            
+            foreach (var contract in _jobContracts)
+            {
+                if (contract.Wage < OfferedWageRate)
+                {
+                    contract.Wage = OfferedWageRate;
+                }
+            }
 
             if (workerDecision == 1)
             {
@@ -201,6 +216,8 @@ namespace NewScripts
             SetBuilding();
             //UpdateCanvasText(false);
             ServiceLocator.Instance.FlowController.CommitDecision();
+            UpdateCanvasText(false);
+
         }
         
         public static float MapValue(float value, float minValue, float maxValue)
@@ -286,7 +303,7 @@ namespace NewScripts
                 AddReward(-0.11F);
             }
 
-            PaySocialFare();
+            //PaySocialFare();
             
             LifetimeMonths++;
             Academy.Instance.StatsRecorder.Add("Company/Liquidity", (float)Liquidity);
@@ -325,12 +342,15 @@ namespace NewScripts
             }
             
             SetBuilding();
+            UpdateCanvasText(false);
+
 
             
             //ServiceLocator.Instance.FlowController.CommitDecision();
             //yield return new WaitForFixedUpdate();
             lastWorkers = _jobContracts.Count;
         }
+
 
         private void PaySocialFare()
         {

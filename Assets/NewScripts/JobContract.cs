@@ -6,7 +6,7 @@ namespace NewScripts
     {
         private Worker Worker { get; }
         public ICompany Employer { get; }
-        public decimal Wage { get; private set; }
+        public decimal Wage { get; set; }
         public int RunsFor { get; set; }
         public bool IsForceReduced { get; set; }
 

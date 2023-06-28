@@ -15,18 +15,18 @@ namespace NewScripts.Ui
         public TextMeshProUGUI priceText;
         
         public GameObject companyGo;
-        private CompanyPlayer _company;
+        private ICompany _company;
         private int _workerCount;
         private decimal _workerWageAverage;
         private decimal _price;
 
         public void Awake()
         {
-            _company = companyGo.GetComponent<CompanyPlayer>();
+            _company = companyGo.GetComponent<ICompany>();
             workerCountSlider.onValueChanged.AddListener(OnWorkerCountChanged);
             workerWageSlider.onValueChanged.AddListener(OnWorkerWageChanged);
             priceSlider.onValueChanged.AddListener(OnPriceChanged);
-            _company.DecisionRequestEvent.AddListener(SetValues);
+            _company.DecisionRequestEventProp.AddListener(SetValues);
             statusText.text = "WAITING";
         }
 
@@ -35,45 +35,52 @@ namespace NewScripts.Ui
             _workerCount = workerCount;
             _workerWageAverage = workerWage;
             _price = price;
+            workerCountSlider.value = workerCount;
+            workerWageSlider.value = (int)workerWage;
+            priceSlider.value = (float)price;
             statusText.text = "ACTIVE";
+            OnWorkerCountChanged(workerCount);
+            OnWorkerWageChanged((float)workerWage);
+            OnPriceChanged((float)price);
         }
 
         private void OnWorkerCountChanged(float val)
         {
-            string text = _workerCount - val > 0 
-                ? $"+{_workerCount - val:0}" 
-                : _workerCount - val < 0 
-                    ? $"-{_workerCount - val:0}" 
+            string text = val - _workerCount > 0 
+                ? $"+{val - _workerCount:0}" 
+                : val - _workerCount < 0 
+                    ? $"-{val - _workerCount:0}" 
                     : "0";
-            workerCountText.text = text;
+            workerCountText.text = $"Workers: {_workerCount}({text})";
         }
         
         private void OnWorkerWageChanged(float val)
         {
             decimal newWage = (decimal) val;
-            string text = _workerWageAverage - newWage > 0 
-                ? $"+{_workerWageAverage - newWage:0.##}" 
-                : _workerWageAverage - newWage < 0 
-                    ? $"-{_workerWageAverage - newWage:0.##}" 
+            string text = newWage - _workerWageAverage > 0 
+                ? $"+{newWage - _workerWageAverage:0.##}" 
+                : newWage - _workerWageAverage < 0 
+                    ? $"-{newWage - _workerWageAverage:0.##}" 
                     : "0";
-            workerWageText.text = text;
+            workerWageText.text = $"Wage: {_workerWageAverage:0}({text})";
         }
         
         private void OnPriceChanged(float val)
         {
             decimal newPrice = (decimal) val;
-            string text = _price - newPrice > 0 
-                ? $"+{_price - newPrice:0.##}" 
-                : _price - newPrice < 0 
-                    ? $"-{_price - newPrice:0.##}" 
+            string text = newPrice - _price > 0 
+                ? $"+{newPrice - _price:0.##}" 
+                : newPrice - _price < 0 
+                    ? $"-{newPrice - _price:0.##}" 
                     : "0";
-            priceText.text = text;
+            priceText.text = $"Price: {_price:0.##}({text})";
         }
 
         public void Confirm()
         {
             statusText.text = "WAITING";
-            _company.SendDecision((decimal)priceSlider.value, (int) workerCountSlider.value, (decimal) workerWageSlider.value);
+            _company.SendDecision((decimal)priceSlider.value, (int) (workerCountSlider.value - _workerCount), 
+                (decimal) workerWageSlider.value);
         }
     }
 }

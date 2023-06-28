@@ -8,13 +8,13 @@ namespace NewScripts
 {
     public class Worker
     {
-        public decimal Money { get; set; } = 30;
+        public decimal Money { get; set; } = 90;
         //public double Wage { get; set; } = 0;
         public int Health { get; set; } = 1000;
         public int UnemployedForMonth { get; set; } = 0;
         private const int MonthlyDemand = 100;
         private const int MonthlyMinimumDemand = MonthlyDemand / 2;
-        private int _consumeInMonth;
+        public int _consumeInMonth { get; private set; }
 
         public List<InventoryItem> Inventory { get; set; } = new();
         //public int CompanyId { get; set; }
@@ -50,12 +50,10 @@ namespace NewScripts
 
         public void EndMonth()
         {
-            Inventory[0].Count = Inventory[0].Count >= _consumeInMonth 
-                ? Inventory[0].Count -= _consumeInMonth 
-                : Inventory[0].Count = 0;
+            Inventory[0].Consume(_consumeInMonth);
         }
 
-        public void AddProductBids()
+        public void AddProductBids(decimal averagePrice)
         {
             Academy.Instance.StatsRecorder.Add("Worker/Money", (float)Money);
 
@@ -63,34 +61,32 @@ namespace NewScripts
             decimal bidPrice = 0;
             if (Inventory[0].Count - _consumeInMonth < MonthlyMinimumDemand)
             {
-                bidPrice = Inventory[0].AvgPaid * 1.1M;
+                Inventory[0].AvgPaid *= 1.1M;
             }
             else if (Inventory[0].Count - _consumeInMonth < MonthlyDemand)
             {
-                bidPrice = Inventory[0].AvgPaid;
+                Inventory[0].AvgPaid *= 1.01M;
             }
             else if (Inventory[0].Count - _consumeInMonth < MonthlyDemand * 1.5)
             {
-                bidPrice = Inventory[0].AvgPaid * 0.9M;
+                Inventory[0].AvgPaid *= 0.9M;
             }
             else
             {
                 return;
             }
+            bidPrice = Inventory[0].AvgPaid;
 
             bidPrice = bidPrice < 0.1M ? 0.1M : bidPrice > 5 ? 5 : bidPrice;
-            var bpold = bidPrice;
+            
             if (_consumeInMonth * bidPrice > Money)
-            {
-                bidPrice = RoundDown(Money / _consumeInMonth, 2);
-            }
-            if (_consumeInMonth < MonthlyMinimumDemand)
             {
                 bidPrice = RoundDown(Money / MonthlyMinimumDemand, 2);
                 _consumeInMonth = MonthlyMinimumDemand;
             }
             if (_consumeInMonth > 0 && bidPrice > 0)
             {
+                BidPrice = bidPrice;
                 if (Money - bidPrice * _consumeInMonth < 0)
                 {
                     Debug.LogError("Not enough money");
@@ -101,6 +97,8 @@ namespace NewScripts
                 Academy.Instance.StatsRecorder.Add("Market/P-Bid-Make-Price", (float)bidPrice);
             }
         }
+
+        public decimal BidPrice;
         
         public decimal RoundDown(decimal i, double decimalPlaces)
         {

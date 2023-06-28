@@ -21,6 +21,12 @@ namespace NewScripts
 
         public int DemandForWorkforce { get; private set; }
         
+
+        private void Awake()
+        {
+            
+        }
+
         public void InitWorkers(int count)
         {
             for (int i = 0; i < count; i++)

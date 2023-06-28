@@ -81,7 +81,7 @@ namespace NewScripts
             //ProductTemplateFactory.CompanysPerType = companysPerType;
             int zPos = 0;
             int xPos = 0;
-            decimal liquidity = 70000 / (decimal) playerCompaniesPerType + playerCompaniesPerType;
+            decimal liquidity = 10000 / (decimal) (aiCompaniesPerType + playerCompaniesPerType);
             for (var i = 0; i < aiCompaniesPerType + playerCompaniesPerType; i++)
             {
                 if (i != 0 && i % 10 == 0)
@@ -155,21 +155,21 @@ namespace NewScripts
                 
             foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
             {
-                worker.AddProductBids();
+                worker.AddProductBids(averageFoodPrice);
             }
                 
             ServiceLocator.Instance.ProductMarket.ResolveMarket();
+            
+            foreach (var company in ServiceLocator.Instance.Companys)
+            {
+                company.EndMonth();
+            }
             
             foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
             {
                 worker.EndMonth();
             }
-                
-            foreach (var company in ServiceLocator.Instance.Companys)
-            {
-                company.EndMonth();
-            }
-                
+
             ServiceLocator.Instance.FlowController.IncrementMonth();
             ServiceLocator.Instance.Stats.UpdateStats();
             roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
@@ -201,6 +201,8 @@ namespace NewScripts
             }
             else if (_currentActionStep == 3)
             {
+                decimal averageFoodPrice = ServiceLocator.Instance.ProductMarket.AveragePrice();
+
                 foreach (var company in ServiceLocator.Instance.Companys)
                 {
                     company.Produce();
@@ -208,7 +210,7 @@ namespace NewScripts
                 
                 foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
                 {
-                    worker.AddProductBids();
+                    worker.AddProductBids(averageFoodPrice);
                 }
                 
                 ServiceLocator.Instance.ProductMarket.ResolveMarket();
@@ -216,16 +218,16 @@ namespace NewScripts
             }
             else if (_currentActionStep == 4)
             {
-                foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
-                {
-                    worker.EndMonth();
-                }
-                
                 foreach (var company in ServiceLocator.Instance.Companys)
                 {
                     company.EndMonth();
                 }
                 
+                foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
+                {
+                    worker.EndMonth();
+                }
+
                 ServiceLocator.Instance.FlowController.IncrementMonth();
                 ServiceLocator.Instance.Stats.UpdateStats();
                 roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
