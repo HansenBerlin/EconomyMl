@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using NewScripts.Http;
+﻿using System.Collections;
+using NewScripts.Ui;
 using TMPro;
-using Unity.MLAgents;
 using Unity.MLAgents.Policies;
 using UnityEngine;
-using UnityEngine.Serialization;
-using Random = System.Random;
 
 namespace NewScripts
 {
@@ -16,25 +10,23 @@ namespace NewScripts
     {
         public GameObject foodCompanyPrefab;
         public GameObject foodCompanyPrefabPlayer;
+        public GameObject companyPanelGo;
+        public TextMeshProUGUI roundText;
+        public TextMeshProUGUI buttonText;
         public int aiCompaniesPerType = 100;
         public int playerCompaniesPerType = 1;
         
+        private const int GridGap = 30;
         public bool isThrottled;
         public bool isTraining;
         public bool writeToDatabase;
-        public TextMeshProUGUI roundText;
         private int _currentActionStep = 0;
-        private const int GridGap = 30;
         private bool _isInitDone;
-        public TextMeshProUGUI buttonText;
 
         private void Awake()
         {
             if (ServiceLocator.Instance is not null && _isInitDone == false)
             {
-                ServiceLocator.Instance.Settings.IsTraining = isTraining;
-                ServiceLocator.Instance.Settings.IsThrottled = isThrottled;
-                ServiceLocator.Instance.Settings.WriteToDatabase = writeToDatabase;
                 SetupGameObjects();
             }
         }
@@ -76,6 +68,11 @@ namespace NewScripts
 
         private void SetupGameObjects()
         {
+            ServiceLocator.Instance.Settings.IsTraining = isTraining;
+            ServiceLocator.Instance.Settings.IsThrottled = isThrottled;
+            ServiceLocator.Instance.Settings.WriteToDatabase = writeToDatabase;
+            ServiceLocator.Instance.CompanyPanel = companyPanelGo.GetComponent<CompanyPanelActivator>();
+            
             //Academy.Instance.OnEnvironmentReset += EnvironmentReset;
             ServiceLocator.Instance.LaborMarket.InitWorkers(1000);
             //ProductTemplateFactory.CompanysPerType = companysPerType;

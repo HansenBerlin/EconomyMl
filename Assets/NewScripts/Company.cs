@@ -45,6 +45,8 @@ namespace NewScripts
         private bool _writeToDatabase;
         private int _currentActiveIndex = -1;
         //private int _startUpRounds = 12;
+        public List<CompanyData> Ledger { get; } = new();
+
         
         private void Start()
         {
@@ -68,15 +70,14 @@ namespace NewScripts
         
         private void UpdateCanvasText(bool isClick)
         {
-            if (ServiceLocator.Instance.PopupInfoService.CurrentlyActive == Id || isClick)
+            if (ServiceLocator.Instance.CompanyPanel == null)
             {
-                ServiceLocator.Instance.PopupInfoService.SetTexts(new List<string>
-                {
-                    $"{Liquidity:0.##}", $"{_salesLastMonth}",
-                    _jobContracts.Count.ToString(), ProductStock.ToString(),
-                    $"{OfferedWageRate:0}", $"{(_jobContracts.Count > 0 ? _jobContracts.Select(x => x.Wage).Average() : 100):0}", 
-                    $"{ProductPrice:0.##}", $"{LifetimeMonths}"
-                }, Id);
+                return;
+            }
+            if (ServiceLocator.Instance.CompanyPanel.ActiveCompanyId == Id || isClick)
+            {
+                ServiceLocator.Instance.CompanyPanel.ActiveCompanyData = Ledger;
+                ServiceLocator.Instance.CompanyPanel.UpdateUi();
             }
         }
 
