@@ -32,10 +32,12 @@ namespace NewScripts.Ui
 
             if (ActiveCompanyData.Count > 0)
             {
-                foreach (var dataset in ActiveCompanyData)
+                for (var i = 0; i < ActiveCompanyData.Count; i++)
                 {
+                    var dataset = ActiveCompanyData[i];
                     GameObject instance = Instantiate(rowPrefab, parentGo.transform);
                     ProductRow row = instance.GetComponent<ProductRow>();
+                    
                     ProductLedger productInfo = dataset.Product;
                     row.periodText.text = $"{dataset.Month}/{dataset.Year}";
                     row.priceText.text = $"{productInfo.PriceSet:0.##}";
@@ -43,6 +45,9 @@ namespace NewScripts.Ui
                     row.productionText.text = $"{productInfo.Production:0}";
                     row.salesText.text = $"{productInfo.Sales:0}";
                     row.stockCheckText.text = $"{productInfo.StockEndCheck:0}";
+                    float hue = i % 2 == 0 ? 0.04F : 0.08F;
+                    var rawImage = row.GetComponent<RawImage>();
+                    rawImage.color = new Color(1, 1, 1, hue);
                 }
             }
         }

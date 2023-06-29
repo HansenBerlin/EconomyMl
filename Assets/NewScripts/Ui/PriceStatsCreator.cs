@@ -17,39 +17,52 @@ namespace NewScripts.Ui
         public TextMeshProUGUI textCurrentTotalCount;
 
         private readonly List<GameObject> _bars = new();
-
-        //private readonly List<GameObject> _offerBars = new();
-        //private readonly List<decimal> _initialBidValues = new();
-        //private readonly List<decimal> _initialOfferValues = new();
         private List<BucketStatistics> _buckets = new();
         private readonly Stack<List<ProductDistributionInfo>> _valueHistory = new();
         private int _bidders;
-        private int _offerers;
-        private List<ProductOffer> _fullfilledOffers = new();
-        private List<ProductBid> _fullfilledBids = new();
+        private List<ProductOffer> _offers = new();
+        private List<ProductBid> _bids = new();
+        private List<Deal> _successfulDeals = new();
+        private bool _isInitDone;
+        
 
         private void Awake()
         {
-            var productMarket = productMarketGo.GetComponent<ProductMarket>();
-            productMarket.updateEvent.AddListener(DeconstructOffersAndBids);
-            InitGameObjects();
+            if (_isInitDone == false)
+            {
+                var productMarket = productMarketGo.GetComponent<ProductMarket>();
+                productMarket.updateEvent.AddListener(DeconstructOffersAndBids);
+                InitGameObjects();
+                _isInitDone = true;
+            }
+            if (_valueHistory.Count > 0)
+            {
+                ShowStats();
+            }
+            else if(_bids.Count > 0)
+            {
+                PrepareData();
+                ShowStats();
+            }
         }
 
-        private void DeconstructOffersAndBids(List<ProductOffer> offers, List<ProductBid> bids, 
-            List<ProductOffer> fullfilledOffers, List<ProductBid> fullfilledBids)
+        private void DeconstructOffersAndBids(List<ProductOffer> offers, List<ProductBid> bids, List<Deal> successfulDeals)
         {
-            _fullfilledOffers = fullfilledOffers.OrderBy(x => x.Price).ToList();
-            _fullfilledBids = fullfilledBids.OrderBy(x => x.Price).ToList();
-            if (bids.Count == 0)
+            _successfulDeals = successfulDeals.OrderBy(x => x.Price).ToList();
+            _bids = bids;
+            _offers = offers;
+            if (enabled)
             {
-                return;
+                PrepareData();
+                ShowStats();
             }
+        }
 
-            _bidders = bids.Count;
-            _offerers = offers.Count;
-            //var values = bids.Select(bid => bid.Price).ToList();
+        private void PrepareData()
+        {
+            _bidders = _bids.Count;
             List<ProductDistributionInfo> initialValues = new();
-            foreach (var bid in bids)
+            foreach (var bid in _bids)
             {
                 for (int i = 0; i < bid.Amount; i++)
                 {
@@ -58,7 +71,7 @@ namespace NewScripts.Ui
                 }
             }
 
-            foreach (var offer in offers)
+            foreach (var offer in _offers)
             {
                 for (int i = 0; i < offer.Amount; i++)
                 {
@@ -67,19 +80,11 @@ namespace NewScripts.Ui
                 }
             }
 
-            //_initialvalues = values;
             _valueHistory.Clear();
             _valueHistory.Push(initialValues);
 
-            for (int i = 0; i < 1000 - bids.Count; i++)
-            {
-                //values.Add(0);
-            }
-
             _buckets = GetBucketStatistics(initialValues, maxNumOfBuckets);
             textCurrentTotalCount.text = TotalCountText(initialValues.Count, _buckets);
-            //_buckets = _buckets.OrderBy(x => x.Min).ToList();
-            ShowStats();
         }
 
 
@@ -89,7 +94,10 @@ namespace NewScripts.Ui
             for (int i = 0; i < count; i++)
             {
                 GameObject instance = Instantiate(barPrefab, parent.transform, true);
-                instance.GetComponent<Button>().onClick.AddListener(() =>
+                instance
+                    .GetComponent<StatBar>().button
+                    .GetComponent<Button>().onClick
+                    .AddListener(() =>
                 {
                     OnSingleBarClick(instance.GetInstanceID());
                 });
@@ -103,8 +111,8 @@ namespace NewScripts.Ui
             float heightMultiplier = count / (float) _buckets
                 .Select(x => x.Count)
                 .Max();
-            heightMultiplier = 500 / (float) count * heightMultiplier;
-            float width = showBoth ? 45 : 90;
+            heightMultiplier = 650 / (float) count * heightMultiplier;
+            //float width = showBoth ? 45 : 90;
             
             for (int i = 0; i < _buckets.Count; i++)
             {
@@ -119,54 +127,38 @@ namespace NewScripts.Ui
                 }
 
                 instance.SetActive(true);
-                var rectTransform = instance.GetComponent<RectTransform>();
-                rectTransform.sizeDelta = new Vector2(width, (int) (bucket.Count * heightMultiplier));
+                var statBarScript = instance.GetComponent<StatBar>();
+                var rectTransform = statBarScript.button.GetComponent<RectTransform>();
+                rectTransform.sizeDelta = new Vector2(100, (int) (bucket.Count * heightMultiplier));
                 rectTransform.anchoredPosition = new Vector2(i * 100, 0);
-                instance.GetComponent<Image>().color = bucket.IsBid
+                statBarScript.button.GetComponent<Image>().color = bucket.IsBid
                     ? new Color(0.271F, 0.153F, 0.627F)
                     : new Color(0.678F, 0.078F, 0.341F);
                 
-                foreach (Transform child in instance.transform.GetComponentsInChildren<Transform>())
+                var succesfulDealsInRange = _successfulDeals
+                    .Where(x => x.Price >= bucket.Min && x.Price <= bucket.Max)
+                    .ToList();
+                
+                float sumDeals = succesfulDealsInRange.Select(x => x.Amount).Sum();
+                
+                if (succesfulDealsInRange.Count > 0 && bucket.IsBid == false)
                 {
-                    if (child.gameObject.name == "Fullfilled")
-                    {
-                        if (_fullfilledOffers.Count > 0 && bucket.IsBid)
-                        {
-                            child.gameObject.SetActive(true);
-                            var values = _fullfilledOffers
-                                .Where(x => x.Price >= bucket.Min && x.Price <= bucket.Max)
-                                .ToList();
-                            float sum = values.Select(x => x.Amount).Sum();
-                                child.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, sum * heightMultiplier);
-                        }
-                        else if (_fullfilledBids.Count > 0 && bucket.IsBid == false)
-                        {
-                            var values = _fullfilledBids
-                                .Where(x => x.Price >= bucket.Min && x.Price <= bucket.Max)
-                                .ToList();
-                            float sum = values.Select(x => x.Amount).Sum();
-                            child.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, sum * heightMultiplier);
-                        }
-                        else
-                        {
-                            child.gameObject.SetActive(false);
-                        }
-                    }
+                    statBarScript.fullfilled.SetActive(true);
+                    float barWidth = rectTransform.sizeDelta.x;
+                    var fullfilledBarRect = statBarScript.fullfilled.GetComponent<RectTransform>();
+                    fullfilledBarRect.anchoredPosition = new Vector2(0, sumDeals * heightMultiplier + 90);
+                    fullfilledBarRect.sizeDelta = new Vector2(barWidth, 5);
+                }
+                else
+                {
+                    statBarScript.fullfilled.SetActive(false);
                 }
 
-                var texts = instance.GetComponentsInChildren<TextMeshProUGUI>();
-                foreach (var text in texts)
-                {
-                    text.text = text.name switch
-                    {
-                        "Min" => $"{bucket.Min:0.##}",
-                        "Max" => $"{bucket.Max:0.##}",
-                        "Val" => bucket.Count.ToString(),
-                        _ => text.text
-                    };
-                }
-
-                instance.GetComponent<Button>().interactable = DistinctValuesInRange(bucket) > 1;
+                statBarScript.rangeText.text = $"{bucket.Min:0.##} - {bucket.Max:0.##}";
+                //statBarScript.valueText.text = $"{bucket.Count}({sumDeals / bucket.Count:0.##})";
+                statBarScript.valueText.text = $"{bucket.Count}";
+                
+                statBarScript.button.GetComponent<Button>().interactable = DistinctValuesInRange(bucket) > 1;
             }
 
             if (_buckets.Count < maxNumOfBuckets * 2)

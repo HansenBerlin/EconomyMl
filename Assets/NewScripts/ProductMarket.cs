@@ -56,8 +56,9 @@ namespace NewScripts
             CountAdded = 0;
             var offers = ProductOffers.OrderBy(x => x.Price).ToList();
             var bids = ProductBids.OrderByDescending(x => x.Price).ToList();
-            List<ProductOffer> fullfilledOffers = new();
-            List<ProductBid> fullfilledBids = new();
+            //List<ProductOffer> fullfilledOffers = new();
+            List<Deal> successfulDeals = new();
+            var (offersCopy, bidsCopy) = DeepCopy(ProductOffers, ProductBids);
             
 
             while (offers.Count > 0 && bids.Count > 0)
@@ -71,8 +72,7 @@ namespace NewScripts
                         Academy.Instance.StatsRecorder.Add("Market/P-Add", CountAdded+=offer.Amount);
 
                         bid.Amount -= offer.Amount;
-                        fullfilledOffers.Add(offer);
-                        fullfilledBids.Add(bid);
+                        successfulDeals.Add(new Deal(offer.Price, offer.Amount));
                         bid.Buyer.FullfillBid(offer.Product, offer.Amount, offer.Price);
                         offer.Seller.FullfillBid(offer.Product, offer.Amount, offer.Price);
                         offers.Remove(offer);
@@ -82,8 +82,7 @@ namespace NewScripts
                         Academy.Instance.StatsRecorder.Add("Market/P-Add", CountAdded+=bid.Amount);
 
                         offer.Amount -= bid.Amount;
-                        fullfilledOffers.Add(offer);
-                        fullfilledBids.Add(bid);
+                        successfulDeals.Add(new Deal(offer.Price, bid.Amount));
                         bid.Buyer.FullfillBid(offer.Product, bid.Amount, offer.Price);
                         offer.Seller.FullfillBid(offer.Product, bid.Amount, offer.Price);
                         bids.Remove(bid);
@@ -91,8 +90,7 @@ namespace NewScripts
                     else
                     {
                         Academy.Instance.StatsRecorder.Add("Market/P-Add", CountAdded+=bid.Amount);
-                        fullfilledOffers.Add(offer);
-                        fullfilledBids.Add(bid);
+                        successfulDeals.Add(new Deal(offer.Price, bid.Amount));
                         bid.Buyer.FullfillBid(offer.Product, bid.Amount, offer.Price);
                         offer.Seller.FullfillBid(offer.Product, bid.Amount, offer.Price);
                         offers.Remove(offer);
@@ -111,12 +109,27 @@ namespace NewScripts
 
             if (isTraining == false)
             {
-                updateEvent.Invoke(ProductOffers, ProductBids, fullfilledOffers, fullfilledBids);
+                updateEvent.Invoke(offersCopy, bidsCopy, successfulDeals);
             }
 
 
             ProductOffers.Clear();
             ProductBids.Clear();
+        }
+
+        private (List<ProductOffer> offers, List<ProductBid> bids) DeepCopy(
+            List<ProductOffer> offersSource,
+            List<ProductBid> bidsSource)
+        {
+            List<ProductOffer> offers = offersSource
+                .Select(offer => new ProductOffer(offer.Product, offer.Seller, offer.Price, offer.Amount))
+                .ToList();
+
+            List<ProductBid> bids = bidsSource
+                .Select(bid => new ProductBid(bid.Product, bid.Buyer, bid.Price, bid.Amount))
+                .ToList();
+
+            return (offers, bids);
         }
     }
 }

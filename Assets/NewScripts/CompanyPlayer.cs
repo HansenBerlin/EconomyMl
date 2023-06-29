@@ -22,6 +22,7 @@ namespace NewScripts
         public double Reward { get; private set; }
         public int LifetimeMonths { get; private set; } = 1;
         
+        
         public int Id => GetInstanceID();
         private int _salesInMonth = 0;
         private int _salesLastMonth = 0;
@@ -59,6 +60,7 @@ namespace NewScripts
             }
             if (ServiceLocator.Instance.CompanyPanel.ActiveCompanyId == Id || isClick)
             {
+                ServiceLocator.Instance.CompanyPanel.ActiveCompanyId = Id;
                 ServiceLocator.Instance.CompanyPanel.ActiveCompanyData = Ledger;
                 ServiceLocator.Instance.CompanyPanel.UpdateUi();
             }
@@ -285,6 +287,9 @@ namespace NewScripts
                 //ProductStock = 0;
                 //EndEpisode();
             }
+
+            int availableSpace = _jobContracts.Count * 400;
+            ProductStock = ProductStock > availableSpace ? availableSpace : ProductStock;
             
             SetBuilding();
 

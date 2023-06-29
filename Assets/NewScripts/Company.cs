@@ -341,6 +341,8 @@ namespace NewScripts
                 //ProductStock = 0;
                 EndEpisode();
             }
+            int availableSpace = _jobContracts.Count * 400;
+            ProductStock = ProductStock > availableSpace ? availableSpace : ProductStock;
             
             SetBuilding();
             UpdateCanvasText(false);
