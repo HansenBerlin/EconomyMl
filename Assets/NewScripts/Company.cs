@@ -118,7 +118,7 @@ namespace NewScripts
             RequestDecision();
         }
 
-        public void SendDecision(decimal price, int workerChange, decimal wage)
+        public void StartNextPeriod(decimal price, int workerChange, decimal wage)
         {
             //throw new NotImplementedException();
         }
@@ -158,7 +158,7 @@ namespace NewScripts
         
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
-            UpdateCanvasText(false);
+            //UpdateCanvasText(false);
             if (_lastMonth == ServiceLocator.Instance.FlowController.Month)
             {
                 return;
@@ -204,7 +204,7 @@ namespace NewScripts
                     var contract = _jobContracts[i];
                     if (contract.RunsFor > 3)
                     {
-                        contract.QuitContract();
+                        contract.QuitContract(true);
                         fireWorkers--;
                         Academy.Instance.StatsRecorder.Add("Labor/Fire", 1);
 
@@ -219,8 +219,8 @@ namespace NewScripts
             UpdateCanvasText(false);
 
         }
-        
-        public static float MapValue(float value, float minValue, float maxValue)
+
+        private static float MapValue(float value, float minValue, float maxValue)
         {
             float mappedValue = (value + 1f) * 0.5f * (maxValue - minValue) + minValue;
             return mappedValue;
@@ -236,7 +236,7 @@ namespace NewScripts
                 Academy.Instance.StatsRecorder.Add("Market/P-OfferCount", ProductStock);
                 Academy.Instance.StatsRecorder.Add("Market/P-OfferPrice", (float)ProductPrice);
             }
-            //UpdateCanvasText(false);
+            UpdateCanvasText(false);
         }
 
         private int lastWorkers;
@@ -406,7 +406,7 @@ namespace NewScripts
             AddReward(1F);
         }
         
-        public void RemoveContract(JobContract contract)
+        public void RemoveContract(JobContract contract, bool isQuitByEmployer)
         {
             _jobContracts.Remove(contract);
             Reputation--;

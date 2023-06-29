@@ -34,11 +34,11 @@ namespace NewScripts
         
         
         
-        public void QuitContract(bool isQuitByEmployer = false)
+        public void QuitContract(bool isQuitByEmployer)
         {
             Academy.Instance.StatsRecorder.Add("Contract/WorkQuit", ++ServiceLocator.Instance.LaborMarket.CountRemoved);
 
-            Employer.RemoveContract(this);
+            Employer.RemoveContract(this, isQuitByEmployer);
             Worker.RemoveJobContract(this, isQuitByEmployer);
         }
     }

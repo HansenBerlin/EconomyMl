@@ -158,7 +158,7 @@ namespace NewScripts
                 worker.AddProductBids(averageFoodPrice);
             }
                 
-            ServiceLocator.Instance.ProductMarket.ResolveMarket();
+            ServiceLocator.Instance.ProductMarket.ResolveMarket(isTraining);
             
             foreach (var company in ServiceLocator.Instance.Companys)
             {
@@ -213,7 +213,7 @@ namespace NewScripts
                     worker.AddProductBids(averageFoodPrice);
                 }
                 
-                ServiceLocator.Instance.ProductMarket.ResolveMarket();
+                ServiceLocator.Instance.ProductMarket.ResolveMarket(isTraining);
                 ServiceLocator.Instance.Stats.UpdateStats();
             }
             else if (_currentActionStep == 4)

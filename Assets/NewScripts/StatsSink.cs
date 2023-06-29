@@ -58,9 +58,9 @@ namespace NewScripts
             
             try
             {
-                double avgB = workers.Select(x => x._consumeInMonth).Average();
-                double minB = workers.Select(x => x._consumeInMonth).Min();
-                double maxB = workers.Select(x => x._consumeInMonth).Max();
+                double avgB = workers.Select(x => x.ConsumeInMonth).Average();
+                double minB = workers.Select(x => x.ConsumeInMonth).Min();
+                double maxB = workers.Select(x => x.ConsumeInMonth).Max();
                 BuildText(workerDemandFullfilledText, minB, maxB, avgB);
                 
                 double avgC = (double)workers.Select(x => x.BidPrice).Average();

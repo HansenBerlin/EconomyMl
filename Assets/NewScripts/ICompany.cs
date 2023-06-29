@@ -28,9 +28,9 @@ namespace NewScripts
         public int LifetimeMonths { get; }
         void FullfillBid(ProductType product, int count, decimal price);
         void AddContract(JobContract contract);
-        void RemoveContract(JobContract contract);
+        void RemoveContract(JobContract contract, bool isQuitByEmployer);
         void RequestMonthlyDecision();
-        public void SendDecision(decimal price, int workerChange, decimal wage);
+        public void StartNextPeriod(decimal price, int workerChange, decimal wage);
         void Produce();
         void EndMonth();
         PlayerDecisionEvent DecisionRequestEventProp { get; }

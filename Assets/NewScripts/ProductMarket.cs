@@ -50,12 +50,15 @@ namespace NewScripts
             ProductOffers.Add(offer);
         }
         
-        public void ResolveMarket()
+        public void ResolveMarket(bool isTraining)
         {
-            updateEvent.Invoke(ProductOffers, ProductBids);
+            //updateEvent.Invoke(ProductOffers, ProductBids);
             CountAdded = 0;
             var offers = ProductOffers.OrderBy(x => x.Price).ToList();
             var bids = ProductBids.OrderByDescending(x => x.Price).ToList();
+            List<ProductOffer> fullfilledOffers = new();
+            List<ProductBid> fullfilledBids = new();
+            
 
             while (offers.Count > 0 && bids.Count > 0)
             {
@@ -68,6 +71,8 @@ namespace NewScripts
                         Academy.Instance.StatsRecorder.Add("Market/P-Add", CountAdded+=offer.Amount);
 
                         bid.Amount -= offer.Amount;
+                        fullfilledOffers.Add(offer);
+                        fullfilledBids.Add(bid);
                         bid.Buyer.FullfillBid(offer.Product, offer.Amount, offer.Price);
                         offer.Seller.FullfillBid(offer.Product, offer.Amount, offer.Price);
                         offers.Remove(offer);
@@ -77,6 +82,8 @@ namespace NewScripts
                         Academy.Instance.StatsRecorder.Add("Market/P-Add", CountAdded+=bid.Amount);
 
                         offer.Amount -= bid.Amount;
+                        fullfilledOffers.Add(offer);
+                        fullfilledBids.Add(bid);
                         bid.Buyer.FullfillBid(offer.Product, bid.Amount, offer.Price);
                         offer.Seller.FullfillBid(offer.Product, bid.Amount, offer.Price);
                         bids.Remove(bid);
@@ -84,7 +91,8 @@ namespace NewScripts
                     else
                     {
                         Academy.Instance.StatsRecorder.Add("Market/P-Add", CountAdded+=bid.Amount);
-
+                        fullfilledOffers.Add(offer);
+                        fullfilledBids.Add(bid);
                         bid.Buyer.FullfillBid(offer.Product, bid.Amount, offer.Price);
                         offer.Seller.FullfillBid(offer.Product, bid.Amount, offer.Price);
                         offers.Remove(offer);
@@ -100,6 +108,12 @@ namespace NewScripts
 
             DemandForProduct = bids.Count - offers.Count;
             Academy.Instance.StatsRecorder.Add("Market/Demand", DemandForProduct);
+
+            if (isTraining == false)
+            {
+                updateEvent.Invoke(ProductOffers, ProductBids, fullfilledOffers, fullfilledBids);
+            }
+
 
             ProductOffers.Clear();
             ProductBids.Clear();

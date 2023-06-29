@@ -7,5 +7,5 @@ namespace NewScripts
     public class PlayerDecisionEvent : UnityEvent<int, decimal, decimal> { }
     
     [System.Serializable]
-    public class ProductMarketUpdateEvent : UnityEvent<List<ProductOffer>, List<ProductBid>> { }
+    public class ProductMarketUpdateEvent : UnityEvent<List<ProductOffer>, List<ProductBid>, List<ProductOffer>, List<ProductBid>> { }
 }

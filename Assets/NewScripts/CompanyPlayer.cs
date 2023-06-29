@@ -1,21 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Agents;
-using MathNet.Numerics.LinearAlgebra.Single.Solvers;
-using Mirror;
 using NewScripts.Http;
-using NewScripts.Http;
-using TMPro;
-using Unity.MLAgents;
-using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Sensors;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace NewScripts
 {
@@ -40,20 +26,18 @@ namespace NewScripts
         private int _salesInMonth = 0;
         private int _salesLastMonth = 0;
         private readonly List<JobContract> _jobContracts = new();
-        private readonly System.Random _rand = new();
-        //private bool _initDone;
         private bool _isTraining;
         private bool _writeToDatabase;
         private int _currentActiveIndex = -1;
-        //private int _startUpRounds = 12;
-        private PlayerDecisionEvent DecisionRequestEvent;
-        public PlayerDecisionEvent DecisionRequestEventProp => DecisionRequestEvent;
+        private PlayerDecisionEvent _decisionRequestEvent;
+        public PlayerDecisionEvent DecisionRequestEventProp => _decisionRequestEvent;
+        public List<CompanyData> Ledger { get; } = new();
         
         private void Awake()
         {
             _isTraining = ServiceLocator.Instance.Settings.IsTraining;
             _writeToDatabase = ServiceLocator.Instance.Settings.WriteToDatabase;
-            DecisionRequestEvent ??= new PlayerDecisionEvent();
+            _decisionRequestEvent ??= new PlayerDecisionEvent();
         }
 
         private void Update() {  
@@ -122,8 +106,9 @@ namespace NewScripts
         
         private int _lastMonth;
         
-        public void SendDecision(decimal price, int workerChange, decimal wage)
+        public void StartNextPeriod(decimal price, int workerChange, decimal wage)
         {
+            
             if (_lastMonth == ServiceLocator.Instance.FlowController.Month)
             {
                 return;
@@ -131,6 +116,12 @@ namespace NewScripts
             
             _lastMonth = ServiceLocator.Instance.FlowController.Month;
 
+            var companyData = new CompanyData(Id, ServiceLocator.Instance.FlowController.Month, ServiceLocator.Instance.FlowController.Year, LifetimeMonths);
+            var averageWage = _jobContracts.Count > 0 ? _jobContracts.Select(x => x.Wage).Average() : 100;
+            var workerLedger = new WorkersLedger(_jobContracts.Count, wage, averageWage);
+            var productLedger = new ProductLedger(price, ProductStock);
+            var booksLedger = new BookKeepingLedger(Liquidity);
+            
             ProductPrice = price;
             OfferedWageRate = wage;
 
@@ -145,9 +136,10 @@ namespace NewScripts
             if (workerChange > 0)
             {
                 OpenPositions = workerChange;
+                workerLedger.OpenPositions = OpenPositions;
                 for (int i = 0; i < OpenPositions; i++)
                 {
-                    var jobBid = new JobBid(this, (decimal)wage);
+                    var jobBid = new JobBid(this, wage);
                     ServiceLocator.Instance.LaborMarket.AddJobBid(jobBid);
                 }
             }
@@ -164,12 +156,17 @@ namespace NewScripts
                     var contract = _jobContracts[i];
                     if (contract.RunsFor > 3)
                     {
-                        contract.QuitContract();
+                        //workerLedger.WorkersFired++;
+                        contract.QuitContract(true);
                         fireWorkers--;
                     }
                 }
             }
 
+            companyData.Workers = workerLedger;
+            companyData.Product = productLedger;
+            companyData.Books = booksLedger;
+            Ledger.Add(companyData);
 
             SetBuilding();
             //UpdateCanvasText(false);
@@ -180,12 +177,14 @@ namespace NewScripts
 
         public void RequestMonthlyDecision()
         {
-            DecisionRequestEvent.Invoke(_jobContracts.Count, OfferedWageRate, ProductPrice);
+            _decisionRequestEvent.Invoke(_jobContracts.Count, OfferedWageRate, ProductPrice);
         }
 
         public void Produce()
         {
-            ProductStock += _jobContracts.Count * ServiceLocator.Instance.Settings.OutputMultiplier;
+            int production = _jobContracts.Count * ServiceLocator.Instance.Settings.OutputMultiplier;
+            ProductStock += production;
+            Ledger[^1].Product.Production = production;
             if (ProductStock > 0)
             {
                 var offer = new ProductOffer(ProductType.Food, this, ProductPrice, ProductStock);
@@ -230,16 +229,19 @@ namespace NewScripts
                 if (contract.Wage < Liquidity)
                 {
                     contract.PayWorker();
+                    Ledger[^1].Workers.WorkersPaid++;
+                    Ledger[^1].Books.WagePayments += contract.Wage;
                 }
                 else
                 {
                     contract.ReduceWage();
+                    Ledger[^1].Workers.WorkersUnpaid++;
                     Reputation--;
                     AddReward(-0.1F);
                 }
             }
             
-            if(Liquidity < 10 || _jobContracts.Count == 0)
+            if (Liquidity < 10 || _jobContracts.Count == 0)
             {
                 Reputation--;
                 AddReward(-0.1F);
@@ -289,6 +291,9 @@ namespace NewScripts
             SetBuilding();
             UpdateCanvasText(false);
 
+            Ledger[^1].Product.StockEndCheck = ProductStock;
+            Ledger[^1].Books.LiquidityEndCheck = Liquidity;
+
 
             
             //ServiceLocator.Instance.FlowController.CommitDecision();
@@ -314,6 +319,7 @@ namespace NewScripts
                     foreach (var worker in unemployed)
                     {
                         worker.Give(societyShare);
+                        Ledger[^1].Books.TaxPayments += societyShare;
                     }
                     Liquidity = companyReserve + baseSafety;
                 }
@@ -346,18 +352,29 @@ namespace NewScripts
         {
             _jobContracts.Add(contract);
             Reputation++;
+            Ledger[^1].Workers.WorkersHired++;
             AddReward(1F);
         }
         
-        public void RemoveContract(JobContract contract)
+        public void RemoveContract(JobContract contract, bool isQuitByEmployer)
         {
             _jobContracts.Remove(contract);
             Reputation--;
             AddReward(-1.1F);
+            if (isQuitByEmployer)
+            {
+                Ledger[^1].Workers.WorkersFired++;
+            }
+            else
+            {
+                Ledger[^1].Workers.WorkersQuit++;
+            }
         }
         
         public void FullfillBid(ProductType product, int count, decimal price)
         {
+            Ledger[^1].Product.Sales += count;
+            Ledger[^1].Books.Income += count * price;
             ProductStock -= count;
             Liquidity += count * price;
             //Reputation++;

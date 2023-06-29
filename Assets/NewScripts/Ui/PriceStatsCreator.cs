@@ -9,7 +9,7 @@ namespace NewScripts.Ui
 {
     public class PriceStatsCreator : MonoBehaviour
     {
-        public int maxNumOfBuckets = 10;
+        public int maxNumOfBuckets = 5;
         public bool showBoth = true;
         public GameObject barPrefab;
         public GameObject parent;
@@ -25,6 +25,8 @@ namespace NewScripts.Ui
         private readonly Stack<List<ProductDistributionInfo>> _valueHistory = new();
         private int _bidders;
         private int _offerers;
+        private List<ProductOffer> _fullfilledOffers = new();
+        private List<ProductBid> _fullfilledBids = new();
 
         private void Awake()
         {
@@ -33,8 +35,11 @@ namespace NewScripts.Ui
             InitGameObjects();
         }
 
-        private void DeconstructOffersAndBids(List<ProductOffer> offers, List<ProductBid> bids)
+        private void DeconstructOffersAndBids(List<ProductOffer> offers, List<ProductBid> bids, 
+            List<ProductOffer> fullfilledOffers, List<ProductBid> fullfilledBids)
         {
+            _fullfilledOffers = fullfilledOffers.OrderBy(x => x.Price).ToList();
+            _fullfilledBids = fullfilledBids.OrderBy(x => x.Price).ToList();
             if (bids.Count == 0)
             {
                 return;
@@ -43,13 +48,13 @@ namespace NewScripts.Ui
             _bidders = bids.Count;
             _offerers = offers.Count;
             //var values = bids.Select(bid => bid.Price).ToList();
-            List<decimal> initialBidValues = new();
-            List<decimal> initialOfferValues = new();
+            List<ProductDistributionInfo> initialValues = new();
             foreach (var bid in bids)
             {
                 for (int i = 0; i < bid.Amount; i++)
                 {
-                    initialBidValues.Add(bid.Price);
+                    var distributionInfo = new ProductDistributionInfo(bid.Price, ProductDistributionType.Bid);
+                    initialValues.Add(distributionInfo);
                 }
             }
 
@@ -57,28 +62,22 @@ namespace NewScripts.Ui
             {
                 for (int i = 0; i < offer.Amount; i++)
                 {
-                    initialOfferValues.Add(offer.Price);
+                    var distributionInfo = new ProductDistributionInfo(offer.Price, ProductDistributionType.Offer);
+                    initialValues.Add(distributionInfo);
                 }
             }
 
             //_initialvalues = values;
             _valueHistory.Clear();
-            var data = new StatsData(initialBidValues, initialOfferValues);
-            _valueHistory.Push(data);
+            _valueHistory.Push(initialValues);
 
             for (int i = 0; i < 1000 - bids.Count; i++)
             {
                 //values.Add(0);
             }
 
-            _buckets = GetBucketStatistics(initialBidValues, maxNumOfBuckets, true);
-            textCurrentTotalCount.text = TotalCountText(initialBidValues.Count, _buckets);
-            if (showBoth)
-            {
-                var offerBuckets = GetBucketStatistics(initialOfferValues, maxNumOfBuckets, false);
-                _buckets.AddRange(offerBuckets);
-            }
-
+            _buckets = GetBucketStatistics(initialValues, maxNumOfBuckets);
+            textCurrentTotalCount.text = TotalCountText(initialValues.Count, _buckets);
             //_buckets = _buckets.OrderBy(x => x.Min).ToList();
             ShowStats();
         }
@@ -100,17 +99,13 @@ namespace NewScripts.Ui
 
         private void ShowStats()
         {
-            var initialBidValues = _valueHistory.Peek().PriceBids;
-            var initialOfferValues = _valueHistory.Peek().PriceOffers;
-            int relevantCount = initialBidValues.Count > initialOfferValues.Count
-                ? initialBidValues.Count
-                : initialOfferValues.Count;
-            float heightMultiplier = relevantCount / (float) _buckets.Select(x => x.Count).Max();
-            heightMultiplier = 500 / (float) relevantCount * heightMultiplier;
+            var count = _valueHistory.Peek().Count;
+            float heightMultiplier = count / (float) _buckets
+                .Select(x => x.Count)
+                .Max();
+            heightMultiplier = 500 / (float) count * heightMultiplier;
             float width = showBoth ? 45 : 90;
-
-            _buckets = _buckets.OrderBy(x => x.Min).ToList();
-
+            
             for (int i = 0; i < _buckets.Count; i++)
             {
                 var bucket = _buckets[i];
@@ -130,6 +125,34 @@ namespace NewScripts.Ui
                 instance.GetComponent<Image>().color = bucket.IsBid
                     ? new Color(0.271F, 0.153F, 0.627F)
                     : new Color(0.678F, 0.078F, 0.341F);
+                
+                foreach (Transform child in instance.transform.GetComponentsInChildren<Transform>())
+                {
+                    if (child.gameObject.name == "Fullfilled")
+                    {
+                        if (_fullfilledOffers.Count > 0 && bucket.IsBid)
+                        {
+                            child.gameObject.SetActive(true);
+                            var values = _fullfilledOffers
+                                .Where(x => x.Price >= bucket.Min && x.Price <= bucket.Max)
+                                .ToList();
+                            float sum = values.Select(x => x.Amount).Sum();
+                                child.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, sum * heightMultiplier);
+                        }
+                        else if (_fullfilledBids.Count > 0 && bucket.IsBid == false)
+                        {
+                            var values = _fullfilledBids
+                                .Where(x => x.Price >= bucket.Min && x.Price <= bucket.Max)
+                                .ToList();
+                            float sum = values.Select(x => x.Amount).Sum();
+                            child.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, sum * heightMultiplier);
+                        }
+                        else
+                        {
+                            child.gameObject.SetActive(false);
+                        }
+                    }
+                }
 
                 var texts = instance.GetComponentsInChildren<TextMeshProUGUI>();
                 foreach (var text in texts)
@@ -143,7 +166,17 @@ namespace NewScripts.Ui
                     };
                 }
 
-                instance.GetComponent<Button>().interactable = DistinctValuesInRange(bucket) != 1;
+                instance.GetComponent<Button>().interactable = DistinctValuesInRange(bucket) > 1;
+            }
+
+            if (_buckets.Count < maxNumOfBuckets * 2)
+            {
+                int maxBuckets = showBoth ? maxNumOfBuckets * 2 : maxNumOfBuckets;
+                int deactivateBars = maxBuckets - _buckets.Count;
+                for (int i = maxBuckets - deactivateBars; i < maxBuckets; i++)
+                {
+                    _bars[i].SetActive(false);
+                }
             }
         }
 
@@ -152,20 +185,13 @@ namespace NewScripts.Ui
             var bucket = _buckets.First(x => x.Id == instanceId);
             if (bucket != null)
             {
-                var bidValues = _valueHistory
-                    .Peek().PriceBids
-                    .Where(x => x >= bucket.Min && x <= bucket.Max)
+                var values = _valueHistory
+                    .Peek()
+                    .Where(x => x.Value >= bucket.Min && x.Value <= bucket.Max)
                     .ToList();
-                var offerValues = _valueHistory
-                    .Peek().PriceOffers
-                    .Where(x => x >= bucket.Min && x <= bucket.Max)
-                    .ToList();
-                var data = new StatsData(bidValues, offerValues);
-                _valueHistory.Push(data);
-                _buckets = GetBucketStatistics(bidValues, maxNumOfBuckets, true);
-                var offerBuckets = GetBucketStatistics(offerValues, maxNumOfBuckets, false);
-                textCurrentTotalCount.text = TotalCountText(bidValues.Count, _buckets);
-                _buckets.AddRange(offerBuckets);
+                _valueHistory.Push(values);
+                _buckets = GetBucketStatistics(values, maxNumOfBuckets);
+                textCurrentTotalCount.text = TotalCountText(values.Count, _buckets);
                 ShowStats();
             }
         }
@@ -194,8 +220,14 @@ namespace NewScripts.Ui
         private int DistinctValuesInRange(BucketStatistics bucket)
         {
             var values = bucket.IsBid
-                ? _valueHistory.Peek().PriceBids
-                : _valueHistory.Peek().PriceOffers;
+                ? _valueHistory
+                    .Peek()
+                    .Where(x => x.Type == ProductDistributionType.Bid)
+                    .Select(x => x.Value)
+                : _valueHistory
+                    .Peek()
+                    .Where(x => x.Type == ProductDistributionType.Offer)
+                    .Select(x => x.Value);
 
             int distinctValues = values
                 .Where(x => x >= bucket.Min && x <= bucket.Max)
@@ -214,10 +246,8 @@ namespace NewScripts.Ui
 
             _valueHistory.Pop();
             var values = _valueHistory.Peek();
-            _buckets = GetBucketStatistics(values.PriceBids, maxNumOfBuckets, true);
-            textCurrentTotalCount.text = TotalCountText(values.PriceBids.Count, _buckets);
-            var offerBuckets = GetBucketStatistics(values.PriceBids, maxNumOfBuckets, false);
-            _buckets.AddRange(offerBuckets);
+            _buckets = GetBucketStatistics(values, maxNumOfBuckets);
+            textCurrentTotalCount.text = TotalCountText(values.Count, _buckets);
             ShowStats();
         }
 
@@ -266,9 +296,12 @@ namespace NewScripts.Ui
                 }
             }
 
-            bidBuckets = bidBuckets.OrderBy(x => x.Count).ToList();
+            List<BucketStatistics> buckets = new();
+            buckets.AddRange(bidBuckets);
+            buckets.AddRange(offerBuckets);
+            buckets = buckets.OrderBy(x => x.Min).ToList();
 
-            return bidBuckets;
+            return buckets;
         }
 
 

@@ -79,7 +79,7 @@ namespace NewScripts.Ui
         public void Confirm()
         {
             statusText.text = "WAITING";
-            _company.SendDecision((decimal)priceSlider.value, (int) (workerCountSlider.value - _workerCount), 
+            _company.StartNextPeriod((decimal)priceSlider.value, (int) (workerCountSlider.value - _workerCount), 
                 (decimal) workerWageSlider.value);
         }
     }
