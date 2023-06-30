@@ -41,6 +41,7 @@ namespace NewScripts
                 Month = 1;
                 Year++;
             }
+            ServiceLocator.Instance.HouseholdAggregator.StartNewPeriod(Month, Year);
         }
 
         public string Current()

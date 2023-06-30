@@ -108,6 +108,8 @@ namespace NewScripts
                 Academy.Instance.StatsRecorder.Add("Market/P-Bid-Make-Count", ConsumeInMonth);
                 Academy.Instance.StatsRecorder.Add("Market/P-Bid-Make-Price", (float)bidPrice);
             }
+            ServiceLocator.Instance.HouseholdAggregator.Add(new HouseholdLedger(HasJob, ConsumeInMonth, Money));
+
         }
 
         public decimal BidPrice;

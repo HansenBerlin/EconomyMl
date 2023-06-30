@@ -12,6 +12,7 @@ namespace NewScripts
         public GameObject foodCompanyPrefab;
         public GameObject foodCompanyPrefabPlayer;
         public GameObject companyPanelGo;
+        public GameObject houseHoldPanelGo;
         public TextMeshProUGUI roundText;
         public TextMeshProUGUI buttonText;
         public int aiCompaniesPerType = 100;
