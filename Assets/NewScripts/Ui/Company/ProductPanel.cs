@@ -1,26 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using NewScripts.Ui.Company.Rows;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace NewScripts.Ui
+namespace NewScripts.Ui.Company
 {
-    public class CompanyPanelActivator : MonoBehaviour
+    public class ProductPanel : MonoBehaviour
     {
-        public GameObject activatorButton;
         public GameObject parentGo;
         public GameObject rowPrefab;
-        public List<CompanyData> ActiveCompanyData { get; set; } = new();
-        public int ActiveCompanyId { get; set; }
-
-        private void Awake()
-        {
-            activatorButton.GetComponent<Button>().onClick.AddListener(UpdateUi);
-            UpdateUi();
-        }
-
-        public void UpdateUi()
+        
+        public void UpdateUi(List<CompanyData> activeCompanyData)
         {
             foreach (Transform child in parentGo.transform.GetComponentsInChildren<Transform>())
             {
@@ -30,11 +20,11 @@ namespace NewScripts.Ui
                 }
             }
 
-            if (ActiveCompanyData.Count > 0)
+            if (activeCompanyData.Count > 0)
             {
-                for (var i = 0; i < ActiveCompanyData.Count; i++)
+                for (var i = 0; i < activeCompanyData.Count; i++)
                 {
-                    var dataset = ActiveCompanyData[i];
+                    var dataset = activeCompanyData[i];
                     GameObject instance = Instantiate(rowPrefab, parentGo.transform);
                     ProductRow row = instance.GetComponent<ProductRow>();
                     
@@ -44,6 +34,7 @@ namespace NewScripts.Ui
                     row.stockText.text = $"{productInfo.StockStart:0}";
                     row.productionText.text = $"{productInfo.Production:0}";
                     row.salesText.text = $"{productInfo.Sales:0}";
+                    row.destroyedText.text = $"{productInfo.Destroyed:0}";
                     row.stockCheckText.text = $"{productInfo.StockEndCheck:0}";
                     float hue = i % 2 == 0 ? 0.04F : 0.08F;
                     var rawImage = row.GetComponent<RawImage>();

@@ -60,9 +60,7 @@ namespace NewScripts
             }
             if (ServiceLocator.Instance.CompanyPanel.ActiveCompanyId == Id || isClick)
             {
-                ServiceLocator.Instance.CompanyPanel.ActiveCompanyId = Id;
                 ServiceLocator.Instance.CompanyPanel.ActiveCompanyData = Ledger;
-                ServiceLocator.Instance.CompanyPanel.UpdateUi();
             }
         }
 
@@ -229,13 +227,13 @@ namespace NewScripts
                 if (contract.Wage < Liquidity)
                 {
                     contract.PayWorker();
-                    Ledger[^1].Workers.WorkersPaid++;
+                    Ledger[^1].Workers.PaidCount++;
                     Ledger[^1].Books.WagePayments += contract.Wage;
                 }
                 else
                 {
                     contract.ReduceWage();
-                    Ledger[^1].Workers.WorkersUnpaid++;
+                    Ledger[^1].Workers.UnpaidCount++;
                     Reputation--;
                     AddReward(-0.1F);
                 }
@@ -289,12 +287,16 @@ namespace NewScripts
             }
 
             int availableSpace = _jobContracts.Count * 400;
-            ProductStock = ProductStock > availableSpace ? availableSpace : ProductStock;
+            int destroy = ProductStock - availableSpace;
+            Ledger[^1].Product.Destroyed = destroy;
+            ProductStock -= destroy;
             
             SetBuilding();
 
             Ledger[^1].Product.StockEndCheck = ProductStock;
             Ledger[^1].Books.LiquidityEndCheck = Liquidity;
+            Ledger[^1].Workers.EndCount = _jobContracts.Count;
+            Ledger[^1].Reputation = Reputation;
             UpdateCanvasText(false);
 
 
@@ -355,7 +357,7 @@ namespace NewScripts
         {
             _jobContracts.Add(contract);
             Reputation++;
-            Ledger[^1].Workers.WorkersHired++;
+            Ledger[^1].Workers.Hired++;
             AddReward(1F);
         }
         
@@ -366,11 +368,11 @@ namespace NewScripts
             AddReward(-1.1F);
             if (isQuitByEmployer)
             {
-                Ledger[^1].Workers.WorkersFired++;
+                Ledger[^1].Workers.Fired++;
             }
             else
             {
-                Ledger[^1].Workers.WorkersQuit++;
+                Ledger[^1].Workers.Quit++;
             }
         }
         

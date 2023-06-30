@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using NewScripts.Ui;
+using NewScripts.Ui.Company;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ namespace NewScripts
         public FlowController FlowController { get; } = new();
         public SetupSettings Settings { get; } = new();
         public StatsSink Stats { get; private set; }
-        public CompanyPanelActivator CompanyPanel { get; set; }
+        public PanelActivator CompanyPanel { get; set; }
 
 
         private void Awake()

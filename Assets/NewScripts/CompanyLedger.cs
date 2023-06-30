@@ -12,6 +12,7 @@
 
         public int CompanyId { get; }
         public int Lifetime { get; }
+        public double Reputation { get; set; }
         public int Month { get; }
         public int Year { get; }
         public BookKeepingLedger Books { get; set; }
@@ -44,27 +45,29 @@
         public decimal PriceSet { get; }
         public int StockStart { get; }
         public int Production { get; set; }
+        public int Destroyed { get; set; }
         public int Sales { get; set; } 
         public int StockEndCheck { get; set; }
     }
 
     public class WorkersLedger
     {
-        public WorkersLedger(int workersStart, decimal wageSet, decimal averageWage)
+        public WorkersLedger(int startCount, decimal offeredWage, decimal averageWage)
         {
-            WorkersStart = workersStart;
-            WageSet = wageSet;
+            StartCount = startCount;
+            OfferedWage = offeredWage;
             AverageWage = averageWage;
         }
 
-        public int WorkersStart { get; }
-        public decimal WageSet { get; }
-        public int WorkersHired { get; set; }
-        public int WorkersFired { get; set; }
-        public int WorkersQuit { get; set; }
+        public int StartCount { get; }
+        public int EndCount { get; set; }
+        public decimal OfferedWage { get; }
+        public int Hired { get; set; }
+        public int Fired { get; set; }
+        public int Quit { get; set; }
         public int OpenPositions { get; set; }
-        public int WorkersPaid { get; set; }
-        public int WorkersUnpaid { get; set; }
+        public int PaidCount { get; set; }
+        public int UnpaidCount { get; set; }
         public decimal AverageWage { get; }
     }
 }

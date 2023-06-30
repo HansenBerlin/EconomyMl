@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using NewScripts.Ui;
+using NewScripts.Ui.Company;
 using TMPro;
 using Unity.MLAgents.Policies;
 using UnityEngine;
@@ -71,7 +72,7 @@ namespace NewScripts
             ServiceLocator.Instance.Settings.IsTraining = isTraining;
             ServiceLocator.Instance.Settings.IsThrottled = isThrottled;
             ServiceLocator.Instance.Settings.WriteToDatabase = writeToDatabase;
-            ServiceLocator.Instance.CompanyPanel = companyPanelGo.GetComponent<CompanyPanelActivator>();
+            ServiceLocator.Instance.CompanyPanel = companyPanelGo.GetComponent<PanelActivator>();
             
             //Academy.Instance.OnEnvironmentReset += EnvironmentReset;
             ServiceLocator.Instance.LaborMarket.InitWorkers(1000);

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using NewScripts.Enums;
 using UnityEngine.Events;
 
 namespace NewScripts
@@ -8,4 +9,7 @@ namespace NewScripts
     
     [System.Serializable]
     public class ProductMarketUpdateEvent : UnityEvent<List<ProductOffer>, List<ProductBid>, List<Deal>> { }
+    
+    [System.Serializable]
+    public class CompanyPanelSelectionEvent : UnityEvent<CompanyPanelSelection> { }
 }

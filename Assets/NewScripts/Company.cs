@@ -65,9 +65,7 @@ namespace NewScripts
                 }  
             } 
         }
-    
-    
-        
+
         private void UpdateCanvasText(bool isClick)
         {
             if (ServiceLocator.Instance.CompanyPanel == null)
@@ -77,7 +75,6 @@ namespace NewScripts
             if (ServiceLocator.Instance.CompanyPanel.ActiveCompanyId == Id || isClick)
             {
                 ServiceLocator.Instance.CompanyPanel.ActiveCompanyData = Ledger;
-                ServiceLocator.Instance.CompanyPanel.UpdateUi();
             }
         }
 

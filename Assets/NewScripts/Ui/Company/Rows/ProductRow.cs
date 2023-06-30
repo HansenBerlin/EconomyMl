@@ -1,7 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 
-namespace NewScripts.Ui
+namespace NewScripts.Ui.Company.Rows
 {
     public class ProductRow : MonoBehaviour
     {
@@ -10,6 +10,7 @@ namespace NewScripts.Ui
         public TextMeshProUGUI stockText;
         public TextMeshProUGUI productionText;
         public TextMeshProUGUI salesText;
+        public TextMeshProUGUI destroyedText;
         public TextMeshProUGUI stockCheckText;
     }
 }
