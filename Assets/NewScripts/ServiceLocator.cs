@@ -20,7 +20,7 @@ namespace NewScripts
         public FlowController FlowController { get; } = new();
         public SetupSettings Settings { get; } = new();
         public StatsSink Stats { get; private set; }
-        public PanelActivator CompanyPanel { get; set; }
+        public CompanyPanelController CompanyCompanyPanel { get; set; }
         public HouseholdAggregatorService HouseholdAggregator { get; set; }
 
 

@@ -69,13 +69,13 @@ namespace NewScripts
 
         private void UpdateCanvasText(bool isClick)
         {
-            if (ServiceLocator.Instance.CompanyPanel == null)
+            if (ServiceLocator.Instance.CompanyCompanyPanel == null)
             {
                 return;
             }
-            if (ServiceLocator.Instance.CompanyPanel.ActiveCompanyId == Id || isClick)
+            if (ServiceLocator.Instance.CompanyCompanyPanel.ActiveCompanyId == Id || isClick)
             {
-                ServiceLocator.Instance.CompanyPanel.ActiveCompanyData = Ledger;
+                ServiceLocator.Instance.CompanyCompanyPanel.ActiveCompanyData = Ledger;
             }
         }
 

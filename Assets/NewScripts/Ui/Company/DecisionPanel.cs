@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using NewScripts.Common;
 using NewScripts.Ui.Company.Rows;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace NewScripts.Ui.Company
 {
-    public class BooksPanel : MonoBehaviour
+    public class DecisionPanel : MonoBehaviour
     {
         public GameObject parentGo;
         public GameObject rowPrefab;
@@ -15,7 +14,7 @@ namespace NewScripts.Ui.Company
         {
             foreach (Transform child in parentGo.transform.GetComponentsInChildren<Transform>())
             {
-                if (child.gameObject.name == "BooksListItem(Clone)")
+                if (child.gameObject.name == "DecisionListItem(Clone)")
                 {
                     Destroy(child.gameObject);
                 }
@@ -27,18 +26,14 @@ namespace NewScripts.Ui.Company
                 {
                     var dataset = activeCompanyData[i];
                     GameObject instance = Instantiate(rowPrefab, parentGo.transform);
-                    BooksRow row = instance.GetComponent<BooksRow>();
-                    
-                    BookKeepingLedger booksInfo = dataset.Books;
+                    DecisionRow row = instance.GetComponent<DecisionRow>();
+
+                    DecisionLedger decisionInfo = dataset.Decision;
                     row.periodText.text = $"{dataset.Month}/{dataset.Year}";
-                    row.incomeText.text = $"{booksInfo.Income:0.##}";
-                    row.liquidityStartText.text = $"{booksInfo.LiquidityStart:0.##}";
-                    row.liquidityEndText.text = $"{booksInfo.LiquidityEndCheck:0.##}";
-                    row.workerPaymentsText.text = $"{booksInfo.WagePayments:0.##}";
-                    row.taxPaymentsText.text = $"{booksInfo.TaxPayments:0.##}";
-                    decimal liquidityChange = booksInfo.LiquidityEndCheck - booksInfo.LiquidityStart;
-                    row.cashflowText.text = $"{liquidityChange:0.##}";
-                    row.cashflowText.color = liquidityChange < 0 ? Colors.Red : Colors.Green;
+                    row.fireWorkersText.text = $"{decisionInfo.FireWorkers:0}";
+                    row.openPositionsText.text = $"{decisionInfo.OpenPositions:0}";
+                    row.setPriceText.text = $"{decisionInfo.SetPrice:0.##}";
+                    row.setWageText.text = $"{decisionInfo.SetWorkerWage:0.##}";
                     float hue = i % 2 == 0 ? 0.04F : 0.08F;
                     var rawImage = row.GetComponent<RawImage>();
                     rawImage.color = new Color(1, 1, 1, hue);

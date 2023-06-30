@@ -111,7 +111,7 @@ namespace NewScripts.Ui
             float heightMultiplier = count / (float) _buckets
                 .Select(x => x.Count)
                 .Max();
-            heightMultiplier = 650 / (float) count * heightMultiplier;
+            heightMultiplier = 350 / (float) count * heightMultiplier;
             //float width = showBoth ? 45 : 90;
             
             for (int i = 0; i < _buckets.Count; i++)

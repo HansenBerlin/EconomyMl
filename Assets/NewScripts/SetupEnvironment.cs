@@ -73,7 +73,7 @@ namespace NewScripts
             ServiceLocator.Instance.Settings.IsTraining = isTraining;
             ServiceLocator.Instance.Settings.IsThrottled = isThrottled;
             ServiceLocator.Instance.Settings.WriteToDatabase = writeToDatabase;
-            ServiceLocator.Instance.CompanyPanel = companyPanelGo.GetComponent<PanelActivator>();
+            ServiceLocator.Instance.CompanyCompanyPanel = companyPanelGo.GetComponent<CompanyPanelController>();
             
             //Academy.Instance.OnEnvironmentReset += EnvironmentReset;
             ServiceLocator.Instance.LaborMarket.InitWorkers(1000);

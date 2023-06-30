@@ -18,6 +18,7 @@
         public BookKeepingLedger Books { get; set; }
         public ProductLedger Product { get; set; }
         public WorkersLedger Workers { get; set; }
+        public DecisionLedger Decision { get; set; }
     }
 
     public class BookKeepingLedger
@@ -70,5 +71,21 @@
         public int ReducedPaidCount { get; set; }
         public int UnpaidCount { get; set; }
         public decimal AverageWage { get; }
+    }
+
+    public class DecisionLedger
+    {
+        public DecisionLedger(int workerChange, decimal setWorkerWage, decimal setPrice)
+        {
+            FireWorkers = workerChange < 0 ? workerChange * -1 : 0;
+            OpenPositions = workerChange > 0 ? workerChange : 0;
+            SetWorkerWage = setWorkerWage;
+            SetPrice = setPrice;
+        }
+
+        public int FireWorkers { get; }
+        public int OpenPositions { get; }
+        public decimal SetWorkerWage { get; }
+        public decimal SetPrice { get; }
     }
 }

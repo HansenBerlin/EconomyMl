@@ -6,17 +6,19 @@ using UnityEngine.UI;
 
 namespace NewScripts.Ui.Company
 {
-    public class PanelActivator : MonoBehaviour
+    public class CompanyPanelController : MonoBehaviour
     {
         public GameObject dashboardButtonGo;
         public GameObject productButtonGo;
         public GameObject workersButtonGo;
         public GameObject booksButtonGo;
+        public GameObject decisionButtonGo;
         
         public GameObject dashboardPanelGo;
         public GameObject productPanelGo;
         public GameObject workersPanelGo;
         public GameObject booksPanelGo;
+        public GameObject decisionPanelGo;
 
         public TextMeshProUGUI breadcrumb;
         
@@ -25,12 +27,9 @@ namespace NewScripts.Ui.Company
             get => _activeCompanyData;
             set
             {
-                if (value != _activeCompanyData || value.Count != _activeCompanyData.Count)
-                {
-                    _activeCompanyData = value;
-                    ActiveCompanyId = _activeCompanyData[0].CompanyId;
-                    UpdatePanelData();
-                }  
+                _activeCompanyData = value;
+                ActiveCompanyId = _activeCompanyData[0].CompanyId;
+                UpdatePanelData();
             } 
         }
         
@@ -61,11 +60,16 @@ namespace NewScripts.Ui.Company
                 _currentSelection = CompanyPanelSelection.Books;
                 UpdatePanelData();
             });
+            decisionButtonGo.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                _currentSelection = CompanyPanelSelection.Decision;
+                UpdatePanelData();
+            });
         }
 
         private void UpdatePanelData()
         {
-            GameObject[] panels = {dashboardPanelGo, productPanelGo, workersPanelGo, booksPanelGo};
+            GameObject[] panels = { dashboardPanelGo, productPanelGo, workersPanelGo, booksPanelGo, decisionPanelGo };
             for (var i = 0; i < panels.Length; i++)
             {
                 panels[i].SetActive(i == (int) _currentSelection);
@@ -85,6 +89,9 @@ namespace NewScripts.Ui.Company
                 case CompanyPanelSelection.Books:
                     booksPanelGo.GetComponent<BooksPanel>().UpdateUi(ActiveCompanyData);
                     break;
+                case CompanyPanelSelection.Decision:
+                    decisionPanelGo.GetComponent<DecisionPanel>().UpdateUi(ActiveCompanyData);
+                    break;
             }
             
             SetBreadcrumbText();
@@ -97,6 +104,7 @@ namespace NewScripts.Ui.Company
                 CompanyPanelSelection.Dashboard => "Dashboard",
                 CompanyPanelSelection.Product => "Produktion",
                 CompanyPanelSelection.Workers => "Arbeiter",
+                CompanyPanelSelection.Decision => "Entscheidungen",
                 _ => "Buchhaltung"
             };
             breadcrumb.text = text;

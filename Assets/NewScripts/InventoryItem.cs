@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace NewScripts
 {
     public class InventoryItem
@@ -21,7 +23,12 @@ namespace NewScripts
 
         public void Consume(int count)
         {
-            Count = Count - count < 0 ? 0 : Count - count;
+            //Count = Count - count < 0 ? 0 : Count - count;
+            Count -= count;
+            if (Count < 0)
+            {
+                Debug.LogError("Count is negative");
+            }
         }
     }
 }

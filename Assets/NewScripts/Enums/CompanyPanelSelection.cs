@@ -5,6 +5,7 @@
         Dashboard = 0,
         Product = 1,
         Workers = 2,
-        Books = 3
+        Books = 3,
+        Decision = 4
     }
 }

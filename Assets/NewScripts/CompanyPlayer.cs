@@ -56,13 +56,13 @@ namespace NewScripts
         
         private void UpdateCanvasText(bool isClick)
         {
-            if (ServiceLocator.Instance.CompanyPanel == null || Ledger.Count == 0)
+            if (ServiceLocator.Instance.CompanyCompanyPanel == null || Ledger.Count == 0)
             {
                 return;
             }
-            if (ServiceLocator.Instance.CompanyPanel.ActiveCompanyId == Id || isClick)
+            if (ServiceLocator.Instance.CompanyCompanyPanel.ActiveCompanyId == Id || isClick)
             {
-                ServiceLocator.Instance.CompanyPanel.ActiveCompanyData = Ledger;
+                ServiceLocator.Instance.CompanyCompanyPanel.ActiveCompanyData = Ledger;
             }
         }
 
@@ -122,6 +122,7 @@ namespace NewScripts
             var workerLedger = new WorkersLedger(_jobContracts.Count, wage, averageWage);
             var productLedger = new ProductLedger(price, ProductStock);
             var booksLedger = new BookKeepingLedger(Liquidity);
+            var decisionLedger = new DecisionLedger(workerChange, wage, price);
             
             ProductPrice = price;
             OfferedWageRate = wage;
@@ -167,6 +168,7 @@ namespace NewScripts
             companyData.Workers = workerLedger;
             companyData.Product = productLedger;
             companyData.Books = booksLedger;
+            companyData.Decision = decisionLedger;
             Ledger.Add(companyData);
 
             SetBuilding();

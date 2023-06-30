@@ -93,8 +93,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22
-  m_fontSizeBase: 22
+  m_fontSize: 16
+  m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -174,7 +174,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 780}
+  m_SizeDelta: {x: 0, y: 380}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2660668676770371765
 MonoBehaviour:
@@ -216,8 +216,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rangeText: {fileID: 7217801648312973991}
   valueText: {fileID: 7237095498378646672}
-  button: {fileID: 4899774141116948559}
   fullfilled: {fileID: 8244399610224576968}
+  button: {fileID: 4899774141116948559}
 --- !u!1 &7546705527612299699
 GameObject:
   m_ObjectHideFlags: 0
@@ -413,7 +413,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 50}
+  m_SizeDelta: {x: 0, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8429320504681404411
 CanvasRenderer:
@@ -470,8 +470,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 22
+  m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -610,7 +610,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6368745905103396221, guid: 9c2fd8054dc4c16449a70f34527d2c34, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 379.05
+      value: 274.4
       objectReference: {fileID: 0}
     - target: {fileID: 6368745905103396221, guid: 9c2fd8054dc4c16449a70f34527d2c34, type: 3}
       propertyPath: m_LocalPosition.x

@@ -1,4 +1,6 @@
-﻿namespace NewScripts
+﻿using UnityEngine;
+
+namespace NewScripts
 {
     public class HouseholdsAggregate
     {
@@ -13,7 +15,7 @@
         public decimal AveragePurchasingPower { get; private set; }
         public double AverageDemand { get; private set; }
         public double EmploymentRate { get; private set; }
-        public int Population { get; private set; }
+        private int Population { get; set; }
         
         public void Update(HouseholdLedger data)
         {

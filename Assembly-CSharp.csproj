@@ -55,7 +55,6 @@
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
      <Compile Include="Assets\Scripts\Models\ProductMarketModel.cs" />
      <Compile Include="Assets\NewScripts\ProductMarket.cs" />
-     <Compile Include="Assets\NewScripts\Ui\Company\PanelActivator.cs" />
      <Compile Include="Assets\NewScripts\Ui\PlayerControl.cs" />
      <Compile Include="Assets\NewScripts\Ui\Company\WorkersPanel.cs" />
      <Compile Include="Assets\NewScripts\SetupEnvironment.cs" />
@@ -79,6 +78,7 @@
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ChatController.cs" />
      <Compile Include="Assets\Scripts\Policies\FederalUnemployedPaymentPolicy.cs" />
      <Compile Include="Assets\NewScripts\CompanyLedger.cs" />
+     <Compile Include="Assets\NewScripts\Ui\Company\TimelineStatPanelController.cs" />
      <Compile Include="Assets\Scripts\Models\JobModel.cs" />
      <Compile Include="Assets\NewScripts\SetupSettings.cs" />
      <Compile Include="Assets\NewScripts\InventoryItem.cs" />
@@ -123,6 +123,7 @@
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark03.cs" />
      <Compile Include="Assets\NewScripts\Blacklist.cs" />
+     <Compile Include="Assets\NewScripts\Ui\Company\DecisionPanel.cs" />
      <Compile Include="Assets\Scripts\Repositories\StatisticalDataRepository.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\SpawnObject.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\CarBehavior.cs" />
@@ -136,7 +137,9 @@
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\HumanBehavior.cs" />
      <Compile Include="Assets\Scripts\Factories\JobPositionFactory.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\TrafficLight.cs" />
+     <Compile Include="Assets\NewScripts\Enums\TimelineSelection.cs" />
      <Compile Include="Assets\NewScripts\MarketLedger.cs" />
+     <Compile Include="Assets\NewScripts\Ui\Company\CompanyPanelController.cs" />
      <Compile Include="Assets\the-minimum-wage-trade-off-unity\Scripts\MWMenuManager.cs" />
      <Compile Include="Assets\NewScripts\Ui\Company\Rows\WorkerRow.cs" />
      <Compile Include="Assets\NewScripts\Product.cs" />
@@ -171,6 +174,7 @@
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\PathFinding.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\TrajectoryPoint.cs" />
      <Compile Include="Assets\NewScripts\ProductTemplateFactory.cs" />
+     <Compile Include="Assets\NewScripts\Ui\TooltipManager.cs" />
      <Compile Include="Assets\NewScripts\Camera\SimpleCameraController.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ObjectSpin.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_PhoneNumberValidator.cs" />
@@ -195,6 +199,7 @@
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventCheck.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\Interfaces\IPathFinder.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_UiFrameRateCounter.cs" />
+     <Compile Include="Assets\NewScripts\Ui\Company\Rows\DecisionRow.cs" />
      <Compile Include="Assets\NewScripts\Receipt.cs" />
      <Compile Include="Assets\NewScripts\Enums\WorkerFireReason.cs" />
      <Compile Include="Assets\Scripts\Enums\CompanyActionPhase.cs" />
@@ -217,7 +222,6 @@
      <Compile Include="Assets\Scripts\Policies\EducationBoundaryPolicy.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SkewTextExample.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\WarpTextExample.cs" />
-     <Compile Include="Assets\NewScripts\Ui\DashboardViewModel.cs" />
      <Compile Include="Assets\NewScripts\Ui\StatBar.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshProFloatingText.cs" />
      <Compile Include="Assets\Scripts\Enums\JobStatus.cs" />
@@ -230,6 +234,7 @@
      <Compile Include="Assets\Scripts\Factories\ProductionFactory.cs" />
      <Compile Include="Assets\NewScripts\Http\HttpService.cs" />
      <Compile Include="Assets\NewScripts\Ui\Company\BooksPanel.cs" />
+     <Compile Include="Assets\NewScripts\Common\Colors.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\PerspectiveCameraControl.cs" />
      <Compile Include="Assets\Scripts\Models\PopulationModel.cs" />
      <Compile Include="Assets\Scripts\Factories\ActionsFactory.cs" />
@@ -415,6 +420,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Music_T\Materials" />
      <Folder Include="Library\PackageCache\com.unity.modules.cloth@1.0.0" />
      <Folder Include="Assets\PolygonTown\Models\Items" />
+     <Folder Include="Assets\NewScripts\Common" />
      <Folder Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents\Plugins\ProtoBuffer" />
      <Folder Include="Assets\PolygonCity\Prefabs\Characters" />
      <None Include="Assets\results\company-v6-1\run_logs\timers.json" />

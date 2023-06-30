@@ -12,7 +12,7 @@ namespace NewScripts
         public decimal Money { get; set; } = 90;
         public int Health { get; set; } = 1000;
         public int ConsumeInMonth { get; private set; }
-        public int FullfilledInMonth { get; private set; }
+        private int FullfilledInMonth { get; set; }
         public bool HasJob => _jobContract != null;
         //private const int MonthlyDemand = 100;
         private const int MonthlyMaximumDemand = 250;
@@ -48,12 +48,12 @@ namespace NewScripts
 
         public void EndMonth()
         {
-            _inventory[0].Consume(ConsumeInMonth);
+            _inventory[0].Consume(FullfilledInMonth);
         }
 
         private (int low, int high) DemandModifier()
         {
-            float ratio = FullfilledInMonth / (float)ConsumeInMonth;
+            float ratio = FullfilledInMonth > 0 && ConsumeInMonth > 0 ? FullfilledInMonth / (float)ConsumeInMonth : 0;
             float modifier = (ratio + 1) / 2;
             int low = (int)(MonthlyMinimumDemand * modifier);
             int high = (int)(MonthlyMaximumDemand * modifier);
@@ -108,6 +108,11 @@ namespace NewScripts
                 Academy.Instance.StatsRecorder.Add("Market/P-Bid-Make-Count", ConsumeInMonth);
                 Academy.Instance.StatsRecorder.Add("Market/P-Bid-Make-Price", (float)bidPrice);
             }
+            if (ConsumeInMonth < 0 || ConsumeInMonth > 1000 || double.IsFinite(ConsumeInMonth) ||
+                double.IsNaN(ConsumeInMonth))
+            {
+                Debug.Log(ConsumeInMonth);
+            }
             ServiceLocator.Instance.HouseholdAggregator.Add(new HouseholdLedger(HasJob, ConsumeInMonth, Money));
 
         }
@@ -124,6 +129,7 @@ namespace NewScripts
         {
             _inventory.Where(x => x.Product == product).ToArray()[0].Add(count, price);
             Money -= count * price;
+            FullfilledInMonth += count;
         }
         
         public void RemoveJobContract(JobContract contract, WorkerFireReason reason)
