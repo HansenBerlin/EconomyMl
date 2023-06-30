@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using Agents;
 using MathNet.Numerics.LinearAlgebra.Single.Solvers;
+using NewScripts.Enums;
 using NewScripts.Http;
 using NewScripts.Http;
 using TMPro;
@@ -28,7 +29,7 @@ namespace NewScripts
         public int LifetimeMonths { get; }
         void FullfillBid(ProductType product, int count, decimal price);
         void AddContract(JobContract contract);
-        void RemoveContract(JobContract contract, bool isQuitByEmployer);
+        void RemoveContract(JobContract contract, WorkerFireReason reason);
         void RequestMonthlyDecision();
         public void StartNextPeriod(decimal price, int workerChange, decimal wage);
         void Produce();

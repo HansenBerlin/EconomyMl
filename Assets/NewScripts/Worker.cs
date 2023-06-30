@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NewScripts.Enums;
 using Unity.MLAgents;
 using UnityEngine;
 
@@ -11,9 +12,12 @@ namespace NewScripts
         public decimal Money { get; set; } = 90;
         public int Health { get; set; } = 1000;
         public int ConsumeInMonth { get; private set; }
+        public int FullfilledInMonth { get; private set; }
         public bool HasJob => _jobContract != null;
-        private const int MonthlyDemand = 100;
-        private const int MonthlyMinimumDemand = MonthlyDemand / 2;
+        //private const int MonthlyDemand = 100;
+        private const int MonthlyMaximumDemand = 250;
+        private const int MonthlyMinimumDemand = 50;
+        private const int MonthlyAverageDemand = 100;
         private int UnemployedForMonth { get; set; } = 0;
         private readonly List<InventoryItem> _inventory = new();
         private readonly System.Random _rand = new();
@@ -32,7 +36,7 @@ namespace NewScripts
         
         public void AddContract(JobContract contract)
         {
-            _jobContract?.QuitContract(false);
+            _jobContract?.QuitContract(WorkerFireReason.WorkerDecision);
             _jobContract = contract;
             UnemployedForMonth = 0;
         }
@@ -47,9 +51,18 @@ namespace NewScripts
             _inventory[0].Consume(ConsumeInMonth);
         }
 
+        private (int low, int high) DemandModifier()
+        {
+            float ratio = FullfilledInMonth / (float)ConsumeInMonth;
+            float modifier = (ratio + 1) / 2;
+            int low = (int)(MonthlyMinimumDemand * modifier);
+            int high = (int)(MonthlyMaximumDemand * modifier);
+            FullfilledInMonth = 0;
+            return (low, high);
+        }
+
         private decimal DetermineBiddingPrice(decimal averageMarketPrice)
         {
-            ConsumeInMonth = MonthlyDemand + _rand.Next(MonthlyMinimumDemand * -1, MonthlyMinimumDemand + 1);
             decimal priceWillingness = ConsumeInMonth - _inventory[0].Count;
 
             if (_inventory[0].Count < MonthlyMinimumDemand)
@@ -59,17 +72,24 @@ namespace NewScripts
 
             decimal minPrice = averageMarketPrice / 2;
             decimal maxPrice = averageMarketPrice * 2;
-
-            decimal biddingPrice = Math.Max(minPrice, Math.Min(maxPrice, _inventory[0].AvgPaid + priceWillingness / (MonthlyDemand * 2 - MonthlyMinimumDemand)));
+            //decimal biddingPrice = Math.Max(minPrice, Math.Min(maxPrice, _inventory[0].AvgPaid + priceWillingness / (MonthlyDemand * 2 - MonthlyMinimumDemand)));
+            decimal biddingPrice = Math.Max(minPrice, Math.Min(maxPrice, _inventory[0].AvgPaid + priceWillingness / (MonthlyAverageDemand * 2 - MonthlyMinimumDemand)));
 
             return biddingPrice;
+        }
+        
+        private int DemandByMarginalUtility(int minDemand, int maxDemand)
+        {
+            double random = _rand.NextDouble();
+            int demand = minDemand + (int)Math.Round(Math.Pow(random, 2) * (maxDemand - minDemand));
+            return demand;
         }
 
         public void AddProductBids(decimal averagePrice)
         {
             Academy.Instance.StatsRecorder.Add("Worker/Money", (float)Money);
-
-            ConsumeInMonth = MonthlyDemand + _rand.Next(MonthlyMinimumDemand * -1, MonthlyMinimumDemand + 1);
+            (int low, int high) = DemandModifier();
+            ConsumeInMonth = DemandByMarginalUtility(low, high);
             decimal bidPrice = DetermineBiddingPrice(averagePrice);
             
             if (ConsumeInMonth * bidPrice > Money)
@@ -81,7 +101,7 @@ namespace NewScripts
                 BidPrice = bidPrice;
                 if (Money - bidPrice * ConsumeInMonth < 0)
                 {
-                    Debug.LogError("Not enough money");
+                    throw new Exception("Not enough money");
                 }
                 var bid = new ProductBid(ProductType.Food, this, bidPrice, ConsumeInMonth);
                 ServiceLocator.Instance.ProductMarket.AddBid(bid);
@@ -104,14 +124,14 @@ namespace NewScripts
             Money -= count * price;
         }
         
-        public void RemoveJobContract(JobContract contract, bool isQuitByEmployer)
+        public void RemoveJobContract(JobContract contract, WorkerFireReason reason)
         {
             if (_jobContract != contract)
             {
                 throw new Exception("Wrong contract: " + contract.Employer.Id);
             }
 
-            if (isQuitByEmployer)
+            if (reason != WorkerFireReason.WorkerDecision)
             {
                 // blacklist
             }
@@ -138,32 +158,39 @@ namespace NewScripts
             double demand = ServiceLocator.Instance.LaborMarket.DemandForWorkforce;
             double demandModifier = (demand + 1001) / 1000;
 
-            decimal wage;
+            decimal requiredWage;
             if (HasJob)
             {
-                if (_jobContract.Wage >= criticalBoundary)
+                decimal currentWage = _jobContract.IsForceReduced ? _jobContract.Wage / 2 : _jobContract.Wage;
+                if (currentWage >= criticalBoundary)
                 {
                     return;
                 }
 
-                wage = criticalBoundary;
-                //wage = criticalBoundary * demandModifier;
+                if(_jobContract.IsForceReduced == false)
+                {
+                    requiredWage = currentWage > criticalBoundary ? currentWage * 1.1M : criticalBoundary;
+                }
+                else
+                {
+                    requiredWage = currentWage > criticalBoundary ? currentWage * 0.9M : criticalBoundary;
+                }
             }
             else
             {
                 decimal modifier = UnemployedForMonth < 2 ? 0.95M : UnemployedForMonth < 6 ? 0.85M : UnemployedForMonth < 12 ? 0.75M : 0.5M;
-                wage = criticalBoundary * modifier;
+                requiredWage = criticalBoundary * modifier;
                 //wage = criticalBoundary * modifier * demandModifier;
             }
             
             //Debug.Log("WORKER Wage set to " + wage + " with " + UnemployedForMonth + " months unemployed");
             
-            wage = wage < 40 ? 40 : wage > 150 ? 150 : wage;
+            requiredWage = requiredWage < 25 ? 25 : requiredWage > 500 ? 500 : requiredWage;
 
             
-            var offer = new JobOffer(this, wage);
+            var offer = new JobOffer(this, requiredWage);
             ServiceLocator.Instance.LaborMarket.AddJobOffer(offer);
-            Academy.Instance.StatsRecorder.Add("Market/Job-Offer-Price", (float)wage);
+            Academy.Instance.StatsRecorder.Add("Market/Job-Offer-Price", (float)requiredWage);
 
         }
     }

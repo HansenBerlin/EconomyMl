@@ -25,7 +25,7 @@ namespace NewScripts.Ui.Company
             get => _activeCompanyData;
             set
             {
-                if (value != _activeCompanyData)
+                if (value != _activeCompanyData || value.Count != _activeCompanyData.Count)
                 {
                     _activeCompanyData = value;
                     ActiveCompanyId = _activeCompanyData[0].CompanyId;

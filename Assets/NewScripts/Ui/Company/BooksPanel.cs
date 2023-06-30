@@ -7,7 +7,6 @@ namespace NewScripts.Ui.Company
 {
     public class BooksPanel : MonoBehaviour
     {
-        //public GameObject activatorButton;
         public GameObject parentGo;
         public GameObject rowPrefab;
         
@@ -15,7 +14,7 @@ namespace NewScripts.Ui.Company
         {
             foreach (Transform child in parentGo.transform.GetComponentsInChildren<Transform>())
             {
-                if (child.gameObject.name == "ProductListItem(Clone)")
+                if (child.gameObject.name == "BooksListItem(Clone)")
                 {
                     Destroy(child.gameObject);
                 }
@@ -27,15 +26,16 @@ namespace NewScripts.Ui.Company
                 {
                     var dataset = activeCompanyData[i];
                     GameObject instance = Instantiate(rowPrefab, parentGo.transform);
-                    ProductRow row = instance.GetComponent<ProductRow>();
+                    BooksRow row = instance.GetComponent<BooksRow>();
                     
-                    ProductLedger productInfo = dataset.Product;
+                    BookKeepingLedger booksInfo = dataset.Books;
                     row.periodText.text = $"{dataset.Month}/{dataset.Year}";
-                    row.priceText.text = $"{productInfo.PriceSet:0.##}";
-                    row.stockText.text = $"{productInfo.StockStart:0}";
-                    row.productionText.text = $"{productInfo.Production:0}";
-                    row.salesText.text = $"{productInfo.Sales:0}";
-                    row.stockCheckText.text = $"{productInfo.StockEndCheck:0}";
+                    row.incomeText.text = $"{booksInfo.Income:0.##}";
+                    row.liquidityStartText.text = $"{booksInfo.LiquidityStart:0.##}";
+                    row.liquidityEndText.text = $"{booksInfo.LiquidityEndCheck:0.##}";
+                    row.workerPaymentsText.text = $"{booksInfo.WagePayments:0.##}";
+                    row.taxPaymentsText.text = $"{booksInfo.TaxPayments:0.##}";
+                    row.cashflowText.text = $"{booksInfo.LiquidityStart - booksInfo.LiquidityEndCheck:0.##}";
                     float hue = i % 2 == 0 ? 0.04F : 0.08F;
                     var rawImage = row.GetComponent<RawImage>();
                     rawImage.color = new Color(1, 1, 1, hue);

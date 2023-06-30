@@ -1,3 +1,4 @@
+using NewScripts.Enums;
 using Unity.MLAgents;
 
 namespace NewScripts
@@ -26,20 +27,21 @@ namespace NewScripts
             IsForceReduced = false;
         }
 
-        public void ReduceWage()
+        public void PayReducedWage()
         {
-            Wage = Wage / 2 > 20 ? Wage / 2 : 20;
+            decimal reducedWage = Wage / 2;
+            Worker.Money += reducedWage;
+            Employer.Liquidity -= reducedWage;
             IsForceReduced = true;
         }
-        
-        
-        
-        public void QuitContract(bool isQuitByEmployer)
+
+        public void QuitContract(WorkerFireReason reason)
         {
             Academy.Instance.StatsRecorder.Add("Contract/WorkQuit", ++ServiceLocator.Instance.LaborMarket.CountRemoved);
 
-            Employer.RemoveContract(this, isQuitByEmployer);
-            Worker.RemoveJobContract(this, isQuitByEmployer);
+            Employer.RemoveContract(this, reason);
+            Worker.RemoveJobContract(this, reason);
+            IsForceReduced = false;
         }
     }
 }

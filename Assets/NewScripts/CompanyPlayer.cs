@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NewScripts.Enums;
 using NewScripts.Http;
 using UnityEngine;
 
@@ -32,13 +33,14 @@ namespace NewScripts
         private int _currentActiveIndex = -1;
         private PlayerDecisionEvent _decisionRequestEvent;
         public PlayerDecisionEvent DecisionRequestEventProp => _decisionRequestEvent;
-        public List<CompanyData> Ledger { get; } = new();
+        private List<CompanyData> Ledger { get; } = new();
         
         private void Awake()
         {
             _isTraining = ServiceLocator.Instance.Settings.IsTraining;
             _writeToDatabase = ServiceLocator.Instance.Settings.WriteToDatabase;
             _decisionRequestEvent ??= new PlayerDecisionEvent();
+            SetBuilding();
         }
 
         private void Update() {  
@@ -54,7 +56,7 @@ namespace NewScripts
         
         private void UpdateCanvasText(bool isClick)
         {
-            if (ServiceLocator.Instance.CompanyPanel == null)
+            if (ServiceLocator.Instance.CompanyPanel == null || Ledger.Count == 0)
             {
                 return;
             }
@@ -128,7 +130,7 @@ namespace NewScripts
             {
                 if (contract.Wage < OfferedWageRate)
                 {
-                    contract.Wage = OfferedWageRate;
+                    //contract.Wage = OfferedWageRate;
                 }
             }
             
@@ -156,7 +158,7 @@ namespace NewScripts
                     if (contract.RunsFor > 3)
                     {
                         //workerLedger.WorkersFired++;
-                        contract.QuitContract(true);
+                        contract.QuitContract(WorkerFireReason.CompanyDecision);
                         fireWorkers--;
                     }
                 }
@@ -227,15 +229,18 @@ namespace NewScripts
                 if (contract.Wage < Liquidity)
                 {
                     contract.PayWorker();
-                    Ledger[^1].Workers.PaidCount++;
+                    Ledger[^1].Workers.ReducedPaidCount++;
                     Ledger[^1].Books.WagePayments += contract.Wage;
+                }
+                else if (contract.Wage / 2 < Liquidity && contract.IsForceReduced == false)
+                {
+                    contract.PayReducedWage();
+                    Ledger[^1].Workers.ReducedPaidCount++;
+                    Ledger[^1].Books.WagePayments += contract.Wage / 2;
                 }
                 else
                 {
-                    contract.ReduceWage();
-                    Ledger[^1].Workers.UnpaidCount++;
-                    Reputation--;
-                    AddReward(-0.1F);
+                    contract.QuitContract(WorkerFireReason.LackOfFunds);
                 }
             }
             
@@ -287,7 +292,7 @@ namespace NewScripts
             }
 
             int availableSpace = _jobContracts.Count * 400;
-            int destroy = ProductStock - availableSpace;
+            int destroy = ProductStock - availableSpace > 0 ? ProductStock - availableSpace : 0;
             Ledger[^1].Product.Destroyed = destroy;
             ProductStock -= destroy;
             
@@ -361,14 +366,18 @@ namespace NewScripts
             AddReward(1F);
         }
         
-        public void RemoveContract(JobContract contract, bool isQuitByEmployer)
+        public void RemoveContract(JobContract contract, WorkerFireReason reason)
         {
             _jobContracts.Remove(contract);
             Reputation--;
             AddReward(-1.1F);
-            if (isQuitByEmployer)
+            if (reason == WorkerFireReason.CompanyDecision)
             {
-                Ledger[^1].Workers.Fired++;
+                Ledger[^1].Workers.FiredByDecision++;
+            }
+            else if (reason == WorkerFireReason.LackOfFunds)
+            {
+                Ledger[^1].Workers.FiredByForce++;
             }
             else
             {

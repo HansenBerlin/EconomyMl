@@ -32,12 +32,13 @@ namespace NewScripts.Ui.Company
                     row.periodText.text = $"{dataset.Month}/{dataset.Year}";
                     row.startText.text = $"{workerInfo.StartCount}";
                     row.hiredText.text = $"{workerInfo.Hired}";
-                    row.firedText.text = $"{workerInfo.Fired}";
+                    row.firedDecisionText.text = $"{workerInfo.FiredByDecision}";
+                    row.firedForcedText.text = $"{workerInfo.FiredByForce}";
                     row.quitText.text = $"{workerInfo.Quit}";
                     row.endText.text = $"{workerInfo.EndCount}";
                     row.offeredWageText.text = $"{workerInfo.OfferedWage:0}";
                     row.avgWageText.text = $"{workerInfo.AverageWage:0}";
-                    row.paidText.text = $"{workerInfo.PaidCount}/{workerInfo.UnpaidCount}";
+                    row.paidText.text = $"{workerInfo.ReducedPaidCount}/{workerInfo.UnpaidCount}";
                     row.openPositionsText.text = $"{workerInfo.OpenPositions}";
                     float hue = i % 2 == 0 ? 0.04F : 0.08F;
                     var rawImage = row.GetComponent<RawImage>();

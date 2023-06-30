@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using Agents;
 using MathNet.Numerics.LinearAlgebra.Single.Solvers;
+using NewScripts.Enums;
 using NewScripts.Http;
 using NewScripts.Http;
 using TMPro;
@@ -165,7 +166,7 @@ namespace NewScripts
             _lastMonth = ServiceLocator.Instance.FlowController.Month;
 
             int workerDecision = actionBuffers.DiscreteActions[0];
-            float newWage = MapValue(actionBuffers.ContinuousActions[0], 20, 200);
+            float newWage = MapValue(actionBuffers.ContinuousActions[0], 25, 500);
             float newPrice = MapValue(actionBuffers.ContinuousActions[1], 0.1F, 2F);
             
             ProductPrice = (decimal)newPrice;
@@ -202,7 +203,7 @@ namespace NewScripts
                     var contract = _jobContracts[i];
                     if (contract.RunsFor > 3)
                     {
-                        contract.QuitContract(true);
+                        contract.QuitContract(WorkerFireReason.CompanyDecision);
                         fireWorkers--;
                         Academy.Instance.StatsRecorder.Add("Labor/Fire", 1);
 
@@ -273,16 +274,25 @@ namespace NewScripts
                 if (contract.Wage < Liquidity)
                 {
                     contract.PayWorker();
+                    //Ledger[^1].Workers.ReducedPaidCount++;
+                    //Ledger[^1].Books.WagePayments += contract.Wage;
+                    Reputation++;
+                }
+                else if (contract.Wage / 2 < Liquidity && contract.IsForceReduced == false)
+                {
+                    contract.PayReducedWage();
+                    //Ledger[^1].Workers.ReducedPaidCount++;
+                    //Ledger[^1].Books.WagePayments += contract.Wage / 2;
+                    Reputation--;
                 }
                 else
                 {
-                    contract.ReduceWage();
-                    Reputation--;
-                    AddReward(-0.1F);
+                    contract.QuitContract(WorkerFireReason.LackOfFunds);
+                    Reputation -= 2;
                 }
             }
             
-            if(Liquidity < 10 || _jobContracts.Count == 0)
+            if (Liquidity < 10 || _jobContracts.Count == 0)
             {
                 Reputation--;
                 AddReward(-0.1F);
@@ -339,7 +349,9 @@ namespace NewScripts
                 EndEpisode();
             }
             int availableSpace = _jobContracts.Count * 400;
-            ProductStock = ProductStock > availableSpace ? availableSpace : ProductStock;
+            int destroy = ProductStock - availableSpace > 0 ? ProductStock - availableSpace : 0;
+            //Ledger[^1].Product.Destroyed = destroy;
+            ProductStock -= destroy;
             
             SetBuilding();
             UpdateCanvasText(false);
@@ -406,7 +418,7 @@ namespace NewScripts
             AddReward(1F);
         }
         
-        public void RemoveContract(JobContract contract, bool isQuitByEmployer)
+        public void RemoveContract(JobContract contract, WorkerFireReason reason)
         {
             _jobContracts.Remove(contract);
             Reputation--;

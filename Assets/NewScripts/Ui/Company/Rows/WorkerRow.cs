@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace NewScripts.Ui.Company.Rows
 {
@@ -8,7 +9,8 @@ namespace NewScripts.Ui.Company.Rows
         public TextMeshProUGUI periodText;
         public TextMeshProUGUI startText;
         public TextMeshProUGUI hiredText;
-        public TextMeshProUGUI firedText;
+        [FormerlySerializedAs("firedText")] public TextMeshProUGUI firedDecisionText;
+        public TextMeshProUGUI firedForcedText;
         public TextMeshProUGUI quitText;
         public TextMeshProUGUI endText;
         public TextMeshProUGUI paidText;

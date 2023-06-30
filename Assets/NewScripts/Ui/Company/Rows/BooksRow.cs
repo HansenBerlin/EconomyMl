@@ -11,5 +11,6 @@ namespace NewScripts.Ui.Company.Rows
         public TextMeshProUGUI workerPaymentsText;
         public TextMeshProUGUI taxPaymentsText;
         public TextMeshProUGUI liquidityEndText;
+        public TextMeshProUGUI cashflowText;
     }
 }
