@@ -1,9 +1,11 @@
-﻿namespace NewScripts.Common
+﻿using System.Collections.Generic;
+
+namespace NewScripts.Common
 {
     public static class CompanyNames
     {
-        private static System.Random _random = new System.Random();
-        private static readonly string[] _companyNames = {
+        private static readonly System.Random Random = new System.Random();
+        private static readonly string[] AllCompanyNames = {
             "Crunchy Bites",
             "Yumzy Delights",
             "Sizzlelicious",
@@ -105,10 +107,19 @@
             "Peanut Butter Paradise"
         };
         
+        private static readonly List<string> AvailableNames = new(AllCompanyNames);
+        
         public static string PickRandomName()
         {
-            var index = _random.Next(0, _companyNames.Length);
-            return _companyNames[index];
+            var index = Random.Next(0, AvailableNames.Count);
+            string name = AvailableNames[index];
+            AvailableNames.Remove(name);
+            return name;
+        }
+
+        public static void AddToAvailableNames(string name)
+        {
+            AvailableNames.Add(name);
         }
     }
 }

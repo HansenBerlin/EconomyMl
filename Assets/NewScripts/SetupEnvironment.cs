@@ -79,17 +79,17 @@ namespace NewScripts
                     zPos++;
                     xPos = 0;
                 }
-                if(i < aiCompaniesPerType)
+                if(i < playerCompaniesPerType)
                 {
-                    var go = Instantiate(foodCompanyPrefab);
-                    ICompany company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go, true);
+                    var go = Instantiate(foodCompanyPrefabPlayer);
+                    ICompany company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go, false);
                     company.Liquidity = liquidity;
                     ServiceLocator.Instance.Companys.Add(company);
                 }
                 else
                 {
-                    var go = Instantiate(foodCompanyPrefabPlayer);
-                    ICompany company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go, false);
+                    var go = Instantiate(foodCompanyPrefab);
+                    ICompany company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go, true);
                     company.Liquidity = liquidity;
                     ServiceLocator.Instance.Companys.Add(company);
                 }

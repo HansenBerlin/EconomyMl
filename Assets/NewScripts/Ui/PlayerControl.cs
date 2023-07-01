@@ -63,19 +63,18 @@ namespace NewScripts.Ui
                 : val - _activeCompany.WorkerCount < 0 
                     ? $"-{val - _activeCompany.WorkerCount:0}" 
                     : "0";
-            workerCountText.text = $"Workers goal: {_activeCompany.WorkerCount} (change: {text})";
+            workerCountText.text = $"Workers current: {_activeCompany.WorkerCount}, goal: {val} ({text})";
         }
         
         private void OnWorkerWageChanged(float val)
         {
-            var average = _activeCompany.AverageWageRate;
             decimal newWage = (decimal) val;
             string text = newWage - _activeCompany.AverageWageRate > 0 
                 ? $"+{newWage - _activeCompany.AverageWageRate:0.##}" 
                 : newWage - _activeCompany.AverageWageRate < 0 
                     ? $"-{newWage - _activeCompany.AverageWageRate:0.##}" 
                     : "0";
-            workerWageText.text = $"Wage: {_activeCompany.AverageWageRate:0} (change: {text})";
+            workerWageText.text = $"Change wage from {_activeCompany.AverageWageRate:0} to {val} ({text})";
         }
         
         private void OnPriceChanged(float val)
@@ -86,7 +85,7 @@ namespace NewScripts.Ui
                 : newPrice - _activeCompany.ProductPrice < 0 
                     ? $"-{newPrice - _activeCompany.ProductPrice:0.##}" 
                     : "0";
-            priceText.text = $"Price: {_activeCompany.ProductPrice:0.##} (change: {text})";
+            priceText.text = $"Change price from: {_activeCompany.ProductPrice:0.##} to {val:0.##} ({text})";
         }
 
         private void Confirm()

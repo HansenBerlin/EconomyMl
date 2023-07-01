@@ -19,7 +19,7 @@ namespace NewScripts
             }
         }
 
-        public void CompanyUpdateValuesEvent(ICompany company)
+        public void SelectCompanyEvent(ICompany company)
         {
             if (SelectedCompanyId != company.Id)
             {

@@ -74,6 +74,7 @@
      <Compile Include="Assets\NewScripts\Enums\CompanyPanelSelection.cs" />
      <Compile Include="Assets\Scripts\Controller\Data\StatisticalDistributionController.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01_UGUI.cs" />
+     <Compile Include="Assets\NewScripts\RotationController.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SimpleScript.cs" />
      <Compile Include="Assets\NewScripts\Spawner.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark04.cs" />
@@ -247,6 +248,7 @@
      <Compile Include="Assets\Scripts\Enums\CreditRating.cs" />
      <Compile Include="Assets\NewScripts\Http\CompanyLedger.cs" />
      <Compile Include="Assets\Scripts\Models\ReceiptModel.cs" />
+     <Compile Include="Assets\NewScripts\Ui\GameSetupPanelController.cs" />
      <Compile Include="Assets\Scripts\Policies\CompanyResourcePolicy.cs" />
      <Compile Include="Assets\Scripts\Models\GovernmentModel.cs" />
      <Compile Include="Assets\Scripts\Agents\CompanyBaseAgent.cs" />
@@ -386,6 +388,7 @@
      <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Anton OFL.txt" />
      <Folder Include="Assets\TextMesh Pro\Resources\Fonts &amp; Materials" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Props_M" />
+     <Folder Include="Assets\PolygonStarter\Prefabs\Characters" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Tiles_T" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\India_T" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Western_M" />
@@ -461,6 +464,7 @@
      <Folder Include="Assets\Brains\company-v2-5-66d33bd1-aeaa-42f5-9740-25328234e212\run_logs" />
      <Folder Include="Library\PackageCache\com.unity.modules.unitywebrequest@1.0.0" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Beach_M" />
+     <Folder Include="Assets\PolygonStarter\Materials\Misc" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Nature_M\Stones_M" />
      <Folder Include="Library\PackageCache\com.unity.modules.unitywebrequestassetbundle@1.0.0" />
      <Folder Include="Assets\results\company-v7-1\Company" />
@@ -586,6 +590,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Nature_M\Leaves_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\WW2_T" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Sport_T" />
+     <Folder Include="Assets\PolygonStarter\Models" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\- Textures" />
      <None Include="Assets\Brains\company-v2-7\run_logs\timers.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Resources_T" />
@@ -622,6 +627,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Sport_M" />
      <Folder Include="Assets\Brains\better\company-v2-6\run_logs" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\WW2_M" />
+     <Folder Include="Assets\PolygonStarter\Textures" />
      <Folder Include="Assets\results\company-v7-2\run_logs" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Traffic_T" />
      <Folder Include="Assets\results\company-v6-3\Company" />
@@ -657,12 +663,15 @@
      <Folder Include="Assets\NewScripts" />
      <None Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\ValidationExceptions.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Nature_M\Leaves_M" />
+     <Folder Include="Assets\PolygonStarter\Prefabs" />
+     <Folder Include="Assets\PolygonStarter\Models\Collision" />
      <Folder Include="Assets\TextMesh Pro\Resources\Style Sheets" />
      <Folder Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents\Samples" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Weapons_M" />
      <Folder Include="Assets\Scripts\Controller\Agents" />
      <Folder Include="Assets\Brains\company-three\run_logs" />
      <Folder Include="Assets\TextMesh Pro\Fonts" />
+     <Folder Include="Assets\PolygonStarter\Scenes" />
      <None Include="Library\PackageCache\com.unity.modules.vehicles@1.0.0\package.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Furniture_T" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Nature_M\Trees_M\Materials" />
@@ -695,6 +704,7 @@
      <None Include="Assets\Brains\company-v2-7\run_logs\training_status.json" />
      <Folder Include="Assets\Packages\ScottPlot.4.1.64" />
      <None Include="Library\PackageCache\com.unity.modules.unitywebrequestaudio@1.0.0\package.json" />
+     <Folder Include="Assets\PolygonStarter\Materials\Plane" />
      <Folder Include="Assets\ML-Agents\Timers" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Nature_M\Clouds_M" />
      <Folder Include="Assets\TextMesh Pro\Examples &amp; Extras\Prefabs" />
@@ -713,6 +723,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Tiles_M\Tunnels_M" />
      <None Include="Assets\Mirror\Plugins\Mono.Cecil\License.txt" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Tiles_M\Runway_M" />
+     <Folder Include="Assets\PolygonStarter" />
      <None Include="Assets\Packages\System.Drawing.Common.4.7.2\version.txt" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Tiles_T\Roads_T" />
      <Folder Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\Textures\BlueNoise16" />
@@ -888,6 +899,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Zulu_T" />
      <Folder Include="Assets\Brains\better\company-v4-2" />
      <Folder Include="Assets\Brains\better\company-v3-3\run_logs" />
+     <Folder Include="Assets\PolygonStarter\Materials" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Food_M" />
      <Folder Include="Assets\PolygonTown\Textures" />

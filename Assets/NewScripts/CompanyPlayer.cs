@@ -10,7 +10,7 @@ namespace NewScripts
     public class CompanyPlayer : MonoBehaviour, ICompany
     {
         //public GameObject canvasInfo;
-        public GameObject stageZeroBuilding;
+        public GameObject hourglass;
         public GameObject stageOneBuilding;
         public GameObject stageTwoBuilding;
         public GameObject stageThreeBuilding;
@@ -27,7 +27,7 @@ namespace NewScripts
         public int WorkerCount => _jobContracts.Count;
         public PlayerType PlayerType { get; } = PlayerType.Human;
         public CompanyDecisionStatus DecisionStatus { get; private set; }
-        public decimal AverageWageRate => _jobContracts.Count == 0 ? 0 : _jobContracts.Average(x => x.Wage);
+        public decimal AverageWageRate => _jobContracts.Count == 0 ? 100 : _jobContracts.Average(x => x.Wage);
         
         
         public int Id => GetInstanceID();
@@ -55,11 +55,10 @@ namespace NewScripts
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out var hit)) {  
                     if (hit.transform == transform) {  
-                        ServiceLocator.Instance.UiUpdateManager.CompanyUpdateValuesEvent(this);
-                        Debug.Log("Status: " + DecisionStatus + ", Id: " + Id);
+                        ServiceLocator.Instance.UiUpdateManager.SelectCompanyEvent(this);
                     }  
                 }  
-            } 
+            }
         }
 
         private void SetupAgent()
@@ -168,12 +167,15 @@ namespace NewScripts
             //UpdateCanvasText(false);
             ServiceLocator.Instance.FlowController.CommitDecision(Id, DecisionStatus = CompanyDecisionStatus.Commited);
             ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
+            hourglass.SetActive(false);
         }
 
        public void RequestMonthlyDecision()
        {
            ServiceLocator.Instance.FlowController.CommitDecision(Id, DecisionStatus = CompanyDecisionStatus.Requested);
            ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
+           hourglass.SetActive(true);
+           hourglass.GetComponent<RotationController>().ActivateAnimation();
        }
 
         public void Produce()
@@ -298,7 +300,7 @@ namespace NewScripts
             Ledger[^1].Books.LiquidityEndCheck = Liquidity;
             Ledger[^1].Workers.EndCount = _jobContracts.Count;
             Ledger[^1].Reputation = Reputation;
-            ServiceLocator.Instance.UiUpdateManager.CompanyUpdateValuesEvent(this);
+            ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
             ServiceLocator.Instance.FlowController.CommitDecision(Id, DecisionStatus = CompanyDecisionStatus.Pending);
 
 

@@ -53,7 +53,7 @@ namespace NewScripts
         //private int _startUpRounds = 12;
         public List<CompanyData> Ledger { get; } = new();
         public int WorkerCount => _jobContracts.Count;
-        public decimal AverageWageRate => _jobContracts.Count == 0 ? 0 : _jobContracts.Average(x => x.Wage);
+        public decimal AverageWageRate => _jobContracts.Count == 0 ? 100 : _jobContracts.Average(x => x.Wage);
 
         
         private void Start()
@@ -69,8 +69,7 @@ namespace NewScripts
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out var hit)) {  
                     if (hit.transform == transform) {  
-                        ServiceLocator.Instance.UiUpdateManager.CompanyUpdateValuesEvent(this);
-                        Debug.Log("Status: " + DecisionStatus + ", Id: " + Id);
+                        ServiceLocator.Instance.UiUpdateManager.SelectCompanyEvent(this);
                     }  
                 }  
             } 
@@ -366,7 +365,7 @@ namespace NewScripts
             Ledger[^1].Workers.EndCount = _jobContracts.Count;
             Ledger[^1].Reputation = Reputation;
             
-            ServiceLocator.Instance.UiUpdateManager.CompanyUpdateValuesEvent(this);
+            ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
             ServiceLocator.Instance.FlowController.CommitDecision(Id, DecisionStatus = CompanyDecisionStatus.Pending);
             //AddReward(_jobContracts.Count*1F);
             if (Reputation >= 1000)

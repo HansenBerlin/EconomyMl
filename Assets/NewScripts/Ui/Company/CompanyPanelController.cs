@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NewScripts.Enums;
 using TMPro;
 using UnityEngine;
@@ -65,12 +66,23 @@ namespace NewScripts.Ui.Company
                 _currentSelection = CompanyPanelSelection.Decision;
                 UpdatePanelData();
             });
-            ServiceLocator.Instance.UiUpdateManager.companySelectedEvent.AddListener((x) =>
+            ServiceLocator.Instance.UiUpdateManager.playerDecisionValuesUpdateEvent.AddListener(x =>
             {
                 _activeCompanyId = x.Id;
                 _activeCompanyData = x.Ledger;
                 UpdatePanelData();
             });
+            if (_activeCompanyData.Count == 0)
+            {
+                var activeCompany = ServiceLocator.Instance.Companys
+                    .FirstOrDefault(x => x.Id == ServiceLocator.Instance.UiUpdateManager.SelectedCompanyId);
+                if (activeCompany?.Ledger.Count > 0)
+                {
+                    _activeCompanyId = activeCompany.Id;
+                    _activeCompanyData = activeCompany.Ledger;
+                    UpdatePanelData();
+                }
+            }
         }
 
         private void UpdatePanelData()
