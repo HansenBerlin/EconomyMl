@@ -6,20 +6,22 @@ using NewScripts.Ui.Company;
 using TMPro;
 using Unity.MLAgents.Policies;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace NewScripts
 {
     public class SetupEnvironment : MonoBehaviour
     {
-        public GameObject foodCompanyPrefab;
-        public GameObject foodCompanyPrefabPlayer;
+        [FormerlySerializedAs("foodCompanyPrefab")] public GameObject companyPrefabAi;
+        [FormerlySerializedAs("foodCompanyPrefabPlayer")] public GameObject companyPrefabPlayer;
+        public GameObject dummyTilePrefab;
         public GameObject companyPanelGo;
         //public TextMeshProUGUI roundText;
         //public TextMeshProUGUI buttonText;
         public int aiCompaniesPerType = 100;
         public int playerCompaniesPerType = 1;
         
-        private const int GridGap = 30;
+        private const int GridGap = 40;
         public bool isThrottled;
         public bool isTraining;
         public bool writeToDatabase;
@@ -72,7 +74,7 @@ namespace NewScripts
             int zPos = 0;
             int xPos = 0;
             decimal liquidity = 10000 / (decimal) (aiCompaniesPerType + playerCompaniesPerType);
-            for (var i = 0; i < aiCompaniesPerType + playerCompaniesPerType; i++)
+            for (var i = 0; i < 80; i++)
             {
                 if (i != 0 && i % 10 == 0)
                 {
@@ -81,17 +83,22 @@ namespace NewScripts
                 }
                 if(i < playerCompaniesPerType)
                 {
-                    var go = Instantiate(foodCompanyPrefabPlayer);
+                    var go = Instantiate(companyPrefabPlayer);
                     ICompany company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go, false);
+                    company.Liquidity = liquidity;
+                    ServiceLocator.Instance.Companys.Add(company);
+                }
+                else if (i < aiCompaniesPerType)
+                {
+                    var go = Instantiate(companyPrefabAi);
+                    ICompany company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go, true);
                     company.Liquidity = liquidity;
                     ServiceLocator.Instance.Companys.Add(company);
                 }
                 else
                 {
-                    var go = Instantiate(foodCompanyPrefab);
-                    ICompany company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go, true);
-                    company.Liquidity = liquidity;
-                    ServiceLocator.Instance.Companys.Add(company);
+                    var instance = Instantiate(dummyTilePrefab);
+                    instance.transform.position = new Vector3(GridGap * xPos, 0, GridGap * zPos * -1);
                 }
                 xPos++;
             }

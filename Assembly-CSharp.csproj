@@ -222,6 +222,7 @@
      <Compile Include="Assets\Scripts\Enums\PersonActionType.cs" />
      <Compile Include="Assets\Scripts\Factories\PopulationDataTemplateModel.cs" />
      <Compile Include="Assets\Scripts\Agents\CentralBankAgent.cs" />
+     <Compile Include="Assets\NewScripts\DummyTileActivator.cs" />
      <Compile Include="Assets\Scripts\Agents\GovernmentAgent.cs" />
      <Compile Include="Assets\NewScripts\Http\CompanyEvent.cs" />
      <Compile Include="Assets\Scripts\Models\BankingMarkets.cs" />
