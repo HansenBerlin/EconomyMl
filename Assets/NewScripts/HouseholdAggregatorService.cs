@@ -38,18 +38,9 @@ namespace NewScripts
 
         public void StartNewPeriod(int month, int year)
         {
-            if (_householdsAggregates.Count == 10)
-            {
-                _buyerPowerTimeline.AddDatapoint(130);
-                _demandTimeline.AddDatapoint(200);
-                _employmentTimeline.AddDatapoint(90);
-            }
-            else
-            {
-                _buyerPowerTimeline.AddDatapoint((float)_householdsAggregates[^1].AveragePurchasingPower);
-                _demandTimeline.AddDatapoint((float)_householdsAggregates[^1].AverageDemand);
-                _employmentTimeline.AddDatapoint((float)_householdsAggregates[^1].EmploymentRate * 100);
-            }
+            _buyerPowerTimeline.AddDatapoint((float)_householdsAggregates[^1].AveragePurchasingPower);
+            _demandTimeline.AddDatapoint((float)_householdsAggregates[^1].AverageDemand);
+            _employmentTimeline.AddDatapoint((float)_householdsAggregates[^1].EmploymentRate * 100);
             _householdsAggregates.Add(new HouseholdsAggregate(month, year));
         }
     }

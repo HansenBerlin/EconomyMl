@@ -46,6 +46,7 @@ namespace NewScripts.Ui.Company
             {
                 panels[i].SetActive(i == (int) _currentSelection);
             }
+            panels[(int) _currentSelection].GetComponent<TimelineGraphDrawer>().SetScrollview();
             SetBreadcrumbText();
         }
 

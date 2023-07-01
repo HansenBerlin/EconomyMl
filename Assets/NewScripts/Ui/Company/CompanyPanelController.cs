@@ -27,6 +27,7 @@ namespace NewScripts.Ui.Company
             get => _activeCompanyData;
             set
             {
+                if(value.Count == 0) return;
                 _activeCompanyData = value;
                 ActiveCompanyId = _activeCompanyData[0].CompanyId;
                 UpdatePanelData();

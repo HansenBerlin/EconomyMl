@@ -12,9 +12,8 @@ namespace NewScripts
         public GameObject foodCompanyPrefab;
         public GameObject foodCompanyPrefabPlayer;
         public GameObject companyPanelGo;
-        public GameObject houseHoldPanelGo;
-        public TextMeshProUGUI roundText;
-        public TextMeshProUGUI buttonText;
+        //public TextMeshProUGUI roundText;
+        //public TextMeshProUGUI buttonText;
         public int aiCompaniesPerType = 100;
         public int playerCompaniesPerType = 1;
         
@@ -171,7 +170,7 @@ namespace NewScripts
 
             ServiceLocator.Instance.FlowController.IncrementMonth();
             ServiceLocator.Instance.Stats.UpdateStats();
-            roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
+            //roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
             DecisionRequested = false;
             yield return new WaitForFixedUpdate();
         }
@@ -229,7 +228,7 @@ namespace NewScripts
 
                 ServiceLocator.Instance.FlowController.IncrementMonth();
                 ServiceLocator.Instance.Stats.UpdateStats();
-                roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
+                //roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
             }
             
 
@@ -241,7 +240,7 @@ namespace NewScripts
                     : _currentActionStep == 3
                         ? "Gütermarkt"
                         : "Monatsende";
-            buttonText.GetComponent<TextMeshProUGUI>().text = buttonCaption;
+            //buttonText.GetComponent<TextMeshProUGUI>().text = buttonCaption;
         }
     }
 }

@@ -30,7 +30,7 @@ namespace NewScripts.Ui
         private readonly List<float> _values = new();
         private float _alltimeMax;
         
-        public void InitializeValues(float max, float stepwidth = 100)
+        public void InitializeValues(float max, float stepwidth = 50)
         {
             _alltimeMax = max * 1.1F;
             _valueModifier = graphHeight / _alltimeMax;
@@ -82,16 +82,16 @@ namespace NewScripts.Ui
 
         private void AddTicks(float max)
         {
-            float range = graphHeight / 100;
-            for (int i = 1; i < range; i++)
+            float range = graphHeight / 11;
+            for (int i = 1; i < 11; i++)
             {
                 var tickLeft = Instantiate(textPrefabLeft, textParent.transform);
                 var tickRight = Instantiate(textPrefabRight, textParent.transform);
-                string text = max > 10 ? $"{max / range * i:0}" : $"{max / range * i:0.##}";
+                string text = max > 10 ? $"{max / 10 * i:0}" : $"{max / 10 * i:0.##}";
                 tickLeft.text = text;
                 tickRight.text = text;
-                tickLeft.GetComponent<RectTransform>().anchoredPosition = new Vector2(50, i * 100);
-                tickRight.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50 - stepWidth, i * 100);
+                tickLeft.GetComponent<RectTransform>().anchoredPosition = new Vector2(20, i * range);
+                tickRight.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50 - stepWidth, i * range);
                 _ticks.Add(tickLeft.gameObject);
                 _ticks.Add(tickRight.gameObject);
             }
@@ -116,7 +116,7 @@ namespace NewScripts.Ui
             _lines.Add(line);
         }
 
-        private void SetScrollview()
+        public void SetScrollview()
         {
             var sv = scrollView.GetComponent<ScrollRect>();
             sv.normalizedPosition = new Vector2(1, 0);

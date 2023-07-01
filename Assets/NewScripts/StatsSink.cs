@@ -21,13 +21,13 @@ namespace NewScripts
 
         public void UpdateStats()
         {
-            SetCirculatingMoneyText();
-            SetCompanyLifetimeText();
-            SetCompanyPricesText();
-            SetCompanyReservesText();
-            SetCompanyStockText();
-            SetCompanyWagesText();
-            SetWorkerTexts();
+            //SetCirculatingMoneyText();
+            //SetCompanyLifetimeText();
+            //SetCompanyPricesText();
+            //SetCompanyReservesText();
+            //SetCompanyStockText();
+            //SetCompanyWagesText();
+            //SetWorkerTexts();
         }
         
         private void SetCirculatingMoneyText()
