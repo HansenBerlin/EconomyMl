@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using Agents;
 using MathNet.Numerics.LinearAlgebra.Single.Solvers;
+using NewScripts.Common;
 using NewScripts.Enums;
 using NewScripts.Http;
 using NewScripts.Http;
@@ -31,6 +32,7 @@ namespace NewScripts
         public CompanyDecisionStatus DecisionStatus { get; private set; }
 
 
+        public string Name { get; private set; }
         public PlayerType PlayerType { get; } = PlayerType.Ai;
         public int OpenPositions { get; private set; } = 0;
         public int ProductStock { get; set; } = 0;
@@ -51,7 +53,7 @@ namespace NewScripts
         //private int _startUpRounds = 12;
         public List<CompanyData> Ledger { get; } = new();
         public int WorkerCount => _jobContracts.Count;
-
+        public decimal AverageWageRate => _jobContracts.Count == 0 ? 0 : _jobContracts.Average(x => x.Wage);
 
         
         private void Start()
@@ -59,6 +61,7 @@ namespace NewScripts
             _isTraining = ServiceLocator.Instance.Settings.IsTraining;
             _writeToDatabase = ServiceLocator.Instance.Settings.WriteToDatabase;
             //SetupAgent();
+            Name = CompanyNames.PickRandomName();
         }
 
         private void Update() {  
@@ -66,7 +69,8 @@ namespace NewScripts
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out var hit)) {  
                     if (hit.transform == transform) {  
-                        ServiceLocator.Instance.CompanySelectionManager.CompanySelectionEvent(this);
+                        ServiceLocator.Instance.UiUpdateManager.CompanyUpdateValuesEvent(this);
+                        Debug.Log("Status: " + DecisionStatus + ", Id: " + Id);
                     }  
                 }  
             } 
@@ -107,6 +111,7 @@ namespace NewScripts
 
         public void RequestMonthlyDecision()
         {
+            ServiceLocator.Instance.FlowController.CommitDecision(Id, DecisionStatus = CompanyDecisionStatus.Requested);
             RequestDecision();
         }
 
@@ -146,17 +151,14 @@ namespace NewScripts
             }
         }
 
-        private int _lastMonth;
         
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
             //UpdateCanvasText(false);
-            if (_lastMonth == ServiceLocator.Instance.FlowController.Month)
+            if (DecisionStatus != CompanyDecisionStatus.Requested)
             {
-                return;
+                throw new System.Exception("DecisionStatus != CompanyDecisionStatus.Requested");
             }
-            
-            _lastMonth = ServiceLocator.Instance.FlowController.Month;
             
             int workerDecision = actionBuffers.DiscreteActions[0];
             float newWage = MapValue(actionBuffers.ContinuousActions[0], 25, 250);
@@ -236,7 +238,7 @@ namespace NewScripts
 
             SetBuilding();
             //UpdateCanvasText(false);
-            ServiceLocator.Instance.FlowController.CommitDecision(Id);
+            ServiceLocator.Instance.FlowController.CommitDecision(Id, DecisionStatus = CompanyDecisionStatus.Commited);
             //UpdateCanvasText(false);
 
         }
@@ -364,7 +366,8 @@ namespace NewScripts
             Ledger[^1].Workers.EndCount = _jobContracts.Count;
             Ledger[^1].Reputation = Reputation;
             
-            ServiceLocator.Instance.CompanySelectionManager.CompanySelectionEvent(this);
+            ServiceLocator.Instance.UiUpdateManager.CompanyUpdateValuesEvent(this);
+            ServiceLocator.Instance.FlowController.CommitDecision(Id, DecisionStatus = CompanyDecisionStatus.Pending);
             //AddReward(_jobContracts.Count*1F);
             if (Reputation >= 1000)
             {

@@ -28,7 +28,10 @@ namespace NewScripts
             _employmentTimeline.InitializeValues(initialMaxValueEmployment);
             _demandTimeline = demandTimeline.GetComponent<TimelineGraphDrawer>();
             _demandTimeline.InitializeValues(initialMaxValueDemand);
-            _householdsAggregates.Add(new HouseholdsAggregate(1, 1));
+            if (_householdsAggregates.Count == 0)
+            {
+                _householdsAggregates.Add(new HouseholdsAggregate(1, 1));
+            }
         }
 
         public void Add(HouseholdLedger data)

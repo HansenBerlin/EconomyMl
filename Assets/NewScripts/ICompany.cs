@@ -21,25 +21,24 @@ namespace NewScripts
 {
     public interface ICompany
     {
-        public int Id { get; }
-        public decimal Liquidity { get; set; }
-        public decimal OfferedWageRate { get; }
-        public decimal ProductPrice { get; }
-        public int ProductStock { get; }
-        public int LifetimeMonths { get; }
+        int Id { get; }
+        string Name { get; }
+        decimal Liquidity { get; set; }
+        decimal OfferedWageRate { get; }
+        decimal AverageWageRate { get; }
+        decimal ProductPrice { get; }
+        int ProductStock { get; }
+        int LifetimeMonths { get; }
         void FullfillBid(ProductType product, int count, decimal price);
         void AddContract(JobContract contract);
         void RemoveContract(JobContract contract, WorkerFireReason reason);
         void RequestMonthlyDecision();
-        public void StartNextPeriod(decimal price, int workerChange, decimal wage);
+        void StartNextPeriod(decimal price, int workerChange, decimal wage);
         void Produce();
         void EndMonth();
-        //PlayerDecisionEvent DecisionRequestEventProp { get; }
         int WorkerCount { get; }
         PlayerType PlayerType { get; }
         CompanyDecisionStatus DecisionStatus { get; }
         List<CompanyData> Ledger { get; }
-
-
     }
 }

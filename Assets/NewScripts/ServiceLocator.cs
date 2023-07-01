@@ -23,7 +23,7 @@ namespace NewScripts
         public StatsSink Stats { get; private set; }
         public CompanyPanelController CompanyPanelController { get; set; }
         public HouseholdAggregatorService HouseholdAggregator { get; private set; }
-        public UiSelectionManager CompanySelectionManager { get; private set; }
+        public UiUpdateManager UiUpdateManager { get; private set; }
 
 
         private void Awake()
@@ -39,7 +39,8 @@ namespace NewScripts
             LaborMarket = GetComponentInChildren<LaborMarket>();
             Stats = GetComponentInChildren<StatsSink>();
             HouseholdAggregator = GetComponentInChildren<HouseholdAggregatorService>();
-            CompanySelectionManager = GetComponentInChildren<UiSelectionManager>();
+            UiUpdateManager = GetComponentInChildren<UiUpdateManager>();
+            GetComponentInChildren<FooterMenuController>().RegisterEvents();
         }
 
         public void InitFlowController()

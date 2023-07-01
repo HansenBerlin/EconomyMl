@@ -34,25 +34,26 @@ namespace NewScripts
                 Month = 1;
                 Year++;
             }
-            foreach (var item in DecisionStati)
-            {
-                DecisionStati[item.Key] = CompanyDecisionStatus.Requested;
-            }
+            
             ServiceLocator.Instance.HouseholdAggregator.StartNewPeriod(Month, Year);
+            ServiceLocator.Instance.UiUpdateManager.newPeriodStartedEvent.Invoke(Month, Year);
         }
 
-        public void CommitDecision(int companyId)
+        public void CommitDecision(int companyId, CompanyDecisionStatus status)
         {
-            DecisionStati[companyId] = CompanyDecisionStatus.Commited;
+            DecisionStati[companyId] = status;
         }
         
         public bool Proceed()
         {
-            if (DecisionStati.All(x => x.Value == CompanyDecisionStatus.Commited))
+            bool areAllDecisionsMade = DecisionStati.All(x => x.Value == CompanyDecisionStatus.Commited);
+            if (areAllDecisionsMade)
             {
-                foreach (var item in DecisionStati)
+                List<int> keys = new List<int>(DecisionStati.Keys);
+
+                for (int i = keys.Count - 1; i >= 0; i--)
                 {
-                    DecisionStati[item.Key] = CompanyDecisionStatus.Pending;
+                    DecisionStati[keys[i]] = CompanyDecisionStatus.Pending;
                 }
                 return true;
             }

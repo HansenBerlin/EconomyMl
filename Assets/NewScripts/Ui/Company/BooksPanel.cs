@@ -38,7 +38,7 @@ namespace NewScripts.Ui.Company
                     row.taxPaymentsText.text = $"{booksInfo.TaxPayments:0.##}";
                     decimal liquidityChange = booksInfo.LiquidityEndCheck - booksInfo.LiquidityStart;
                     row.cashflowText.text = $"{liquidityChange:0.##}";
-                    row.cashflowText.color = liquidityChange < 0 ? Colors.Red : Colors.Green;
+                    row.cashflowText.color = liquidityChange < 0 ? Colors.DarkRed : Colors.DarkGreen;
                     float hue = i % 2 == 0 ? 0.04F : 0.08F;
                     var rawImage = row.GetComponent<RawImage>();
                     rawImage.color = new Color(1, 1, 1, hue);

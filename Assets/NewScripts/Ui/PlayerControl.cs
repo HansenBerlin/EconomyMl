@@ -1,3 +1,5 @@
+using System.Linq;
+using NewScripts.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,73 +15,86 @@ namespace NewScripts.Ui
         public Slider  workerCountSlider;
         public Slider  workerWageSlider;
         public Slider  priceSlider;
+        public GameObject commitButtonGo;
         
         private ICompany _activeCompany;
-        private int _workerCount;
-        private decimal _workerWageAverage;
-        private decimal _price;
-        private int _companyId;
+        private Button _commitButton;
+        
 
         public void Awake()
         {
             workerCountSlider.onValueChanged.AddListener(OnWorkerCountChanged);
             workerWageSlider.onValueChanged.AddListener(OnWorkerWageChanged);
             priceSlider.onValueChanged.AddListener(OnPriceChanged);
-            ServiceLocator.Instance.CompanySelectionManager.playerDecisionEvent.AddListener(SetValues);
+            _commitButton = commitButtonGo.GetComponent<Button>();
+            _commitButton.onClick.AddListener(Confirm);
+            ServiceLocator.Instance.UiUpdateManager.playerDecisionValuesUpdateEvent.AddListener(SetValues);
+
+            if (_activeCompany == null)
+            {
+                var activeCompany = ServiceLocator.Instance.Companys
+                    .FirstOrDefault(x => x.Id == ServiceLocator.Instance.UiUpdateManager.SelectedCompanyId);
+                if (activeCompany?.PlayerType == PlayerType.Human)
+                {
+                    _activeCompany = activeCompany;
+                    SetValues(_activeCompany);
+                }
+            }
         }
 
-        private void SetValues(int workerCount, decimal workerWage, decimal price, int companyId)
+        private void SetValues(ICompany company)
         {
-            _companyId = companyId;
-            _workerCount = workerCount;
-            _workerWageAverage = workerWage;
-            _price = price;
-            workerCountSlider.value = workerCount;
-            workerWageSlider.value = (int)workerWage;
-            priceSlider.value = (float)price;
-            statusText.text = $"{_activeCompany.DecisionStatus})";
-            OnWorkerCountChanged(workerCount);
-            OnWorkerWageChanged((float)workerWage);
-            OnPriceChanged((float)price);
+            _commitButton.interactable = company.DecisionStatus == CompanyDecisionStatus.Requested;
+            _activeCompany = company;
+            workerCountSlider.value = _activeCompany.WorkerCount;
+            workerWageSlider.value = (int)_activeCompany.OfferedWageRate;
+            priceSlider.value = (float)_activeCompany.ProductPrice;
+            statusText.text = $"{_activeCompany.DecisionStatus}";
+            OnWorkerCountChanged(_activeCompany.WorkerCount);
+            OnWorkerWageChanged((float)_activeCompany.OfferedWageRate);
+            OnPriceChanged((float)_activeCompany.ProductPrice);
+            
         }
 
         private void OnWorkerCountChanged(float val)
         {
-            string text = val - _workerCount > 0 
-                ? $"+{val - _workerCount:0}" 
-                : val - _workerCount < 0 
-                    ? $"-{val - _workerCount:0}" 
+            string text = val - _activeCompany.WorkerCount > 0 
+                ? $"+{val - _activeCompany.WorkerCount:0}" 
+                : val - _activeCompany.WorkerCount < 0 
+                    ? $"-{val - _activeCompany.WorkerCount:0}" 
                     : "0";
-            workerCountText.text = $"Workers goal: {_workerCount} (change: {text})";
+            workerCountText.text = $"Workers goal: {_activeCompany.WorkerCount} (change: {text})";
         }
         
         private void OnWorkerWageChanged(float val)
         {
+            var average = _activeCompany.AverageWageRate;
             decimal newWage = (decimal) val;
-            string text = newWage - _workerWageAverage > 0 
-                ? $"+{newWage - _workerWageAverage:0.##}" 
-                : newWage - _workerWageAverage < 0 
-                    ? $"-{newWage - _workerWageAverage:0.##}" 
+            string text = newWage - _activeCompany.AverageWageRate > 0 
+                ? $"+{newWage - _activeCompany.AverageWageRate:0.##}" 
+                : newWage - _activeCompany.AverageWageRate < 0 
+                    ? $"-{newWage - _activeCompany.AverageWageRate:0.##}" 
                     : "0";
-            workerWageText.text = $"Wage: {_workerWageAverage:0} (change: {text})";
+            workerWageText.text = $"Wage: {_activeCompany.AverageWageRate:0} (change: {text})";
         }
         
         private void OnPriceChanged(float val)
         {
             decimal newPrice = (decimal) val;
-            string text = newPrice - _price > 0 
-                ? $"+{newPrice - _price:0.##}" 
-                : newPrice - _price < 0 
-                    ? $"-{newPrice - _price:0.##}" 
+            string text = newPrice - _activeCompany.ProductPrice > 0 
+                ? $"+{newPrice - _activeCompany.ProductPrice:0.##}" 
+                : newPrice - _activeCompany.ProductPrice < 0 
+                    ? $"-{newPrice - _activeCompany.ProductPrice:0.##}" 
                     : "0";
-            priceText.text = $"Price: {_price:0.##} (change: {text})";
+            priceText.text = $"Price: {_activeCompany.ProductPrice:0.##} (change: {text})";
         }
 
-        public void Confirm()
+        private void Confirm()
         {
-            statusText.text = $"{_activeCompany.DecisionStatus})";
-            _activeCompany.StartNextPeriod((decimal)priceSlider.value, (int) (workerCountSlider.value - _workerCount), 
+            //statusText.text = $"{CompanyDecisionStatus.Commited}";
+            _activeCompany.StartNextPeriod((decimal)priceSlider.value, (int) (workerCountSlider.value - _activeCompany.WorkerCount), 
                 (decimal) workerWageSlider.value);
+            _commitButton.interactable = false;
         }
     }
 }

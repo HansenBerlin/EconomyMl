@@ -115,7 +115,7 @@ namespace NewScripts
             }
             else
             {
-                foreach (var company in ServiceLocator.Instance.Companys.Where(x => x.DecisionStatus == CompanyDecisionStatus.Requested))
+                foreach (var company in ServiceLocator.Instance.Companys.Where(x => x.DecisionStatus == CompanyDecisionStatus.Pending))
                 {
                     company.RequestMonthlyDecision();
                 }

@@ -37,6 +37,7 @@ namespace NewScripts.Ui.Company
                 _currentSelection = TimelineSelection.Demand;
                 UpdatePanelData();
             });
+            UpdatePanelData();
         }
 
         private void UpdatePanelData()

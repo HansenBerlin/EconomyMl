@@ -65,10 +65,11 @@ namespace NewScripts.Ui.Company
                 _currentSelection = CompanyPanelSelection.Decision;
                 UpdatePanelData();
             });
-            ServiceLocator.Instance.CompanySelectionManager.companySelectedEvent.AddListener((x) =>
+            ServiceLocator.Instance.UiUpdateManager.companySelectedEvent.AddListener((x) =>
             {
                 _activeCompanyId = x.Id;
                 _activeCompanyData = x.Ledger;
+                UpdatePanelData();
             });
         }
 

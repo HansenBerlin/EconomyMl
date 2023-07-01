@@ -25,6 +25,7 @@ namespace NewScripts
         private List<ProductOffer> ProductOffers { get; } = new();
         private List<ProductBid> ProductBids { get; } = new();
         public int DemandForProduct { get; private set; }
+        public PriceAnalysisStatsModel PriceAnalysisStats { get; private set; }
 
         private readonly Random _rand = new();
         private int CountAdded { get; set; }
@@ -58,7 +59,7 @@ namespace NewScripts
             var bids = ProductBids.OrderByDescending(x => x.Price).ToList();
             //List<ProductOffer> fullfilledOffers = new();
             List<Deal> successfulDeals = new();
-            var (offersCopy, bidsCopy) = DeepCopy(ProductOffers, ProductBids);
+            PriceAnalysisStats = new PriceAnalysisStatsModel(ProductOffers, ProductBids); 
             
 
             while (offers.Count > 0 && bids.Count > 0)
@@ -109,27 +110,13 @@ namespace NewScripts
 
             if (isTraining == false)
             {
-                updateEvent.Invoke(offersCopy, bidsCopy, successfulDeals);
+                PriceAnalysisStats.Deals = successfulDeals;
+                updateEvent.Invoke(PriceAnalysisStats);
             }
 
 
             ProductOffers.Clear();
             ProductBids.Clear();
-        }
-
-        private (List<ProductOffer> offers, List<ProductBid> bids) DeepCopy(
-            List<ProductOffer> offersSource,
-            List<ProductBid> bidsSource)
-        {
-            List<ProductOffer> offers = offersSource
-                .Select(offer => new ProductOffer(offer.Product, offer.Seller, offer.Price, offer.Amount))
-                .ToList();
-
-            List<ProductBid> bids = bidsSource
-                .Select(bid => new ProductBid(bid.Product, bid.Buyer, bid.Price, bid.Amount))
-                .ToList();
-
-            return (offers, bids);
         }
     }
 }

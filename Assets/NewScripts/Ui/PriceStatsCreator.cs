@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using NewScripts.Common;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -33,6 +34,11 @@ namespace NewScripts.Ui
                 var productMarket = productMarketGo.GetComponent<ProductMarket>();
                 productMarket.updateEvent.AddListener(DeconstructOffersAndBids);
                 InitGameObjects();
+                var data = productMarket.PriceAnalysisStats;
+                if (data != null)
+                {
+                    DeconstructOffersAndBids(data);
+                }
                 _isInitDone = true;
             }
             if (_valueHistory.Count > 0)
@@ -46,11 +52,11 @@ namespace NewScripts.Ui
             }
         }
 
-        private void DeconstructOffersAndBids(List<ProductOffer> offers, List<ProductBid> bids, List<Deal> successfulDeals)
+        private void DeconstructOffersAndBids(PriceAnalysisStatsModel data)
         {
-            _successfulDeals = successfulDeals.OrderBy(x => x.Price).ToList();
-            _bids = bids;
-            _offers = offers;
+            _successfulDeals = data.Deals.OrderBy(x => x.Price).ToList();
+            _bids = data.Bids;
+            _offers = data.Offers;
             if (enabled)
             {
                 PrepareData();
@@ -132,8 +138,8 @@ namespace NewScripts.Ui
                 rectTransform.sizeDelta = new Vector2(100, (int) (bucket.Count * heightMultiplier));
                 rectTransform.anchoredPosition = new Vector2(i * 100, 0);
                 statBarScript.button.GetComponent<Image>().color = bucket.IsBid
-                    ? new Color(0.271F, 0.153F, 0.627F)
-                    : new Color(0.678F, 0.078F, 0.341F);
+                    ? Colors.LightGreen
+                    : Colors.Indigo;
                 
                 var succesfulDealsInRange = _successfulDeals
                     .Where(x => x.Price >= bucket.Min && x.Price <= bucket.Max)

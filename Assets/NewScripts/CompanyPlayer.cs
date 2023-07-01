@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NewScripts.Common;
 using NewScripts.Enums;
 using NewScripts.Http;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace NewScripts
         public GameObject stageThreeBuilding;
         public GameObject emergencySign;
         public int OpenPositions { get; private set; } = 0;
+        public string Name { get; private set; }
         public int ProductStock { get; set; } = 0;
         public decimal ProductPrice { get; private set; } = 1M;
         public decimal OfferedWageRate { get; private set; } = 100;
@@ -25,6 +27,7 @@ namespace NewScripts
         public int WorkerCount => _jobContracts.Count;
         public PlayerType PlayerType { get; } = PlayerType.Human;
         public CompanyDecisionStatus DecisionStatus { get; private set; }
+        public decimal AverageWageRate => _jobContracts.Count == 0 ? 0 : _jobContracts.Average(x => x.Wage);
         
         
         public int Id => GetInstanceID();
@@ -43,6 +46,7 @@ namespace NewScripts
             _isTraining = ServiceLocator.Instance.Settings.IsTraining;
             _writeToDatabase = ServiceLocator.Instance.Settings.WriteToDatabase;
             //_decisionRequestEvent ??= new PlayerDecisionEvent();
+            Name = CompanyNames.PickRandomName();
             SetBuilding();
         }
 
@@ -51,7 +55,8 @@ namespace NewScripts
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out var hit)) {  
                     if (hit.transform == transform) {  
-                        ServiceLocator.Instance.CompanySelectionManager.CompanySelectionEvent(this);
+                        ServiceLocator.Instance.UiUpdateManager.CompanyUpdateValuesEvent(this);
+                        Debug.Log("Status: " + DecisionStatus + ", Id: " + Id);
                     }  
                 }  
             } 
@@ -96,18 +101,15 @@ namespace NewScripts
             Reward += reward;
         }
         
-        private int _lastMonth;
         
         public void StartNextPeriod(decimal price, int workerChange, decimal wage)
         {
             
-            if (_lastMonth == ServiceLocator.Instance.FlowController.Month)
+            if (DecisionStatus != CompanyDecisionStatus.Requested)
             {
-                return;
+                throw new System.Exception("DecisionStatus != CompanyDecisionStatus.Requested");
             }
             
-            _lastMonth = ServiceLocator.Instance.FlowController.Month;
-
             var companyData = new CompanyData(Id, ServiceLocator.Instance.FlowController.Month, ServiceLocator.Instance.FlowController.Year, LifetimeMonths);
             var averageWage = _jobContracts.Count > 0 ? _jobContracts.Select(x => x.Wage).Average() : 100;
             var workerLedger = new WorkersLedger(_jobContracts.Count, wage, averageWage);
@@ -164,13 +166,14 @@ namespace NewScripts
 
             SetBuilding();
             //UpdateCanvasText(false);
-
-            ServiceLocator.Instance.FlowController.CommitDecision(Id);
+            ServiceLocator.Instance.FlowController.CommitDecision(Id, DecisionStatus = CompanyDecisionStatus.Commited);
+            ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
         }
 
        public void RequestMonthlyDecision()
        {
-           ServiceLocator.Instance.CompanySelectionManager.BroadcastUpdateDecisionValuesEvent(Id);
+           ServiceLocator.Instance.FlowController.CommitDecision(Id, DecisionStatus = CompanyDecisionStatus.Requested);
+           ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
        }
 
         public void Produce()
@@ -295,7 +298,8 @@ namespace NewScripts
             Ledger[^1].Books.LiquidityEndCheck = Liquidity;
             Ledger[^1].Workers.EndCount = _jobContracts.Count;
             Ledger[^1].Reputation = Reputation;
-            ServiceLocator.Instance.CompanySelectionManager.CompanySelectionEvent(this);
+            ServiceLocator.Instance.UiUpdateManager.CompanyUpdateValuesEvent(this);
+            ServiceLocator.Instance.FlowController.CommitDecision(Id, DecisionStatus = CompanyDecisionStatus.Pending);
 
 
             
