@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using NewScripts.Ui;
@@ -17,11 +18,12 @@ namespace NewScripts
         public ProductMarket ProductMarket { get; private set; }
         public LaborMarket LaborMarket { get; private set; }
         public List<ICompany> Companys { get; set; } = new();
-        public FlowController FlowController { get; } = new();
+        public FlowController FlowController { get; set; }
         public SetupSettings Settings { get; } = new();
         public StatsSink Stats { get; private set; }
-        public CompanyPanelController CompanyCompanyPanel { get; set; }
-        public HouseholdAggregatorService HouseholdAggregator { get; set; }
+        public CompanyPanelController CompanyPanelController { get; set; }
+        public HouseholdAggregatorService HouseholdAggregator { get; private set; }
+        public UiSelectionManager CompanySelectionManager { get; private set; }
 
 
         private void Awake()
@@ -32,12 +34,21 @@ namespace NewScripts
                 return;
             }
             Instance = this;
+            
             ProductMarket = GetComponentInChildren<ProductMarket>();
             LaborMarket = GetComponentInChildren<LaborMarket>();
             Stats = GetComponentInChildren<StatsSink>();
             HouseholdAggregator = GetComponentInChildren<HouseholdAggregatorService>();
+            CompanySelectionManager = GetComponentInChildren<UiSelectionManager>();
         }
-        
-        
+
+        public void InitFlowController()
+        {
+            if (Companys.Count == 0)
+            {
+                throw new Exception("No companys found");
+            }
+            FlowController = new FlowController(Companys.Select(c => c.Id).ToList());
+        }
     }
 }

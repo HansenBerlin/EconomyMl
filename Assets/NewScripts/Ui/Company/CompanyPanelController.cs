@@ -22,20 +22,19 @@ namespace NewScripts.Ui.Company
 
         public TextMeshProUGUI breadcrumb;
         
-        public List<CompanyData> ActiveCompanyData
-        {
-            get => _activeCompanyData;
-            set
-            {
-                if(value.Count == 0) return;
-                _activeCompanyData = value;
-                ActiveCompanyId = _activeCompanyData[0].CompanyId;
-                UpdatePanelData();
-            } 
-        }
-        
-        public int ActiveCompanyId { get; private set; }
-        
+        //public List<CompanyData> ActiveCompanyData
+        //{
+        //    get => _activeCompanyData;
+        //    set
+        //    {
+        //        if(value.Count == 0) return;
+        //        _activeCompanyData = value;
+        //        ActiveCompanyId = _activeCompanyData[0].CompanyId;
+        //        UpdatePanelData();
+        //    } 
+        //}
+
+        private int _activeCompanyId;
         private List<CompanyData> _activeCompanyData = new();
         private CompanyPanelSelection _currentSelection;
 
@@ -66,6 +65,11 @@ namespace NewScripts.Ui.Company
                 _currentSelection = CompanyPanelSelection.Decision;
                 UpdatePanelData();
             });
+            ServiceLocator.Instance.CompanySelectionManager.companySelectedEvent.AddListener((x) =>
+            {
+                _activeCompanyId = x.Id;
+                _activeCompanyData = x.Ledger;
+            });
         }
 
         private void UpdatePanelData()
@@ -79,19 +83,19 @@ namespace NewScripts.Ui.Company
             switch (_currentSelection)
             {
                 case CompanyPanelSelection.Dashboard:
-                    dashboardPanelGo.GetComponent<DashboardPanel>().UpdateUi(ActiveCompanyData);
+                    dashboardPanelGo.GetComponent<DashboardPanel>().UpdateUi(_activeCompanyData);
                     break;
                 case CompanyPanelSelection.Product:
-                    productPanelGo.GetComponent<ProductPanel>().UpdateUi(ActiveCompanyData);
+                    productPanelGo.GetComponent<ProductPanel>().UpdateUi(_activeCompanyData);
                     break;
                 case CompanyPanelSelection.Workers:
-                    workersPanelGo.GetComponent<WorkersPanel>().UpdateUi(ActiveCompanyData);
+                    workersPanelGo.GetComponent<WorkersPanel>().UpdateUi(_activeCompanyData);
                     break;
                 case CompanyPanelSelection.Books:
-                    booksPanelGo.GetComponent<BooksPanel>().UpdateUi(ActiveCompanyData);
+                    booksPanelGo.GetComponent<BooksPanel>().UpdateUi(_activeCompanyData);
                     break;
                 case CompanyPanelSelection.Decision:
-                    decisionPanelGo.GetComponent<DecisionPanel>().UpdateUi(ActiveCompanyData);
+                    decisionPanelGo.GetComponent<DecisionPanel>().UpdateUi(_activeCompanyData);
                     break;
             }
             
@@ -103,10 +107,10 @@ namespace NewScripts.Ui.Company
             string text = _currentSelection switch
             {
                 CompanyPanelSelection.Dashboard => "Dashboard",
-                CompanyPanelSelection.Product => "Produktion",
-                CompanyPanelSelection.Workers => "Arbeiter",
-                CompanyPanelSelection.Decision => "Entscheidungen",
-                _ => "Buchhaltung"
+                CompanyPanelSelection.Product => "Production",
+                CompanyPanelSelection.Workers => "Workforce",
+                CompanyPanelSelection.Decision => "Decisions",
+                _ => "Bookkeeping"
             };
             breadcrumb.text = text;
         }

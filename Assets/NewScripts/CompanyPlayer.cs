@@ -22,6 +22,9 @@ namespace NewScripts
         public int Reputation { get; private set; }
         public double Reward { get; private set; }
         public int LifetimeMonths { get; private set; } = 1;
+        public int WorkerCount => _jobContracts.Count;
+        public PlayerType PlayerType { get; } = PlayerType.Human;
+        public CompanyDecisionStatus DecisionStatus { get; private set; }
         
         
         public int Id => GetInstanceID();
@@ -31,15 +34,15 @@ namespace NewScripts
         private bool _isTraining;
         private bool _writeToDatabase;
         private int _currentActiveIndex = -1;
-        private PlayerDecisionEvent _decisionRequestEvent;
-        public PlayerDecisionEvent DecisionRequestEventProp => _decisionRequestEvent;
-        private List<CompanyData> Ledger { get; } = new();
+        //private PlayerDecisionEvent _decisionRequestEvent;
+        //public PlayerDecisionEvent DecisionRequestEventProp => _decisionRequestEvent;
+        public List<CompanyData> Ledger { get; } = new();
         
         private void Awake()
         {
             _isTraining = ServiceLocator.Instance.Settings.IsTraining;
             _writeToDatabase = ServiceLocator.Instance.Settings.WriteToDatabase;
-            _decisionRequestEvent ??= new PlayerDecisionEvent();
+            //_decisionRequestEvent ??= new PlayerDecisionEvent();
             SetBuilding();
         }
 
@@ -48,22 +51,10 @@ namespace NewScripts
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out var hit)) {  
                     if (hit.transform == transform) {  
-                        UpdateCanvasText(true);
+                        ServiceLocator.Instance.CompanySelectionManager.CompanySelectionEvent(this);
                     }  
                 }  
             } 
-        }
-        
-        private void UpdateCanvasText(bool isClick)
-        {
-            if (ServiceLocator.Instance.CompanyCompanyPanel == null || Ledger.Count == 0)
-            {
-                return;
-            }
-            if (ServiceLocator.Instance.CompanyCompanyPanel.ActiveCompanyId == Id || isClick)
-            {
-                ServiceLocator.Instance.CompanyCompanyPanel.ActiveCompanyData = Ledger;
-            }
         }
 
         private void SetupAgent()
@@ -174,13 +165,13 @@ namespace NewScripts
             SetBuilding();
             //UpdateCanvasText(false);
 
-            ServiceLocator.Instance.FlowController.CommitDecision();
+            ServiceLocator.Instance.FlowController.CommitDecision(Id);
         }
 
-        public void RequestMonthlyDecision()
-        {
-            _decisionRequestEvent.Invoke(_jobContracts.Count, OfferedWageRate, ProductPrice);
-        }
+       public void RequestMonthlyDecision()
+       {
+           ServiceLocator.Instance.CompanySelectionManager.BroadcastUpdateDecisionValuesEvent(Id);
+       }
 
         public void Produce()
         {
@@ -293,8 +284,8 @@ namespace NewScripts
                 //EndEpisode();
             }
 
-            int availableSpace = _jobContracts.Count * 400;
-            int destroy = ProductStock - availableSpace > 0 ? ProductStock - availableSpace : 0;
+            //int availableSpace = _jobContracts.Count * 400;
+            int destroy = (int)(ProductStock * 0.1M);
             Ledger[^1].Product.Destroyed = destroy;
             ProductStock -= destroy;
             
@@ -304,7 +295,7 @@ namespace NewScripts
             Ledger[^1].Books.LiquidityEndCheck = Liquidity;
             Ledger[^1].Workers.EndCount = _jobContracts.Count;
             Ledger[^1].Reputation = Reputation;
-            UpdateCanvasText(false);
+            ServiceLocator.Instance.CompanySelectionManager.CompanySelectionEvent(this);
 
 
             

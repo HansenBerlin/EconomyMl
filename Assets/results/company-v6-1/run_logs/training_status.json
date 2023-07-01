@@ -1,0 +1,47 @@
+{
+    "Company": {
+        "checkpoints": [
+            {
+                "steps": 9990,
+                "file_path": "results\\company-v6-1\\Company\\Company-9990.onnx",
+                "reward": -471.9401443283279,
+                "creation_time": 1687780014.49306,
+                "auxillary_file_paths": [
+                    "results\\company-v6-1\\Company\\Company-9990.pt"
+                ]
+            },
+            {
+                "steps": 19970,
+                "file_path": "results\\company-v6-1\\Company\\Company-19970.onnx",
+                "reward": -477.0027327104048,
+                "creation_time": 1687780431.131543,
+                "auxillary_file_paths": [
+                    "results\\company-v6-1\\Company\\Company-19970.pt"
+                ]
+            },
+            {
+                "steps": 29886,
+                "file_path": "results\\company-v6-1\\Company\\Company-29886.onnx",
+                "reward": -482.28058471679685,
+                "creation_time": 1687781128.67222,
+                "auxillary_file_paths": [
+                    "results\\company-v6-1\\Company\\Company-29886.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 29886,
+            "file_path": "results\\company-v6-1\\Company.onnx",
+            "reward": -482.28058471679685,
+            "creation_time": 1687781128.67222,
+            "auxillary_file_paths": [
+                "results\\company-v6-1\\Company\\Company-29886.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.0.1+cpu"
+    }
+}

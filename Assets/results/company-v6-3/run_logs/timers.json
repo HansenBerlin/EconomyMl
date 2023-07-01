@@ -1,0 +1,75 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1687782037",
+        "python_version": "3.9.13 (tags/v3.9.13:6de2ca5, May 17 2022, 16:36:42) [MSC v.1929 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\Users\\Hannes\\AppData\\Local\\Programs\\Python\\Python39\\Scripts\\mlagents-learn scripts/company.yaml --run-id=company-v6-3",
+        "mlagents_version": "0.30.0",
+        "mlagents_envs_version": "0.30.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.0.1+cpu",
+        "numpy_version": "1.21.2",
+        "end_time_seconds": "1687782202"
+    },
+    "total": 164.64234530000002,
+    "count": 1,
+    "self": 0.021597500000012815,
+    "children": {
+        "run_training.setup": {
+            "total": 0.12444979999999983,
+            "count": 1,
+            "self": 0.12444979999999983
+        },
+        "TrainerController.start_learning": {
+            "total": 164.496298,
+            "count": 1,
+            "self": 0.00020700000001738772,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 26.3952094,
+                    "count": 1,
+                    "self": 26.3952094
+                },
+                "TrainerController.advance": {
+                    "total": 137.62246729999998,
+                    "count": 1,
+                    "self": 2.5499999992462108e-05,
+                    "children": {
+                        "env_step": {
+                            "total": 137.6224418,
+                            "count": 1,
+                            "self": 137.6105012,
+                            "children": {
+                                "SubprocessEnvManager._take_step": {
+                                    "total": 0.011940599999995527,
+                                    "count": 1,
+                                    "self": 0.005234599999994316,
+                                    "children": {
+                                        "TorchPolicy.evaluate": {
+                                            "total": 0.006706000000001211,
+                                            "count": 1,
+                                            "self": 0.006706000000001211
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "TrainerController._save_models": {
+                    "total": 0.4784142999999972,
+                    "count": 1,
+                    "self": 0.004179500000020653,
+                    "children": {
+                        "RLTrainer._checkpoint": {
+                            "total": 0.47423479999997653,
+                            "count": 1,
+                            "self": 0.47423479999997653
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

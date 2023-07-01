@@ -2,79 +2,59 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NewScripts.Enums;
 using UnityEngine;
 
 namespace NewScripts
 {
     public class FlowController
     {
-        public int Year { get; set; } = 1;
-        public int Month { get; set; } = 1;
-        //public int Day { get; set; } = 1;
-        public int StartMonthBusinessDecisionsMade { get; set; }
-        
-        public int StartMonthHouseholdDecisionMade
+        public int Year { get; private set; } = 1;
+        public int Month { get; private set; } = 1;
+        private Dictionary<int, CompanyDecisionStatus> DecisionStati { get; set; } = new();
+
+        public FlowController(List<int> companyIds)
         {
-            get => _startMonthHouseholdDecisionMade;
-            set
+            foreach (var companyId in companyIds)
             {
-                _startMonthHouseholdDecisionMade = value;
-                if (_startMonthHouseholdDecisionMade == ServiceLocator.Instance.LaborMarket.Workers.Count)
-                {
-                    _startMonthHouseholdDecisionMade = 0;
-                }
-            } 
+                DecisionStati.Add(companyId, CompanyDecisionStatus.Requested);
+            }
         }
-        private int _startMonthHouseholdDecisionMade;
-        //public SimulationStep Step = SimulationStep.StartMonthBusiness;
 
         public void IncrementMonth()
         {
-            //Day++;
+            if (DecisionStati.All(x => x.Value == CompanyDecisionStatus.Pending) == false)
+            {
+                throw new Exception("Not all companys have commited");
+            }
+            
             Month++;
-            //if (Day == 21)
-            //{
-            //    Day = 1;
-            //}
             if (Month == 13)
             {
                 Month = 1;
                 Year++;
             }
+            foreach (var item in DecisionStati)
+            {
+                DecisionStati[item.Key] = CompanyDecisionStatus.Requested;
+            }
             ServiceLocator.Instance.HouseholdAggregator.StartNewPeriod(Month, Year);
         }
 
-        public string Current()
+        public void CommitDecision(int companyId)
         {
-            return $"{Month}.{Year}";
-        }
-        
-        public IEnumerator WaitUntilStartMonthHouseholdPhase (Action whenDone)
-        {
-            yield return new WaitUntil(()=>StartMonthBusinessDecisionsMade == ServiceLocator.Instance.Companys.Count);
-            whenDone?.Invoke();
-        }
-        
-        public IEnumerator WaitUntilStartDaysPhase (Action whenDone)
-        {
-            yield return new WaitUntil(()=>StartMonthBusinessDecisionsMade == ServiceLocator.Instance.Companys.Count);
-            whenDone?.Invoke();
-        }
-        
-
-        public void CommitDecision()
-        {
-            StartMonthBusinessDecisionsMade++;
-            
+            DecisionStati[companyId] = CompanyDecisionStatus.Commited;
         }
         
         public bool Proceed()
         {
-            if (StartMonthBusinessDecisionsMade == ServiceLocator.Instance.Companys.Count)
+            if (DecisionStati.All(x => x.Value == CompanyDecisionStatus.Commited))
             {
-                StartMonthBusinessDecisionsMade = 0;
+                foreach (var item in DecisionStati)
+                {
+                    DecisionStati[item.Key] = CompanyDecisionStatus.Pending;
+                }
                 return true;
-                //IncrementMonth();
             }
 
             return false;

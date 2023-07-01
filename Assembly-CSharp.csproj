@@ -64,8 +64,10 @@
      <Compile Include="Assets\NewScripts\Ui\Company\DashboardPanel.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\EnvMapAnimator.cs" />
      <Compile Include="Assets\Scripts\Enums\UpdateEpisodeType.cs" />
+     <Compile Include="Assets\NewScripts\Enums\CompanyDecisionStatus.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\Path.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_A.cs" />
+     <Compile Include="Assets\NewScripts\Enums\PlayerType.cs" />
      <Compile Include="Assets\NewScripts\FlowController.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\Crosswalk.cs" />
      <Compile Include="Assets\NewScripts\Enums\CompanyPanelSelection.cs" />
@@ -74,7 +76,6 @@
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SimpleScript.cs" />
      <Compile Include="Assets\NewScripts\Spawner.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark04.cs" />
-     <Compile Include="Assets\NewScripts\Ui\CompanyActionActivator.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ChatController.cs" />
      <Compile Include="Assets\Scripts\Policies\FederalUnemployedPaymentPolicy.cs" />
      <Compile Include="Assets\NewScripts\CompanyLedger.cs" />
@@ -107,6 +108,7 @@
      <Compile Include="Assets\Scripts\Models\EnvironmentModel.cs" />
      <Compile Include="Assets\Scripts\Agents\ObservationDataModel.cs" />
      <Compile Include="Assets\NewScripts\HouseholdAggregatorService.cs" />
+     <Compile Include="Assets\NewScripts\UiSelectionManager.cs" />
      <Compile Include="Assets\Scripts\Policies\PoliciesWrapper.cs" />
      <Compile Include="Assets\NewScripts\ICompany.cs" />
      <Compile Include="Assets\Scripts\Repositories\PopulationDataRepository.cs" />

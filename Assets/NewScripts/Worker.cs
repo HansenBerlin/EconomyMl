@@ -48,7 +48,7 @@ namespace NewScripts
 
         public void EndMonth()
         {
-            _inventory[0].Consume(FullfilledInMonth);
+            _inventory[0].Consume(ConsumeInMonth);
         }
 
         private (int low, int high) DemandModifier()

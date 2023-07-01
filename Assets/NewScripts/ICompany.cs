@@ -34,7 +34,12 @@ namespace NewScripts
         public void StartNextPeriod(decimal price, int workerChange, decimal wage);
         void Produce();
         void EndMonth();
-        PlayerDecisionEvent DecisionRequestEventProp { get; }
+        //PlayerDecisionEvent DecisionRequestEventProp { get; }
+        int WorkerCount { get; }
+        PlayerType PlayerType { get; }
+        CompanyDecisionStatus DecisionStatus { get; }
+        List<CompanyData> Ledger { get; }
+
 
     }
 }
