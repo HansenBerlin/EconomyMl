@@ -2,8 +2,15 @@
 {
     public enum TimelineSelection
     {
-        BuyPower = 0,
-        Employment = 1,
-        Demand = 2
+        AveragePurchasingPower,
+        AverageDemand,
+        OverallEmploymentRate,
+        ShortTimWorkingRate, 
+        FullyEmployedWorkingRate,
+        AveragePriceBid,
+        AverageFulltimeWage, 
+        AverageShortWorkWage,
+        AverageReservationWage,
+        AverageInventoryBeforeBuying
     }
 }

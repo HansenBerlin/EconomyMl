@@ -12,7 +12,7 @@
 
         public int CompanyId { get; }
         public int Lifetime { get; }
-        public double Reputation { get; set; }
+        public int Reputation { get; set; }
         public int Month { get; }
         public int Year { get; }
         public BookKeepingLedger Books { get; set; }
@@ -65,7 +65,7 @@
         public decimal OfferedWage { get; }
         public int Hired { get; set; }
         public int FiredByDecision { get; set; }
-        public int FiredByForce { get; set; }
+        public int FiredByLackOfFunds { get; set; }
         public int Quit { get; set; }
         public int OpenPositions { get; set; }
         public int ReducedPaidCount { get; set; }

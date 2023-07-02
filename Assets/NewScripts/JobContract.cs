@@ -5,11 +5,11 @@ namespace NewScripts
 {
     public class JobContract
     {
-        private Worker Worker { get; }
         public ICompany Employer { get; }
         public decimal Wage { get; set; }
         public int RunsFor { get; set; }
-        public bool IsForceReduced { get; set; }
+        public bool IsForceReduced { get; private set; }
+        private Worker Worker { get; }
 
         public JobContract(Worker worker, ICompany company, decimal wage)
         {
@@ -42,6 +42,7 @@ namespace NewScripts
             Employer.RemoveContract(this, reason);
             Worker.RemoveJobContract(this, reason);
             IsForceReduced = false;
+            ServiceLocator.Instance.LaborMarket.RemoveContract(this);
         }
     }
 }

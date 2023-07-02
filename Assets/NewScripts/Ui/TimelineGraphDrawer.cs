@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NewScripts.Enums;
 using TMPro;
 using UnityEngine;
@@ -20,7 +22,7 @@ namespace NewScripts.Ui
         public GameObject textParent;
         public Color color = new(0.271F, 0.153F, 0.627F);
         public float graphHeight;
-        public float stepWidth = 100;
+        public float stepWidth = 50;
         
         private float _lastX;
         private float _lastY;
@@ -30,12 +32,63 @@ namespace NewScripts.Ui
         private readonly List<float> _values = new();
         private float _alltimeMax;
         
-        public void InitializeValues(float max, float stepwidth = 50)
+       //public void InitializeValues(float max, float stepwidth = 50)
+       //{
+       //    _alltimeMax = max * 1.1F;
+       //    _valueModifier = graphHeight / _alltimeMax;
+       //    stepWidth = stepwidth;
+       //    AddTicks(max);
+       //}
+        
+        public void DrawGraph<T>(List<T> values = null)
         {
-            _alltimeMax = max * 1.1F;
+            if (values == null)
+            {
+                var floats = ConvertAndAddFloats(values);
+                _values.AddRange(floats);
+            }
+            _lastX = 0;
+            _lastY = 0;
+            _alltimeMax = _values.Max() * 1.1F;
             _valueModifier = graphHeight / _alltimeMax;
-            stepWidth = stepwidth;
-            AddTicks(max);
+            
+            AddTicks(_alltimeMax);
+            foreach (var val in _values)
+            {
+                DefineLineValues(val);
+            }
+            SetScrollview();
+        }
+
+        public void RemoveGraph()
+        {
+            _values.Clear();
+            foreach (var tick in _ticks)
+            {
+                Destroy(tick);
+            }
+            foreach (var line in _lines)
+            {
+                Destroy(line);
+            }
+        }
+        
+        public List<float> ConvertAndAddFloats<T>(List<T> objectList)
+        {
+            List<float> floats = new();
+            foreach (object obj in objectList)
+            {
+                if (obj is float f)
+                {
+                    floats.Add(f);
+                }
+                else
+                {
+                    throw new InvalidCastException("List contains non-float values");
+                }
+            }
+
+            return floats;
         }
 
         public void AddDatapoint(float value)
@@ -43,24 +96,7 @@ namespace NewScripts.Ui
             _values.Add(value);
             if (value > _alltimeMax)
             {
-                _alltimeMax = value * 1.1F;
-                _valueModifier = graphHeight / _alltimeMax;
-                _lastX = 0;
-                _lastY = 0;
-
-                foreach (var tick in _ticks)
-                {
-                    Destroy(tick);
-                }
-                foreach (var line in _lines)
-                {
-                    Destroy(line);
-                }
-                AddTicks(_alltimeMax);
-                foreach (var val in _values)
-                {
-                    DefineLineValues(val);
-                }
+                DrawGraph<float>();
             }
             else
             {

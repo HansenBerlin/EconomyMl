@@ -21,6 +21,7 @@ namespace NewScripts
         private int UnemployedForMonth { get; set; } = 0;
         private readonly List<InventoryItem> _inventory = new();
         private readonly System.Random _rand = new();
+        private HouseholdData _periodData;
 
         private JobContract _jobContract;
 
@@ -49,6 +50,13 @@ namespace NewScripts
         public void EndMonth()
         {
             _inventory[0].Consume(ConsumeInMonth);
+            _periodData.JobStatus = _jobContract == null 
+                ? WorkerJobStatus.Unemployed 
+                : _jobContract.IsForceReduced 
+                    ? WorkerJobStatus.ShortTimeWork 
+                    : WorkerJobStatus.FullyEmployed;
+            _periodData.RealWage = _jobContract?.Wage ?? 0;
+            ServiceLocator.Instance.HouseholdAggregator.Add(_periodData);
         }
 
         private (int low, int high) DemandModifier()
@@ -98,7 +106,6 @@ namespace NewScripts
             }
             if (ConsumeInMonth > 0 && bidPrice > 0)
             {
-                BidPrice = bidPrice;
                 if (Money - bidPrice * ConsumeInMonth < 0)
                 {
                     throw new Exception("Not enough money");
@@ -113,16 +120,9 @@ namespace NewScripts
             {
                 Debug.Log(ConsumeInMonth);
             }
-            ServiceLocator.Instance.HouseholdAggregator.Add(new HouseholdLedger(HasJob, ConsumeInMonth, Money));
 
-        }
+            _periodData = new HouseholdData(ConsumeInMonth, Money, _inventory[0].Count, bidPrice);
 
-        public decimal BidPrice;
-        
-        public decimal RoundDown(decimal i, double decimalPlaces)
-        {
-            var power = Convert.ToDecimal(Math.Pow(10, decimalPlaces));
-            return Math.Floor(i * power) / power;
         }
 
         public void FullfillBid(ProductType product, int count, decimal price)
@@ -156,6 +156,7 @@ namespace NewScripts
                 _jobContract.RunsFor++;
                 if (_jobContract.RunsFor <= 3 && _jobContract.IsForceReduced == false)
                 {
+                    _periodData.ReservationWage = _jobContract.Wage;
                     return;
                 }
             }
@@ -172,6 +173,7 @@ namespace NewScripts
                 decimal currentWage = _jobContract.IsForceReduced ? _jobContract.Wage / 2 : _jobContract.Wage;
                 if (currentWage >= criticalBoundary)
                 {
+                    _periodData.ReservationWage = currentWage;
                     return;
                 }
 
@@ -199,6 +201,7 @@ namespace NewScripts
             var offer = new JobOffer(this, requiredWage);
             ServiceLocator.Instance.LaborMarket.AddJobOffer(offer);
             Academy.Instance.StatsRecorder.Add("Market/Job-Offer-Price", (float)requiredWage);
+            _periodData.ReservationWage = requiredWage;
 
         }
     }

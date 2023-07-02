@@ -15,4 +15,7 @@ namespace NewScripts
     
     [System.Serializable]
     public class PeriodIncrementEvent : UnityEvent<int, int> { }
+    
+    [System.Serializable]
+    public class PeriodAggregateAddedEvent : UnityEvent<Aggregate> { }
 }

@@ -20,7 +20,6 @@ namespace NewScripts
         public List<ICompany> Companys { get; set; } = new();
         public FlowController FlowController { get; set; }
         public SetupSettings Settings { get; } = new();
-        public StatsSink Stats { get; private set; }
         public CompanyPanelController CompanyPanelController { get; set; }
         public HouseholdAggregatorService HouseholdAggregator { get; private set; }
         public UiUpdateManager UiUpdateManager { get; private set; }
@@ -37,7 +36,6 @@ namespace NewScripts
             
             ProductMarket = GetComponentInChildren<ProductMarket>();
             LaborMarket = GetComponentInChildren<LaborMarket>();
-            Stats = GetComponentInChildren<StatsSink>();
             HouseholdAggregator = GetComponentInChildren<HouseholdAggregatorService>();
             UiUpdateManager = GetComponentInChildren<UiUpdateManager>();
             GetComponentInChildren<FooterMenuController>().RegisterEvents();

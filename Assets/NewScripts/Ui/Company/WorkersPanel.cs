@@ -33,7 +33,7 @@ namespace NewScripts.Ui.Company
                     row.startText.text = $"{workerInfo.StartCount}";
                     row.hiredText.text = $"{workerInfo.Hired}";
                     row.firedDecisionText.text = $"{workerInfo.FiredByDecision}";
-                    row.firedForcedText.text = $"{workerInfo.FiredByForce}";
+                    row.firedForcedText.text = $"{workerInfo.FiredByLackOfFunds}";
                     row.quitText.text = $"{workerInfo.Quit}";
                     row.endText.text = $"{workerInfo.EndCount}";
                     row.offeredWageText.text = $"{workerInfo.OfferedWage:0}";

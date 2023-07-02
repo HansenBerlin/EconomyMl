@@ -1,65 +1,95 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using NewScripts.Enums;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace NewScripts.Ui.Company
 {
     public class TimelineStatPanelController : MonoBehaviour
     {
-        public GameObject buyPowerButtonGo;
-        public GameObject employmentButtonGo;
-        public GameObject demandButtonGo;
-        
-        public GameObject buyerTimeline;
-        public GameObject demandTimeline;
-        public GameObject employmentTimeline;
-
+        public GameObject buttonPrefab;
+        [FormerlySerializedAs("timelinePrefab")] public GameObject timelineGo;
+        public GameObject buttonParent;
         public TextMeshProUGUI breadcrumb;
-        
-        private TimelineSelection _currentSelection;
+        private TimelineGraphDrawer _timelineGraphDrawer;
+        private TimelineSelection _currentSelection = TimelineSelection.AveragePurchasingPower;
 
         private void Awake()
         {
-            buyPowerButtonGo.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                _currentSelection = TimelineSelection.BuyPower; 
-                UpdatePanelData(); 
-            });
-            employmentButtonGo.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                _currentSelection = TimelineSelection.Employment;
-                UpdatePanelData();
-            });
-            demandButtonGo.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                _currentSelection = TimelineSelection.Demand;
-                UpdatePanelData();
-            });
-            UpdatePanelData();
-        }
+            _timelineGraphDrawer = timelineGo.GetComponent<TimelineGraphDrawer>();
+            var options = (TimelineSelection[])Enum.GetValues(typeof(TimelineSelection));
 
-        private void UpdatePanelData()
-        {
-            GameObject[] panels = { buyerTimeline, employmentTimeline, demandTimeline };
-            for (var i = 0; i < panels.Length; i++)
+            foreach (var option in options)
             {
-                panels[i].SetActive(i == (int) _currentSelection);
+                CreateInstance(option.ToString(), option);
             }
-            panels[(int) _currentSelection].GetComponent<TimelineGraphDrawer>().SetScrollview();
-            SetBreadcrumbText();
+
+            var values = GetCorrspondingValues(_currentSelection);
+            if (values.Count > 0)
+            {
+                UpdatePanels(_currentSelection, values, true);
+            }
+            
+            ServiceLocator.Instance.HouseholdAggregator.periodAggregateAddedEvent.AddListener((x) =>
+            {
+                var value = GetProperty(x, _currentSelection).GetValue(x);
+                _timelineGraphDrawer.AddDatapoint((float)value);
+            });
         }
 
-        private void SetBreadcrumbText()
+        private void CreateInstance(string label, TimelineSelection type)
         {
-            string text = _currentSelection switch
+            var button = Instantiate(buttonPrefab, buttonParent.transform);
+            button.GetComponentInChildren<TextMeshProUGUI>().text = type.ToString();
+            button.GetComponent<Button>().onClick.AddListener(() =>
             {
-                TimelineSelection.BuyPower => "Kaufkraft",
-                TimelineSelection.Demand => "Nachfrage",
-                _ => "Beschäftigungsquote"
-            };
-            breadcrumb.text = text;
+                var values = GetCorrspondingValues(type);
+                UpdatePanels(type, values);
+            });
         }
+
+        private List<object> GetCorrspondingValues(TimelineSelection type)
+        {
+            var values = ServiceLocator.Instance.HouseholdAggregator.HouseholdsAggregates
+                .Select(x => GetProperty(x, type).GetValue(x))
+                .ToList();
+            return values;
+        }
+
+        private PropertyInfo GetProperty(object obj, TimelineSelection propertyName)
+        {
+            Type type = obj.GetType();
+            var property = type
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .FirstOrDefault(x => x.Name == propertyName.ToString());
+            return property;
+        }
+
+        private void UpdatePanels<T>(TimelineSelection selection, List<T> data, bool isInit = false)
+        {
+            if (selection == _currentSelection && isInit == false)
+            {
+                return;
+            }
+            _currentSelection = selection;
+            breadcrumb.text = _currentSelection.ToString();
+            _timelineGraphDrawer.RemoveGraph();
+            _timelineGraphDrawer.DrawGraph(data);
+        }
+
+       //private string MapText(TimelineSelection selection)
+       //{
+       //    return selection switch
+       //    {
+       //        TimelineSelection.BuyPower => "Kaufkraft",
+       //        TimelineSelection.Demand => "Nachfrage",
+       //        _ => "Beschäftigungsquote"
+       //    };
+       //}
     }
 }

@@ -376,7 +376,7 @@ namespace NewScripts
             }
             else if (reason == WorkerFireReason.LackOfFunds)
             {
-                Ledger[^1].Workers.FiredByForce++;
+                Ledger[^1].Workers.FiredByLackOfFunds++;
             }
             else
             {

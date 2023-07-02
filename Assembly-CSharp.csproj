@@ -123,7 +123,6 @@
      <Compile Include="Assets\Scripts\Agents\PrivateCompanyAgent.cs" />
      <Compile Include="Assets\Scripts\Factories\BankFactory.cs" />
      <Compile Include="Assets\NewScripts\Ui\Company\Rows\ProductRow.cs" />
-     <Compile Include="Assets\NewScripts\StatsSink.cs" />
      <Compile Include="Assets\Scripts\Models\LoanModel.cs" />
      <Compile Include="Assets\Scripts\Agents\PersonAgentDiscreteActions.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
@@ -158,6 +157,7 @@
      <Compile Include="Assets\Scripts\Interfaces\ICountryEconomy.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeB.cs" />
      <Compile Include="Assets\Scripts\Factories\BusinessFactory.cs" />
+     <Compile Include="Assets\NewScripts\Enums\WorkerJobStatus.cs" />
      <Compile Include="Assets\Scripts\Controller\RepositoryController\PopulationController.cs" />
      <Compile Include="Assets\the-minimum-wage-trade-off-unity\Scripts\MWEmployee.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\DropdownSample.cs" />

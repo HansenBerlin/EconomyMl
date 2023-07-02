@@ -12,11 +12,11 @@ namespace NewScripts
     public class LaborMarket : MonoBehaviour
     {
         public List<Worker> Workers { get; } = new();
-        public List<JobOffer> JobOffers { get; } = new();
-        public List<JobBid> JobBids { get; } = new();
-        public List<JobContract> Contracts { get; } = new();
-        
-        public int CountAdded { get; private set; }
+        private List<JobOffer> JobOffers { get; } = new();
+        private List<JobBid> JobBids { get; } = new();
+        private List<JobContract> Contracts { get; } = new();
+
+        private int CountAdded { get; set; }
         public int CountRemoved { get; set; }
 
         public int DemandForWorkforce { get; private set; }
@@ -49,6 +49,11 @@ namespace NewScripts
         public void AddJobBid(JobBid bid)
         {
             JobBids.Add(bid);
+        }
+
+        public void RemoveContract(JobContract contract)
+        {
+            Contracts.Remove(contract);
         }
 
         public void ResolveMarket()
