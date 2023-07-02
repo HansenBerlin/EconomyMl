@@ -56,9 +56,9 @@ namespace NewScripts
     {
         public decimal AveragePurchasingPower { get; private set; }
         public double AverageDemand { get; private set; }
-        public double OverallEmploymentRate { get; private set; }
-        public double ShortTimWorkingRate { get; private set; }
-        public double FullyEmployedWorkingRate { get; private set; }
+        public double OverallEmploymentRate => _overallEmploymentRate * 100;
+        public double ShortTimeWorkingRate => _shortTimeWorkingRate * 100;
+        public double FullyEmployedWorkingRate => _fullyEmployedWorkingRate * 100;
         public decimal AveragePriceBid { get; private set; }
         public decimal AverageFulltimeWage { get; private set; }
         public decimal AverageShortWorkWage { get; private set; }
@@ -66,6 +66,9 @@ namespace NewScripts
         public int AverageInventoryBeforeBuying { get; private set; }
         private int Population { get; set; }
         private int EmployedPopulation { get; set; }
+        private double _overallEmploymentRate;
+        private double _shortTimeWorkingRate;
+        private double _fullyEmployedWorkingRate;
         
         public HouseholdsAggregate(int month, int year) : base(month, year) { }
         
@@ -75,12 +78,18 @@ namespace NewScripts
             EmployedPopulation += data.JobStatus != WorkerJobStatus.Unemployed ? 1 : 0;
             AveragePurchasingPower = (AveragePurchasingPower * (Population - 1) + data.MoneyAvailableAdBidTime) / Population;
             AverageDemand = (AverageDemand * (Population - 1) + (data.Demand > 0 && data.PriceBid > 0 ? data.Demand : 0)) / Population;
-            OverallEmploymentRate = (OverallEmploymentRate * (Population - 1) + (data.JobStatus != WorkerJobStatus.Unemployed ? 1 : 0)) / Population;
-            ShortTimWorkingRate = (ShortTimWorkingRate * (EmployedPopulation - 1) + (data.JobStatus == WorkerJobStatus.ShortTimeWork ? 1 : 0)) / Population;
-            FullyEmployedWorkingRate = (FullyEmployedWorkingRate * (EmployedPopulation - 1) + (data.JobStatus == WorkerJobStatus.FullyEmployed ? 1 : 0)) / Population;
+            _overallEmploymentRate = (_overallEmploymentRate * (Population - 1) + (data.JobStatus != WorkerJobStatus.Unemployed ? 1 : 0)) / Population;
+            _fullyEmployedWorkingRate = (_fullyEmployedWorkingRate * (Population - 1) + (data.JobStatus == WorkerJobStatus.FullyEmployed ? 1 : 0)) / Population;
+            _shortTimeWorkingRate = (_shortTimeWorkingRate * (Population - 1) + (data.JobStatus == WorkerJobStatus.ShortTimeWork ? 1 : 0)) / Population;
+            if (data.JobStatus == WorkerJobStatus.FullyEmployed)
+            {
+                AverageFulltimeWage = (AverageFulltimeWage * (EmployedPopulation - 1) + data.RealWage) / EmployedPopulation;
+            }
+            if (data.JobStatus == WorkerJobStatus.ShortTimeWork)
+            {
+                AverageShortWorkWage = (AverageShortWorkWage * (EmployedPopulation - 1) + data.RealWage / 2) / EmployedPopulation;
+            }
             AveragePriceBid = (AveragePriceBid * (Population - 1) + (data.PriceBid > 0 && data.Demand > 0 ? data.PriceBid : 0)) / Population;
-            AverageFulltimeWage = data.JobStatus == WorkerJobStatus.FullyEmployed ? (AverageFulltimeWage * (EmployedPopulation - 1) + data.RealWage) / EmployedPopulation : AverageFulltimeWage;
-            AverageShortWorkWage = data.JobStatus == WorkerJobStatus.ShortTimeWork ? (AverageShortWorkWage * (EmployedPopulation - 1) + data.RealWage) / EmployedPopulation : AverageShortWorkWage;
             AverageReservationWage = (AverageReservationWage * (Population - 1) + data.ReservationWage) / Population;
             AverageInventoryBeforeBuying = (AverageInventoryBeforeBuying * (Population - 1) + data.InventoryBeforeBuying) / Population;
         }
@@ -88,21 +97,12 @@ namespace NewScripts
 
     public class HouseholdData
     {
-        public decimal MoneyAvailableAdBidTime { get; }
-        public decimal PriceBid { get; }
+        public decimal MoneyAvailableAdBidTime { get; set; }
+        public decimal PriceBid { get; set; }
         public decimal RealWage { get; set; }
         public decimal ReservationWage { get; set; }
-        public int Demand { get; }
-        public int InventoryBeforeBuying { get; }
+        public int Demand { get; set; }
+        public int InventoryBeforeBuying { get; set; }
         public WorkerJobStatus JobStatus { get; set; }
-        
-        
-        public HouseholdData(int demand, decimal moneyAvailableAdBidTime, int inventoryBeforeBuying, decimal priceBid)
-        {
-            Demand = demand;
-            MoneyAvailableAdBidTime = moneyAvailableAdBidTime;
-            InventoryBeforeBuying = inventoryBeforeBuying;
-            PriceBid = priceBid;
-        }
     }
 }

@@ -21,7 +21,7 @@ namespace NewScripts
         private int UnemployedForMonth { get; set; } = 0;
         private readonly List<InventoryItem> _inventory = new();
         private readonly System.Random _rand = new();
-        private HouseholdData _periodData;
+        private HouseholdData _periodData = new();
 
         private JobContract _jobContract;
 
@@ -57,6 +57,7 @@ namespace NewScripts
                     : WorkerJobStatus.FullyEmployed;
             _periodData.RealWage = _jobContract?.Wage ?? 0;
             ServiceLocator.Instance.HouseholdAggregator.Add(_periodData);
+            _periodData = new HouseholdData();
         }
 
         private (int low, int high) DemandModifier()
@@ -121,8 +122,10 @@ namespace NewScripts
                 Debug.Log(ConsumeInMonth);
             }
 
-            _periodData = new HouseholdData(ConsumeInMonth, Money, _inventory[0].Count, bidPrice);
-
+            _periodData.Demand = ConsumeInMonth;
+            _periodData.MoneyAvailableAdBidTime =  Money;
+            _periodData.InventoryBeforeBuying = _inventory[0].Count;
+            _periodData.PriceBid =  bidPrice;
         }
 
         public void FullfillBid(ProductType product, int count, decimal price)
@@ -202,7 +205,6 @@ namespace NewScripts
             ServiceLocator.Instance.LaborMarket.AddJobOffer(offer);
             Academy.Instance.StatsRecorder.Add("Market/Job-Offer-Price", (float)requiredWage);
             _periodData.ReservationWage = requiredWage;
-
         }
     }
 }

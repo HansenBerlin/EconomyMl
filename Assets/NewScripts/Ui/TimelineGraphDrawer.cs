@@ -30,7 +30,7 @@ namespace NewScripts.Ui
         private readonly List<GameObject> _lines = new();
         private readonly List<GameObject> _ticks = new();
         private readonly List<float> _values = new();
-        private float _alltimeMax;
+        private float _alltimeMax = 1;
         
        //public void InitializeValues(float max, float stepwidth = 50)
        //{
@@ -42,19 +42,27 @@ namespace NewScripts.Ui
         
         public void DrawGraph<T>(List<T> values = null)
         {
-            if (values == null)
+            if (values != null)
             {
-                var floats = ConvertAndAddFloats(values);
+                var floats = (from object obj in values select Convert.ToSingle(obj)).ToList();
                 _values.AddRange(floats);
             }
             _lastX = 0;
             _lastY = 0;
-            _alltimeMax = _values.Max() * 1.1F;
+            _alltimeMax = _values.Max() * 1.1F > _alltimeMax ? _values.Max() * 1.1F 
+                : _values.Max() == 0 ? 1 
+                    : _values.Max() * 1.1F < _alltimeMax ? _values.Max() * 1.1F 
+                    : _alltimeMax;
+            
             _valueModifier = graphHeight / _alltimeMax;
             
             AddTicks(_alltimeMax);
             foreach (var val in _values)
             {
+                if (float.IsNaN(val) || float.IsInfinity(val))
+                {
+                    Debug.Log("NaN");
+                }
                 DefineLineValues(val);
             }
             SetScrollview();
@@ -72,30 +80,15 @@ namespace NewScripts.Ui
                 Destroy(line);
             }
         }
-        
-        public List<float> ConvertAndAddFloats<T>(List<T> objectList)
-        {
-            List<float> floats = new();
-            foreach (object obj in objectList)
-            {
-                if (obj is float f)
-                {
-                    floats.Add(f);
-                }
-                else
-                {
-                    throw new InvalidCastException("List contains non-float values");
-                }
-            }
-
-            return floats;
-        }
 
         public void AddDatapoint(float value)
         {
             _values.Add(value);
             if (value > _alltimeMax)
             {
+                var values = new List<float>(_values);
+                RemoveGraph();
+                _values.AddRange(values);
                 DrawGraph<float>();
             }
             else
@@ -113,6 +106,10 @@ namespace NewScripts.Ui
             float by = value * _valueModifier;
             _lastX = bx;
             _lastY = by;
+            if (float.IsNaN(by) || float.IsNaN(ay) || float.IsNaN(ax) || float.IsNaN(bx))
+            {
+                Debug.Log("NaN");
+            }
             MakeLine(ax, ay, bx, by, color);
         }
 
@@ -145,11 +142,20 @@ namespace NewScripts.Ui
             Vector3 b = new Vector3(bx*graphScale.x, by*graphScale.y, 0);
             Vector3 dif = a - b;
 
-            rect.localPosition = (a + b) / 2;
-            rect.sizeDelta = new Vector2(dif.magnitude, lineWidth);
-            rect.rotation = Quaternion.Euler(new Vector3(0, 0, 180 * Mathf.Atan(dif.y / dif.x) / Mathf.PI));
-            
-            _lines.Add(line);
+            try
+            {
+                rect.localPosition = (a + b) / 2;
+                rect.sizeDelta = new Vector2(dif.magnitude, lineWidth);
+                rect.rotation = Quaternion.Euler(new Vector3(0, 0, 180 * Mathf.Atan(dif.y / dif.x) / Mathf.PI));
+                
+                _lines.Add(line);
+
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+
         }
 
         public void SetScrollview()

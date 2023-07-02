@@ -29,33 +29,37 @@ namespace NewScripts.Ui.Company
                 CreateInstance(option.ToString(), option);
             }
 
-            var values = GetCorrspondingValues(_currentSelection);
-            if (values.Count > 0)
+            if (ServiceLocator.Instance.HouseholdAggregator.HouseholdsAggregates.Count > 1)
             {
+                var values = GetCorrspondingValues(_currentSelection);
                 UpdatePanels(_currentSelection, values, true);
             }
             
-            ServiceLocator.Instance.HouseholdAggregator.periodAggregateAddedEvent.AddListener((x) =>
+            ServiceLocator.Instance.HouseholdAggregator.periodAggregateAddedEvent.AddListener(x =>
             {
                 var value = GetProperty(x, _currentSelection).GetValue(x);
-                _timelineGraphDrawer.AddDatapoint((float)value);
+                _timelineGraphDrawer.AddDatapoint(Convert.ToSingle(value));
             });
         }
 
         private void CreateInstance(string label, TimelineSelection type)
         {
             var button = Instantiate(buttonPrefab, buttonParent.transform);
-            button.GetComponentInChildren<TextMeshProUGUI>().text = type.ToString();
+            button.GetComponentInChildren<TextMeshProUGUI>().text = type.ToString().Substring(0, 1);
             button.GetComponent<Button>().onClick.AddListener(() =>
             {
-                var values = GetCorrspondingValues(type);
-                UpdatePanels(type, values);
+                if (ServiceLocator.Instance.HouseholdAggregator.HouseholdsAggregates.Count > 1)
+                {
+                    var values = GetCorrspondingValues(type);
+                    UpdatePanels(type, values);
+                }
             });
         }
 
         private List<object> GetCorrspondingValues(TimelineSelection type)
         {
             var values = ServiceLocator.Instance.HouseholdAggregator.HouseholdsAggregates
+                .GetRange(0, ServiceLocator.Instance.HouseholdAggregator.HouseholdsAggregates.Count - 1)
                 .Select(x => GetProperty(x, type).GetValue(x))
                 .ToList();
             return values;
@@ -72,6 +76,14 @@ namespace NewScripts.Ui.Company
 
         private void UpdatePanels<T>(TimelineSelection selection, List<T> data, bool isInit = false)
         {
+            var floats = (from object obj in data select Convert.ToSingle(obj)).ToList();
+            foreach (var f in floats)
+            {
+                if (float.IsNaN(f) || float.IsInfinity(f))
+                {
+                    Debug.Log("NaN");
+                }
+            }
             if (selection == _currentSelection && isInit == false)
             {
                 return;

@@ -5,7 +5,7 @@
         AveragePurchasingPower,
         AverageDemand,
         OverallEmploymentRate,
-        ShortTimWorkingRate, 
+        ShortTimeWorkingRate, 
         FullyEmployedWorkingRate,
         AveragePriceBid,
         AverageFulltimeWage, 
