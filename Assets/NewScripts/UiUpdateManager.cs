@@ -13,7 +13,7 @@ namespace NewScripts
         
         public void BroadcastUpdateDecisionValuesEvent(ICompany company)
         {
-            if (company is {PlayerType: PlayerType.Human} && SelectedCompanyId == company.Id)
+            if (SelectedCompanyId == company.Id)
             {
                 playerDecisionValuesUpdateEvent.Invoke(company);
             }

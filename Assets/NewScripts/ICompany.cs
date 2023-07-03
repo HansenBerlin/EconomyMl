@@ -24,16 +24,17 @@ namespace NewScripts
         int Id { get; }
         string Name { get; }
         decimal Liquidity { get; set; }
-        decimal OfferedWageRate { get; }
+        //decimal OfferedWageRate { get; }
         decimal AverageWageRate { get; }
-        decimal ProductPrice { get; }
-        int ProductStock { get; }
+        Decision LastDecision { get; }
+        int ProductStockFood { get; }
         int LifetimeMonths { get; }
         void FullfillBid(ProductType product, int count, decimal price);
         void AddContract(JobContract contract);
         void RemoveContract(JobContract contract, WorkerFireReason reason);
         void RequestMonthlyDecision();
-        void StartNextPeriod(decimal price, int workerChange, decimal wage);
+
+        void StartNextPeriod(Decision decision);
         void Produce();
         void EndMonth();
         int WorkerCount { get; }

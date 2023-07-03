@@ -58,6 +58,7 @@ namespace NewScripts
 
         public void ResolveMarket()
         {
+            Debug.Log("3A Resolve markets start.");
             CountAdded = 0;
             var offers = JobOffers.OrderBy(x => x.Wage).ToList();
             var bids = JobBids.OrderByDescending(x => x.Wage).ToList();
@@ -87,6 +88,8 @@ namespace NewScripts
 
             JobOffers.Clear();
             JobBids.Clear();
+            Debug.Log("3B Resolve markets done.");
+
         }
 
         public void RemoveSick()

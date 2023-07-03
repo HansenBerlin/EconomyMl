@@ -9,8 +9,10 @@ namespace NewScripts
 {
     public class HouseholdAggregatorService : MonoBehaviour
     {
-        public PeriodAggregateAddedEvent periodAggregateAddedEvent = new();
+        [FormerlySerializedAs("periodAggregateAddedEvent")] public PeriodAggregateAddedEvent periodHouseholdAggregateAddedEvent = new();
+        public PeriodAggregateAddedEvent periodCompanyAggregateAddedEvent = new();
         public List<HouseholdsAggregate> HouseholdsAggregates { get; } = new();
+        public List<CompaniesAggregate> CompaniesAggregates { get; } = new();
 
         private void Awake()
         {
@@ -18,17 +20,33 @@ namespace NewScripts
             {
                 HouseholdsAggregates.Add(new HouseholdsAggregate(1, 1));
             }
+            if (CompaniesAggregates.Count == 0)
+            {
+                CompaniesAggregates.Add(new CompaniesAggregate(1, 1));
+            }
         }
 
         public void Add(HouseholdData data)
         {
             HouseholdsAggregates[^1].UpdateHouseholdData(data);
         }
+        
+        public void Add(CompanyData data)
+        {
+            CompaniesAggregates[^1].UpdateCompanyData(data);
+        }
 
         public void StartNewPeriod(int month, int year)
         {
-            periodAggregateAddedEvent.Invoke(HouseholdsAggregates[^1]);
+            if (HouseholdsAggregates.Count > 120)
+            {
+                HouseholdsAggregates.RemoveRange(0, HouseholdsAggregates.Count - 120);
+                CompaniesAggregates.RemoveRange(0, CompaniesAggregates.Count - 120);
+            }
+            periodHouseholdAggregateAddedEvent.Invoke(HouseholdsAggregates[^1]);
+            periodCompanyAggregateAddedEvent.Invoke(CompaniesAggregates[^1]);
             HouseholdsAggregates.Add(new HouseholdsAggregate(month, year));
+            CompaniesAggregates.Add(new CompaniesAggregate(month, year));
         }
     }
 }

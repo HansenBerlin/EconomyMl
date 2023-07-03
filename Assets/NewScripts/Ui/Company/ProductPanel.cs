@@ -28,7 +28,7 @@ namespace NewScripts.Ui.Company
                     GameObject instance = Instantiate(rowPrefab, parentGo.transform);
                     ProductRow row = instance.GetComponent<ProductRow>();
                     
-                    ProductLedger productInfo = dataset.Product;
+                    ProductLedger productInfo = dataset.Food;
                     row.periodText.text = $"{dataset.Month}/{dataset.Year}";
                     row.priceText.text = $"{productInfo.PriceSet:0.##}";
                     row.stockText.text = $"{productInfo.StockStart:0}";

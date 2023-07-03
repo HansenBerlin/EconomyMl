@@ -32,7 +32,7 @@ namespace NewScripts.Ui.Company
                     row.periodText.text = $"{dataset.Month}/{dataset.Year}";
                     row.fireWorkersText.text = $"{decisionInfo.FireWorkers:0}";
                     row.openPositionsText.text = $"{decisionInfo.OpenPositions:0}";
-                    row.setPriceText.text = $"{decisionInfo.SetPrice:0.##}";
+                    row.setPriceText.text = $"{decisionInfo.SetFoodPrice:0.##}";
                     row.setWageText.text = $"{decisionInfo.SetWorkerWage:0.##}";
                     float hue = i % 2 == 0 ? 0.04F : 0.08F;
                     var rawImage = row.GetComponent<RawImage>();

@@ -10,7 +10,7 @@ namespace NewScripts
         public GameObject prefabHuman;
         public int count;
         public int sideLength;
-        private System.Random _random = new();
+        private readonly System.Random _random = new();
 
         void Awake()
         {

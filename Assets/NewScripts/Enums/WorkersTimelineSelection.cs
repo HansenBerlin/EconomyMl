@@ -1,16 +1,19 @@
 ﻿namespace NewScripts.Enums
 {
-    public enum TimelineSelection
+    public enum WorkersTimelineSelection
     {
         AveragePurchasingPower,
-        AverageDemand,
+        AverageDemandFood,
+        AverageDemandLuxury,
         OverallEmploymentRate,
         ShortTimeWorkingRate, 
         FullyEmployedWorkingRate,
-        AveragePriceBid,
+        AveragePriceBidFood,
+        AveragePriceBidLuxury,
         AverageFulltimeWage, 
         AverageShortWorkWage,
         AverageReservationWage,
-        AverageInventoryBeforeBuying
+        AverageFoodInventoryBeforeBuying,
+        AverageLuxuryInventoryBeforeBuying
     }
 }

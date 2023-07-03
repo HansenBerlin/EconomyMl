@@ -16,7 +16,8 @@
         public int Month { get; }
         public int Year { get; }
         public BookKeepingLedger Books { get; set; }
-        public ProductLedger Product { get; set; }
+        public ProductLedger Food { get; set; }
+        public ProductLedger Luxury { get; set; }
         public WorkersLedger Workers { get; set; }
         public DecisionLedger Decision { get; set; }
     }
@@ -75,17 +76,19 @@
 
     public class DecisionLedger
     {
-        public DecisionLedger(int workerChange, decimal setWorkerWage, decimal setPrice)
+        public DecisionLedger(Decision decision)
         {
-            FireWorkers = workerChange < 0 ? workerChange * -1 : 0;
-            OpenPositions = workerChange > 0 ? workerChange : 0;
-            SetWorkerWage = setWorkerWage;
-            SetPrice = setPrice;
+            FireWorkers = decision.WorkerChange < 0 ? decision.WorkerChange * -1 : 0;
+            OpenPositions = decision.WorkerChange > 0 ? decision.WorkerChange : 0;
+            SetWorkerWage = decision.Wage;
+            SetFoodPrice = decision.PriceFood;
+            SetLuxuryPrice = decision.PriceLuxury;
         }
 
         public int FireWorkers { get; }
         public int OpenPositions { get; }
         public decimal SetWorkerWage { get; }
-        public decimal SetPrice { get; }
+        public decimal SetFoodPrice { get; }
+        public decimal SetLuxuryPrice { get; }
     }
 }

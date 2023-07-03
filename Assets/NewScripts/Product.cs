@@ -2,14 +2,6 @@
 
 namespace NewScripts
 {
-    public class Product
-    {
-        public ProductType ProductTypeInput;
-        public int InputAmount;
-        public ProductType ProductTypeOutput;
-        public int OutputAmount;
-    }
-
     public class ProductOffer
     {
         public ProductType Product { get; }
@@ -71,8 +63,6 @@ namespace NewScripts
     public enum ProductType
     {
         Food,
-        Intermediate,
-        Luxury,
-        None
+        Luxury
     }
 }

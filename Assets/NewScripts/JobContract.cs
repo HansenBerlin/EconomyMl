@@ -22,6 +22,7 @@ namespace NewScripts
 
         public void PayWorker()
         {
+            Academy.Instance.StatsRecorder.Add("New/Worker-Payment-Regular", (float)Wage);
             Worker.Money += Wage;
             Employer.Liquidity -= Wage;
             IsForceReduced = false;
@@ -29,6 +30,7 @@ namespace NewScripts
 
         public void PayReducedWage()
         {
+            Academy.Instance.StatsRecorder.Add("New/Worker-Payment-Reduced", (float)Wage/2);
             decimal reducedWage = Wage / 2;
             Worker.Money += reducedWage;
             Employer.Liquidity -= reducedWage;

@@ -15,11 +15,12 @@ namespace NewScripts
     {
         public string SessionId { get; } = Guid.NewGuid().ToString();
         public static ServiceLocator Instance { get; private set; }
-        public ProductMarket ProductMarket { get; private set; }
+        public ProductMarket FoodProductMarket { get; private set; }
+        public ProductMarket LuxuryProductMarket { get; private set; }
         public LaborMarket LaborMarket { get; private set; }
         public List<ICompany> Companys { get; set; } = new();
         public FlowController FlowController { get; set; }
-        public SetupSettings Settings { get; } = new();
+        public Settings Settings { get; } = new();
         public CompanyPanelController CompanyPanelController { get; set; }
         public HouseholdAggregatorService HouseholdAggregator { get; private set; }
         public UiUpdateManager UiUpdateManager { get; private set; }
@@ -34,7 +35,8 @@ namespace NewScripts
             }
             Instance = this;
             
-            ProductMarket = GetComponentInChildren<ProductMarket>();
+            FoodProductMarket = GetComponentInChildren<ProductMarket>();
+            LuxuryProductMarket = GetComponentInChildren<ProductMarket>();
             LaborMarket = GetComponentInChildren<LaborMarket>();
             HouseholdAggregator = GetComponentInChildren<HouseholdAggregatorService>();
             UiUpdateManager = GetComponentInChildren<UiUpdateManager>();

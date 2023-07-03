@@ -7,6 +7,7 @@ using TMPro;
 using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace NewScripts
 {
@@ -22,10 +23,8 @@ namespace NewScripts
         public int playerCompaniesPerType = 1;
         
         private const int GridGap = 40;
-        public bool isThrottled;
         public bool isTraining;
         public bool writeToDatabase;
-        private int _currentActionStep = 0;
         private bool _isInitDone;
 
         private void Awake()
@@ -36,7 +35,6 @@ namespace NewScripts
             }
         }
         
-
         private ICompany GetFromGameObject(float xPos, float zPos, GameObject instance, bool isAi)
         {
             //var go = Instantiate(FoodCompanyPrefab);
@@ -64,17 +62,13 @@ namespace NewScripts
         private void SetupGameObjects()
         {
             ServiceLocator.Instance.Settings.IsTraining = isTraining;
-            ServiceLocator.Instance.Settings.IsThrottled = isThrottled;
             ServiceLocator.Instance.Settings.WriteToDatabase = writeToDatabase;
             ServiceLocator.Instance.CompanyPanelController = companyPanelGo.GetComponent<CompanyPanelController>();
-            
-            //Academy.Instance.OnEnvironmentReset += EnvironmentReset;
             ServiceLocator.Instance.LaborMarket.InitWorkers(1000);
-            //ProductTemplateFactory.CompanysPerType = companysPerType;
             int zPos = 0;
             int xPos = 0;
-            decimal liquidity = 10000 / (decimal) (aiCompaniesPerType + playerCompaniesPerType);
-            for (var i = 0; i < 80; i++)
+            decimal liquidity = 500000 / (decimal) (aiCompaniesPerType + playerCompaniesPerType);
+            for (var i = 0; i < 100; i++)
             {
                 if (i != 0 && i % 10 == 0)
                 {
@@ -106,8 +100,6 @@ namespace NewScripts
             ServiceLocator.Instance.InitFlowController();
             _isInitDone = true;
         }
-
-        //private bool DecisionRequested;
         
         public void Update()
         {
@@ -116,13 +108,19 @@ namespace NewScripts
                 SetupGameObjects();
             }
 
+            if (ServiceLocator.Instance.Settings.IsPaused)
+            {
+                return;
+            }
+
             if (ServiceLocator.Instance.FlowController.Proceed())
             {
                 StartCoroutine(Run());
             }
             else
             {
-                foreach (var company in ServiceLocator.Instance.Companys.Where(x => x.DecisionStatus == CompanyDecisionStatus.Pending))
+                foreach (var company in ServiceLocator.Instance.Companys
+                             .Where(x => x.DecisionStatus == CompanyDecisionStatus.Pending))
                 {
                     company.RequestMonthlyDecision();
                 }
@@ -132,7 +130,7 @@ namespace NewScripts
         private IEnumerator Run()
         {
             decimal averageIncome = ServiceLocator.Instance.LaborMarket.AveragePayment();
-            decimal averageFoodPrice = ServiceLocator.Instance.ProductMarket.AveragePrice();
+            decimal averageFoodPrice = ServiceLocator.Instance.FoodProductMarket.AveragePriceInLastYear();
             foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
             {
                 worker.SearchForJob(averageIncome, averageFoodPrice);
@@ -145,12 +143,15 @@ namespace NewScripts
                 company.Produce();
             }
                 
+            decimal averageLuxuryPrice = ServiceLocator.Instance.LuxuryProductMarket.AveragePriceInLastYear();
             foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
             {
-                worker.AddProductBids(averageFoodPrice);
+                worker.AddProductBids(averageFoodPrice, ProductType.Food, ServiceLocator.Instance.FoodProductMarket);
+                worker.AddProductBids(averageLuxuryPrice, ProductType.Luxury, ServiceLocator.Instance.LuxuryProductMarket);
             }
-                
-            ServiceLocator.Instance.ProductMarket.ResolveMarket(isTraining);
+            
+            ServiceLocator.Instance.FoodProductMarket.ResolveMarket(isTraining);
+            ServiceLocator.Instance.LuxuryProductMarket.ResolveMarket(isTraining);
             
             foreach (var company in ServiceLocator.Instance.Companys)
             {
@@ -161,79 +162,9 @@ namespace NewScripts
             {
                 worker.EndMonth();
             }
-
+            
             ServiceLocator.Instance.FlowController.IncrementMonth();
-            //ServiceLocator.Instance.Stats.UpdateStats();
-            //roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
             yield return new WaitForFixedUpdate();
         }
-
-        //public void RequestStep()
-        //{
-        //    if (_currentActionStep == 1)
-        //    {
-        //        foreach (var company in ServiceLocator.Instance.Companys)
-        //        {
-        //            company.RequestMonthlyDecision();
-        //        }
-        //        ServiceLocator.Instance.Stats.UpdateStats();
-        //    }
-        //    else if (_currentActionStep == 2)
-        //    {
-        //        decimal averageIncome = ServiceLocator.Instance.LaborMarket.AveragePayment();
-        //        decimal averageFoodPrice = ServiceLocator.Instance.ProductMarket.AveragePrice();
-        //        foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
-        //        {
-        //            worker.SearchForJob(averageIncome, averageFoodPrice);
-        //        }
-        //        
-        //        ServiceLocator.Instance.LaborMarket.ResolveMarket();
-        //        ServiceLocator.Instance.Stats.UpdateStats();
-        //    }
-        //    else if (_currentActionStep == 3)
-        //    {
-        //        decimal averageFoodPrice = ServiceLocator.Instance.ProductMarket.AveragePrice();
-//
-        //        foreach (var company in ServiceLocator.Instance.Companys)
-        //        {
-        //            company.Produce();
-        //        }
-        //        
-        //        foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
-        //        {
-        //            worker.AddProductBids(averageFoodPrice);
-        //        }
-        //        
-        //        ServiceLocator.Instance.ProductMarket.ResolveMarket(isTraining);
-        //        ServiceLocator.Instance.Stats.UpdateStats();
-        //    }
-        //    else if (_currentActionStep == 4)
-        //    {
-        //        foreach (var company in ServiceLocator.Instance.Companys)
-        //        {
-        //            company.EndMonth();
-        //        }
-        //        
-        //        foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
-        //        {
-        //            worker.EndMonth();
-        //        }
-//
-        //        ServiceLocator.Instance.FlowController.IncrementMonth();
-        //        ServiceLocator.Instance.Stats.UpdateStats();
-        //        //roundText.GetComponent<TextMeshProUGUI>().text = ServiceLocator.Instance.FlowController.Current();
-        //    }
-        //    
-//
-        //    _currentActionStep = _currentActionStep == 4 ? 1 : _currentActionStep + 1;
-        //    string buttonCaption = _currentActionStep == 1
-        //        ? "AI Decision"
-        //        : _currentActionStep == 2
-        //            ? "Arbeitsmarkt"
-        //            : _currentActionStep == 3
-        //                ? "Gütermarkt"
-        //                : "Monatsende";
-        //    //buttonText.GetComponent<TextMeshProUGUI>().text = buttonCaption;
-        //}
     }
 }

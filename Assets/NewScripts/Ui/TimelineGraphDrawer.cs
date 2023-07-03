@@ -49,20 +49,13 @@ namespace NewScripts.Ui
             }
             _lastX = 0;
             _lastY = 0;
-            _alltimeMax = _values.Max() * 1.1F > _alltimeMax ? _values.Max() * 1.1F 
-                : _values.Max() == 0 ? 1 
-                    : _values.Max() * 1.1F < _alltimeMax ? _values.Max() * 1.1F 
-                    : _alltimeMax;
-            
-            _valueModifier = graphHeight / _alltimeMax;
+            _alltimeMax = _values.Max() < 1 ? 1 : _values.Max();
+            _valueModifier = graphHeight / _alltimeMax * 0.9F;
             
             AddTicks(_alltimeMax);
+
             foreach (var val in _values)
             {
-                if (float.IsNaN(val) || float.IsInfinity(val))
-                {
-                    Debug.Log("NaN");
-                }
                 DefineLineValues(val);
             }
             SetScrollview();
@@ -106,10 +99,6 @@ namespace NewScripts.Ui
             float by = value * _valueModifier;
             _lastX = bx;
             _lastY = by;
-            if (float.IsNaN(by) || float.IsNaN(ay) || float.IsNaN(ax) || float.IsNaN(bx))
-            {
-                Debug.Log("NaN");
-            }
             MakeLine(ax, ay, bx, by, color);
         }
 
@@ -141,24 +130,14 @@ namespace NewScripts.Ui
             Vector3 a = new Vector3(ax*graphScale.x, ay*graphScale.y, 0);
             Vector3 b = new Vector3(bx*graphScale.x, by*graphScale.y, 0);
             Vector3 dif = a - b;
-
-            try
-            {
-                rect.localPosition = (a + b) / 2;
-                rect.sizeDelta = new Vector2(dif.magnitude, lineWidth);
-                rect.rotation = Quaternion.Euler(new Vector3(0, 0, 180 * Mathf.Atan(dif.y / dif.x) / Mathf.PI));
+            rect.localPosition = (a + b) / 2;
+            rect.sizeDelta = new Vector2(dif.magnitude, lineWidth);
+            rect.rotation = Quaternion.Euler(new Vector3(0, 0, 180 * Mathf.Atan(dif.y / dif.x) / Mathf.PI));
                 
-                _lines.Add(line);
-
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-            }
-
+            _lines.Add(line);
         }
 
-        public void SetScrollview()
+        private void SetScrollview()
         {
             var sv = scrollView.GetComponent<ScrollRect>();
             sv.normalizedPosition = new Vector2(1, 0);

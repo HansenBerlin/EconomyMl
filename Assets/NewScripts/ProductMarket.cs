@@ -9,23 +9,15 @@ using Random = System.Random;
 
 namespace NewScripts
 {
-    [System.Serializable]
-    public class CompanyPayEvent : UnityEvent<string>
-    {
-    }
-    
     public class ProductMarket : MonoBehaviour
     {
-        private readonly List<decimal> _salesHistory = new();
-        //private LaborMarket _laborMarket;
-        //public CompanyPayEvent payCompanyEvent;
-
         public ProductMarketUpdateEvent updateEvent;
-
-        private List<ProductOffer> ProductOffers { get; } = new();
-        private List<ProductBid> ProductBids { get; } = new();
         public int DemandForProduct { get; private set; }
         public PriceAnalysisStatsModel PriceAnalysisStats { get; private set; }
+
+        private readonly List<decimal> _salesHistory = new();
+        private List<ProductOffer> ProductOffers { get; } = new();
+        private List<ProductBid> ProductBids { get; } = new();
 
         private readonly Random _rand = new();
         private int CountAdded { get; set; }
@@ -35,8 +27,12 @@ namespace NewScripts
             updateEvent ??= new ProductMarketUpdateEvent();
         }
 
-        public decimal AveragePrice()
+        public decimal AveragePriceInLastYear()
         {
+            if (_salesHistory.Count > 12)
+            {
+                _salesHistory.RemoveRange(0, _salesHistory.Count - 12);
+            }
             decimal average = _salesHistory.Count > 0 ? _salesHistory.Average() : 1;
             return average;
         }

@@ -9,30 +9,25 @@ namespace NewScripts
 {
     public class Worker
     {
-        public decimal Money { get; set; } = 90;
+        public decimal Money { get; set; } = 500;
         public int Health { get; set; } = 1000;
-        public int ConsumeInMonth { get; private set; }
-        private int FullfilledInMonth { get; set; }
+        
         public bool HasJob => _jobContract != null;
-        //private const int MonthlyDemand = 100;
-        private const int MonthlyMaximumDemand = 250;
-        private const int MonthlyMinimumDemand = 50;
-        private const int MonthlyAverageDemand = 100;
+        
         private int UnemployedForMonth { get; set; } = 0;
         private readonly List<InventoryItem> _inventory = new();
         private readonly System.Random _rand = new();
         private HouseholdData _periodData = new();
 
         private JobContract _jobContract;
+        private PriceBidCalculator _priceBidCalculator;
 
         public Worker()
         {
-            _inventory.Add(new InventoryItem
-            {
-                AvgPaid = 1, 
-                Count = MonthlyMinimumDemand, 
-                Product = ProductType.Food
-            });
+            var food = new InventoryItem(ProductType.Food, 150, 50, 250, 1);
+            var luxury = new InventoryItem(ProductType.Luxury, 10, 0, 100, 10);
+            _inventory.Add(food);
+            _inventory.Add(luxury);
         }
         
         public void AddContract(JobContract contract)
@@ -49,7 +44,10 @@ namespace NewScripts
 
         public void EndMonth()
         {
-            _inventory[0].Consume(ConsumeInMonth);
+            foreach (var item in _inventory)
+            {
+                item.Consume();
+            }
             _periodData.JobStatus = _jobContract == null 
                 ? WorkerJobStatus.Unemployed 
                 : _jobContract.IsForceReduced 
@@ -60,79 +58,66 @@ namespace NewScripts
             _periodData = new HouseholdData();
         }
 
-        private (int low, int high) DemandModifier()
-        {
-            float ratio = FullfilledInMonth > 0 && ConsumeInMonth > 0 ? FullfilledInMonth / (float)ConsumeInMonth : 0;
-            float modifier = (ratio + 1) / 2;
-            int low = (int)(MonthlyMinimumDemand * modifier);
-            int high = (int)(MonthlyMaximumDemand * modifier);
-            FullfilledInMonth = 0;
-            return (low, high);
-        }
-
-        private decimal DetermineBiddingPrice(decimal averageMarketPrice)
-        {
-            decimal priceWillingness = ConsumeInMonth - _inventory[0].Count;
-
-            if (_inventory[0].Count < MonthlyMinimumDemand)
-            {
-                priceWillingness += _inventory[0].AvgPaid - averageMarketPrice; 
-            }
-
-            decimal minPrice = averageMarketPrice / 2;
-            decimal maxPrice = averageMarketPrice * 2;
-            //decimal biddingPrice = Math.Max(minPrice, Math.Min(maxPrice, _inventory[0].AvgPaid + priceWillingness / (MonthlyDemand * 2 - MonthlyMinimumDemand)));
-            decimal biddingPrice = Math.Max(minPrice, Math.Min(maxPrice, _inventory[0].AvgPaid + priceWillingness / (MonthlyAverageDemand * 2 - MonthlyMinimumDemand)));
-
-            return biddingPrice;
-        }
         
-        private int DemandByMarginalUtility(int minDemand, int maxDemand)
-        {
-            double random = _rand.NextDouble();
-            int demand = minDemand + (int)Math.Round(Math.Pow(random, 2) * (maxDemand - minDemand));
-            return demand;
-        }
 
-        public void AddProductBids(decimal averagePrice)
+        public void AddProductBids(decimal averagePrice, ProductType productType, ProductMarket market)
         {
-            Academy.Instance.StatsRecorder.Add("Worker/Money", (float)Money);
-            (int low, int high) = DemandModifier();
-            ConsumeInMonth = DemandByMarginalUtility(low, high);
-            decimal bidPrice = DetermineBiddingPrice(averagePrice);
+            var inventoryItem = _inventory.FirstOrDefault(x => x.Product == productType)??
+                                throw new Exception("No inventory item for " + productType);
             
-            if (ConsumeInMonth * bidPrice > Money)
+            Academy.Instance.StatsRecorder.Add("New/Money-Before-Bid", (float)Money);
+            (int low, int high) = _priceBidCalculator.DemandModifier(inventoryItem);
+            inventoryItem.ConsumeInMonth = _priceBidCalculator.DemandByMarginalUtility(low, high);
+            decimal bidPrice = _priceBidCalculator.DetermineBiddingPrice(averagePrice, inventoryItem);
+            
+            if (inventoryItem.ConsumeInMonth * bidPrice > Money)
             {
-                ConsumeInMonth = (int)Math.Floor(Money / bidPrice * 0.9M);
+                inventoryItem.ConsumeInMonth = (int)Math.Floor(Money / bidPrice * 0.9M);
             }
-            if (ConsumeInMonth > 0 && bidPrice > 0)
+            if (inventoryItem.ConsumeInMonth > 0 && bidPrice > 0)
             {
-                if (Money - bidPrice * ConsumeInMonth < 0)
+                if (Money - bidPrice * inventoryItem.ConsumeInMonth < 0)
                 {
                     throw new Exception("Not enough money");
                 }
-                var bid = new ProductBid(ProductType.Food, this, bidPrice, ConsumeInMonth);
-                ServiceLocator.Instance.ProductMarket.AddBid(bid);
-                Academy.Instance.StatsRecorder.Add("Market/P-Bid-Make-Count", ConsumeInMonth);
-                Academy.Instance.StatsRecorder.Add("Market/P-Bid-Make-Price", (float)bidPrice);
+                var bid = new ProductBid(ProductType.Food, this, bidPrice, inventoryItem.ConsumeInMonth);
+                market.AddBid(bid);
+                
+                Academy.Instance.StatsRecorder.Add("Market/BidCount " + productType, inventoryItem.ConsumeInMonth);
+                Academy.Instance.StatsRecorder.Add("Market/BidPrice " + productType, (float)bidPrice);
             }
-            if (ConsumeInMonth < 0 || ConsumeInMonth > 1000 || double.IsFinite(ConsumeInMonth) ||
-                double.IsNaN(ConsumeInMonth))
+            if (inventoryItem.ConsumeInMonth < 0 || inventoryItem.ConsumeInMonth > 1000 || double.IsInfinity(inventoryItem.ConsumeInMonth) ||
+                double.IsNaN(inventoryItem.ConsumeInMonth))
             {
-                Debug.Log(ConsumeInMonth);
+                throw  new Exception("Wrong demand: " + inventoryItem.ConsumeInMonth);
             }
+            
+            AddData(inventoryItem, bidPrice);
+        }
 
-            _periodData.Demand = ConsumeInMonth;
+        private void AddData(InventoryItem inventoryItem, decimal bidPrice)
+        {
             _periodData.MoneyAvailableAdBidTime =  Money;
-            _periodData.InventoryBeforeBuying = _inventory[0].Count;
-            _periodData.PriceBid =  bidPrice;
+            if (inventoryItem.Product == ProductType.Food)
+            {
+                _periodData.DemandFood = inventoryItem.ConsumeInMonth;
+                _periodData.FoodInventoryBeforeBuying = inventoryItem.Count;
+                _periodData.PriceBidFood =  bidPrice;
+            }
+            else
+            {
+                _periodData.DemandLuxury = inventoryItem.ConsumeInMonth;
+                _periodData.LuxuryInventoryBeforeBuying = inventoryItem.Count;
+                _periodData.PriceBidLuxury =  bidPrice;
+            }
         }
 
         public void FullfillBid(ProductType product, int count, decimal price)
         {
-            _inventory.Where(x => x.Product == product).ToArray()[0].Add(count, price);
+            var item = _inventory.FirstOrDefault(x => x.Product == product);
+            item?.Add(count, price);
             Money -= count * price;
-            FullfilledInMonth += count;
+            Academy.Instance.StatsRecorder.Add("New/Money-After-Buy", (float)Money);
         }
         
         public void RemoveJobContract(JobContract contract, WorkerFireReason reason)
@@ -153,6 +138,8 @@ namespace NewScripts
 
         public void SearchForJob(decimal averageIncome, decimal averageFoodPrice)
         {
+            Academy.Instance.StatsRecorder.Add("New/Money-Before-Job-Search", (float)Money);
+
             //Academy.Instance.StatsRecorder.Add("Worker/Bought", DemandFulfilled);
             if (HasJob)
             {
@@ -165,7 +152,7 @@ namespace NewScripts
             }
             UnemployedForMonth = HasJob ? 0 : UnemployedForMonth + 1;
 
-            averageFoodPrice *= MonthlyMinimumDemand;
+            averageFoodPrice *= _inventory.FirstOrDefault(x => x.Product == ProductType.Food)!.MonthlyMinimumDemand;
             decimal criticalBoundary = averageIncome > averageFoodPrice ? averageIncome : averageFoodPrice;
             double demand = ServiceLocator.Instance.LaborMarket.DemandForWorkforce;
             double demandModifier = (demand + 1001) / 1000;

@@ -93,22 +93,26 @@ namespace NewScripts.Ui.Company
                 panels[i].SetActive(i == (int) _currentSelection);
             }
 
+            List<CompanyData> activeCompanyData = _activeCompanyData.Count >= 120 
+                ? _activeCompanyData.GetRange(_activeCompanyData.Count - 120, 120) 
+                : _activeCompanyData;
+
             switch (_currentSelection)
             {
                 case CompanyPanelSelection.Dashboard:
                     dashboardPanelGo.GetComponent<DashboardPanel>().UpdateUi(_activeCompanyData);
                     break;
                 case CompanyPanelSelection.Product:
-                    productPanelGo.GetComponent<ProductPanel>().UpdateUi(_activeCompanyData);
+                    productPanelGo.GetComponent<ProductPanel>().UpdateUi(activeCompanyData);
                     break;
                 case CompanyPanelSelection.Workers:
-                    workersPanelGo.GetComponent<WorkersPanel>().UpdateUi(_activeCompanyData);
+                    workersPanelGo.GetComponent<WorkersPanel>().UpdateUi(activeCompanyData);
                     break;
                 case CompanyPanelSelection.Books:
-                    booksPanelGo.GetComponent<BooksPanel>().UpdateUi(_activeCompanyData);
+                    booksPanelGo.GetComponent<BooksPanel>().UpdateUi(activeCompanyData);
                     break;
                 case CompanyPanelSelection.Decision:
-                    decisionPanelGo.GetComponent<DecisionPanel>().UpdateUi(_activeCompanyData);
+                    decisionPanelGo.GetComponent<DecisionPanel>().UpdateUi(activeCompanyData);
                     break;
             }
             

@@ -19,32 +19,42 @@ namespace NewScripts
     public class CompaniesAggregate : Aggregate
     {
         public decimal AverageWageOffer { get; private set; }
-        public decimal AveragePriceOffer { get; private set; }
+        public decimal AveragePriceOfferFood { get; private set; }
+        public double AverageSupplyFood { get; private set; }
+        public int AverageStockFood { get; private set; }
+        public int AverageSalesFood { get; private set; }
+        public decimal AveragePriceOfferLuxury { get; private set; }
+        public double AverageSupplyLuxury { get; private set; }
+        public int AverageStockLuxury { get; private set; }
+        public int AverageSalesLuxury { get; private set; }
         public decimal AverageLiquidity { get; private set; }
-        public double AverageSupply { get; private set; }
-        public int AverageStock { get; private set; }
-        public int AverageReputation { get; private set; }
+        public int AverageReputation => _averageReputation + 100;
         public int AverageLifetime { get; private set; }
-        public int AverageSales { get; private set; }
         public int AverageOpenPositions { get; private set; }
         public int AverageFiredWorkersTotal { get; private set; }
         public int AverageFiredWorkersByDecision { get; private set; }
         public int AverageFiredWorkersByLackOfFunds { get; private set; }
         private int Companys { get; set; }
+        private int _averageReputation;
         
         public CompaniesAggregate(int month, int year) : base(month, year) { }
         
         public void UpdateCompanyData(CompanyData data)
         {
             Companys++;
+            AveragePriceOfferFood = (AveragePriceOfferFood * (Companys - 1) + data.Food.PriceSet) / Companys;
+            AverageSupplyFood = (AverageSupplyFood * (Companys - 1) + data.Food.Production) / Companys;
+            AverageStockFood = (AverageStockFood * (Companys - 1) + data.Food.StockStart) / Companys;
+            AverageSalesFood = (AverageSalesFood * (Companys - 1) + data.Food.Sales) / Companys;
+            AveragePriceOfferLuxury = (AveragePriceOfferLuxury * (Companys - 1) + data.Luxury.PriceSet) / Companys;
+            AverageSupplyLuxury = (AverageSupplyLuxury * (Companys - 1) + data.Luxury.Production) / Companys;
+            AverageStockLuxury = (AverageStockLuxury * (Companys - 1) + data.Luxury.StockStart) / Companys;
+            AverageSalesLuxury = (AverageSalesLuxury * (Companys - 1) + data.Luxury.Sales) / Companys;
+            
             AverageWageOffer = (AverageWageOffer * (Companys - 1) + data.Workers.OfferedWage) / Companys;
-            AveragePriceOffer = (AveragePriceOffer * (Companys - 1) + data.Product.PriceSet) / Companys;
             AverageLiquidity = (AverageLiquidity * (Companys - 1) + data.Books.LiquidityStart) / Companys;
-            AverageSupply = (AverageSupply * (Companys - 1) + data.Product.Production) / Companys;
-            AverageStock = (AverageStock * (Companys - 1) + data.Product.StockStart) / Companys;
-            AverageReputation = (AverageReputation * (Companys - 1) + data.Reputation) / Companys;
+            _averageReputation = (_averageReputation * (Companys - 1) + data.Reputation) / Companys;
             AverageLifetime = (AverageLifetime * (Companys - 1) + data.Lifetime) / Companys;
-            AverageSales = (AverageSales * (Companys - 1) + data.Product.Sales) / Companys;
             AverageOpenPositions = (AverageOpenPositions * (Companys - 1) + data.Workers.OpenPositions) / Companys;
             AverageFiredWorkersTotal = (AverageFiredWorkersTotal * (Companys - 1) + data.Workers.FiredByDecision + data.Workers.FiredByLackOfFunds) / Companys;
             AverageFiredWorkersByDecision = (AverageFiredWorkersByDecision * (Companys - 1) + data.Workers.FiredByDecision) / Companys;
@@ -55,15 +65,18 @@ namespace NewScripts
     public class HouseholdsAggregate : Aggregate
     {
         public decimal AveragePurchasingPower { get; private set; }
-        public double AverageDemand { get; private set; }
+        public double AverageDemandFood { get; private set; }
+        public double AverageDemandLuxury { get; private set; }
         public double OverallEmploymentRate => _overallEmploymentRate * 100;
         public double ShortTimeWorkingRate => _shortTimeWorkingRate * 100;
         public double FullyEmployedWorkingRate => _fullyEmployedWorkingRate * 100;
-        public decimal AveragePriceBid { get; private set; }
+        public decimal AveragePriceBidFood { get; private set; }
+        public decimal AveragePriceBidLuxury { get; private set; }
         public decimal AverageFulltimeWage { get; private set; }
         public decimal AverageShortWorkWage { get; private set; }
         public decimal AverageReservationWage { get; private set; }
-        public int AverageInventoryBeforeBuying { get; private set; }
+        public int AverageFoodInventoryBeforeBuying { get; private set; }
+        public int AverageLuxuryInventoryBeforeBuying { get; private set; }
         private int Population { get; set; }
         private int EmployedPopulation { get; set; }
         private double _overallEmploymentRate;
@@ -77,7 +90,8 @@ namespace NewScripts
             Population++;
             EmployedPopulation += data.JobStatus != WorkerJobStatus.Unemployed ? 1 : 0;
             AveragePurchasingPower = (AveragePurchasingPower * (Population - 1) + data.MoneyAvailableAdBidTime) / Population;
-            AverageDemand = (AverageDemand * (Population - 1) + (data.Demand > 0 && data.PriceBid > 0 ? data.Demand : 0)) / Population;
+            AverageDemandFood = (AverageDemandFood * (Population - 1) + (data.DemandFood > 0 && data.PriceBidFood > 0 ? data.DemandFood : 0)) / Population;
+            AverageDemandLuxury = (AverageDemandLuxury * (Population - 1) + (data.DemandLuxury > 0 && data.PriceBidLuxury > 0 ? data.DemandLuxury : 0)) / Population;
             _overallEmploymentRate = (_overallEmploymentRate * (Population - 1) + (data.JobStatus != WorkerJobStatus.Unemployed ? 1 : 0)) / Population;
             _fullyEmployedWorkingRate = (_fullyEmployedWorkingRate * (Population - 1) + (data.JobStatus == WorkerJobStatus.FullyEmployed ? 1 : 0)) / Population;
             _shortTimeWorkingRate = (_shortTimeWorkingRate * (Population - 1) + (data.JobStatus == WorkerJobStatus.ShortTimeWork ? 1 : 0)) / Population;
@@ -89,20 +103,25 @@ namespace NewScripts
             {
                 AverageShortWorkWage = (AverageShortWorkWage * (EmployedPopulation - 1) + data.RealWage / 2) / EmployedPopulation;
             }
-            AveragePriceBid = (AveragePriceBid * (Population - 1) + (data.PriceBid > 0 && data.Demand > 0 ? data.PriceBid : 0)) / Population;
+            AveragePriceBidFood = (AveragePriceBidFood * (Population - 1) + (data.PriceBidFood > 0 && data.DemandFood > 0 ? data.PriceBidFood : 0)) / Population;
+            AveragePriceBidLuxury = (AveragePriceBidLuxury * (Population - 1) + (data.PriceBidLuxury > 0 && data.DemandLuxury > 0 ? data.PriceBidLuxury : 0)) / Population;
             AverageReservationWage = (AverageReservationWage * (Population - 1) + data.ReservationWage) / Population;
-            AverageInventoryBeforeBuying = (AverageInventoryBeforeBuying * (Population - 1) + data.InventoryBeforeBuying) / Population;
+            AverageFoodInventoryBeforeBuying = (AverageFoodInventoryBeforeBuying * (Population - 1) + data.FoodInventoryBeforeBuying) / Population;
+            AverageLuxuryInventoryBeforeBuying = (AverageLuxuryInventoryBeforeBuying * (Population - 1) + data.LuxuryInventoryBeforeBuying) / Population;
         }
     }
 
     public class HouseholdData
     {
         public decimal MoneyAvailableAdBidTime { get; set; }
-        public decimal PriceBid { get; set; }
+        public decimal PriceBidFood { get; set; }
+        public decimal PriceBidLuxury { get; set; }
         public decimal RealWage { get; set; }
         public decimal ReservationWage { get; set; }
-        public int Demand { get; set; }
-        public int InventoryBeforeBuying { get; set; }
+        public int DemandFood { get; set; }
+        public int DemandLuxury { get; set; }
+        public int FoodInventoryBeforeBuying { get; set; }
+        public int LuxuryInventoryBeforeBuying { get; set; }
         public WorkerJobStatus JobStatus { get; set; }
     }
 }

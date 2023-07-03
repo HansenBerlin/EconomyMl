@@ -16,7 +16,7 @@ namespace NewScripts.Ui
         public TextMeshProUGUI playerCountText;
         public TextMeshProUGUI aiCountText;
         public Button startButton;
-        
+
         public void Awake()
         {
             startButton.onClick.AddListener(StartGame);
@@ -29,6 +29,11 @@ namespace NewScripts.Ui
         
         private void StartGame()
         {
+            if (playerCountSlider.value == 0 && aiCountSlider.value == 0)
+            {
+                return;
+            }
+            startButton.interactable = false;
             bottomBar.SetActive(true);
             servicesGo.SetActive(true);
             var setup = setupGo.GetComponent<SetupEnvironment>();

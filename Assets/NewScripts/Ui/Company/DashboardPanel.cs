@@ -17,7 +17,10 @@ namespace NewScripts.Ui.Company
         
         public void UpdateUi(List<CompanyData> activeCompanyData)
         {
-            if(activeCompanyData.Count == 0) return;
+            if (activeCompanyData.Count == 0)
+            {
+                return;
+            }
             var dataset = activeCompanyData[^1];
             periodText.text = $"{dataset.Month}/{dataset.Year}";
             companyIdText.text = $"{dataset.CompanyId}";

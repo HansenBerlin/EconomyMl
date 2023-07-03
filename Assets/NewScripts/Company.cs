@@ -1,22 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using Agents;
-using MathNet.Numerics.LinearAlgebra.Single.Solvers;
 using NewScripts.Common;
 using NewScripts.Enums;
 using NewScripts.Http;
-using NewScripts.Http;
-using TMPro;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace NewScripts
 {
@@ -34,26 +25,20 @@ namespace NewScripts
 
         public string Name { get; private set; }
         public PlayerType PlayerType { get; } = PlayerType.Ai;
-        public int OpenPositions { get; private set; } = 0;
-        public int ProductStock { get; set; } = 0;
-        public decimal ProductPrice { get; private set; } = 1M;
-        public decimal OfferedWageRate { get; private set; } = 100;
+        private int OpenPositions { get; set; }
+        public int ProductStockFood { get; private set; }
+        private int ProductStockLuxury { get; set; }
         public decimal Liquidity { get; set; }
-        public int Reputation { get; private set; }
+        private int Reputation { get; set; }
         public int LifetimeMonths { get; private set; } = 1;
         public int Id => GetInstanceID();
-        private int _salesInMonth = 0;
-        private int _salesLastMonth = 0;
         private readonly List<JobContract> _jobContracts = new();
-        private readonly System.Random _rand = new();
-        //private bool _initDone;
         private bool _isTraining;
         private bool _writeToDatabase;
-        private int _currentActiveIndex = -1;
-        //private int _startUpRounds = 12;
         public List<CompanyData> Ledger { get; } = new();
         public int WorkerCount => _jobContracts.Count;
         public decimal AverageWageRate => _jobContracts.Count == 0 ? 100 : _jobContracts.Average(x => x.Wage);
+        public Decision LastDecision { get; private set; }
 
         
         private void Start()
@@ -77,13 +62,9 @@ namespace NewScripts
 
         private void SetupAgent()
         {
-            //ProductStock = 100;
-            //OfferedWageRate = ServiceLocator.Instance.LaborMarket.AveragePayment();
-            ProductPrice = (ServiceLocator.Instance.ProductMarket.AveragePrice() + ProductPrice) / 2;
             LifetimeMonths = 0;
-            //ProductStock = 1000 / ServiceLocator.Instance.Companys.Count * ServiceLocator.Instance.Settings.OutputMultiplier;
-            ProductStock = 0;
-            Reputation = 100;
+            ProductStockFood /= 2;
+            Reputation = 0;
             SetBuilding();
         }
 
@@ -97,14 +78,9 @@ namespace NewScripts
             double personCount = ServiceLocator.Instance.LaborMarket.Workers.Count;
             double ratio = personCount / companycount;
             int activeIndex = _jobContracts.Count < ratio * 2 ? 0 : _jobContracts.Count > ratio * 5 ? 2 : 1;
-            if (activeIndex != _currentActiveIndex)
+            for (var i = 0; i < buildings.Count; i++)
             {
-                for (var i = 0; i < buildings.Count; i++)
-                {
-                    buildings[i].SetActive(i == activeIndex);
-                }
-
-                _currentActiveIndex = activeIndex;
+                buildings[i].SetActive(i == activeIndex);
             }
         }
 
@@ -114,7 +90,7 @@ namespace NewScripts
             RequestDecision();
         }
 
-        public void StartNextPeriod(decimal price, int workerChange, decimal wage)
+        public void StartNextPeriod(Decision decision)
         {
             //throw new NotImplementedException();
         }
@@ -126,18 +102,41 @@ namespace NewScripts
         
         public override void CollectObservations(VectorSensor sensor)
         {
-            sensor.AddObservation((float)Liquidity);
-            sensor.AddObservation(_jobContracts.Count);
-            sensor.AddObservation((float)ProductPrice);
-            sensor.AddObservation(ProductStock);
-            sensor.AddObservation(OpenPositions);
-            sensor.AddObservation(_salesLastMonth);
-            sensor.AddObservation(_salesInMonth);
-            sensor.AddObservation((float)OfferedWageRate);
-            sensor.AddObservation((float)ServiceLocator.Instance.LaborMarket.AveragePayment());
-            sensor.AddObservation((float)ServiceLocator.Instance.ProductMarket.AveragePrice());
-            sensor.AddObservation((float)ServiceLocator.Instance.ProductMarket.DemandForProduct);
-            sensor.AddObservation((float)ServiceLocator.Instance.LaborMarket.DemandForWorkforce);
+            if (Ledger.Count > 0)
+            {
+                sensor.AddObservation((float)Ledger.Last().Books.Income);
+                sensor.AddObservation((float)Ledger.Last().Books.WagePayments);
+                sensor.AddObservation((float)Ledger.Last().Books.LiquidityStart);
+                sensor.AddObservation((float)Ledger.Last().Books.LiquidityEndCheck);
+                sensor.AddObservation((float)Ledger.Last().Month);
+                sensor.AddObservation((float)Ledger.Last().Reputation);
+                sensor.AddObservation((float)Ledger.Last().Lifetime);
+                sensor.AddObservation((float) Ledger.Last().Decision.SetWorkerWage);
+                sensor.AddObservation((float) Ledger.Last().Decision.OpenPositions);
+                sensor.AddObservation((float) Ledger.Last().Decision.SetFoodPrice);
+                sensor.AddObservation((float) Ledger.Last().Decision.SetLuxuryPrice);
+                sensor.AddObservation((float) Ledger.Last().Workers.StartCount);
+                sensor.AddObservation((float) Ledger.Last().Workers.EndCount);
+                sensor.AddObservation((float) Ledger.Last().Workers.Hired);
+                sensor.AddObservation((float) Ledger.Last().Workers.FiredByDecision);
+                sensor.AddObservation((float) Ledger.Last().Workers.FiredByLackOfFunds);
+                sensor.AddObservation((float) Ledger.Last().Food.Production);
+                sensor.AddObservation((float) Ledger.Last().Food.Sales);
+                sensor.AddObservation((float) Ledger.Last().Food.Destroyed);
+                sensor.AddObservation((float) Ledger.Last().Food.StockStart);
+                sensor.AddObservation((float) Ledger.Last().Food.StockEndCheck);
+                sensor.AddObservation((float) Ledger.Last().Luxury.Production);
+                sensor.AddObservation((float) Ledger.Last().Luxury.Sales);
+                sensor.AddObservation((float) Ledger.Last().Luxury.Destroyed);
+                sensor.AddObservation((float) Ledger.Last().Luxury.StockStart);
+                sensor.AddObservation((float) Ledger.Last().Luxury.StockEndCheck);
+                sensor.AddObservation((float)ServiceLocator.Instance.LaborMarket.AveragePayment());
+                sensor.AddObservation((float)ServiceLocator.Instance.FoodProductMarket.AveragePriceInLastYear());
+                sensor.AddObservation((float)ServiceLocator.Instance.LuxuryProductMarket.AveragePriceInLastYear());
+                sensor.AddObservation((float)ServiceLocator.Instance.FoodProductMarket.DemandForProduct);
+                sensor.AddObservation((float)ServiceLocator.Instance.LuxuryProductMarket.DemandForProduct);
+                sensor.AddObservation((float)ServiceLocator.Instance.LaborMarket.DemandForWorkforce);
+            }
         }
 
         
@@ -160,47 +159,53 @@ namespace NewScripts
             }
             
             int workerDecision = actionBuffers.DiscreteActions[0];
-            float newWage = MapValue(actionBuffers.ContinuousActions[0], 25, 250);
-            float newPrice = MapValue(actionBuffers.ContinuousActions[1], 0.1F, 2F);
+            bool adaptWages = actionBuffers.DiscreteActions[1] == 1;
+            float newWage = MapValue(actionBuffers.ContinuousActions[0], 10, 250);
+            float foodPrice = MapValue(actionBuffers.ContinuousActions[1], 0.1F, 5F);
+            float luxuryPrice = MapValue(actionBuffers.ContinuousActions[2], 1F, 100F);
+            float ressourceDistribution = MapValue(actionBuffers.ContinuousActions[3], 0.1F, 1F);
             
-            var companyData = new CompanyData(Id, ServiceLocator.Instance.FlowController.Month, ServiceLocator.Instance.FlowController.Year, LifetimeMonths);
+            var companyData = new CompanyData(Id, ServiceLocator.Instance.FlowController.Month, 
+                ServiceLocator.Instance.FlowController.Year, LifetimeMonths);
             var averageWage = _jobContracts.Count > 0 ? _jobContracts.Select(x => x.Wage).Average() : 100;
             var workerLedger = new WorkersLedger(_jobContracts.Count, (decimal)newWage, averageWage);
-            var productLedger = new ProductLedger((decimal)newPrice, ProductStock);
+            var foodProductLedger = new ProductLedger((decimal)foodPrice, ProductStockFood);
+            var luxuryProductLedger = new ProductLedger((decimal)luxuryPrice, ProductStockLuxury);
             var booksLedger = new BookKeepingLedger(Liquidity);
-            DecisionLedger decisionLedger;
+            int fireWorkers = (int)MapValue(actionBuffers.ContinuousActions[4], 1, _jobContracts.Count);
+            int workerChange;
+            
             if(workerDecision == 1)
             {
-                var open = (int)MapValue(actionBuffers.ContinuousActions[2], 1, 50);
-                decisionLedger = new DecisionLedger(open, (decimal)newWage, (decimal)newPrice);
+                OpenPositions = (int)MapValue(actionBuffers.ContinuousActions[5], 1, 1000);
+                workerChange = OpenPositions;
             }
             else if(workerDecision == 2 && _jobContracts.Count > 0)
             {
-                int fireWorkers = (int)MapValue(actionBuffers.ContinuousActions[3], 1, _jobContracts.Count);
-                decisionLedger = new DecisionLedger(fireWorkers * -1, (decimal)newWage, (decimal)newPrice);
+                workerChange = fireWorkers * -1;
             }
             else
             {
-                decisionLedger = new DecisionLedger(0, (decimal)newWage, (decimal)newPrice);
+                workerChange = 0;
             }
 
-            
-            ProductPrice = (decimal)newPrice;
-            OfferedWageRate = (decimal)newWage;
-            
-            foreach (var contract in _jobContracts)
+            LastDecision = new Decision((decimal) foodPrice, (decimal) luxuryPrice, ressourceDistribution, workerChange, (decimal) newWage, adaptWages);
+            var decisionLedger = new DecisionLedger(LastDecision);
+
+            if (adaptWages)
             {
-                if (contract.Wage < OfferedWageRate)
+                foreach (var contract in _jobContracts)
                 {
-                    contract.Wage = OfferedWageRate;
+                    if (contract.Wage < LastDecision.Wage)
+                    {
+                        contract.Wage = LastDecision.Wage;
+                    }
                 }
             }
 
             if (workerDecision == 1)
             {
-                OpenPositions = (int)MapValue(actionBuffers.ContinuousActions[2], 1, 50);
                 workerLedger.OpenPositions = OpenPositions;
-
                 for (int i = 0; i < OpenPositions; i++)
                 {
                     var jobBid = new JobBid(this, (decimal)newWage);
@@ -211,7 +216,6 @@ namespace NewScripts
 
             if (workerDecision == 2 && _jobContracts.Count > 0)
             {
-                int fireWorkers = (int)MapValue(actionBuffers.ContinuousActions[3], 1, _jobContracts.Count);
                 for (var i = _jobContracts.Count - 1; i >= 0; i--)
                 {
                     if (fireWorkers == 0)
@@ -230,7 +234,8 @@ namespace NewScripts
             }
 
             companyData.Workers = workerLedger;
-            companyData.Product = productLedger;
+            companyData.Food = foodProductLedger;
+            companyData.Luxury = luxuryProductLedger;
             companyData.Books = booksLedger;
             companyData.Decision = decisionLedger;
             Ledger.Add(companyData);
@@ -250,17 +255,28 @@ namespace NewScripts
 
         public void Produce()
         {
-            int production = _jobContracts.Count * ServiceLocator.Instance.Settings.OutputMultiplier;
-            ProductStock += production;
-            Ledger[^1].Product.Production = production;
-            
-            if (ProductStock > 0)
+            int foodProduction = (int)Math.Floor(_jobContracts.Count *
+                                                 ServiceLocator.Instance.Settings.OutputMultiplier(ProductType.Food) *
+                                                 LastDecision.RessourceDistribution);
+            ProductStockFood += foodProduction;
+            Ledger[^1].Food.Production = foodProduction;
+            if (ProductStockFood > 0)
             {
-                var offer = new ProductOffer(ProductType.Food, this, ProductPrice, ProductStock);
-                ServiceLocator.Instance.ProductMarket.AddOffer(offer);
-                Academy.Instance.StatsRecorder.Add("Market/P-OfferCount", ProductStock);
-                Academy.Instance.StatsRecorder.Add("Market/P-OfferPrice", (float)ProductPrice);
+                var offer = new ProductOffer(ProductType.Food, this, LastDecision.PriceFood, ProductStockFood);
+                ServiceLocator.Instance.FoodProductMarket.AddOffer(offer);
             }
+            
+            int luxuryProduction = (int)Math.Floor(_jobContracts.Count *
+                                                   ServiceLocator.Instance.Settings.OutputMultiplier(ProductType.Luxury) *
+                                                   (1 - LastDecision.RessourceDistribution));
+            ProductStockLuxury += luxuryProduction;
+            Ledger[^1].Luxury.Production = luxuryProduction;
+            if (ProductStockLuxury > 0)
+            {
+                var offer = new ProductOffer(ProductType.Luxury, this, LastDecision.PriceLuxury, ProductStockLuxury);
+                ServiceLocator.Instance.LuxuryProductMarket.AddOffer(offer);
+            }
+            
             //UpdateCanvasText(false);
         }
 
@@ -279,10 +295,10 @@ namespace NewScripts
                     liquidity = (double)Liquidity,
                     realWage = _jobContracts.Count > 0 ? (double)_jobContracts.Average(x => x.Wage) : 0,
                     workers = _jobContracts.Count,
-                    price = (double)ProductPrice,
-                    wage = (double)OfferedWageRate,
-                    sales = _salesInMonth,
-                    stock = ProductStock,
+                    //price = (double)ProductPriceFood,
+                    //wage = (double)OfferedWageRate,
+                    //sales = _salesInMonth,
+                    stock = ProductStockFood,
                     lifetime = LifetimeMonths,
                     sessionId = ServiceLocator.Instance.SessionId,
                     emergencyRounds = 0,
@@ -313,7 +329,7 @@ namespace NewScripts
                 }
                 else
                 {
-                    contract.QuitContract(WorkerFireReason.LackOfFunds);
+                    //contract.QuitContract(WorkerFireReason.LackOfFunds);
                     Reputation -= 2;
                 }
             }
@@ -324,73 +340,73 @@ namespace NewScripts
                 AddReward(-0.1F);
             }
 
-            if (_jobContracts.Count > lastWorkers)
-            {
-                AddReward(0.1F);
-            }
-            else if (_jobContracts.Count == lastWorkers)
-            {
-                AddReward(0.01F);
-            }
-            else
-            {
-                AddReward(-0.11F);
-            }
+            
 
             //PaySocialFare();
             
             LifetimeMonths++;
             Academy.Instance.StatsRecorder.Add("Company/Liquidity", (float)Liquidity);
-            Academy.Instance.StatsRecorder.Add("Company/LastSales", _salesLastMonth);
-            Academy.Instance.StatsRecorder.Add("Company/CurrentSales", _salesInMonth);
+            Academy.Instance.StatsRecorder.Add("Company/SalesFood", Ledger.Last().Food.Sales);
+            Academy.Instance.StatsRecorder.Add("Company/SalesLux", Ledger.Last().Luxury.Sales);
             //Academy.Instance.StatsRecorder.Add("Company/ProfitMonth", (float)Liquidity);
             Academy.Instance.StatsRecorder.Add("Company/Lifetime", LifetimeMonths);
             Academy.Instance.StatsRecorder.Add("Company/Rep", Reputation);
-            Academy.Instance.StatsRecorder.Add("Product/Price", (float)ProductPrice);
-            Academy.Instance.StatsRecorder.Add("Product/Stock", ProductStock);
+            Academy.Instance.StatsRecorder.Add("Product/PriceFood", (float)Ledger.Last().Food.PriceSet);
+            Academy.Instance.StatsRecorder.Add("Product/PriceLux", (float)Ledger.Last().Luxury.PriceSet);
+            Academy.Instance.StatsRecorder.Add("Product/Stock", ProductStockFood);
             Academy.Instance.StatsRecorder.Add("Labor/Workers", _jobContracts.Count);
             Academy.Instance.StatsRecorder.Add("Labor/Open", OpenPositions);
-            _salesLastMonth = _salesInMonth;
-            _salesInMonth = 0;
             
             //UpdateCanvasText(false);
             AddReward(Reputation*0.01F);
-            AddReward((float)Liquidity*0.01F);
+            //AddReward((float)Liquidity*0.01F);
             //int availableSpace = _jobContracts.Count * 400;
-            int destroy = (int)(ProductStock * 0.1M);
-            Ledger[^1].Product.Destroyed = destroy;
-            ProductStock -= destroy;
-            Ledger[^1].Product.StockEndCheck = ProductStock;
+            int destroy = (int)(ProductStockFood * 0.1M);
+            Ledger[^1].Food.Destroyed = destroy;
+            ProductStockFood -= destroy;
+            Ledger[^1].Food.StockEndCheck = ProductStockFood;
+            Ledger[^1].Luxury.StockEndCheck = ProductStockLuxury;
             Ledger[^1].Books.LiquidityEndCheck = Liquidity;
             Ledger[^1].Workers.EndCount = _jobContracts.Count;
             Ledger[^1].Reputation = Reputation;
+            if (Ledger.Count >= 2)
+            {
+                if (Ledger[^1].Books.LiquidityEndCheck > Ledger[^2].Books.LiquidityEndCheck)
+                {
+                    AddReward(0.1F);
+                    Reputation += 1;
+                }
+                else
+                {
+                    AddReward(-0.1F);
+                    Reputation -= 2;
+                }
+            }
+            
+            ServiceLocator.Instance.HouseholdAggregator.Add(Ledger[^1]);
             
             ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
             ServiceLocator.Instance.FlowController.CommitDecision(Id, DecisionStatus = CompanyDecisionStatus.Pending);
             //AddReward(_jobContracts.Count*1F);
             if (Reputation >= 1000)
             {
-                AddReward(1000F);
+                SetReward(100F);
                 //ProductStock = 0;
                 EndEpisode();
             }
-            else if (Reputation <= -1000)
+            else if (Reputation <= -500)
             {
                 for (int i = _jobContracts.Count - 1; i >= 0; i--)
                 {
                     //var contract = _jobContracts[i];
                     //contract.QuitContract();
                 }
-                SetReward(-100F);
+                SetReward(-10F);
                 //ProductStock = 0;
                 EndEpisode();
             }
             
-            
             SetBuilding();
-
-
-            
             //ServiceLocator.Instance.FlowController.CommitDecision();
             //yield return new WaitForFixedUpdate();
             lastWorkers = _jobContracts.Count;
@@ -449,8 +465,7 @@ namespace NewScripts
             _jobContracts.Add(contract);
             Reputation++;
             Ledger[^1].Workers.Hired++;
-
-            AddReward(1F);
+            AddReward(0.1F);
         }
         
         public void RemoveContract(JobContract contract, WorkerFireReason reason)
@@ -460,27 +475,37 @@ namespace NewScripts
             if (reason == WorkerFireReason.CompanyDecision)
             {
                 Ledger[^1].Workers.FiredByDecision++;
+                AddReward(-0.05F);
             }
             else if (reason == WorkerFireReason.LackOfFunds)
             {
                 Ledger[^1].Workers.FiredByLackOfFunds++;
+                AddReward(-0.1F);
             }
             else
             {
                 Ledger[^1].Workers.Quit++;
+                AddReward(-0.01F);
             }
-            AddReward(-1.1F);
         }
         
         public void FullfillBid(ProductType product, int count, decimal price)
         {
-            Ledger[^1].Product.Sales += count;
+            if(product == ProductType.Luxury)
+            {
+                Ledger[^1].Luxury.Sales += count;
+                ProductStockLuxury -= count;
+            }
+            else if(product == ProductType.Food)
+            {
+                Ledger[^1].Food.Sales += count;
+                ProductStockFood -= count;
+            }
+            
             Ledger[^1].Books.Income += count * price;
-            ProductStock -= count;
+            ProductStockFood -= count;
             Liquidity += count * price;
-            //Reputation++;
-            _salesInMonth += count;
-            AddReward((float)count / 10000);
+            AddReward(0.01F);
         }
     }
 }

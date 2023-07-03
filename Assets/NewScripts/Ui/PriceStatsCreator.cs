@@ -41,7 +41,7 @@ namespace NewScripts.Ui
                 }
                 _isInitDone = true;
             }
-            if (_valueHistory.Count > 0)
+            else if (_valueHistory.Count > 0)
             {
                 ShowStats();
             }

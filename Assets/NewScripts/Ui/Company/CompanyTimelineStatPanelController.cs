@@ -10,80 +10,59 @@ using UnityEngine.UI;
 
 namespace NewScripts.Ui.Company
 {
-    public class TimelineStatPanelController : MonoBehaviour
+    public class CompanyTimelineStatPanelController : MonoBehaviour
     {
         public GameObject buttonPrefab;
         [FormerlySerializedAs("timelinePrefab")] public GameObject timelineGo;
         public GameObject buttonParent;
         public TextMeshProUGUI breadcrumb;
         private TimelineGraphDrawer _timelineGraphDrawer;
-        private TimelineSelection _currentSelection = TimelineSelection.AveragePurchasingPower;
+        private CompanyTimelineSelection _currentSelection = CompanyTimelineSelection.AverageLiquidity;
+        private readonly PropertyConverter<CompanyTimelineSelection, CompaniesAggregate> _propertyConverter = new(); 
 
         private void Awake()
         {
             _timelineGraphDrawer = timelineGo.GetComponent<TimelineGraphDrawer>();
-            var options = (TimelineSelection[])Enum.GetValues(typeof(TimelineSelection));
+            var options = (CompanyTimelineSelection[])Enum.GetValues(typeof(CompanyTimelineSelection));
 
             foreach (var option in options)
             {
                 CreateInstance(option.ToString(), option);
             }
 
-            if (ServiceLocator.Instance.HouseholdAggregator.HouseholdsAggregates.Count > 1)
+            if (ServiceLocator.Instance.HouseholdAggregator.CompaniesAggregates.Count > 1)
             {
-                var values = GetCorrspondingValues(_currentSelection);
+                var values = _propertyConverter.GetCorrspondingValues(_currentSelection, 
+                    ServiceLocator.Instance.HouseholdAggregator.CompaniesAggregates);
                 UpdatePanels(_currentSelection, values, true);
             }
             
-            ServiceLocator.Instance.HouseholdAggregator.periodAggregateAddedEvent.AddListener(x =>
+            ServiceLocator.Instance.HouseholdAggregator.periodCompanyAggregateAddedEvent.AddListener(x =>
             {
-                var value = GetProperty(x, _currentSelection).GetValue(x);
+                var value = _propertyConverter.GetProperty(x, _currentSelection.ToString()).GetValue(x);
                 _timelineGraphDrawer.AddDatapoint(Convert.ToSingle(value));
             });
         }
 
-        private void CreateInstance(string label, TimelineSelection type)
+        private void CreateInstance(string label, CompanyTimelineSelection type)
         {
             var button = Instantiate(buttonPrefab, buttonParent.transform);
             button.GetComponentInChildren<TextMeshProUGUI>().text = type.ToString().Substring(0, 1);
             button.GetComponent<Button>().onClick.AddListener(() =>
             {
-                if (ServiceLocator.Instance.HouseholdAggregator.HouseholdsAggregates.Count > 1)
+                if (ServiceLocator.Instance.HouseholdAggregator.CompaniesAggregates.Count > 1)
                 {
-                    var values = GetCorrspondingValues(type);
+                    var values = _propertyConverter.GetCorrspondingValues(type,
+                        ServiceLocator.Instance.HouseholdAggregator.CompaniesAggregates);
                     UpdatePanels(type, values);
                 }
             });
         }
 
-        private List<object> GetCorrspondingValues(TimelineSelection type)
-        {
-            var values = ServiceLocator.Instance.HouseholdAggregator.HouseholdsAggregates
-                .GetRange(0, ServiceLocator.Instance.HouseholdAggregator.HouseholdsAggregates.Count - 1)
-                .Select(x => GetProperty(x, type).GetValue(x))
-                .ToList();
-            return values;
-        }
+        
 
-        private PropertyInfo GetProperty(object obj, TimelineSelection propertyName)
+        private void UpdatePanels<T>(CompanyTimelineSelection selection, List<T> data, bool isInit = false)
         {
-            Type type = obj.GetType();
-            var property = type
-                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .FirstOrDefault(x => x.Name == propertyName.ToString());
-            return property;
-        }
-
-        private void UpdatePanels<T>(TimelineSelection selection, List<T> data, bool isInit = false)
-        {
-            var floats = (from object obj in data select Convert.ToSingle(obj)).ToList();
-            foreach (var f in floats)
-            {
-                if (float.IsNaN(f) || float.IsInfinity(f))
-                {
-                    Debug.Log("NaN");
-                }
-            }
             if (selection == _currentSelection && isInit == false)
             {
                 return;

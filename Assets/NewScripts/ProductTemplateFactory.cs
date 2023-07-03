@@ -4,7 +4,7 @@ namespace NewScripts
 {
     public static class ProductTemplateFactory
     {
-        public static int CompanysPerType { get; set; } = 3;
+        /*public static int CompanysPerType { get; set; } = 3;
         public static ProductTemplate Create(ProductType type)
         {
             float defaultPrice = 0.33F;
@@ -40,12 +40,12 @@ namespace NewScripts
                     //Price = defaultPrice
                 },
                 workerSalary, unitsPerWorker, defaultPrice, startCapital, avgConsumptionFromAllWorkers, startWorkerCount);
-        }
+        }*/
     }
 
     public class ProductTemplate
     {
-        public ProductTemplate(Product product, int workerSalary, int unitsPerWorker, 
+        /*public ProductTemplate(Product product, int workerSalary, int unitsPerWorker, 
             float defaultPrice, float startCapital, int averageConsumptionPerCompany, int startWorkerCount)
         {
             Product = product;
@@ -63,6 +63,6 @@ namespace NewScripts
         public int WorkerSalary { get; }
         public int StartWorkerCount { get; }
         public int AverageConsumptionPerCompany { get; }
-        public int UnitsPerWorker { get; }
+        public int UnitsPerWorker { get; }*/
     }
 }
