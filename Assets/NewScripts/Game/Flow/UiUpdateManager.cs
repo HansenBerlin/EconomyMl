@@ -1,0 +1,32 @@
+﻿using NewScripts.Interfaces;
+using UnityEngine;
+
+namespace NewScripts.Game.Flow
+{
+    public class UiUpdateManager : MonoBehaviour
+    {
+        public CompanySelectedEvent companySelectedEvent;
+        public CompanySelectedEvent playerDecisionValuesUpdateEvent;
+        public PeriodIncrementEvent newPeriodStartedEvent;
+
+        public int SelectedCompanyId { get; private set; }
+        
+        public void BroadcastUpdateDecisionValuesEvent(ICompany company)
+        {
+            if (SelectedCompanyId == company.Id)
+            {
+                playerDecisionValuesUpdateEvent.Invoke(company);
+            }
+        }
+
+        public void SelectCompanyEvent(ICompany company)
+        {
+            if (SelectedCompanyId != company.Id)
+            {
+                SelectedCompanyId = company.Id;
+                companySelectedEvent.Invoke(company);
+                BroadcastUpdateDecisionValuesEvent(company);
+            }
+        }
+    }
+}
