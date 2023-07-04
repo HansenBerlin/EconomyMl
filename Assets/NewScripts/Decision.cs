@@ -2,22 +2,11 @@
 {
     public class Decision
     {
-        public decimal PriceFood { get; }
-        public decimal PriceLuxury { get; }
-        public float RessourceDistribution { get; }
-        public int WorkerChange { get; }
-        public decimal Wage { get; }
-        public bool AdjustWages { get; }
-        
-        public Decision(decimal priceFood, decimal priceLuxury, float ressourceDistribution, int workerChange,
-            decimal wage, bool adjustWages)
-        {
-            PriceFood = priceFood;
-            PriceLuxury = priceLuxury;
-            RessourceDistribution = ressourceDistribution;
-            WorkerChange = workerChange;
-            Wage = wage;
-            AdjustWages = adjustWages;    
-        }
+        public decimal PriceFood { get; set; } = 1;
+        public decimal PriceLuxury { get; set; } = 10;
+        public float RessourceDistribution { get; set; } = 1;
+        public int WorkerChange { get; set; } = 0;
+        public decimal Wage { get; set; } = 100;
+        public bool AdjustWages { get; set; }
     }
 }

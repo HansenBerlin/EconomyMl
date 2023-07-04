@@ -9,22 +9,27 @@ using Random = System.Random;
 
 namespace NewScripts
 {
-    public class ProductMarket : MonoBehaviour
+    public class ProductMarket
     {
-        public ProductMarketUpdateEvent updateEvent;
+        //public ProductMarketUpdateEvent updateEvent;
         public int DemandForProduct { get; private set; }
         public PriceAnalysisStatsModel PriceAnalysisStats { get; private set; }
-
         private readonly List<decimal> _salesHistory = new();
         private List<ProductOffer> ProductOffers { get; } = new();
         private List<ProductBid> ProductBids { get; } = new();
-
-        private readonly Random _rand = new();
         private int CountAdded { get; set; }
+        private ProductType _productType;
+        private decimal _averageStartingPrice;
 
-        private void Awake()
+       //private void Awake()
+       //{
+       //    updateEvent ??= new ProductMarketUpdateEvent();
+       //}
+
+        public ProductMarket(ProductType productType, decimal startingAverage)
         {
-            updateEvent ??= new ProductMarketUpdateEvent();
+            _productType = productType;
+            _averageStartingPrice = startingAverage;
         }
 
         public decimal AveragePriceInLastYear()
@@ -33,7 +38,7 @@ namespace NewScripts
             {
                 _salesHistory.RemoveRange(0, _salesHistory.Count - 12);
             }
-            decimal average = _salesHistory.Count > 0 ? _salesHistory.Average() : 1;
+            decimal average = _salesHistory.Count > 0 ? _salesHistory.Average() : _averageStartingPrice;
             return average;
         }
 
@@ -107,12 +112,13 @@ namespace NewScripts
             if (isTraining == false)
             {
                 PriceAnalysisStats.Deals = successfulDeals;
-                updateEvent.Invoke(PriceAnalysisStats);
+                //updateEvent.Invoke(PriceAnalysisStats);
             }
 
 
             ProductOffers.Clear();
             ProductBids.Clear();
+            CountAdded = 0;
         }
     }
 }

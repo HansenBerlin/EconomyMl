@@ -3,9 +3,10 @@
     public enum CompanyPanelSelection
     {
         Dashboard = 0,
-        Product = 1,
-        Workers = 2,
-        Books = 3,
-        Decision = 4
+        ProductFood = 1,
+        ProductLux = 2,
+        Workers = 3,
+        Books = 4,
+        Decision = 6
     }
 }

@@ -64,7 +64,8 @@ namespace NewScripts
             ServiceLocator.Instance.Settings.IsTraining = isTraining;
             ServiceLocator.Instance.Settings.WriteToDatabase = writeToDatabase;
             ServiceLocator.Instance.CompanyPanelController = companyPanelGo.GetComponent<CompanyPanelController>();
-            ServiceLocator.Instance.LaborMarket.InitWorkers(1000);
+            var priceBidCalculator = new PriceBidCalculator();
+            ServiceLocator.Instance.LaborMarket.InitWorkers(1000, priceBidCalculator);
             int zPos = 0;
             int xPos = 0;
             decimal liquidity = 500000 / (decimal) (aiCompaniesPerType + playerCompaniesPerType);
@@ -143,14 +144,19 @@ namespace NewScripts
                 company.Produce();
             }
                 
-            decimal averageLuxuryPrice = ServiceLocator.Instance.LuxuryProductMarket.AveragePriceInLastYear();
             foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
             {
                 worker.AddProductBids(averageFoodPrice, ProductType.Food, ServiceLocator.Instance.FoodProductMarket);
-                worker.AddProductBids(averageLuxuryPrice, ProductType.Luxury, ServiceLocator.Instance.LuxuryProductMarket);
             }
             
             ServiceLocator.Instance.FoodProductMarket.ResolveMarket(isTraining);
+            
+            decimal averageLuxuryPrice = ServiceLocator.Instance.LuxuryProductMarket.AveragePriceInLastYear();
+            foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
+            {
+                worker.AddProductBids(averageLuxuryPrice, ProductType.Luxury, ServiceLocator.Instance.LuxuryProductMarket);
+            }
+            
             ServiceLocator.Instance.LuxuryProductMarket.ResolveMarket(isTraining);
             
             foreach (var company in ServiceLocator.Instance.Companys)

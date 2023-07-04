@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace NewScripts
 {
@@ -39,6 +40,11 @@ namespace NewScripts
         {
             double random = _rand.NextDouble();
             int demand = minDemand + (int)Math.Round(Math.Pow(random, 2) * (maxDemand - minDemand));
+            if (demand < 0)
+            {
+                Debug.Log("Demand is negative");
+                //throw new Exception("Demand is negative");
+            }
             return demand;
         }
     }

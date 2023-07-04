@@ -12,7 +12,9 @@ namespace NewScripts.Ui
         public TextMeshProUGUI statusText;
         public TextMeshProUGUI workerCountText;
         public TextMeshProUGUI workerWageText;
-        public TextMeshProUGUI priceText;
+        [FormerlySerializedAs("priceText")] public TextMeshProUGUI foodPriceText;
+        public TextMeshProUGUI luxuryPriceText;
+        public TextMeshProUGUI resourceDistributionText;
         public Slider  workerCountSlider;
         public Slider  workerWageSlider;
         public Slider  resourceDistributionSlider;
@@ -30,7 +32,8 @@ namespace NewScripts.Ui
             workerCountSlider.onValueChanged.AddListener(OnWorkerCountChanged);
             workerWageSlider.onValueChanged.AddListener(OnWorkerWageChanged);
             foodPriceSlider.onValueChanged.AddListener(OnFoodPriceChanged);
-            luxuryPriceSlider.onValueChanged.AddListener(OnFoodPriceChanged);
+            luxuryPriceSlider.onValueChanged.AddListener(OnLuxPriceChanged);
+            resourceDistributionSlider.onValueChanged.AddListener(OnWorkerDistributionChanged);
             _commitButton = commitButtonGo.GetComponent<Button>();
             _commitButton.onClick.AddListener(Confirm);
             ServiceLocator.Instance.UiUpdateManager.playerDecisionValuesUpdateEvent.AddListener(SetValues);
@@ -78,7 +81,7 @@ namespace NewScripts.Ui
         {
             float last = _activeCompany.LastDecision.RessourceDistribution * 100;
             float current = val * 100;
-            workerCountText.text = $"Distribution current: {last}% food, {100 - last}% luxury, goal: {current}% food, {1 - current}% luxury";
+            resourceDistributionText.text = $"Distribution current: {last:0.##}% food, {100 - last:0.##}% luxury, goal: {current:0.##}% food, {100 - current:0.##}% luxury";
         }
         
         private void OnWorkerWageChanged(float val)
@@ -100,7 +103,7 @@ namespace NewScripts.Ui
                 : newPrice - _activeCompany.LastDecision.PriceFood < 0 
                     ? $"-{newPrice - _activeCompany.LastDecision.PriceFood:0.##}" 
                     : "0";
-            priceText.text = $"Change food price from: {_activeCompany.LastDecision.PriceFood:0.##} to {val:0.##} ({text})";
+            foodPriceText.text = $"Change food price from: {_activeCompany.LastDecision.PriceFood:0.##} to {val:0.##} ({text})";
         }
         
         private void OnLuxPriceChanged(float val)
@@ -111,15 +114,21 @@ namespace NewScripts.Ui
                 : newPrice - _activeCompany.LastDecision.PriceLuxury < 0 
                     ? $"-{newPrice - _activeCompany.LastDecision.PriceLuxury:0.##}" 
                     : "0";
-            priceText.text = $"Change luxury price from: {_activeCompany.LastDecision.PriceLuxury:0.##} to {val:0.##} ({text})";
+            luxuryPriceText.text = $"Change luxury price from: {_activeCompany.LastDecision.PriceLuxury:0.##} to {val:0.##} ({text})";
         }
 
         private void Confirm()
         {
             //statusText.text = $"{CompanyDecisionStatus.Commited}";
-            var decision = new Decision((decimal)foodPriceSlider.value, (decimal)luxuryPriceSlider.value, 
-                resourceDistributionSlider.value, (int) (workerCountSlider.value - _activeCompany.WorkerCount), 
-                (decimal) workerWageSlider.value, adjustWageToggle.isOn);
+            var decision = new Decision
+            {
+                PriceFood = (decimal)foodPriceSlider.value,
+                PriceLuxury = (decimal)luxuryPriceSlider.value,
+                RessourceDistribution = resourceDistributionSlider.value,
+                WorkerChange = (int) (workerCountSlider.value - _activeCompany.WorkerCount), 
+                Wage = (decimal) workerWageSlider.value,
+                AdjustWages = adjustWageToggle.isOn
+            };
             _activeCompany.StartNextPeriod(decision);
             _commitButton.interactable = false;
         }

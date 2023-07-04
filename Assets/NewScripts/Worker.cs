@@ -20,10 +20,11 @@ namespace NewScripts
         private HouseholdData _periodData = new();
 
         private JobContract _jobContract;
-        private PriceBidCalculator _priceBidCalculator;
+        private readonly PriceBidCalculator _priceBidCalculator;
 
-        public Worker()
+        public Worker(PriceBidCalculator priceBidCalculator)
         {
+            _priceBidCalculator = priceBidCalculator;
             var food = new InventoryItem(ProductType.Food, 150, 50, 250, 1);
             var luxury = new InventoryItem(ProductType.Luxury, 10, 0, 100, 10);
             _inventory.Add(food);
@@ -62,10 +63,14 @@ namespace NewScripts
 
         public void AddProductBids(decimal averagePrice, ProductType productType, ProductMarket market)
         {
+            if (productType == ProductType.Luxury)
+            {
+                Debug.Log("Lux Bidding");
+            }
             var inventoryItem = _inventory.FirstOrDefault(x => x.Product == productType)??
                                 throw new Exception("No inventory item for " + productType);
             
-            Academy.Instance.StatsRecorder.Add("New/Money-Before-Bid", (float)Money);
+            Academy.Instance.StatsRecorder.Add("New/Money-Before-Bid " + productType, (float)Money);
             (int low, int high) = _priceBidCalculator.DemandModifier(inventoryItem);
             inventoryItem.ConsumeInMonth = _priceBidCalculator.DemandByMarginalUtility(low, high);
             decimal bidPrice = _priceBidCalculator.DetermineBiddingPrice(averagePrice, inventoryItem);
@@ -80,7 +85,7 @@ namespace NewScripts
                 {
                     throw new Exception("Not enough money");
                 }
-                var bid = new ProductBid(ProductType.Food, this, bidPrice, inventoryItem.ConsumeInMonth);
+                var bid = new ProductBid(productType, this, bidPrice, inventoryItem.ConsumeInMonth);
                 market.AddBid(bid);
                 
                 Academy.Instance.StatsRecorder.Add("Market/BidCount " + productType, inventoryItem.ConsumeInMonth);
@@ -117,7 +122,7 @@ namespace NewScripts
             var item = _inventory.FirstOrDefault(x => x.Product == product);
             item?.Add(count, price);
             Money -= count * price;
-            Academy.Instance.StatsRecorder.Add("New/Money-After-Buy", (float)Money);
+            Academy.Instance.StatsRecorder.Add("New/Money-After-Buy " + product, (float)Money);
         }
         
         public void RemoveJobContract(JobContract contract, WorkerFireReason reason)
@@ -153,15 +158,15 @@ namespace NewScripts
             UnemployedForMonth = HasJob ? 0 : UnemployedForMonth + 1;
 
             averageFoodPrice *= _inventory.FirstOrDefault(x => x.Product == ProductType.Food)!.MonthlyMinimumDemand;
-            decimal criticalBoundary = averageIncome > averageFoodPrice ? averageIncome : averageFoodPrice;
             double demand = ServiceLocator.Instance.LaborMarket.DemandForWorkforce;
             double demandModifier = (demand + 1001) / 1000;
+            decimal criticalBoundary = averageIncome * 0.75M > averageFoodPrice ? averageIncome + 0.75M : averageFoodPrice;
 
             decimal requiredWage;
             if (HasJob)
             {
                 decimal currentWage = _jobContract.IsForceReduced ? _jobContract.Wage / 2 : _jobContract.Wage;
-                if (currentWage >= criticalBoundary)
+                if (currentWage >= averageFoodPrice && currentWage >= averageIncome * 0.75M)
                 {
                     _periodData.ReservationWage = currentWage;
                     return;

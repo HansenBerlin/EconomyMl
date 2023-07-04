@@ -2,15 +2,17 @@
 {
     public class CompanyData
     {
-        public CompanyData(int companyId, int month, int year, int lifetime)
+        public CompanyData(int companyId, string companyName, int month, int year, int lifetime)
         {
             CompanyId = companyId;
+            CompanyName = companyName;
             Month = month;
             Year = year;
             Lifetime = lifetime;
         }
 
         public int CompanyId { get; }
+        public string CompanyName { get; }
         public int Lifetime { get; }
         public int Reputation { get; set; }
         public int Month { get; }

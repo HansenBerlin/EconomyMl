@@ -32,7 +32,7 @@ namespace NewScripts.Ui
             if (_isInitDone == false)
             {
                 var productMarket = productMarketGo.GetComponent<ProductMarket>();
-                productMarket.updateEvent.AddListener(DeconstructOffersAndBids);
+                //productMarket.updateEvent.AddListener(DeconstructOffersAndBids);
                 InitGameObjects();
                 var data = productMarket.PriceAnalysisStats;
                 if (data != null)

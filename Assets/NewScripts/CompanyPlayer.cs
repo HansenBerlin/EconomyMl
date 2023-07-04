@@ -28,8 +28,8 @@ namespace NewScripts
         public PlayerType PlayerType { get; } = PlayerType.Human;
         public CompanyDecisionStatus DecisionStatus { get; private set; }
         public decimal AverageWageRate => _jobContracts.Count == 0 ? 100 : _jobContracts.Average(x => x.Wage);
-        
-        public Decision LastDecision {get; private set;}
+
+        public Decision LastDecision { get; private set; } = new();
         public int Id => GetInstanceID();
         private readonly List<JobContract> _jobContracts = new();
         private bool _isTraining;
@@ -96,7 +96,7 @@ namespace NewScripts
             }
             LastDecision = decision;
             
-            var companyData = new CompanyData(Id, ServiceLocator.Instance.FlowController.Month, ServiceLocator.Instance.FlowController.Year, LifetimeMonths);
+            var companyData = new CompanyData(Id, Name, ServiceLocator.Instance.FlowController.Month, ServiceLocator.Instance.FlowController.Year, LifetimeMonths);
             var averageWage = _jobContracts.Count > 0 ? _jobContracts.Select(x => x.Wage).Average() : 100;
             var workerLedger = new WorkersLedger(_jobContracts.Count, LastDecision.Wage, averageWage);
             var productLedgerFood = new ProductLedger(LastDecision.PriceFood, ProductStockFood);

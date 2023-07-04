@@ -38,7 +38,7 @@ namespace NewScripts
         public List<CompanyData> Ledger { get; } = new();
         public int WorkerCount => _jobContracts.Count;
         public decimal AverageWageRate => _jobContracts.Count == 0 ? 100 : _jobContracts.Average(x => x.Wage);
-        public Decision LastDecision { get; private set; }
+        public Decision LastDecision { get; private set; } = new();
 
         
         private void Start()
@@ -64,6 +64,7 @@ namespace NewScripts
         {
             LifetimeMonths = 0;
             ProductStockFood /= 2;
+            ProductStockLuxury /= 2;
             Reputation = 0;
             SetBuilding();
         }
@@ -149,6 +150,10 @@ namespace NewScripts
             }
         }
 
+        private float _jobRampup;
+        private float _foodPriceRampup = 0.6F;
+        private float _luxPriceRampup = 6;
+        private float _wageRampup = 60;
         
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
@@ -157,42 +162,48 @@ namespace NewScripts
             {
                 throw new System.Exception("DecisionStatus != CompanyDecisionStatus.Requested");
             }
-            
+
+            _jobRampup = Math.Abs(_jobRampup - 1) > 0.01F ? _jobRampup + 0.1F : 1;
+            _wageRampup = _wageRampup > 0 ? _wageRampup - 5 : 0;
+            _foodPriceRampup = _foodPriceRampup > 0 ? _foodPriceRampup - 0.06F : 0;
+            _luxPriceRampup = _luxPriceRampup > 0 ? _luxPriceRampup - 0.6F : 0;
+
+            LastDecision = new Decision();
             int workerDecision = actionBuffers.DiscreteActions[0];
-            bool adaptWages = actionBuffers.DiscreteActions[1] == 1;
-            float newWage = MapValue(actionBuffers.ContinuousActions[0], 10, 250);
-            float foodPrice = MapValue(actionBuffers.ContinuousActions[1], 0.1F, 5F);
-            float luxuryPrice = MapValue(actionBuffers.ContinuousActions[2], 1F, 100F);
-            float ressourceDistribution = MapValue(actionBuffers.ContinuousActions[3], 0.1F, 1F);
+            float averageGlobalWage = (float)ServiceLocator.Instance.LaborMarket.AveragePayment();
+            averageGlobalWage = averageGlobalWage > 10 ? averageGlobalWage : 25;
+            LastDecision.AdjustWages = actionBuffers.DiscreteActions[1] == 1;
+            LastDecision.Wage = (decimal)MapValue(actionBuffers.ContinuousActions[0], 10 + _wageRampup, averageGlobalWage * 2 - _wageRampup);
+            LastDecision.PriceFood = (decimal)MapValue(actionBuffers.ContinuousActions[1], 0.1F + _foodPriceRampup, 5F - _foodPriceRampup * 5);
+            LastDecision.PriceLuxury = (decimal)MapValue(actionBuffers.ContinuousActions[2], 1F + _luxPriceRampup, 100F - _luxPriceRampup * 10);
+            LastDecision.RessourceDistribution = MapValue(actionBuffers.ContinuousActions[3], 0.1F, 1F);
             
-            var companyData = new CompanyData(Id, ServiceLocator.Instance.FlowController.Month, 
+            var companyData = new CompanyData(Id, Name, ServiceLocator.Instance.FlowController.Month, 
                 ServiceLocator.Instance.FlowController.Year, LifetimeMonths);
-            var averageWage = _jobContracts.Count > 0 ? _jobContracts.Select(x => x.Wage).Average() : 100;
-            var workerLedger = new WorkersLedger(_jobContracts.Count, (decimal)newWage, averageWage);
-            var foodProductLedger = new ProductLedger((decimal)foodPrice, ProductStockFood);
-            var luxuryProductLedger = new ProductLedger((decimal)luxuryPrice, ProductStockLuxury);
+            var averageLocalWage = _jobContracts.Count > 0 ? _jobContracts.Select(x => x.Wage).Average() : 100;
+            var workerLedger = new WorkersLedger(_jobContracts.Count, LastDecision.Wage, averageLocalWage);
+            var foodProductLedger = new ProductLedger(LastDecision.PriceFood, ProductStockFood);
+            var luxuryProductLedger = new ProductLedger(LastDecision.PriceLuxury, ProductStockLuxury);
             var booksLedger = new BookKeepingLedger(Liquidity);
             int fireWorkers = (int)MapValue(actionBuffers.ContinuousActions[4], 1, _jobContracts.Count);
-            int workerChange;
             
             if(workerDecision == 1)
             {
-                OpenPositions = (int)MapValue(actionBuffers.ContinuousActions[5], 1, 1000);
-                workerChange = OpenPositions;
+                OpenPositions = (int)MapValue(actionBuffers.ContinuousActions[5], 1, 1000 * _jobRampup);
+                LastDecision.WorkerChange = OpenPositions;
             }
             else if(workerDecision == 2 && _jobContracts.Count > 0)
             {
-                workerChange = fireWorkers * -1;
+                LastDecision.WorkerChange = fireWorkers * -1;
             }
             else
             {
-                workerChange = 0;
+                LastDecision.WorkerChange = 0;
             }
 
-            LastDecision = new Decision((decimal) foodPrice, (decimal) luxuryPrice, ressourceDistribution, workerChange, (decimal) newWage, adaptWages);
             var decisionLedger = new DecisionLedger(LastDecision);
 
-            if (adaptWages)
+            if (LastDecision.AdjustWages)
             {
                 foreach (var contract in _jobContracts)
                 {
@@ -208,9 +219,9 @@ namespace NewScripts
                 workerLedger.OpenPositions = OpenPositions;
                 for (int i = 0; i < OpenPositions; i++)
                 {
-                    var jobBid = new JobBid(this, (decimal)newWage);
+                    var jobBid = new JobBid(this, LastDecision.Wage);
                     ServiceLocator.Instance.LaborMarket.AddJobBid(jobBid);
-                    Academy.Instance.StatsRecorder.Add("Market/Job-Bid-Price", newWage);
+                    Academy.Instance.StatsRecorder.Add("Market/Job-Bid-Price", (float)LastDecision.Wage);
                 }
             }
 

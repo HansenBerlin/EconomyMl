@@ -12,9 +12,8 @@ namespace NewScripts.Ui.Company
 {
     public class CompanyTimelineStatPanelController : MonoBehaviour
     {
-        public GameObject buttonPrefab;
+        public TMP_Dropdown dropdownGo;
         [FormerlySerializedAs("timelinePrefab")] public GameObject timelineGo;
-        public GameObject buttonParent;
         public TextMeshProUGUI breadcrumb;
         private TimelineGraphDrawer _timelineGraphDrawer;
         private CompanyTimelineSelection _currentSelection = CompanyTimelineSelection.AverageLiquidity;
@@ -27,8 +26,20 @@ namespace NewScripts.Ui.Company
 
             foreach (var option in options)
             {
-                CreateInstance(option.ToString(), option);
+                var optionData = new TMP_Dropdown.OptionData(option.ToString());
+                dropdownGo.options.Add(optionData);
             }
+            
+            dropdownGo.onValueChanged.AddListener(x =>
+            {
+                if (ServiceLocator.Instance.HouseholdAggregator.CompaniesAggregates.Count > 1)
+                {
+                    CompanyTimelineSelection type = (CompanyTimelineSelection) x;
+                    var values = _propertyConverter.GetCorrspondingValues(type,
+                        ServiceLocator.Instance.HouseholdAggregator.CompaniesAggregates);
+                    UpdatePanels(type, values);
+                } 
+            });
 
             if (ServiceLocator.Instance.HouseholdAggregator.CompaniesAggregates.Count > 1)
             {
@@ -44,19 +55,11 @@ namespace NewScripts.Ui.Company
             });
         }
 
-        private void CreateInstance(string label, CompanyTimelineSelection type)
+        private void CreateInstance(string label, CompanyTimelineSelection type, bool setactive = false)
         {
-            var button = Instantiate(buttonPrefab, buttonParent.transform);
-            button.GetComponentInChildren<TextMeshProUGUI>().text = type.ToString().Substring(0, 1);
-            button.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                if (ServiceLocator.Instance.HouseholdAggregator.CompaniesAggregates.Count > 1)
-                {
-                    var values = _propertyConverter.GetCorrspondingValues(type,
-                        ServiceLocator.Instance.HouseholdAggregator.CompaniesAggregates);
-                    UpdatePanels(type, values);
-                }
-            });
+            //var button = Instantiate(buttonPrefab, buttonParent.transform);
+            var optionData = new TMP_Dropdown.OptionData(type.ToString());
+            dropdownGo.options.Add(optionData);
         }
 
         

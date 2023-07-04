@@ -34,10 +34,10 @@ namespace NewScripts
                 return;
             }
             Instance = this;
-            
-            FoodProductMarket = GetComponentInChildren<ProductMarket>();
-            LuxuryProductMarket = GetComponentInChildren<ProductMarket>();
+            FoodProductMarket = new ProductMarket(ProductType.Food, 1);
+            LuxuryProductMarket = new ProductMarket(ProductType.Luxury, 10);
             LaborMarket = GetComponentInChildren<LaborMarket>();
+            
             HouseholdAggregator = GetComponentInChildren<HouseholdAggregatorService>();
             UiUpdateManager = GetComponentInChildren<UiUpdateManager>();
             GetComponentInChildren<FooterMenuController>().RegisterEvents();

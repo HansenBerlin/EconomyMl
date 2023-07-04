@@ -2423,6 +2423,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CompanyAgent
       objectReference: {fileID: 0}
+    - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 5022602860645237092, guid: 838e7396fdd0ac14aa724532da089365, type: 3}
     - target: {fileID: 6541046929888668071, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
       propertyPath: emergencySign
       value: 

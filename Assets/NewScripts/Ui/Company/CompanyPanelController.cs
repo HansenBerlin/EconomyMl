@@ -3,6 +3,7 @@ using System.Linq;
 using NewScripts.Enums;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace NewScripts.Ui.Company
@@ -10,13 +11,15 @@ namespace NewScripts.Ui.Company
     public class CompanyPanelController : MonoBehaviour
     {
         public GameObject dashboardButtonGo;
-        public GameObject productButtonGo;
+        [FormerlySerializedAs("productButtonGo")] public GameObject productFoodButtonGo;
         public GameObject workersButtonGo;
         public GameObject booksButtonGo;
         public GameObject decisionButtonGo;
+        public GameObject productLuxuryButtonGo;
         
         public GameObject dashboardPanelGo;
-        public GameObject productPanelGo;
+        [FormerlySerializedAs("productPanelGo")] public GameObject productPanelFoodGo;
+        public GameObject productPanelLuxuryGo;
         public GameObject workersPanelGo;
         public GameObject booksPanelGo;
         public GameObject decisionPanelGo;
@@ -46,9 +49,14 @@ namespace NewScripts.Ui.Company
                 _currentSelection = CompanyPanelSelection.Dashboard; 
                 UpdatePanelData(); 
             });
-            productButtonGo.GetComponent<Button>().onClick.AddListener(() =>
+            productFoodButtonGo.GetComponent<Button>().onClick.AddListener(() =>
             {
-                _currentSelection = CompanyPanelSelection.Product;
+                _currentSelection = CompanyPanelSelection.ProductFood;
+                UpdatePanelData();
+            });
+            productLuxuryButtonGo.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                _currentSelection = CompanyPanelSelection.ProductLux;
                 UpdatePanelData();
             });
             workersButtonGo.GetComponent<Button>().onClick.AddListener(() =>
@@ -87,7 +95,7 @@ namespace NewScripts.Ui.Company
 
         private void UpdatePanelData()
         {
-            GameObject[] panels = { dashboardPanelGo, productPanelGo, workersPanelGo, booksPanelGo, decisionPanelGo };
+            GameObject[] panels = { dashboardPanelGo, productPanelFoodGo, productPanelLuxuryGo, workersPanelGo, booksPanelGo, decisionPanelGo };
             for (var i = 0; i < panels.Length; i++)
             {
                 panels[i].SetActive(i == (int) _currentSelection);
@@ -102,8 +110,11 @@ namespace NewScripts.Ui.Company
                 case CompanyPanelSelection.Dashboard:
                     dashboardPanelGo.GetComponent<DashboardPanel>().UpdateUi(_activeCompanyData);
                     break;
-                case CompanyPanelSelection.Product:
-                    productPanelGo.GetComponent<ProductPanel>().UpdateUi(activeCompanyData);
+                case CompanyPanelSelection.ProductFood:
+                    productPanelFoodGo.GetComponent<ProductPanel>().UpdateUi(activeCompanyData, ProductType.Food);
+                    break;
+                case CompanyPanelSelection.ProductLux:
+                    productPanelLuxuryGo.GetComponent<ProductPanel>().UpdateUi(activeCompanyData, ProductType.Luxury);
                     break;
                 case CompanyPanelSelection.Workers:
                     workersPanelGo.GetComponent<WorkersPanel>().UpdateUi(activeCompanyData);
@@ -124,7 +135,8 @@ namespace NewScripts.Ui.Company
             string text = _currentSelection switch
             {
                 CompanyPanelSelection.Dashboard => "Dashboard",
-                CompanyPanelSelection.Product => "Production",
+                CompanyPanelSelection.ProductFood => "Production Food",
+                CompanyPanelSelection.ProductLux => "Production Luxury",
                 CompanyPanelSelection.Workers => "Workforce",
                 CompanyPanelSelection.Decision => "Decisions",
                 _ => "Bookkeeping"

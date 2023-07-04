@@ -10,7 +10,7 @@ namespace NewScripts.Ui.Company
         public GameObject parentGo;
         public GameObject rowPrefab;
         
-        public void UpdateUi(List<CompanyData> activeCompanyData)
+        public void UpdateUi(List<CompanyData> activeCompanyData, ProductType productType)
         {
             foreach (Transform child in parentGo.transform.GetComponentsInChildren<Transform>())
             {
@@ -28,7 +28,7 @@ namespace NewScripts.Ui.Company
                     GameObject instance = Instantiate(rowPrefab, parentGo.transform);
                     ProductRow row = instance.GetComponent<ProductRow>();
                     
-                    ProductLedger productInfo = dataset.Food;
+                    ProductLedger productInfo = productType == ProductType.Food ? dataset.Food : dataset.Luxury;
                     row.periodText.text = $"{dataset.Month}/{dataset.Year}";
                     row.priceText.text = $"{productInfo.PriceSet:0.##}";
                     row.stockText.text = $"{productInfo.StockStart:0}";

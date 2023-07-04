@@ -27,11 +27,11 @@ namespace NewScripts
             
         }
 
-        public void InitWorkers(int count)
+        public void InitWorkers(int count, PriceBidCalculator priceBidCalculator)
         {
             for (int i = 0; i < count; i++)
             {
-                Workers.Add(new Worker());
+                Workers.Add(new Worker(priceBidCalculator));
             }
         }
 
