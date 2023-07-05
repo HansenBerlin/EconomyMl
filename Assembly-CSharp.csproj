@@ -141,6 +141,7 @@
      <Compile Include="Assets\NewScripts\Game\Controls\RotationController.cs" />
      <Compile Include="Assets\Scripts\Controller\Agents\BusinessRespawnController.cs" />
      <Compile Include="Assets\NewScripts\Enums\WorkersTimelineSelection.cs" />
+     <Compile Include="Assets\NewScripts\Ui\Controller\EquilibriumTimelineStatPanelController.cs" />
      <Compile Include="Assets\Scripts\Interfaces\IPersonAction.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\LevelCrossingController.cs" />
      <Compile Include="Assets\NewScripts\Interfaces\ICompany.cs" />

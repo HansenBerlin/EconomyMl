@@ -4,6 +4,7 @@ using System.Linq;
 using NewScripts.Common;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace NewScripts.Ui.Controller
@@ -21,6 +22,8 @@ namespace NewScripts.Ui.Controller
         public Color color = Colors.Amber;
         public float graphHeight;
         public float stepWidth = 50;
+        [FormerlySerializedAs("drawTicks")] public bool drawRightTicks = true;
+        public bool drawLeftTicks = true;
         
         private float _lastX;
         private float _lastY;
@@ -30,22 +33,26 @@ namespace NewScripts.Ui.Controller
         private readonly List<float> _values = new();
         private float _alltimeMax = 1;
         
-        public void DrawGraph<T>(List<T> values = null)
+        public void DrawGraph<T>(List<T> values = null, float maxOverwrite = -1)
         {
             if (values != null)
             {
                 var floats = (from object obj in values select Convert.ToSingle(obj)).ToList();
                 _values.AddRange(floats);
             }
-            _lastX = 0;
-            _lastY = 0;
-            _alltimeMax = _values.Max() < 1 ? 1 : _values.Max();
+            _alltimeMax = maxOverwrite > 0 ? maxOverwrite : _values.Max() < 1 ? 1 : _values.Max();
             _valueModifier = graphHeight / _alltimeMax * 0.9F;
+            _lastX = _values[0];
+            _lastY = _values[0] * _valueModifier;
             
             AddTicks(_alltimeMax);
 
-            foreach (var val in _values)
+            foreach (var val in _values.GetRange(1, _values.Count - 1))
             {
+                if (val < 0)
+                {
+                    //continue;
+                }
                 DefineLineValues(val);
             }
             SetScrollview();
@@ -88,36 +95,51 @@ namespace NewScripts.Ui.Controller
             float ay = _lastY;
             float by = value * _valueModifier;
             _lastX = bx;
-            _lastY = by;
+            _lastY = by < 0 ? _lastY : by;
             DrawLine(ax, ay, bx, by, color);
         }
 
         private void AddTicks(float max)
         {
             float range = graphHeight / 11;
+            
             for (int i = 1; i < 11; i++)
             {
-                var tickLeft = Instantiate(textPrefabLeft, textParent.transform);
-                var tickRight = Instantiate(textPrefabRight, textParent.transform);
+
                 string text = max > 10 ? $"{max / 10 * i:0}" : $"{max / 10 * i:0.##}";
-                tickLeft.text = text;
-                tickRight.text = text;
-                tickLeft.GetComponent<RectTransform>().anchoredPosition = new Vector2(20, i * range);
-                tickRight.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50 - stepWidth, i * range);
-                _ticks.Add(tickLeft.gameObject);
-                _ticks.Add(tickRight.gameObject);
+                if (drawRightTicks)
+                {
+                    var tickRight = Instantiate(textPrefabRight, textParent.transform);
+                    tickRight.text = text;
+                    tickRight.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50 - stepWidth, i * range);
+                    _ticks.Add(tickRight.gameObject);
+                }
+
+                if (drawLeftTicks)
+                {
+                    var tickLeft = Instantiate(textPrefabLeft, textParent.transform);
+                    tickLeft.text = text;
+                    tickLeft.GetComponent<RectTransform>().anchoredPosition = new Vector2(20, i * range);
+                    _ticks.Add(tickLeft.gameObject);
+                }
             }
         }
 
         private void DrawLine(float ax, float ay, float bx, float by, Color col)
         {
             lineParent.GetComponent<RectTransform>().sizeDelta = new Vector2(bx, graphHeight);
+            float byadapted = by;
+            if (by < 0)
+            {
+                col = Color.clear;
+                byadapted = _lastY;
+            }
             GameObject line = Instantiate(imagePrefab, lineParent.transform);
             line.GetComponent<RawImage>().color = col;
             RectTransform rect = line.GetComponent<RectTransform>();
  
             Vector3 a = new Vector3(ax*graphScale.x, ay*graphScale.y, 0);
-            Vector3 b = new Vector3(bx*graphScale.x, by*graphScale.y, 0);
+            Vector3 b = new Vector3(bx*graphScale.x, byadapted*graphScale.y, 0);
             Vector3 dif = a - b;
             rect.localPosition = (a + b) / 2;
             rect.sizeDelta = new Vector2(dif.magnitude, lineWidth);
@@ -128,8 +150,11 @@ namespace NewScripts.Ui.Controller
 
         private void SetScrollview()
         {
-            var sv = scrollView.GetComponent<ScrollRect>();
-            sv.normalizedPosition = new Vector2(1, 0);
+            if (scrollView != null)
+            {
+                var sv = scrollView.GetComponent<ScrollRect>();
+                sv.normalizedPosition = new Vector2(1, 0);
+            }
         }
     }
 }
