@@ -5,6 +5,7 @@ using NewScripts.Common;
 using NewScripts.DataModelling;
 using NewScripts.Enums;
 using NewScripts.Game.Entities;
+using NewScripts.Game.Flow;
 using NewScripts.Game.Models;
 using NewScripts.Game.Services;
 using NewScripts.Interfaces;
@@ -20,82 +21,39 @@ namespace NewScripts.Ui.Controller
         public int maxNumOfBuckets = 5;
         public bool showBoth = true;
         public GameObject barPrefab;
-        public GameObject parent;
-        public GameObject foodbutton;
-        public GameObject luxurybutton;
-        public GameObject workerButton;
+        //public GameObject parent;
         public TextMeshProUGUI textCurrentTotalCount;
         public int heightModifier = 290;
 
         private readonly List<GameObject> _bars = new();
         private List<BucketStatistics> _buckets = new();
         private readonly Stack<List<ProductDistributionInfo>> _valueHistory = new();
-        private int _bidders;
+        private int _bidCount;
+        private int _offerCount;
         private List<ProductOffer> _offers = new();
         private List<ProductBid> _bids = new();
         private List<Deal> _successfulDeals = new();
         private bool _isInitDone;
-        private MarketPanelSelection _currentSelection;
+        private ProductType _type;
         private readonly BucketCreatorService _bucketCreatorService = new();
         
-
-        private void Awake()
+        public void DeconstructOffersAndBids(PriceAnalysisStatsModel data)
         {
-            if (_isInitDone == false)
+            if (data == null || (data.Bids.Count == 0 && data.Offers.Count == 0))
             {
-                ServiceLocator.Instance.UiUpdateManager.updatedEvent.AddListener(DeconstructOffersAndBids);
-                InitGameObjects();
-                var data = ServiceLocator.Instance.FoodProductMarket.PriceAnalysisStats;
-                if (data != null)
-                {
-                    DeconstructOffersAndBids(data);
-                }
-                _isInitDone = true;
+                textCurrentTotalCount.text = "No data";
             }
-            else if (_valueHistory.Count > 0)
-            {
-                ShowStats();
-            }
-            else if(_bids.Count > 0)
-            {
-                PrepareData();
-                ShowStats();
-            }
-        }
-
-        private bool IsMatchingSelection(ProductType type)
-        {
-            switch (type)
-            {
-                case ProductType.Food when
-                    _currentSelection == MarketPanelSelection.FoodMarket:
-                case ProductType.Luxury when
-                    _currentSelection == MarketPanelSelection.LuxuryMarket:
-                default:
-                    return false;
-            }
-        }
-        
-        
-
-        private void DeconstructOffersAndBids(PriceAnalysisStatsModel data)
-        {
-            if (IsMatchingSelection(data.Type))
-            {
-                _successfulDeals = data.Deals.OrderBy(x => x.Price).ToList();
-                _bids = data.Bids;
-                _offers = data.Offers;
-                if (enabled)
-                {
-                    PrepareData();
-                    ShowStats();
-                }
-            }
+            _successfulDeals = data.Deals.OrderBy(x => x.Price).ToList();
+            _bids = data.Bids;
+            _offers = data.Offers;
+            PrepareData();
+            ShowStats();
         }
 
         private void PrepareData()
         {
-            _bidders = _bids.Count;
+            _bidCount = _bids.Sum(x => x.Amount);
+            _offerCount = _offers.Sum(x => x.Amount);
             List<ProductDistributionInfo> initialValues = new();
             foreach (var bid in _bids)
             {
@@ -119,16 +77,17 @@ namespace NewScripts.Ui.Controller
             _valueHistory.Push(initialValues);
 
             _buckets = _bucketCreatorService.GetBucketStatistics(initialValues, maxNumOfBuckets);
-            textCurrentTotalCount.text = TotalCountText(initialValues.Count, _buckets);
+            textCurrentTotalCount.text = UpdateBreadcrumbText();
         }
 
 
-        private void InitGameObjects()
+        public void InitGameObjects(ProductType type)
         {
+            _type = type;
             int count = showBoth ? maxNumOfBuckets * 2 : maxNumOfBuckets;
             for (int i = 0; i < count; i++)
             {
-                GameObject instance = Instantiate(barPrefab, parent.transform, true);
+                GameObject instance = Instantiate(barPrefab, transform, true);
                 instance
                     .GetComponent<StatBar>().button
                     .GetComponent<Button>().onClick
@@ -243,30 +202,30 @@ namespace NewScripts.Ui.Controller
                     .ToList();
                 _valueHistory.Push(values);
                 _buckets = _bucketCreatorService.GetBucketStatistics(values, maxNumOfBuckets);
-                textCurrentTotalCount.text = TotalCountText(values.Count, _buckets);
+                textCurrentTotalCount.text = UpdateBreadcrumbText();
                 ShowStats();
             }
         }
 
-        private string TotalCountText(int count, List<BucketStatistics> buckets)
+        public string UpdateBreadcrumbText()
         {
-            var filteredBuckets = buckets.Where(x => x.Count > 0).ToList();
-            string min = filteredBuckets[0].Min >= 100
-                ? $"{filteredBuckets[0].Min:0}"
-                : $"{filteredBuckets[0].Min:0.##}";
-            string max;
-            if (filteredBuckets.Count > 1)
-            {
-                max = filteredBuckets[^1].Max >= 100
-                    ? $"{filteredBuckets[^1].Max:0}"
-                    : $"{filteredBuckets[^1].Max:0.##}";
-            }
-            else
-            {
-                max = min;
-            }
+            //var filteredBuckets = buckets.Where(x => x.Count > 0).ToList();
+            //string min = filteredBuckets[0].Min >= 100
+            //    ? $"{filteredBuckets[0].Min:0}"
+            //    : $"{filteredBuckets[0].Min:0.##}";
+            //string max;
+            //if (filteredBuckets.Count > 1)
+            //{
+            //    max = filteredBuckets[^1].Max >= 100
+            //        ? $"{filteredBuckets[^1].Max:0}"
+            //        : $"{filteredBuckets[^1].Max:0.##}";
+            //}
+            //else
+            //{
+            //    max = min;
+            //}
 
-            return $"n:{count}/{_bidders} ({min} - {max})";
+            return $"Bids: {_bidCount} | Offers: {_offerCount} ({_type})";
         }
 
         private int DistinctValuesInRange(BucketStatistics bucket)
@@ -289,7 +248,7 @@ namespace NewScripts.Ui.Controller
             return distinctValues;
         }
 
-        public void OnResetClick()
+        public void BackButtonClicked()
         {
             if (_valueHistory.Count == 1)
             {
@@ -299,7 +258,7 @@ namespace NewScripts.Ui.Controller
             _valueHistory.Pop();
             var values = _valueHistory.Peek();
             _buckets = _bucketCreatorService.GetBucketStatistics(values, maxNumOfBuckets);
-            textCurrentTotalCount.text = TotalCountText(values.Count, _buckets);
+            textCurrentTotalCount.text = UpdateBreadcrumbText();
             ShowStats();
         }
     }

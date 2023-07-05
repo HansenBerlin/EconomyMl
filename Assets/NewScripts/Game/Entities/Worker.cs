@@ -62,10 +62,6 @@ namespace NewScripts.Game.Entities
 
         public void AddProductBids(decimal averagePrice, ProductType productType, ProductMarket market)
         {
-            if (productType == ProductType.Luxury)
-            {
-                Debug.Log("Lux Bidding");
-            }
             var inventoryItem = _inventory.FirstOrDefault(x => x.Product == productType)??
                                 throw new Exception("No inventory item for " + productType);
             
@@ -80,6 +76,12 @@ namespace NewScripts.Game.Entities
             }
             if (inventoryItem.ConsumeInMonth > 0 && bidPrice > 0)
             {
+                if (productType == ProductType.Luxury)
+                {
+                    var food = _inventory.FirstOrDefault(x => x.Product == ProductType.Food);
+                    var fullfillRatioBaseDemand = (food!.FullfilledInMonth + 1) / ((float)food.ConsumeInMonth + 1);
+                    inventoryItem.ConsumeInMonth = (int)Math.Floor(fullfillRatioBaseDemand * inventoryItem.ConsumeInMonth);
+                }
                 if (Money - bidPrice * inventoryItem.ConsumeInMonth < 0)
                 {
                     throw new Exception("Not enough money");

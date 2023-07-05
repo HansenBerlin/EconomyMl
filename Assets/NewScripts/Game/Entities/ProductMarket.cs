@@ -96,7 +96,14 @@ namespace NewScripts.Game.Entities
             if (isTraining == false)
             {
                 PriceAnalysisStats.Deals = successfulDeals;
-                ServiceLocator.Instance.UiUpdateManager.updatedEvent.Invoke(PriceAnalysisStats);
+                if (_productType == ProductType.Food)
+                {
+                    ServiceLocator.Instance.UiUpdateManager.foodPricesupdateEvent.Invoke(PriceAnalysisStats);
+                }
+                else
+                {
+                    ServiceLocator.Instance.UiUpdateManager.luxuryPricesupdateEvent.Invoke(PriceAnalysisStats);
+                }
             }
 
             ProductOffers.Clear();

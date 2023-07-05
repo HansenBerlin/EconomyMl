@@ -20,12 +20,14 @@ namespace NewScripts.Ui.Controller
                 householdsPanelGo.SetActive(true);
                 companiesPanelGo.SetActive(false);
                 headerText.text = "Timeseries Households";
+                householdsPanelGo.GetComponent<HouseholdTimelineStatPanelController>().Activate();
             });
             companiesButtonGo.onClick.AddListener(() =>
             {
                 householdsPanelGo.SetActive(false);
                 companiesPanelGo.SetActive(true);
                 headerText.text = "Timeseries Companies";
+                companiesPanelGo.GetComponent<CompanyTimelineStatPanelController>().Activate();
             });
         }
     }

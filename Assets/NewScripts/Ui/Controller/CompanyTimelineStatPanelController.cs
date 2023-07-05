@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NewScripts.Common;
 using NewScripts.DataModelling;
 using NewScripts.Enums;
 using NewScripts.Game.Services;
@@ -18,9 +19,15 @@ namespace NewScripts.Ui.Controller
         private CompanyTimelineSelection _currentSelection = CompanyTimelineSelection.AverageLiquidity;
         private readonly PropertyConverter<CompanyTimelineSelection, CompaniesAggregate> _propertyConverter = new(); 
 
+        public void Activate()
+        {
+            breadcrumb.text = _currentSelection.ToString();
+        }
+        
         private void Awake()
         {
             _timelineDataPanelController = timelineGo.GetComponent<TimelineDataPanelController>();
+            _timelineDataPanelController.color = Colors.Cyan;
             var options = (CompanyTimelineSelection[])Enum.GetValues(typeof(CompanyTimelineSelection));
 
             foreach (var option in options)

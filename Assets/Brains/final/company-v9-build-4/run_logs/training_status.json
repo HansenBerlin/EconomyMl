@@ -1,0 +1,65 @@
+{
+    "Company": {
+        "checkpoints": [
+            {
+                "steps": 969920,
+                "file_path": "results\\company-v9-build-4\\Company\\Company-969920.onnx",
+                "reward": 56.19125230052126,
+                "creation_time": 1688488530.6977699,
+                "auxillary_file_paths": [
+                    "results\\company-v9-build-4\\Company\\Company-969920.pt"
+                ]
+            },
+            {
+                "steps": 979972,
+                "file_path": "results\\company-v9-build-4\\Company\\Company-979972.onnx",
+                "reward": 58.79295017408288,
+                "creation_time": 1688488683.8310523,
+                "auxillary_file_paths": [
+                    "results\\company-v9-build-4\\Company\\Company-979972.pt"
+                ]
+            },
+            {
+                "steps": 989996,
+                "file_path": "results\\company-v9-build-4\\Company\\Company-989996.onnx",
+                "reward": 28.15318954726796,
+                "creation_time": 1688488834.1067238,
+                "auxillary_file_paths": [
+                    "results\\company-v9-build-4\\Company\\Company-989996.pt"
+                ]
+            },
+            {
+                "steps": 999945,
+                "file_path": "results\\company-v9-build-4\\Company\\Company-999945.onnx",
+                "reward": 63.15288347704984,
+                "creation_time": 1688488978.5073242,
+                "auxillary_file_paths": [
+                    "results\\company-v9-build-4\\Company\\Company-999945.pt"
+                ]
+            },
+            {
+                "steps": 1000015,
+                "file_path": "results\\company-v9-build-4\\Company\\Company-1000015.onnx",
+                "reward": 63.574979143010246,
+                "creation_time": 1688488978.6336036,
+                "auxillary_file_paths": [
+                    "results\\company-v9-build-4\\Company\\Company-1000015.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1000015,
+            "file_path": "results\\company-v9-build-4\\Company.onnx",
+            "reward": 63.574979143010246,
+            "creation_time": 1688488978.6336036,
+            "auxillary_file_paths": [
+                "results\\company-v9-build-4\\Company\\Company-1000015.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.0.1+cpu"
+    }
+}

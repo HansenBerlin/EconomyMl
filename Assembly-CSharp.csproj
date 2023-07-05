@@ -112,6 +112,7 @@
      <Compile Include="Assets\NewScripts\Game\World\GridBuilder.cs" />
      <Compile Include="Assets\Scripts\Policies\PoliciesWrapper.cs" />
      <Compile Include="Assets\NewScripts\Game\Entities\ProductMarket.cs" />
+     <Compile Include="Assets\NewScripts\Ui\Controller\SupplyDemandContainerController.cs" />
      <Compile Include="Assets\Scripts\Repositories\PopulationDataRepository.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\HelicopterController.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\ShipBehavior.cs" />
@@ -215,7 +216,6 @@
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventCheck.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\Interfaces\IPathFinder.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_UiFrameRateCounter.cs" />
-     <Compile Include="Assets\NewScripts\Enums\MarketPanelSelection.cs" />
      <Compile Include="Assets\NewScripts\Enums\WorkerFireReason.cs" />
      <Compile Include="Assets\Scripts\Enums\CompanyActionPhase.cs" />
      <Compile Include="Assets\NewScripts\Game\Flow\Events.cs" />

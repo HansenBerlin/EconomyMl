@@ -9,6 +9,10 @@ namespace NewScripts.Ui.Controller
     {
         public List<BucketStatistics> GetBucketStatistics(List<ProductDistributionInfo> data, int numBuckets)
         {
+            if(data.Count == 0)
+            {
+                return new List<BucketStatistics>();
+            }
             List<decimal> values = data.Select(x => x.Value).ToList();
 
             int distinctValues = values

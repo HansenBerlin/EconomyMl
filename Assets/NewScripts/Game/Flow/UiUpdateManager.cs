@@ -9,7 +9,9 @@ namespace NewScripts.Game.Flow
         public CompanySelectedEvent companySelectedEvent = new();
         public CompanySelectedEvent playerDecisionValuesUpdateEvent = new();
         public PeriodIncrementEvent newPeriodStartedEvent = new();
-        [FormerlySerializedAs("productsUpdatedEvent")] public MarketUpdateEvent updatedEvent = new();
+        [FormerlySerializedAs("updatedEvent")] [FormerlySerializedAs("productsUpdatedEvent")] public MarketUpdateEvent foodPricesupdateEvent = new();
+        public MarketUpdateEvent luxuryPricesupdateEvent = new();
+        public MarketUpdateEvent laborPricesupdateEvent = new();
 
         public int SelectedCompanyId { get; private set; }
         

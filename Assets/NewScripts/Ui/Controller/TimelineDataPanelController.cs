@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NewScripts.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,7 +18,7 @@ namespace NewScripts.Ui.Controller
         public TextMeshProUGUI textPrefabRight;
         public GameObject lineParent;
         public GameObject textParent;
-        public Color color = new(0.271F, 0.153F, 0.627F);
+        public Color color = Colors.Amber;
         public float graphHeight;
         public float stepWidth = 50;
         
@@ -28,7 +29,7 @@ namespace NewScripts.Ui.Controller
         private readonly List<GameObject> _ticks = new();
         private readonly List<float> _values = new();
         private float _alltimeMax = 1;
-
+        
         public void DrawGraph<T>(List<T> values = null)
         {
             if (values != null)
@@ -88,7 +89,7 @@ namespace NewScripts.Ui.Controller
             float by = value * _valueModifier;
             _lastX = bx;
             _lastY = by;
-            MakeLine(ax, ay, bx, by, color);
+            DrawLine(ax, ay, bx, by, color);
         }
 
         private void AddTicks(float max)
@@ -108,7 +109,7 @@ namespace NewScripts.Ui.Controller
             }
         }
 
-        private void MakeLine(float ax, float ay, float bx, float by, Color col)
+        private void DrawLine(float ax, float ay, float bx, float by, Color col)
         {
             lineParent.GetComponent<RectTransform>().sizeDelta = new Vector2(bx, graphHeight);
             GameObject line = Instantiate(imagePrefab, lineParent.transform);

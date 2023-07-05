@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NewScripts.Common;
 using NewScripts.DataModelling;
 using NewScripts.Enums;
 using NewScripts.Game.Services;
@@ -16,12 +17,18 @@ namespace NewScripts.Ui.Controller
         public TextMeshProUGUI breadcrumb;
         private TimelineDataPanelController _timelineDataPanelController;
         private WorkersTimelineSelection _currentSelection = WorkersTimelineSelection.AveragePurchasingPower;
-        private readonly PropertyConverter<WorkersTimelineSelection, HouseholdsAggregate> _propertyConverter = new(); 
+        private readonly PropertyConverter<WorkersTimelineSelection, HouseholdsAggregate> _propertyConverter = new();
 
+        public void Activate()
+        {
+            breadcrumb.text = _currentSelection.ToString();
+        }
 
         private void Awake()
         {
             _timelineDataPanelController = timelineGo.GetComponent<TimelineDataPanelController>();
+            _timelineDataPanelController.color = Colors.Amber;
+
             var options = (WorkersTimelineSelection[])Enum.GetValues(typeof(WorkersTimelineSelection));
 
             foreach (var option in options)
