@@ -1,0 +1,14 @@
+private void DrawLine(float ax, float ay, float bx, float by, Color col)
+{
+    lineParent.GetComponent<RectTransform>().sizeDelta = new Vector2(_lastX + stepWidth, graphHeight);
+    GameObject line = Instantiate(imagePrefab, lineParent.transform);
+    line.GetComponent<RawImage>().color = col;
+    RectTransform rect = line.GetComponent<RectTransform>(); 
+    Vector3 a = new Vector3(ax*graphScale.x, ay*graphScale.y, 0);
+    Vector3 b = new Vector3(bx*graphScale.x, by*graphScale.y, 0);
+    Vector3 dif = a - b;
+    rect.localPosition = (a + b) / 2;
+    rect.sizeDelta = new Vector2(dif.magnitude, lineWidth);
+    rect.rotation = Quaternion.Euler(new Vector3(0, 0, 180 * Mathf.Atan(dif.y / dif.x) / Mathf.PI));                
+    _lines.Add(line);
+}

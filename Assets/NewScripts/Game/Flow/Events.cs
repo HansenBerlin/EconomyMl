@@ -9,7 +9,7 @@ namespace NewScripts.Game.Flow
     public class CompanySelectedEvent : UnityEvent<ICompany> { }
     
     [System.Serializable]
-    public class ProductMarketUpdateEvent : UnityEvent<PriceAnalysisStatsModel> { }
+    public class MarketUpdateEvent : UnityEvent<PriceAnalysisStatsModel> { }
     
     [System.Serializable]
     public class CompanyPanelSelectionEvent : UnityEvent<CompanyPanelSelection> { }

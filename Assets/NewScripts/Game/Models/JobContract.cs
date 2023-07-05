@@ -42,8 +42,6 @@ namespace NewScripts.Game.Models
 
         public void QuitContract(WorkerFireReason reason)
         {
-            Academy.Instance.StatsRecorder.Add("Contract/WorkQuit", ++ServiceLocator.Instance.LaborMarket.CountRemoved);
-
             Employer.RemoveContract(this, reason);
             Worker.RemoveJobContract(this, reason);
             ShortWorkForMonths = 0;

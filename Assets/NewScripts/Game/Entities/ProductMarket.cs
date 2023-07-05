@@ -3,20 +3,20 @@ using System.Linq;
 using NewScripts.DataModelling;
 using NewScripts.Enums;
 using NewScripts.Game.Models;
+using NewScripts.Game.Services;
+using NewScripts.Interfaces;
 using Unity.MLAgents;
 
 namespace NewScripts.Game.Entities
 {
     public class ProductMarket
     {
-        //public ProductMarketUpdateEvent updateEvent;
         public int DemandForProduct { get; private set; }
         public PriceAnalysisStatsModel PriceAnalysisStats { get; private set; }
-        private readonly List<decimal> _salesHistory = new();
+        private readonly ProductType _productType;
         private List<ProductOffer> ProductOffers { get; } = new();
+        private readonly List<decimal> _salesHistory = new();
         private List<ProductBid> ProductBids { get; } = new();
-        private int CountAdded { get; set; }
-        private ProductType _productType;
         private readonly decimal _averageStartingPrice;
 
         public ProductMarket(ProductType productType, decimal startingAverage)
@@ -47,14 +47,10 @@ namespace NewScripts.Game.Entities
         
         public void ResolveMarket(bool isTraining)
         {
-            //updateEvent.Invoke(ProductOffers, ProductBids);
-            CountAdded = 0;
             var offers = ProductOffers.OrderBy(x => x.Price).ToList();
             var bids = ProductBids.OrderByDescending(x => x.Price).ToList();
-            //List<ProductOffer> fullfilledOffers = new();
             List<Deal> successfulDeals = new();
-            PriceAnalysisStats = new PriceAnalysisStatsModel(ProductOffers, ProductBids); 
-            
+            PriceAnalysisStats = new PriceAnalysisStatsModel(ProductOffers, ProductBids, _productType);
 
             while (offers.Count > 0 && bids.Count > 0)
             {
@@ -64,8 +60,6 @@ namespace NewScripts.Game.Entities
                 {
                     if (offer.Amount < bid.Amount)
                     {
-                        Academy.Instance.StatsRecorder.Add("Market/P-Add", CountAdded+=offer.Amount);
-
                         bid.Amount -= offer.Amount;
                         successfulDeals.Add(new Deal(offer.Price, offer.Amount));
                         bid.Buyer.FullfillBid(offer.Product, offer.Amount, offer.Price);
@@ -74,8 +68,6 @@ namespace NewScripts.Game.Entities
                     }
                     else if (offer.Amount > bid.Amount)
                     {
-                        Academy.Instance.StatsRecorder.Add("Market/P-Add", CountAdded+=bid.Amount);
-
                         offer.Amount -= bid.Amount;
                         successfulDeals.Add(new Deal(offer.Price, bid.Amount));
                         bid.Buyer.FullfillBid(offer.Product, bid.Amount, offer.Price);
@@ -83,8 +75,7 @@ namespace NewScripts.Game.Entities
                         bids.Remove(bid);
                     }
                     else
-                    {
-                        Academy.Instance.StatsRecorder.Add("Market/P-Add", CountAdded+=bid.Amount);
+                    { 
                         successfulDeals.Add(new Deal(offer.Price, bid.Amount));
                         bid.Buyer.FullfillBid(offer.Product, bid.Amount, offer.Price);
                         offer.Seller.FullfillBid(offer.Product, bid.Amount, offer.Price);
@@ -105,13 +96,11 @@ namespace NewScripts.Game.Entities
             if (isTraining == false)
             {
                 PriceAnalysisStats.Deals = successfulDeals;
-                //updateEvent.Invoke(PriceAnalysisStats);
+                ServiceLocator.Instance.UiUpdateManager.updatedEvent.Invoke(PriceAnalysisStats);
             }
-
 
             ProductOffers.Clear();
             ProductBids.Clear();
-            CountAdded = 0;
         }
     }
 }

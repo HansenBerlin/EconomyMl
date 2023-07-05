@@ -1,9 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using MathNet.Numerics.Statistics;
 using NewScripts.Common;
 using NewScripts.DataModelling;
+using NewScripts.Enums;
 using NewScripts.Game.Entities;
 using NewScripts.Game.Models;
+using NewScripts.Game.Services;
+using NewScripts.Interfaces;
 using NewScripts.Ui.Models;
 using TMPro;
 using UnityEngine;
@@ -17,8 +21,11 @@ namespace NewScripts.Ui.Controller
         public bool showBoth = true;
         public GameObject barPrefab;
         public GameObject parent;
-        public GameObject productMarketGo;
+        public GameObject foodbutton;
+        public GameObject luxurybutton;
+        public GameObject workerButton;
         public TextMeshProUGUI textCurrentTotalCount;
+        public int heightModifier = 290;
 
         private readonly List<GameObject> _bars = new();
         private List<BucketStatistics> _buckets = new();
@@ -28,16 +35,17 @@ namespace NewScripts.Ui.Controller
         private List<ProductBid> _bids = new();
         private List<Deal> _successfulDeals = new();
         private bool _isInitDone;
+        private MarketPanelSelection _currentSelection;
+        private readonly BucketCreatorService _bucketCreatorService = new();
         
 
         private void Awake()
         {
             if (_isInitDone == false)
             {
-                var productMarket = productMarketGo.GetComponent<ProductMarket>();
-                //productMarket.updateEvent.AddListener(DeconstructOffersAndBids);
+                ServiceLocator.Instance.UiUpdateManager.updatedEvent.AddListener(DeconstructOffersAndBids);
                 InitGameObjects();
-                var data = productMarket.PriceAnalysisStats;
+                var data = ServiceLocator.Instance.FoodProductMarket.PriceAnalysisStats;
                 if (data != null)
                 {
                     DeconstructOffersAndBids(data);
@@ -55,15 +63,33 @@ namespace NewScripts.Ui.Controller
             }
         }
 
+        private bool IsMatchingSelection(ProductType type)
+        {
+            switch (type)
+            {
+                case ProductType.Food when
+                    _currentSelection == MarketPanelSelection.FoodMarket:
+                case ProductType.Luxury when
+                    _currentSelection == MarketPanelSelection.LuxuryMarket:
+                default:
+                    return false;
+            }
+        }
+        
+        
+
         private void DeconstructOffersAndBids(PriceAnalysisStatsModel data)
         {
-            _successfulDeals = data.Deals.OrderBy(x => x.Price).ToList();
-            _bids = data.Bids;
-            _offers = data.Offers;
-            if (enabled)
+            if (IsMatchingSelection(data.Type))
             {
-                PrepareData();
-                ShowStats();
+                _successfulDeals = data.Deals.OrderBy(x => x.Price).ToList();
+                _bids = data.Bids;
+                _offers = data.Offers;
+                if (enabled)
+                {
+                    PrepareData();
+                    ShowStats();
+                }
             }
         }
 
@@ -92,7 +118,7 @@ namespace NewScripts.Ui.Controller
             _valueHistory.Clear();
             _valueHistory.Push(initialValues);
 
-            _buckets = GetBucketStatistics(initialValues, maxNumOfBuckets);
+            _buckets = _bucketCreatorService.GetBucketStatistics(initialValues, maxNumOfBuckets);
             textCurrentTotalCount.text = TotalCountText(initialValues.Count, _buckets);
         }
 
@@ -114,14 +140,19 @@ namespace NewScripts.Ui.Controller
             }
         }
 
-        private void ShowStats()
+        private float HeightMultiplier()
         {
             var count = _valueHistory.Peek().Count;
             float heightMultiplier = count / (float) _buckets
                 .Select(x => x.Count)
                 .Max();
-            heightMultiplier = 290 / (float) count * heightMultiplier;
-            //float width = showBoth ? 45 : 90;
+            heightMultiplier = heightModifier / (float) count * heightMultiplier;
+            return heightMultiplier;
+        }
+
+        private void ShowStats()
+        {
+            float heightMultiplier =  HeightMultiplier();
             
             for (int i = 0; i < _buckets.Count; i++)
             {
@@ -136,49 +167,69 @@ namespace NewScripts.Ui.Controller
                 }
 
                 instance.SetActive(true);
-                var statBarScript = instance.GetComponent<StatBar>();
-                var rectTransform = statBarScript.button.GetComponent<RectTransform>();
-                rectTransform.sizeDelta = new Vector2(100, (int) (bucket.Count * heightMultiplier));
-                rectTransform.anchoredPosition = new Vector2(i * 100, 0);
-                statBarScript.button.GetComponent<Image>().color = bucket.IsBid
-                    ? Colors.LightGreen
-                    : Colors.Indigo;
-                
+                var statBarScript = CreateStatBar(instance, bucket, heightMultiplier, i, out var rectTransform);
+
                 var succesfulDealsInRange = _successfulDeals
                     .Where(x => x.Price >= bucket.Min && x.Price <= bucket.Max)
                     .ToList();
                 
                 float sumDeals = succesfulDealsInRange.Select(x => x.Amount).Sum();
-                
-                if (succesfulDealsInRange.Count > 0 && bucket.IsBid == false)
-                {
-                    statBarScript.fullfilled.SetActive(true);
-                    float barWidth = rectTransform.sizeDelta.x;
-                    var fullfilledBarRect = statBarScript.fullfilled.GetComponent<RectTransform>();
-                    fullfilledBarRect.anchoredPosition = new Vector2(0, sumDeals * heightMultiplier + 90);
-                    fullfilledBarRect.sizeDelta = new Vector2(barWidth, 5);
-                }
-                else
-                {
-                    statBarScript.fullfilled.SetActive(false);
-                }
-
-                statBarScript.rangeText.text = $"{bucket.Min:0.##} - {bucket.Max:0.##}";
-                //statBarScript.valueText.text = $"{bucket.Count}({sumDeals / bucket.Count:0.##})";
-                statBarScript.valueText.text = $"{bucket.Count}";
-                
-                statBarScript.button.GetComponent<Button>().interactable = DistinctValuesInRange(bucket) > 1;
+                SetBarDimensions(succesfulDealsInRange, bucket, statBarScript, rectTransform, sumDeals, heightMultiplier);
+                SetBarText(statBarScript, bucket);
             }
 
             if (_buckets.Count < maxNumOfBuckets * 2)
             {
-                int maxBuckets = showBoth ? maxNumOfBuckets * 2 : maxNumOfBuckets;
-                int deactivateBars = maxBuckets - _buckets.Count;
-                for (int i = maxBuckets - deactivateBars; i < maxBuckets; i++)
-                {
-                    _bars[i].SetActive(false);
-                }
+                DeactivateBarsOutOfRange();
             }
+        }
+
+        private void DeactivateBarsOutOfRange()
+        {
+            int maxBuckets = showBoth ? maxNumOfBuckets * 2 : maxNumOfBuckets;
+            int deactivateBars = maxBuckets - _buckets.Count;
+            for (int i = maxBuckets - deactivateBars; i < maxBuckets; i++)
+            {
+                _bars[i].SetActive(false);
+            }
+        }
+
+        private void SetBarText(StatBar statBarScript, BucketStatistics bucket)
+        {
+            statBarScript.rangeText.text = $"{bucket.Min:0.##} - {bucket.Max:0.##}";
+            statBarScript.valueText.text = $"{bucket.Count}";
+
+            statBarScript.button.GetComponent<Button>().interactable = DistinctValuesInRange(bucket) > 1;
+        }
+
+        private void SetBarDimensions(List<Deal> succesfulDealsInRange, BucketStatistics bucket, StatBar statBarScript,
+            RectTransform rectTransform, float sumDeals, float heightMultiplier)
+        {
+            if (succesfulDealsInRange.Count > 0 && bucket.IsBid == false)
+            {
+                statBarScript.fullfilled.SetActive(true);
+                float barWidth = rectTransform.sizeDelta.x;
+                var fullfilledBarRect = statBarScript.fullfilled.GetComponent<RectTransform>();
+                fullfilledBarRect.anchoredPosition = new Vector2(0, sumDeals * heightMultiplier + 90);
+                fullfilledBarRect.sizeDelta = new Vector2(barWidth, 5);
+            }
+            else
+            {
+                statBarScript.fullfilled.SetActive(false);
+            }
+        }
+
+        private StatBar CreateStatBar(GameObject instance, BucketStatistics bucket, float heightMultiplier, int i,
+            out RectTransform rectTransform)
+        {
+            var statBarScript = instance.GetComponent<StatBar>();
+            rectTransform = statBarScript.button.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(100, (int) (bucket.Count * heightMultiplier));
+            rectTransform.anchoredPosition = new Vector2(i * 100, 0);
+            statBarScript.button.GetComponent<Image>().color = bucket.IsBid
+                ? Colors.LightGreen
+                : Colors.Indigo;
+            return statBarScript;
         }
 
         private void OnSingleBarClick(int instanceId)
@@ -191,7 +242,7 @@ namespace NewScripts.Ui.Controller
                     .Where(x => x.Value >= bucket.Min && x.Value <= bucket.Max)
                     .ToList();
                 _valueHistory.Push(values);
-                _buckets = GetBucketStatistics(values, maxNumOfBuckets);
+                _buckets = _bucketCreatorService.GetBucketStatistics(values, maxNumOfBuckets);
                 textCurrentTotalCount.text = TotalCountText(values.Count, _buckets);
                 ShowStats();
             }
@@ -247,109 +298,9 @@ namespace NewScripts.Ui.Controller
 
             _valueHistory.Pop();
             var values = _valueHistory.Peek();
-            _buckets = GetBucketStatistics(values, maxNumOfBuckets);
+            _buckets = _bucketCreatorService.GetBucketStatistics(values, maxNumOfBuckets);
             textCurrentTotalCount.text = TotalCountText(values.Count, _buckets);
             ShowStats();
         }
-
-        private List<BucketStatistics> GetBucketStatistics(List<ProductDistributionInfo> data, int numBuckets)
-        {
-            List<decimal> values = data.Select(x => x.Value).ToList();
-
-            int distinctValues = values
-                .Distinct()
-                .ToList()
-                .Count;
-
-            if (distinctValues < numBuckets)
-            {
-                numBuckets = distinctValues;
-            }
-
-            decimal minValue = values.Min();
-            decimal maxValue = values.Max();
-
-            decimal range;
-            if (minValue == maxValue)
-            {
-                range = values[0] / numBuckets;
-            }
-            else
-            {
-                range = (maxValue - minValue) / numBuckets;
-            }
-
-            List<BucketStatistics> bidBuckets = CreateEmptyBuckets(numBuckets, true, minValue, range);
-            List<BucketStatistics> offerBuckets = CreateEmptyBuckets(numBuckets, false, minValue, range);
-
-
-            foreach (var item in data)
-            {
-                int bucketIndex = (int) ((item.Value - minValue) / range);
-                bucketIndex = bucketIndex >= numBuckets ? numBuckets - 1 : bucketIndex;
-                if (item.Type == ProductDistributionType.Bid)
-                {
-                    bidBuckets[bucketIndex].Count++;
-                }
-                else
-                {
-                    offerBuckets[bucketIndex].Count++;
-                }
-            }
-
-            List<BucketStatistics> buckets = new();
-            buckets.AddRange(bidBuckets);
-            buckets.AddRange(offerBuckets);
-            buckets = buckets.OrderBy(x => x.Min).ToList();
-
-            return buckets;
-        }
-
-
-        private List<BucketStatistics> CreateEmptyBuckets(int count, bool isBidder, decimal minValue, decimal range)
-        {
-            List<BucketStatistics> buckets = new();
-            for (int i = 0; i < count; i++)
-            {
-                decimal min = minValue + i * range;
-                BucketStatistics bucket = new BucketStatistics
-                {
-                    Count = 0,
-                    Min = min,
-                    Max = min + range,
-                    IsBid = isBidder
-                };
-                buckets.Add(bucket);
-            }
-
-            return buckets;
-        }
-    }
-
-    public class BucketStatistics
-    {
-        public int Id { get; set; }
-        public int Count { get; set; }
-        public decimal Min { get; set; }
-        public decimal Max { get; set; }
-        public bool IsBid { get; set; }
-    }
-
-    public class ProductDistributionInfo
-    {
-        public ProductDistributionInfo(decimal value, ProductDistributionType type)
-        {
-            Value = value;
-            Type = type;
-        }
-
-        public decimal Value { get; }
-        public ProductDistributionType Type { get; }
-    }
-
-    public enum ProductDistributionType
-    {
-        Bid,
-        Offer
     }
 }

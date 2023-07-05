@@ -8,19 +8,20 @@ namespace NewScripts.Game.Models
     public class InventoryItem
     {
         public ProductType Product { get; set; }
-        public int Count { get; set; } = 0;
-        public decimal AvgPaid { get; set; }
-        private long _totalBought;
+        public int Count { get; private set; } = 0;
+        public decimal AvgPaid { get; private set; }
         public int ConsumeInMonth { get; set; }
         public int FullfilledInMonth { get; set; }
         public int MonthlyMinimumDemand => _monthlyMinimumDemand * ServiceLocator.Instance.Settings.DemandModifier(Product);
         public int MonthlyAverageDemand => _monthlyAverageDemand * ServiceLocator.Instance.Settings.DemandModifier(Product);
         public int MonthlyMaximumDemand => _monthlyMaximumDemand * ServiceLocator.Instance.Settings.DemandModifier(Product);
+        private long _totalBought;
         private readonly int _monthlyMinimumDemand;
         private readonly int _monthlyAverageDemand;
         private readonly int _monthlyMaximumDemand;
         
-        public InventoryItem(ProductType product, int monthlyAverageDemand, int monthlyMinimumDemand, int monthlyMaximumDemand, decimal startPrice)
+        public InventoryItem(ProductType product, int monthlyAverageDemand, 
+            int monthlyMinimumDemand, int monthlyMaximumDemand, decimal startPrice)
         {
             Product = product;
             AvgPaid = startPrice;

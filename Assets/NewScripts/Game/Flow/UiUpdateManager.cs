@@ -1,13 +1,15 @@
 ﻿using NewScripts.Interfaces;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace NewScripts.Game.Flow
 {
     public class UiUpdateManager : MonoBehaviour
     {
-        public CompanySelectedEvent companySelectedEvent;
-        public CompanySelectedEvent playerDecisionValuesUpdateEvent;
-        public PeriodIncrementEvent newPeriodStartedEvent;
+        public CompanySelectedEvent companySelectedEvent = new();
+        public CompanySelectedEvent playerDecisionValuesUpdateEvent = new();
+        public PeriodIncrementEvent newPeriodStartedEvent = new();
+        [FormerlySerializedAs("productsUpdatedEvent")] public MarketUpdateEvent updatedEvent = new();
 
         public int SelectedCompanyId { get; private set; }
         

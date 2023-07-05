@@ -28,15 +28,7 @@ namespace NewScripts.Ui.Controller
         private readonly List<GameObject> _ticks = new();
         private readonly List<float> _values = new();
         private float _alltimeMax = 1;
-        
-       //public void InitializeValues(float max, float stepwidth = 50)
-       //{
-       //    _alltimeMax = max * 1.1F;
-       //    _valueModifier = graphHeight / _alltimeMax;
-       //    stepWidth = stepwidth;
-       //    AddTicks(max);
-       //}
-        
+
         public void DrawGraph<T>(List<T> values = null)
         {
             if (values != null)
@@ -118,9 +110,8 @@ namespace NewScripts.Ui.Controller
 
         private void MakeLine(float ax, float ay, float bx, float by, Color col)
         {
-            lineParent.GetComponent<RectTransform>().sizeDelta = new Vector2(_lastX + stepWidth, graphHeight);
+            lineParent.GetComponent<RectTransform>().sizeDelta = new Vector2(bx, graphHeight);
             GameObject line = Instantiate(imagePrefab, lineParent.transform);
-            line.name = "line from " + ax + " to " + bx;
             line.GetComponent<RawImage>().color = col;
             RectTransform rect = line.GetComponent<RectTransform>();
  

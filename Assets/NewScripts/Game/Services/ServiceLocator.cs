@@ -35,7 +35,7 @@ namespace NewScripts.Game.Services
             Instance = this;
             FoodProductMarket = new ProductMarket(ProductType.Food, 1);
             LuxuryProductMarket = new ProductMarket(ProductType.Luxury, 10);
-            LaborMarket = GetComponentInChildren<LaborMarket>();
+            LaborMarket = new LaborMarket();
             
             HouseholdAggregator = GetComponentInChildren<HouseholdAggregatorService>();
             UiUpdateManager = GetComponentInChildren<UiUpdateManager>();

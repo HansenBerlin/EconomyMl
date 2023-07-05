@@ -13,15 +13,11 @@ namespace NewScripts.Game.Entities
     public class Worker
     {
         public decimal Money { get; set; } = 500;
-        public int Health { get; set; } = 1000;
-        
         public bool HasJob => _jobContract != null;
         
-        private int UnemployedForMonth { get; set; } = 0;
+        private int UnemployedForMonth { get; set; }
         private readonly List<InventoryItem> _inventory = new();
-        private readonly System.Random _rand = new();
         private HouseholdData _periodData = new();
-
         private JobContract _jobContract;
         private readonly BidCalculatorService _bidCalculatorService;
 
