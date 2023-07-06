@@ -27,7 +27,7 @@ namespace NewScripts.Game.Entities
 
         public decimal AveragePayment()
         {
-            decimal average = Contracts.Count > 0 ? Contracts.Select(x => x.Wage).Average() : 100;
+            decimal average = Contracts.Count > 0 ? Contracts.Select(x => x.Wage).Average() : 150;
             return average;
         }
 

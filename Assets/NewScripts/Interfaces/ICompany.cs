@@ -12,8 +12,12 @@ namespace NewScripts.Interfaces
         decimal Liquidity { get; set; }
         decimal AverageWageRate { get; }
         Decision LastDecision { get; }
-        int ProductStockFood { get; }
+        //int ProductStockFood { get; }
         int LifetimeMonths { get; }
+        int WorkerCount { get; }
+        PlayerType PlayerType { get; }
+        CompanyDecisionStatus DecisionStatus { get; }
+        List<CompanyLedger> Ledger { get; }
         void FullfillBid(ProductType product, int count, decimal price);
         void AddContract(JobContract contract);
         void RemoveContract(JobContract contract, WorkerFireReason reason);
@@ -21,9 +25,6 @@ namespace NewScripts.Interfaces
         void StartNextPeriod(Decision decision);
         void Produce();
         void EndMonth();
-        int WorkerCount { get; }
-        PlayerType PlayerType { get; }
-        CompanyDecisionStatus DecisionStatus { get; }
-        List<CompanyLedger> Ledger { get; }
+        void AddRewards();
     }
 }

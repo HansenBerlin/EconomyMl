@@ -309,9 +309,6 @@ namespace NewScripts.Game.Entities
             Ledger[^1].Luxury.StockEndCheck = ProductStockLuxury;
             Ledger[^1].Books.LiquidityEndCheck = Liquidity;
             Ledger[^1].Workers.EndCount = _jobContracts.Count;
-            Ledger[^1].Reputation = Reputation;
-            ServiceLocator.Instance.HouseholdAggregator.Add(Ledger[^1]);
-            ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
             ServiceLocator.Instance.FlowController.CommitDecision(Id, DecisionStatus = CompanyDecisionStatus.Pending);
 
 
@@ -319,6 +316,13 @@ namespace NewScripts.Game.Entities
             //ServiceLocator.Instance.FlowController.CommitDecision();
             //yield return new WaitForFixedUpdate();
             _lastWorkers = _jobContracts.Count;
+        }
+
+        public void AddRewards()
+        {
+            Ledger[^1].Reputation = Reputation;
+            ServiceLocator.Instance.HouseholdAggregator.Add(Ledger[^1]);
+            ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
         }
 
         private void PaySocialFare()

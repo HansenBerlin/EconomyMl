@@ -7,6 +7,6 @@
         ProductLux = 2,
         Workers = 3,
         Books = 4,
-        Decision = 6
+        Decision = 5
     }
 }

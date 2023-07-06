@@ -12,7 +12,7 @@ namespace NewScripts.Game.Entities
 {
     public class Worker
     {
-        public decimal Money { get; set; } = 500;
+        public decimal Money { get; set; } = 300;
         public bool HasJob => _jobContract != null;
         
         private int UnemployedForMonth { get; set; }

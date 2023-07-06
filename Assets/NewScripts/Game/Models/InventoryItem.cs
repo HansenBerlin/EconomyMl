@@ -32,6 +32,7 @@ namespace NewScripts.Game.Models
 
         public void Add(int count, decimal price)
         {
+            //Debug.Log("Add " + count + " " + Product + " for " + price + " each");
             if (count == 0 || _totalBought + count == 0)
             {
                 return;
@@ -45,6 +46,7 @@ namespace NewScripts.Game.Models
 
         public void Consume()
         {
+            //Debug.Log("Consume " + ConsumeInMonth + " " + Product);
             Academy.Instance.StatsRecorder.Add("New/Inventory-Consume-" + Product, ConsumeInMonth);
             Count = Count - ConsumeInMonth < 0 ? 0 : Count - ConsumeInMonth;
             if (Count < 0)

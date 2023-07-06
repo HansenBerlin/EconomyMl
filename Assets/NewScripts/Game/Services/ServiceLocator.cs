@@ -5,6 +5,7 @@ using NewScripts.Enums;
 using NewScripts.Game.Entities;
 using NewScripts.Game.Flow;
 using NewScripts.Interfaces;
+using NewScripts.Training;
 using NewScripts.Ui.Controller;
 using UnityEngine;
 
@@ -23,6 +24,7 @@ namespace NewScripts.Game.Services
         public CompanyContainerPanelController CompanyContainerPanelController { get; set; }
         public HouseholdAggregatorService HouseholdAggregator { get; private set; }
         public UiUpdateManager UiUpdateManager { get; private set; }
+        public ReputationAggregatorFactory ReputationAggregatorFactory { get; } = new();
 
 
         private void Awake()

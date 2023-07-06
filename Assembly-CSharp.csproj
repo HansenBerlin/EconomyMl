@@ -150,6 +150,7 @@
      <Compile Include="Assets\Scripts\Controller\Agents\PersonBuyActionBaseProduct.cs" />
      <Compile Include="Assets\NewScripts\Enums\ProductDistributionType.cs" />
      <Compile Include="Assets\Scripts\Models\TempPopulationUpdateModel.cs" />
+     <Compile Include="Assets\NewScripts\Training\ReputationAggregatorFactory.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\HumanBehavior.cs" />
      <Compile Include="Assets\Scripts\Factories\JobPositionFactory.cs" />
      <Compile Include="Assets\NewScripts\Ui\Controller\CompanyContainerPanelController.cs" />
@@ -182,10 +183,10 @@
      <Compile Include="Assets\Scripts\Models\BankAccountModel.cs" />
      <Compile Include="Assets\Scripts\Agents\PersonObservations.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\HeapNode.cs" />
+     <Compile Include="Assets\NewScripts\Training\ReputationAggregator.cs" />
      <Compile Include="Assets\NewScripts\Ui\Controller\TimelineContainerController.cs" />
      <Compile Include="Assets\NewScripts\Ui\Models\ProductRow.cs" />
      <Compile Include="Assets\Scripts\Policies\CentralBankPolicy.cs" />
-     <Compile Include="Assets\NewScripts\Game\Flow\SetupEnvironment.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\TrainController.cs" />
      <Compile Include="Assets\Scripts\Controller\Agents\RatingController.cs" />
      <Compile Include="Assets\Scripts\Policies\AgeBoundaryPolicy.cs" />
@@ -205,6 +206,7 @@
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\BinaryHeap.cs" />
      <Compile Include="Assets\Scripts\Factories\PopulationFactory.cs" />
      <Compile Include="Assets\NewScripts\Ui\Controller\DecisionPanelController.cs" />
+     <Compile Include="Assets\NewScripts\Game\World\EnvironmentSetup.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\RoadPlacer.cs" />
      <Compile Include="Assets\NewScripts\DataModelling\MarketLedger.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextConsoleSimulator.cs" />
@@ -243,10 +245,12 @@
      <Compile Include="Assets\NewScripts\Ui\Panels\ProductPanel.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\WarpTextExample.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshProFloatingText.cs" />
+     <Compile Include="Assets\NewScripts\Game\Entities\Government.cs" />
      <Compile Include="Assets\NewScripts\DataModelling\ProductLedger.cs" />
      <Compile Include="Assets\Scripts\Enums\JobStatus.cs" />
      <Compile Include="Assets\Scripts\Enums\NormRange.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ShaderPropAnimator.cs" />
+     <Compile Include="Assets\NewScripts\Training\RewardNormalizer.cs" />
      <Compile Include="Assets\NewScripts\Game\Services\ServiceLocator.cs" />
      <Compile Include="Assets\Scripts\Enums\ProductType.cs" />
      <Compile Include="Assets\Scripts\Enums\AgeStatus.cs" />
@@ -436,6 +440,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Vehicles_M\Trains_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Vehicles_M\Trains_AI_M" />
      <None Include="Assets\ScriptTemplates\56-Mirror__Network Discovery-NewNetworkDiscovery.cs.txt" />
+     <Folder Include="Assets\NewScripts\Training" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Terrains_M\Scenes_M" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Apocalypse_T" />

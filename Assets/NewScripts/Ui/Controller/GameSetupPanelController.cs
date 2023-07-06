@@ -1,4 +1,5 @@
 ﻿using NewScripts.Game.Flow;
+using NewScripts.Game.World;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,7 +38,7 @@ namespace NewScripts.Ui.Controller
             startButton.interactable = false;
             bottomBar.SetActive(true);
             servicesGo.SetActive(true);
-            var setup = setupGo.GetComponent<SetupEnvironment>();
+            var setup = setupGo.GetComponent<EnvironmentSetup>();
             int humanPlayers = isTrainingToggle.isOn ? 0 : (int)playerCountSlider.value;
             setup.playerCompaniesPerType = humanPlayers;
             setup.aiCompaniesPerType = (int)aiCountSlider.value;

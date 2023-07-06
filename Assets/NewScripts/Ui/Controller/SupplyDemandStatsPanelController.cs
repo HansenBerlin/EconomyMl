@@ -21,7 +21,6 @@ namespace NewScripts.Ui.Controller
         public int maxNumOfBuckets = 5;
         public bool showBoth = true;
         public GameObject barPrefab;
-        //public GameObject parent;
         public TextMeshProUGUI textCurrentTotalCount;
         public int heightModifier = 290;
 
@@ -207,24 +206,8 @@ namespace NewScripts.Ui.Controller
             }
         }
 
-        public string UpdateBreadcrumbText()
+        private string UpdateBreadcrumbText()
         {
-            //var filteredBuckets = buckets.Where(x => x.Count > 0).ToList();
-            //string min = filteredBuckets[0].Min >= 100
-            //    ? $"{filteredBuckets[0].Min:0}"
-            //    : $"{filteredBuckets[0].Min:0.##}";
-            //string max;
-            //if (filteredBuckets.Count > 1)
-            //{
-            //    max = filteredBuckets[^1].Max >= 100
-            //        ? $"{filteredBuckets[^1].Max:0}"
-            //        : $"{filteredBuckets[^1].Max:0.##}";
-            //}
-            //else
-            //{
-            //    max = min;
-            //}
-
             return $"Bids: {_bidCount} | Offers: {_offerCount} ({_type})";
         }
 

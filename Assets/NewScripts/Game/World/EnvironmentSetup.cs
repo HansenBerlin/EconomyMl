@@ -8,9 +8,9 @@ using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace NewScripts.Game.Flow
+namespace NewScripts.Game.World
 {
-    public class SetupEnvironment : MonoBehaviour
+    public class EnvironmentSetup : MonoBehaviour
     {
         [FormerlySerializedAs("foodCompanyPrefab")] public GameObject companyPrefabAi;
         [FormerlySerializedAs("foodCompanyPrefabPlayer")] public GameObject companyPrefabPlayer;
@@ -67,7 +67,7 @@ namespace NewScripts.Game.Flow
             ServiceLocator.Instance.LaborMarket.InitWorkers(1000, priceBidCalculator);
             int zPos = 0;
             int xPos = 0;
-            decimal liquidity = 500000 / (decimal) (aiCompaniesPerType + playerCompaniesPerType);
+            decimal liquidity = 300000 / (decimal) (aiCompaniesPerType + playerCompaniesPerType);
             for (var i = 0; i < 100; i++)
             {
                 if (i != 0 && i % 10 == 0)
@@ -166,6 +166,11 @@ namespace NewScripts.Game.Flow
             foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
             {
                 worker.EndMonth();
+            }
+            
+            foreach (var company in ServiceLocator.Instance.Companys)
+            {
+                company.AddRewards();
             }
             
             ServiceLocator.Instance.FlowController.IncrementMonth();
