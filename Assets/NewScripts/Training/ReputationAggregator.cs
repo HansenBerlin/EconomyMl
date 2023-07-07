@@ -3,12 +3,13 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using NewScripts.Game.Models;
 using NewScripts.Game.Services;
+using UnityEngine;
 
 namespace NewScripts.Training
 {
     public class ReputationAggregator
     {
-        public float Reputation => (float) ((_profitReputation + _lifetimeReputation + _workerContractRuntimeReputation + _marketShareReputation) / 4);
+        public float Reputation => CalculateReputation();
 
         private readonly RewardNormalizer _profitNormalizer;
         private readonly RewardNormalizer _lifetimeNormalizer;
@@ -46,6 +47,11 @@ namespace NewScripts.Training
                 FoodSales = foodSales,
                 LuxurySales = luxurySales
             };
+            _profitNormalizer.AddValue(_rewardValueModel.Profit);
+            _lifetimeNormalizer.AddValue(_rewardValueModel.Lifetime);
+            _workerContractRuntimeNormalizer.AddValue(_rewardValueModel.WorkerContractRuntime);
+            _foodMarketshareNormalizer.AddValue(_rewardValueModel.FoodSales);
+            _luxuryMarketshareNormalizer.AddValue(_rewardValueModel.LuxurySales);
         }
 
         public void AddProfitChange()
@@ -65,11 +71,18 @@ namespace NewScripts.Training
         
         public void AddMarketShareChange()
         {
-            int totalSalesFood = ServiceLocator.Instance.HouseholdAggregator.CompaniesAggregates[^1].AverageSalesFood;
-            int totalSalesLuxury = ServiceLocator.Instance.HouseholdAggregator.CompaniesAggregates[^1].AverageSalesLuxury;
-            var foodReputation = _foodMarketshareNormalizer.Normalize(_rewardValueModel.FoodSales / (double)totalSalesFood);
-            var luxuryReputation = _luxuryMarketshareNormalizer.Normalize(_rewardValueModel.LuxurySales / (double)totalSalesLuxury);
+            //int totalSalesFood = ServiceLocator.Instance.HouseholdAggregator.CompaniesAggregates[^1].AverageSalesFood;
+            //int totalSalesLuxury = ServiceLocator.Instance.HouseholdAggregator.CompaniesAggregates[^1].AverageSalesLuxury;
+            var foodReputation = _foodMarketshareNormalizer.Normalize(_rewardValueModel.FoodSales);
+            var luxuryReputation = _luxuryMarketshareNormalizer.Normalize(_rewardValueModel.LuxurySales);
             _marketShareReputation = (foodReputation + luxuryReputation) / 2;
+        }
+        
+        private float CalculateReputation()
+        {
+            var reputation = (float) ((_profitReputation * 3 + _workerContractRuntimeReputation + _marketShareReputation) / 5);
+            Debug.Log($"Total: {reputation*100:0.##} Profit: {_profitReputation*100:0.##}, WorkerContractRuntime: {_workerContractRuntimeReputation*100:0.##}, MarketShare: {_marketShareReputation*100:0.##}");
+            return reputation;
         }
     }
 

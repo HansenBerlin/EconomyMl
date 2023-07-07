@@ -15,7 +15,7 @@ namespace NewScripts.Game.Services
             float modifier = (ratio + 1) / 2;
             int low = (int)(inventoryItem.MonthlyMinimumDemand * modifier);
             int high = (int)(inventoryItem.MonthlyMaximumDemand * modifier);
-            inventoryItem.FullfilledInMonth = 0;
+            //inventoryItem.FullfilledInMonth = 0;
             return (low, high);
         }
 

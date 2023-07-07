@@ -160,7 +160,7 @@ namespace NewScripts.Game.Entities
 
             SetBuilding();
             //UpdateCanvasText(false);
-            ServiceLocator.Instance.FlowController.CommitDecision(Id, DecisionStatus = CompanyDecisionStatus.Commited);
+            ServiceLocator.Instance.FlowController.CommitCompanyDecision(Id, DecisionStatus = CompanyDecisionStatus.Commited);
             ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
             hourglass.SetActive(false);
             Debug.Log("1B Decisions done.");
@@ -169,7 +169,7 @@ namespace NewScripts.Game.Entities
        public void RequestMonthlyDecision()
        {
            Debug.Log("1A Decision requested.");
-           ServiceLocator.Instance.FlowController.CommitDecision(Id, DecisionStatus = CompanyDecisionStatus.Requested);
+           ServiceLocator.Instance.FlowController.CommitCompanyDecision(Id, DecisionStatus = CompanyDecisionStatus.Requested);
            ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
            hourglass.SetActive(true);
            hourglass.GetComponent<RotationController>().ActivateAnimation();
@@ -309,7 +309,7 @@ namespace NewScripts.Game.Entities
             Ledger[^1].Luxury.StockEndCheck = ProductStockLuxury;
             Ledger[^1].Books.LiquidityEndCheck = Liquidity;
             Ledger[^1].Workers.EndCount = _jobContracts.Count;
-            ServiceLocator.Instance.FlowController.CommitDecision(Id, DecisionStatus = CompanyDecisionStatus.Pending);
+            ServiceLocator.Instance.FlowController.CommitCompanyDecision(Id, DecisionStatus = CompanyDecisionStatus.Pending);
 
 
             
@@ -318,7 +318,7 @@ namespace NewScripts.Game.Entities
             _lastWorkers = _jobContracts.Count;
         }
 
-        public void AddRewards()
+        public void AddRewards(int year)
         {
             Ledger[^1].Reputation = Reputation;
             ServiceLocator.Instance.HouseholdAggregator.Add(Ledger[^1]);
@@ -342,7 +342,7 @@ namespace NewScripts.Game.Entities
                     decimal societyShare = (Liquidity - baseSafety - companyReserve) / unemployed.Count;
                     foreach (var worker in unemployed)
                     {
-                        worker.Give(societyShare);
+                        worker.PaySocialWelfare(societyShare);
                         Ledger[^1].Books.TaxPayments += societyShare;
                     }
                     Liquidity = companyReserve + baseSafety;

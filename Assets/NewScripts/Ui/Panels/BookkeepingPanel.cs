@@ -39,7 +39,7 @@ namespace NewScripts.Ui.Panels
                     row.taxPaymentsText.text = $"{booksInfo.TaxPayments:0.##}";
                     decimal liquidityChange = booksInfo.LiquidityEndCheck - booksInfo.LiquidityStart;
                     row.cashflowText.text = $"{liquidityChange:0.##}";
-                    row.cashflowText.color = liquidityChange < 0 ? Colors.DarkRed : Colors.DarkGreen;
+                    row.cashflowText.color = liquidityChange < 0 ? Colors.Red : Colors.LightGreen;
                     float hue = i % 2 == 0 ? 0.04F : 0.08F;
                     var rawImage = row.GetComponent<RawImage>();
                     rawImage.color = new Color(1, 1, 1, hue);

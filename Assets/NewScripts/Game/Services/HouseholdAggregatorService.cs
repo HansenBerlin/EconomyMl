@@ -56,7 +56,7 @@ namespace NewScripts.Game.Services
             Academy.Instance.StatsRecorder.Add("Aggregates-HH/Inv-Lux", HouseholdsAggregates[^1].AverageLuxuryInventoryBeforeBuying);
             Academy.Instance.StatsRecorder.Add("Aggregates-CO/Lifetime", CompaniesAggregates[^1].AverageLifetime);
             Academy.Instance.StatsRecorder.Add("Aggregates-CO/Liquidity", (float)CompaniesAggregates[^1].AverageLiquidity);
-            Academy.Instance.StatsRecorder.Add("Aggregates-CO/Reputation", CompaniesAggregates[^1].AverageReputation);
+            Academy.Instance.StatsRecorder.Add("Aggregates-CO/Reputation", (float)CompaniesAggregates[^1].AverageReputation);
             Academy.Instance.StatsRecorder.Add("Aggregates-CO/OpenPositions", CompaniesAggregates[^1].AverageOpenPositions);
             Academy.Instance.StatsRecorder.Add("Aggregates-CO/SalesFood", CompaniesAggregates[^1].AverageSalesFood);
             Academy.Instance.StatsRecorder.Add("Aggregates-CO/SalesLux", CompaniesAggregates[^1].AverageSalesLuxury);

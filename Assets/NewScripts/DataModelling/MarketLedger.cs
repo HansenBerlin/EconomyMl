@@ -26,14 +26,14 @@ namespace NewScripts.DataModelling
         public int AverageStockLuxury { get; private set; }
         public int AverageSalesLuxury { get; private set; }
         public decimal AverageLiquidity { get; private set; }
-        public int AverageReputation => _averageReputation + 100;
+        public double AverageReputation => (_averageReputation + 1) * 100;
         public int AverageLifetime { get; private set; }
         public int AverageOpenPositions { get; private set; }
         public int AverageFiredWorkersTotal { get; private set; }
         public int AverageFiredWorkersByDecision { get; private set; }
         public int AverageFiredWorkersByLackOfFunds { get; private set; }
         private int Companys { get; set; }
-        private int _averageReputation;
+        private double _averageReputation;
         
         public CompaniesAggregate(int month, int year) : base(month, year) { }
         

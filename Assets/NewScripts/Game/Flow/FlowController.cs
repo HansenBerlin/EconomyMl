@@ -11,6 +11,7 @@ namespace NewScripts.Game.Flow
         public int Year { get; private set; } = 1;
         public int Month { get; private set; } = 1;
         private Dictionary<int, CompanyDecisionStatus> DecisionStati { get; set; } = new();
+        public bool IsGovernmentDecisionCommitted { get; set; } = true;
 
         public FlowController(List<int> companyIds)
         {
@@ -38,15 +39,15 @@ namespace NewScripts.Game.Flow
             ServiceLocator.Instance.UiUpdateManager.newPeriodStartedEvent.Invoke(Month, Year);
         }
 
-        public void CommitDecision(int companyId, CompanyDecisionStatus status)
+        public void CommitCompanyDecision(int companyId, CompanyDecisionStatus status)
         {
             DecisionStati[companyId] = status;
         }
-        
-        public bool Proceed()
+
+        public bool ProceedWithAutonomous()
         {
             bool areAllDecisionsMade = DecisionStati.All(x => x.Value == CompanyDecisionStatus.Commited);
-            if (areAllDecisionsMade)
+            if (areAllDecisionsMade && IsGovernmentDecisionCommitted)
             {
                 List<int> keys = new List<int>(DecisionStati.Keys);
 
@@ -54,6 +55,7 @@ namespace NewScripts.Game.Flow
                 {
                     DecisionStati[keys[i]] = CompanyDecisionStatus.Pending;
                 }
+                //_isGovernmentDecisionCommitted = false;
                 return true;
             }
 

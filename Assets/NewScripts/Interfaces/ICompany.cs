@@ -25,6 +25,6 @@ namespace NewScripts.Interfaces
         void StartNextPeriod(Decision decision);
         void Produce();
         void EndMonth();
-        void AddRewards();
+        void AddRewards(int year);
     }
 }

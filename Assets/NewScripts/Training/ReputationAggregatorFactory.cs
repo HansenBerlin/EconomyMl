@@ -5,6 +5,7 @@ namespace NewScripts.Training
     public class ReputationAggregatorFactory
     {
         private readonly List<RewardNormalizer> _normalizers = new();
+        private ReputationAggregator _reputationAggregator;
         
         public ReputationAggregatorFactory()
         {
@@ -16,7 +17,12 @@ namespace NewScripts.Training
         
         public ReputationAggregator Create()
         {
-            return new ReputationAggregator(_normalizers);
+            List<RewardNormalizer> normalizers = new();
+            for (int i = 0; i < 5; i++)
+            {
+                normalizers.Add(new RewardNormalizer());
+            }
+            return new ReputationAggregator(normalizers);
         }
     }
 }

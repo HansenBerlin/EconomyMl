@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3727644843878505812
 Transform:
   m_ObjectHideFlags: 0
@@ -30,7 +30,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3253173641288630473
 MonoBehaviour:
@@ -44,4 +44,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bc3a39e14747cfaee45de043f28fae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  companyPrefab: {fileID: 0}
+  companyPrefabAiPpo: {fileID: 6206724465262390989, guid: 9580cd16e1fe26a418f08a3847a9ecc8, type: 3}
+  companyPrefabAiSac: {fileID: 6206724465262390989, guid: 28f82a61c36429c4b8cff39efdce80d2, type: 3}
+  companyPrefabPlayer: {fileID: 6206724465262390989, guid: 45d9d897b4d326242b907b74fda427ca, type: 3}
+  dummyTilePrefab: {fileID: 6206724465262390989, guid: 628ab7382e3f61143b891b5b4774d10a, type: 3}
+  companyPanelGo: {fileID: 0}
+  aiPpoCompaniesPerType: 10
+  aiSacCompaniesPerType: 10
+  playerCompaniesPerType: 2
+  startingCapitalCompanies: 0
+  startingCapitalPlayers: 0
+  isTraining: 0
+  writeToDatabase: 0

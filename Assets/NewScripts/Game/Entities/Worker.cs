@@ -5,15 +5,17 @@ using NewScripts.DataModelling;
 using NewScripts.Enums;
 using NewScripts.Game.Models;
 using NewScripts.Game.Services;
+using NewScripts.Interfaces;
 using Unity.MLAgents;
 using UnityEngine;
 
 namespace NewScripts.Game.Entities
 {
-    public class Worker
+    public class Worker : IBidder
     {
         public decimal Money { get; set; } = 300;
         public bool HasJob => _jobContract != null;
+        public bool IsHungry => IsMinimumFoodDemandFullfilledHungry();
         
         private int UnemployedForMonth { get; set; }
         private readonly List<InventoryItem> _inventory = new();
@@ -37,9 +39,14 @@ namespace NewScripts.Game.Entities
             UnemployedForMonth = 0;
         }
 
-        public void Give(decimal sum)
+        public void PaySocialWelfare(decimal sum)
         {
             Money += sum;
+        }
+
+        public void GiveFood(int count, decimal price)
+        {
+            _inventory.First(x => x.Product == ProductType.Food).Add(count, price);
         }
 
         public void EndMonth()
@@ -47,6 +54,7 @@ namespace NewScripts.Game.Entities
             foreach (var item in _inventory)
             {
                 item.Consume();
+                item.FullfilledInMonth = 0;
             }
             _periodData.JobStatus = _jobContract == null 
                 ? WorkerJobStatus.Unemployed 
@@ -56,6 +64,7 @@ namespace NewScripts.Game.Entities
             _periodData.RealWage = _jobContract?.Wage ?? 0;
             ServiceLocator.Instance.HouseholdAggregator.Add(_periodData);
             _periodData = new HouseholdData();
+            
         }
 
         
@@ -92,13 +101,16 @@ namespace NewScripts.Game.Entities
                 Academy.Instance.StatsRecorder.Add("Market/BidCount " + productType, inventoryItem.ConsumeInMonth);
                 Academy.Instance.StatsRecorder.Add("Market/BidPrice " + productType, (float)bidPrice);
             }
-            if (inventoryItem.ConsumeInMonth < 0 || inventoryItem.ConsumeInMonth > 1000 || double.IsInfinity(inventoryItem.ConsumeInMonth) ||
-                double.IsNaN(inventoryItem.ConsumeInMonth))
-            {
-                throw  new Exception("Wrong demand: " + inventoryItem.ConsumeInMonth);
-            }
-            
+
             AddData(inventoryItem, bidPrice);
+        }
+
+        private bool IsMinimumFoodDemandFullfilledHungry()
+        {
+            var foodInventory = _inventory.FirstOrDefault(x => x.Product == ProductType.Food)!;
+            //int fullfilled = foodInventory.FullfilledInMonth - foodInventory.MonthlyMinimumDemand;
+            //int inInventory = foodInventory.Count;
+            return foodInventory.Count < foodInventory.MonthlyMinimumDemand;
         }
 
         private void AddData(InventoryItem inventoryItem, decimal bidPrice)

@@ -30,7 +30,8 @@ namespace NewScripts.Training
 
             if (range != 0)
             {
-                double improvement = inputValue - average;
+                double improvement = inputValue - (average + maxValue) / 2;
+                //double improvement = inputValue - average;
                 normalizedValue = improvement / (range / 2);
             }
 

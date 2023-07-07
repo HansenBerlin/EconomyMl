@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NewScripts.DataModelling;
 using NewScripts.Enums;
 using NewScripts.Game.Entities;
 using NewScripts.Game.Flow;
+using NewScripts.Game.Models;
 using NewScripts.Interfaces;
 using NewScripts.Training;
 using NewScripts.Ui.Controller;
@@ -18,13 +20,16 @@ namespace NewScripts.Game.Services
         public ProductMarket FoodProductMarket { get; private set; }
         public ProductMarket LuxuryProductMarket { get; private set; }
         public LaborMarket LaborMarket { get; private set; }
-        public List<ICompany> Companys { get; set; } = new();
-        public FlowController FlowController { get; set; }
+        public List<ICompany> Companys { get; } = new();
+        public GlobalPolicies Policies { get; } = new();
+        public FlowController FlowController { get; private set; }
         public Models.Settings Settings { get; } = new();
-        public CompanyContainerPanelController CompanyContainerPanelController { get; set; }
+        public CompanyContainerPanelController CompanyContainerPanelController { get; private set; }
         public HouseholdAggregatorService HouseholdAggregator { get; private set; }
         public UiUpdateManager UiUpdateManager { get; private set; }
         public ReputationAggregatorFactory ReputationAggregatorFactory { get; } = new();
+        public EconomyMetricsCalculator EconomyMetrics { get; private set; } = new();
+        public Government Government { get; set; }
 
 
         private void Awake()
@@ -44,12 +49,15 @@ namespace NewScripts.Game.Services
             GetComponentInChildren<FooterMenuController>().RegisterEvents();
         }
 
-        public void InitFlowController()
+        public void AddInstances(Government government, CompanyContainerPanelController companyContainerPanelController)
         {
             if (Companys.Count == 0)
             {
                 throw new Exception("No companys found");
             }
+            Government = government;
+            Government.Init(Policies, Companys.Count, EconomyMetrics, new RewardNormalizer());
+            CompanyContainerPanelController = companyContainerPanelController;
             FlowController = new FlowController(Companys.Select(c => c.Id).ToList());
         }
     }

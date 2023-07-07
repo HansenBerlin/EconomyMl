@@ -14,7 +14,7 @@
         public int CompanyId { get; }
         public string CompanyName { get; }
         public int Lifetime { get; }
-        public int Reputation { get; set; }
+        public double Reputation { get; set; }
         public int Month { get; }
         public int Year { get; }
         public BookKeepingLedger Books { get; set; }

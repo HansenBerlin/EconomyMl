@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Linq;
 using NewScripts.Enums;
+using NewScripts.Game.Entities;
 using NewScripts.Game.Services;
 using NewScripts.Interfaces;
 using NewScripts.Ui.Controller;
@@ -12,19 +13,24 @@ namespace NewScripts.Game.World
 {
     public class EnvironmentSetup : MonoBehaviour
     {
-        [FormerlySerializedAs("foodCompanyPrefab")] public GameObject companyPrefabAi;
+        [FormerlySerializedAs("companyPrefabAi")] [FormerlySerializedAs("foodCompanyPrefab")] public GameObject companyPrefabAiPpo;
+        public GameObject companyPrefabAiSac;
         [FormerlySerializedAs("foodCompanyPrefabPlayer")] public GameObject companyPrefabPlayer;
         public GameObject dummyTilePrefab;
         public GameObject companyPanelGo;
+        public GameObject governmentGo;
         //public TextMeshProUGUI roundText;
         //public TextMeshProUGUI buttonText;
-        public int aiCompaniesPerType = 100;
+        [FormerlySerializedAs("aiCompaniesPerType")] public int aiPpoCompaniesPerType = 10;
+        public int aiSacCompaniesPerType = 10;
         public int playerCompaniesPerType = 1;
-        
+        public int startingCapitalCompanies;
+        public int startingCapitalPlayers;
         private const int GridGap = 40;
         public bool isTraining;
         public bool writeToDatabase;
         private bool _isInitDone;
+        private Government _government;
 
         private void Awake()
         {
@@ -34,7 +40,7 @@ namespace NewScripts.Game.World
             }
         }
         
-        private ICompany GetFromGameObject(float xPos, float zPos, GameObject instance, bool isAi)
+        private ICompany GetFromGameObject(float xPos, float zPos, GameObject instance, bool isAi, bool ignoreTraining = false)
         {
             //var go = Instantiate(FoodCompanyPrefab);
             instance.transform.position = new Vector3(xPos, 0, zPos);
@@ -46,10 +52,16 @@ namespace NewScripts.Game.World
                 company = transform.GetComponent<ICompany>();
                 if (company is not null)
                 {
-                    if (isAi)
+                    if (isAi && ignoreTraining == false)
                     {
                         var agent = transform.GetComponent<BehaviorParameters>();
                         agent.BehaviorType = isTraining ? BehaviorType.Default : BehaviorType.InferenceOnly;
+                    }
+
+                    if (isAi && ignoreTraining)
+                    {
+                        var agent = transform.GetComponent<BehaviorParameters>();
+                        agent.BehaviorType = BehaviorType.Default;
                     }
                     break;
                 }
@@ -62,12 +74,12 @@ namespace NewScripts.Game.World
         {
             ServiceLocator.Instance.Settings.IsTraining = isTraining;
             ServiceLocator.Instance.Settings.WriteToDatabase = writeToDatabase;
-            ServiceLocator.Instance.CompanyContainerPanelController = companyPanelGo.GetComponent<CompanyContainerPanelController>();
+            //ServiceLocator.Instance.CompanyContainerPanelController = companyPanelGo.GetComponent<CompanyContainerPanelController>();
             var priceBidCalculator = new BidCalculatorService();
             ServiceLocator.Instance.LaborMarket.InitWorkers(1000, priceBidCalculator);
             int zPos = 0;
             int xPos = 0;
-            decimal liquidity = 300000 / (decimal) (aiCompaniesPerType + playerCompaniesPerType);
+            decimal liquidity = 300000 / (decimal) (aiPpoCompaniesPerType + playerCompaniesPerType);
             for (var i = 0; i < 100; i++)
             {
                 if (i != 0 && i % 10 == 0)
@@ -82,9 +94,16 @@ namespace NewScripts.Game.World
                     company.Liquidity = liquidity;
                     ServiceLocator.Instance.Companys.Add(company);
                 }
-                else if (i < aiCompaniesPerType)
+                else if (i < aiPpoCompaniesPerType + playerCompaniesPerType)
                 {
-                    var go = Instantiate(companyPrefabAi);
+                    var go = Instantiate(companyPrefabAiPpo);
+                    ICompany company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go, true, true);
+                    company.Liquidity = liquidity;
+                    ServiceLocator.Instance.Companys.Add(company);
+                }
+                else if (i < aiSacCompaniesPerType + aiPpoCompaniesPerType + playerCompaniesPerType)
+                {
+                    var go = Instantiate(companyPrefabAiSac);
                     ICompany company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go, true);
                     company.Liquidity = liquidity;
                     ServiceLocator.Instance.Companys.Add(company);
@@ -97,7 +116,9 @@ namespace NewScripts.Game.World
                 xPos++;
             }
             
-            ServiceLocator.Instance.InitFlowController();
+            var governmentInstance = Instantiate(governmentGo);
+            _government = governmentInstance.GetComponent<Government>();
+            ServiceLocator.Instance.AddInstances(_government, companyPanelGo.GetComponent<CompanyContainerPanelController>());
             _isInitDone = true;
         }
         
@@ -113,11 +134,11 @@ namespace NewScripts.Game.World
                 return;
             }
 
-            if (ServiceLocator.Instance.FlowController.Proceed())
+            if (ServiceLocator.Instance.FlowController.ProceedWithAutonomous())
             {
                 StartCoroutine(Run());
             }
-            else
+            else if (ServiceLocator.Instance.FlowController.IsGovernmentDecisionCommitted)
             {
                 foreach (var company in ServiceLocator.Instance.Companys
                              .Where(x => x.DecisionStatus == CompanyDecisionStatus.Pending))
@@ -150,6 +171,10 @@ namespace NewScripts.Game.World
             
             ServiceLocator.Instance.FoodProductMarket.ResolveMarket(isTraining);
             
+            _government.AddFoodBids();
+            ServiceLocator.Instance.FoodProductMarket.ResolveMarket(isTraining, true);
+            _government.DistributeFood();
+            
             decimal averageLuxuryPrice = ServiceLocator.Instance.LuxuryProductMarket.AveragePriceInLastYear();
             foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
             {
@@ -163,6 +188,10 @@ namespace NewScripts.Game.World
                 company.EndMonth();
             }
             
+            _government.PayOutSocialFare();
+            _government.PayOutSubsidy();
+            
+            
             foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
             {
                 worker.EndMonth();
@@ -170,7 +199,13 @@ namespace NewScripts.Game.World
             
             foreach (var company in ServiceLocator.Instance.Companys)
             {
-                company.AddRewards();
+                company.AddRewards(ServiceLocator.Instance.FlowController.Year);
+            }
+            
+            _government.EndMonth();
+            if (ServiceLocator.Instance.FlowController.Month == 12)
+            {
+                _government.EndYear();
             }
             
             ServiceLocator.Instance.FlowController.IncrementMonth();

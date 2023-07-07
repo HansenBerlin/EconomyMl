@@ -28,7 +28,7 @@ namespace NewScripts.Ui.Panels
             var dataset = activeCompanyData[^1];
             periodText.text = $"{dataset.Month}/{dataset.Year}({dataset.Lifetime})";
             companyNameText.text = $"{dataset.CompanyName}";
-            reputationText.text = $"{dataset.Reputation:0}";
+            reputationText.text = $"{dataset.Reputation:0.##}";
             liquidityText.text = $"{dataset.Books.LiquidityStart:0}";
             cashflowText.text = $"{dataset.Books.LiquidityEndCheck - dataset.Books.LiquidityStart:0}";
             workerCount.text = $"{dataset.Workers.EndCount}";

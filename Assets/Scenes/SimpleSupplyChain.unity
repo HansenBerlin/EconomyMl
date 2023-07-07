@@ -10170,6 +10170,14 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
+      propertyPath: companyPrefabAiPpo
+      value: 
+      objectReference: {fileID: 6206724465262390989, guid: 9580cd16e1fe26a418f08a3847a9ecc8, type: 3}
+    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
+      propertyPath: companyPrefabAiSac
+      value: 
+      objectReference: {fileID: 6206724465262390989, guid: 28f82a61c36429c4b8cff39efdce80d2, type: 3}
+    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: interCompanyPrefab
       value: 
       objectReference: {fileID: 6206724465262390989, guid: 1a86223ea0dd978479decc0178711e72, type: 3}

@@ -45,6 +45,11 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.0f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\NewScripts\DataModelling\EconomyMetricsCalculator.cs" />
+     <Compile Include="Assets\NewScripts\DataModelling\GovernmentLedger.cs" />
+     <Compile Include="Assets\NewScripts\Game\Models\GlobalPolicies.cs" />
+     <Compile Include="Assets\NewScripts\Game\Services\ValueMapper.cs" />
+     <Compile Include="Assets\NewScripts\Interfaces\IBidder.cs" />
      <Compile Include="Assets\Scripts\Repositories\ProductMarketDataRepository.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\Tile.cs" />
      <Compile Include="Assets\Scripts\Enums\JobPositionStatus.cs" />
@@ -337,6 +342,7 @@
      <Folder Include="Assets\Brains\company-v2-5-66d33bd1-aeaa-42f5-9740-25328234e212" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\People_T" />
      <Folder Include="Library\PackageCache\com.unity.modules.xr@1.0.0" />
+     <Folder Include="Assets\Brains\final\company-v10-15" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Buildings_M" />
      <Folder Include="Assets\TextMesh Pro\Resources\Sprite Assets" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\- Materials\Colors\Emission" />
@@ -416,6 +422,7 @@
      <Folder Include="Assets\results\company-v8-1" />
      <Folder Include="Assets\Brains\better\company-v4-3\run_logs" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Apocalypse_M" />
+     <Folder Include="Assets\Brains\final\company-v10-15\run_logs" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Tiles_M" />
      <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Anton OFL.txt" />
      <Folder Include="Assets\TextMesh Pro\Resources\Fonts &amp; Materials" />
@@ -511,7 +518,6 @@
      <None Include="Assets\Brains\better\company-v3-3\run_logs\timers.json" />
      <None Include="Assets\Brains\v8\company-v8-4\run_logs\timers.json" />
      <None Include="Library\PackageCache\com.unity.shadergraph@14.0.7\package.json" />
-     <Folder Include="Assets\NewScripts\Interfaces" />
      <None Include="Library\PackageCache\com.unity.feature.development@1.0.1\package.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Nature_T\Clouds_T" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Medieval_T" />
@@ -587,6 +593,7 @@
      <None Include="Assets\Brains\company-four\run_logs\training_status.json" />
      <Folder Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7" />
      <None Include="Library\PackageCache\com.unity.modules.particlesystem@1.0.0\package.json" />
+     <None Include="Assets\Brains\final\company-v10-15\run_logs\training_status.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Food_T" />
      <None Include="Assets\Packages\ScottPlot.4.1.64\lib\netstandard2.0\ScottPlot.xml" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Roman_T" />
@@ -630,7 +637,6 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Terrains_M" />
      <Folder Include="Assets\Brains\better\company-v2-6" />
      <Folder Include="Assets\PolygonTown\Prefabs\Items" />
-     <None Include="Assets\NewScripts\Game\Models\InventoryItem2.txt" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Nature_M\Mushrooms_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Nature_M\Leaves_M" />
@@ -640,7 +646,6 @@
      <Folder Include="Assets\Resources\Prefabs\BaVersion\GameLogic" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\- Textures" />
      <None Include="Assets\results\company-v8-3\run_logs\timers.json" />
-     <Folder Include="Assets\NewScripts\DataModelling" />
      <None Include="Assets\Brains\company-v2-7\run_logs\timers.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Resources_T" />
      <Folder Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents\Plugins\ProtoBuffer\runtimes" />
@@ -679,6 +684,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\WW2_M" />
      <Folder Include="Assets\PolygonStarter\Textures" />
      <Folder Include="Assets\results\company-v7-2\run_logs" />
+     <Folder Include="Assets\Brains\final\company-v10-15\Company" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Traffic_T" />
      <None Include="Assets\Brains\v8\company-v8-4\run_logs\training_status.json" />
      <Folder Include="Assets\results\company-v6-3\Company" />
@@ -707,7 +713,6 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Roman_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Props_M\Materials" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Vehicles_M" />
-     <Folder Include="Assets\NewScripts\Game\Services" />
      <None Include="Library\PackageCache\com.unity.modules.physics@1.0.0\package.json" />
      <None Include="Assets\Mirror\Notice.txt" />
      <Folder Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\Textures\2D" />
@@ -810,6 +815,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Props_T" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Tiles_T\Runway_T" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\People_M\Rigs_M" />
+     <None Include="Assets\Brains\final\company-v10-15\run_logs\timers.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\- Materials\Colors\Transparent" />
      <Folder Include="Assets\Mirror" />
      <Folder Include="Assets\results\company-v6-3\run_logs" />
@@ -892,7 +898,6 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Egypt_M" />
      <None Include="Assets\ScriptTemplates\54-Mirror__Network Room Manager-NewNetworkRoomManager.cs.txt" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T" />
-     <Folder Include="Assets\NewScripts\Game\Models" />
      <Folder Include="Assets\Brains\company-v2-7" />
      <Folder Include="Assets\Brains\company-v2-5-66d33bd1-aeaa-42f5-9740-25328234e212\Company" />
      <Folder Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\Textures\BlueNoise16\L" />

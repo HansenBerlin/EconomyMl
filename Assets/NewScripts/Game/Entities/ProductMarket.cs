@@ -16,7 +16,8 @@ namespace NewScripts.Game.Entities
         private readonly ProductType _productType;
         private List<ProductOffer> ProductOffers { get; } = new();
         private readonly List<decimal> _salesHistory = new();
-        private List<ProductBid> ProductBids { get; } = new();
+        private List<ProductBid> PrivateProductBids { get; } = new();
+        private List<ProductBid> GovernmentProductBids { get; } = new();
         private readonly decimal _averageStartingPrice;
 
         public ProductMarket(ProductType productType, decimal startingAverage)
@@ -37,7 +38,7 @@ namespace NewScripts.Game.Entities
 
         public void AddBid(ProductBid bid)
         {
-            ProductBids.Add(bid);
+            PrivateProductBids.Add(bid);
         }
         
         public void AddOffer(ProductOffer offer)
@@ -45,12 +46,21 @@ namespace NewScripts.Game.Entities
             ProductOffers.Add(offer);
         }
         
-        public void ResolveMarket(bool isTraining)
+        public void ResolveMarket(bool isTraining, bool isGovernmentRequest = false)
         {
             var offers = ProductOffers.OrderBy(x => x.Price).ToList();
-            var bids = ProductBids.OrderByDescending(x => x.Price).ToList();
+            List<ProductBid> bids;
             List<Deal> successfulDeals = new();
-            PriceAnalysisStats = new PriceAnalysisStatsModel(ProductOffers, ProductBids, _productType);
+            
+            if (isGovernmentRequest)
+            {
+                bids = GovernmentProductBids.OrderByDescending(x => x.Price).ToList();    
+            }
+            else
+            {
+                bids = PrivateProductBids.OrderByDescending(x => x.Price).ToList();
+                PriceAnalysisStats = new PriceAnalysisStatsModel(ProductOffers, PrivateProductBids, _productType);
+            }
 
             while (offers.Count > 0 && bids.Count > 0)
             {
@@ -106,8 +116,15 @@ namespace NewScripts.Game.Entities
                 }
             }
 
-            ProductOffers.Clear();
-            ProductBids.Clear();
+            if(isGovernmentRequest)
+            {
+                GovernmentProductBids.Clear();
+                ProductOffers.Clear();
+            }
+            else
+            {
+                PrivateProductBids.Clear();
+            }
         }
     }
 }

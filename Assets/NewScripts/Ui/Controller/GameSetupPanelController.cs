@@ -41,7 +41,7 @@ namespace NewScripts.Ui.Controller
             var setup = setupGo.GetComponent<EnvironmentSetup>();
             int humanPlayers = isTrainingToggle.isOn ? 0 : (int)playerCountSlider.value;
             setup.playerCompaniesPerType = humanPlayers;
-            setup.aiCompaniesPerType = (int)aiCountSlider.value;
+            setup.aiPpoCompaniesPerType = (int)aiCountSlider.value;
             setup.writeToDatabase = writeToDatabaseToggle.isOn;
             setup.isTraining = isTrainingToggle.isOn;
             setupGo.SetActive(true);
