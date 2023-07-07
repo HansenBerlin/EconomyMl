@@ -10097,114 +10097,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnvironmentSetup
       objectReference: {fileID: 0}
-    - target: {fileID: 188420078434243018, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: RoundText
+      propertyPath: governmentGo
       value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: roundText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: buttonText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: isTraining
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: IsThrottled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: isThrottled
-      value: 0
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 7249207890542883622, guid: c47b5a5582d4f28428bf71d51500e0a8, type: 3}
     - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: companyPanelGo
       value: 
       objectReference: {fileID: 99573062}
     - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: companyPrefabAi
-      value: 
-      objectReference: {fileID: 6206724465262390989, guid: 9580cd16e1fe26a418f08a3847a9ecc8, type: 3}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: companysPerType
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: dummyTilePrefab
-      value: 
-      objectReference: {fileID: 6206724465262390989, guid: 628ab7382e3f61143b891b5b4774d10a, type: 3}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: writeToDatabase
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: companiesPerType
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: houseHoldPanelGo
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: FoodCompanyPrefab
-      value: 
-      objectReference: {fileID: 6206724465262390989, guid: 9580cd16e1fe26a418f08a3847a9ecc8, type: 3}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: foodCompanyPrefab
-      value: 
-      objectReference: {fileID: 6206724465262390989, guid: 9580cd16e1fe26a418f08a3847a9ecc8, type: 3}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: InterCompanyPrefab
-      value: 
-      objectReference: {fileID: 6206724465262390989, guid: 1a86223ea0dd978479decc0178711e72, type: 3}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: aiCompaniesPerType
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: companyPrefabAiPpo
-      value: 
-      objectReference: {fileID: 6206724465262390989, guid: 9580cd16e1fe26a418f08a3847a9ecc8, type: 3}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: companyPrefabAiSac
-      value: 
-      objectReference: {fileID: 6206724465262390989, guid: 28f82a61c36429c4b8cff39efdce80d2, type: 3}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: interCompanyPrefab
-      value: 
-      objectReference: {fileID: 6206724465262390989, guid: 1a86223ea0dd978479decc0178711e72, type: 3}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: LuxuryCompanyPrefab
-      value: 
-      objectReference: {fileID: 6206724465262390989, guid: b1c951128dd5cb84f9a17a1bd39e5191, type: 3}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: companyPrefabPlayer
-      value: 
-      objectReference: {fileID: 6206724465262390989, guid: 45d9d897b4d326242b907b74fda427ca, type: 3}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: luxuryCompanyPrefab
-      value: 
-      objectReference: {fileID: 6206724465262390989, guid: b1c951128dd5cb84f9a17a1bd39e5191, type: 3}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: playerCompaniesPerType
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: foodCompanyPrefabPlayer
-      value: 
-      objectReference: {fileID: 6206724465262390989, guid: 45d9d897b4d326242b907b74fda427ca, type: 3}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: toggleActiveStateButton
-      value: 
-      objectReference: {fileID: 2074448793}
     - target: {fileID: 3727644843878505812, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -22482,6 +22386,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1944528317280122444, guid: d4991c8c72aa4fe4eb718988e090ab08, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4732577462641213400, guid: d4991c8c72aa4fe4eb718988e090ab08, type: 3}
+      propertyPath: m_Value
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4732577462641213400, guid: d4991c8c72aa4fe4eb718988e090ab08, type: 3}

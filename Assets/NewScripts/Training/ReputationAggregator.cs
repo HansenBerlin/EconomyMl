@@ -56,32 +56,32 @@ namespace NewScripts.Training
 
         public void AddProfitChange()
         {
-            _profitReputation = _profitNormalizer.Normalize(_rewardValueModel.Profit);
+            _profitReputation = _profitNormalizer.Normalize(_rewardValueModel.Profit, true);
         }
         
         public void AddLifetimeChange()
         {
-            _lifetimeReputation = _lifetimeNormalizer.Normalize(_rewardValueModel.Lifetime);
+            _lifetimeReputation = _lifetimeNormalizer.Normalize(_rewardValueModel.Lifetime, true);
         }
         
         public void AddWorkerContractRuntimeChange()
         {
-            _workerContractRuntimeReputation = _workerContractRuntimeNormalizer.Normalize(_rewardValueModel.WorkerContractRuntime);
+            _workerContractRuntimeReputation = _workerContractRuntimeNormalizer.Normalize(_rewardValueModel.WorkerContractRuntime, true);
         }
         
         public void AddMarketShareChange()
         {
             //int totalSalesFood = ServiceLocator.Instance.HouseholdAggregator.CompaniesAggregates[^1].AverageSalesFood;
             //int totalSalesLuxury = ServiceLocator.Instance.HouseholdAggregator.CompaniesAggregates[^1].AverageSalesLuxury;
-            var foodReputation = _foodMarketshareNormalizer.Normalize(_rewardValueModel.FoodSales);
-            var luxuryReputation = _luxuryMarketshareNormalizer.Normalize(_rewardValueModel.LuxurySales);
+            var foodReputation = _foodMarketshareNormalizer.Normalize(_rewardValueModel.FoodSales, true);
+            var luxuryReputation = _luxuryMarketshareNormalizer.Normalize(_rewardValueModel.LuxurySales, true);
             _marketShareReputation = (foodReputation + luxuryReputation) / 2;
         }
         
         private float CalculateReputation()
         {
             var reputation = (float) ((_profitReputation * 3 + _workerContractRuntimeReputation + _marketShareReputation) / 5);
-            Debug.Log($"Total: {reputation*100:0.##} Profit: {_profitReputation*100:0.##}, WorkerContractRuntime: {_workerContractRuntimeReputation*100:0.##}, MarketShare: {_marketShareReputation*100:0.##}");
+            //Debug.Log($"Total: {reputation*100:0.##} Profit: {_profitReputation*100:0.##}, WorkerContractRuntime: {_workerContractRuntimeReputation*100:0.##}, MarketShare: {_marketShareReputation*100:0.##}");
             return reputation;
         }
     }

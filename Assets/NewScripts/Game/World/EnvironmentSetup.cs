@@ -40,7 +40,7 @@ namespace NewScripts.Game.World
             }
         }
         
-        private ICompany GetFromGameObject(float xPos, float zPos, GameObject instance, bool isAi, bool ignoreTraining = false)
+        private ICompany GetFromGameObject(float xPos, float zPos, GameObject instance, bool isAi)
         {
             //var go = Instantiate(FoodCompanyPrefab);
             instance.transform.position = new Vector3(xPos, 0, zPos);
@@ -52,16 +52,10 @@ namespace NewScripts.Game.World
                 company = transform.GetComponent<ICompany>();
                 if (company is not null)
                 {
-                    if (isAi && ignoreTraining == false)
+                    if (isAi)
                     {
                         var agent = transform.GetComponent<BehaviorParameters>();
                         agent.BehaviorType = isTraining ? BehaviorType.Default : BehaviorType.InferenceOnly;
-                    }
-
-                    if (isAi && ignoreTraining)
-                    {
-                        var agent = transform.GetComponent<BehaviorParameters>();
-                        agent.BehaviorType = BehaviorType.Default;
                     }
                     break;
                 }
@@ -97,7 +91,7 @@ namespace NewScripts.Game.World
                 else if (i < aiPpoCompaniesPerType + playerCompaniesPerType)
                 {
                     var go = Instantiate(companyPrefabAiPpo);
-                    ICompany company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go, true, true);
+                    ICompany company = GetFromGameObject(GridGap * xPos, GridGap * zPos * -1, go, true);
                     company.Liquidity = liquidity;
                     ServiceLocator.Instance.Companys.Add(company);
                 }

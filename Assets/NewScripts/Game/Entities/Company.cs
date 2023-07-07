@@ -374,9 +374,9 @@ namespace NewScripts.Game.Entities
 
             var lastPeriodData = Ledger[^1];
             decimal profit = lastPeriodData.Books.LiquidityEndCheck - lastPeriodData.Books.LiquidityStart;
-            if (ServiceLocator.Instance.FlowController.Year > 1)
+            if (ServiceLocator.Instance.FlowController.Year > 1 && profit > 0)
             {
-                ServiceLocator.Instance.Government.PayTaxes(profit);
+                Liquidity -= ServiceLocator.Instance.Government.PayTaxes(profit);
             }
             _reputationAggregator.AddValuesToNormalizers((double)profit, lastPeriodData.Lifetime, _jobContracts, lastPeriodData.Food.Sales, lastPeriodData.Luxury.Sales);
 

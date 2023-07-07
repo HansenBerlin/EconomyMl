@@ -24,7 +24,8 @@ namespace NewScripts.DataModelling
             decimal averageLuxuryDemand = ServiceLocator.Instance.Settings.LuxuryDemandModifier * 10;
             decimal vpiTwo = averageFoodDemand * averagePriceFoodLastPeriod + averageLuxuryDemand * averagePriceLuxuryLastPeriod;
             decimal vpiOne = averageFoodDemand * averagePriceFoodThisPeriod + averageLuxuryDemand * averagePriceLuxuryThisPeriod;
-            decimal inflationRate = (vpiTwo / vpiOne - 1) * 100;
+            decimal inflationRate = (vpiOne / vpiTwo - 1) * 100;
+            
             return inflationRate;
         }
 

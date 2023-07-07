@@ -36,8 +36,13 @@ namespace NewScripts.Game.Entities
             return average;
         }
 
-        public void AddBid(ProductBid bid)
+        public void AddBid(ProductBid bid, bool isGovernmentBid = false)
         {
+            if (isGovernmentBid)
+            {
+                GovernmentProductBids.Add(bid);
+                return;
+            }
             PrivateProductBids.Add(bid);
         }
         

@@ -18,7 +18,7 @@ namespace NewScripts.Training
             _globalHistoricValues.Add(inputValue);
         }
 
-        public double Normalize(double inputValue)
+        public double Normalize(double inputValue, bool isHardMode = false)
         {
             double average = _globalHistoricValues.Average();
 
@@ -30,8 +30,7 @@ namespace NewScripts.Training
 
             if (range != 0)
             {
-                double improvement = inputValue - (average + maxValue) / 2;
-                //double improvement = inputValue - average;
+                double improvement = isHardMode ? inputValue - (average + maxValue) / 2 : inputValue - average;
                 normalizedValue = improvement / (range / 2);
             }
 

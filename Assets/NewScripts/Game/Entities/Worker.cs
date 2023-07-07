@@ -93,7 +93,8 @@ namespace NewScripts.Game.Entities
                 }
                 if (Money - bidPrice * inventoryItem.ConsumeInMonth < 0)
                 {
-                    throw new Exception("Not enough money");
+                    return;
+                    //throw new Exception("Not enough money");
                 }
                 var bid = new ProductBid(productType, this, bidPrice, inventoryItem.ConsumeInMonth);
                 market.AddBid(bid);
