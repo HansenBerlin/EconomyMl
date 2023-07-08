@@ -97,6 +97,7 @@ namespace NewScripts.Game.Entities
             }
         }
 
+
         public void RequestMonthlyDecision()
         {
             ServiceLocator.Instance.FlowController.CommitCompanyDecision(Id, DecisionStatus = CompanyDecisionStatus.Requested);
@@ -149,6 +150,7 @@ namespace NewScripts.Game.Entities
                 sensor.AddObservation((float)ServiceLocator.Instance.FoodProductMarket.DemandForProduct);
                 sensor.AddObservation((float)ServiceLocator.Instance.LuxuryProductMarket.DemandForProduct);
                 sensor.AddObservation((float)ServiceLocator.Instance.LaborMarket.DemandForWorkforce);
+                sensor.AddObservation(ServiceLocator.Instance.Policies.CompanyTaxRate);
             }
         }
 
@@ -158,7 +160,7 @@ namespace NewScripts.Game.Entities
             if (_jobContracts.Count == 0)
             {
                 //actionMask.SetActionEnabled(0, 0, false);
-                //actionMask.SetActionEnabled(0, 2, false);
+                actionMask.SetActionEnabled(0, 2, false);
             }
         }
 
@@ -167,12 +169,14 @@ namespace NewScripts.Game.Entities
         private float _luxPriceRampup = 6;
         private float _wageRampup = 70;
         
+        
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
             //UpdateCanvasText(false);
             if (DecisionStatus != CompanyDecisionStatus.Requested)
             {
-                throw new Exception("DecisionStatus != CompanyDecisionStatus.Requested");
+                //return;
+                throw new Exception("ACT: DecisionStatus != CompanyDecisionStatus.Requested");
             }
 
             if(LifetimeMonths == 12)
@@ -186,7 +190,8 @@ namespace NewScripts.Game.Entities
             LastDecision = new Decision();
             int workerDecision = actionBuffers.DiscreteActions[0];
             LastDecision.AdjustWages = actionBuffers.DiscreteActions[1] == 1;
-            LastDecision.Wage = (decimal)ValueMapper.MapValue(actionBuffers.ContinuousActions[0], 10 + _wageRampup, 500 - 4 * _wageRampup);
+            float wageLowerBoundary = LifetimeMonths > 12 ? (float)ServiceLocator.Instance.Policies.MinimumWage : 10 + _wageRampup;
+            LastDecision.Wage = (decimal)ValueMapper.MapValue(actionBuffers.ContinuousActions[0], wageLowerBoundary, 800 - 6 * _wageRampup);
             LastDecision.PriceFood = (decimal)ValueMapper.MapValue(actionBuffers.ContinuousActions[1], 0.1F + _foodPriceRampup, 5F - _foodPriceRampup * 5);
             LastDecision.PriceLuxury = (decimal)ValueMapper.MapValue(actionBuffers.ContinuousActions[2], 1F + _luxPriceRampup, 100F - _luxPriceRampup * 10);
             LastDecision.RessourceDistribution = ValueMapper.MapValue(actionBuffers.ContinuousActions[3], 0.1F, 1F);
@@ -212,10 +217,12 @@ namespace NewScripts.Game.Entities
             else if(workerDecision == 2 && _jobContracts.Count > 0)
             {
                 LastDecision.WorkerChange = fireWorkers * -1;
+                OpenPositions = 0;
             }
             else
             {
                 LastDecision.WorkerChange = 0;
+                OpenPositions = 0;
             }
 
             var decisionLedger = new DecisionLedger(LastDecision);
@@ -369,15 +376,19 @@ namespace NewScripts.Game.Entities
             ProductStockLuxury -= (int)(ProductStockLuxury * 0.1M);
             Ledger[^1].Food.StockEndCheck = ProductStockFood;
             Ledger[^1].Luxury.StockEndCheck = ProductStockLuxury;
-            Ledger[^1].Books.LiquidityEndCheck = Liquidity;
             Ledger[^1].Workers.EndCount = _jobContracts.Count;
 
             var lastPeriodData = Ledger[^1];
             decimal profit = lastPeriodData.Books.LiquidityEndCheck - lastPeriodData.Books.LiquidityStart;
-            if (ServiceLocator.Instance.FlowController.Year > 1 && profit > 0)
+            decimal taxPaid = 0;
+            if (LifetimeMonths > 3 && profit > 0)
             {
-                Liquidity -= ServiceLocator.Instance.Government.PayTaxes(profit);
+                taxPaid = ServiceLocator.Instance.Government.PayCompanyTaxes(profit);
+                Liquidity -= taxPaid;
             }
+            
+            Ledger[^1].Books.TaxPayments = taxPaid;
+            Ledger[^1].Books.LiquidityEndCheck = Liquidity;
             _reputationAggregator.AddValuesToNormalizers((double)profit, lastPeriodData.Lifetime, _jobContracts, lastPeriodData.Food.Sales, lastPeriodData.Luxury.Sales);
 
             
@@ -441,6 +452,11 @@ namespace NewScripts.Game.Entities
         
         public void FullfillBid(ProductType product, int count, decimal price)
         {
+            if (count <= 0 || price <= 0)
+            {
+                Debug.LogError("Count and price must be positive");
+                //throw new ArgumentException("Count and price must be positive");
+            }
             if(product == ProductType.Luxury)
             {
                 Ledger[^1].Luxury.Sales += count;

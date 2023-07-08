@@ -2423,6 +2423,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: CompanyAgent
       objectReference: {fileID: 0}
+    - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 33
+      objectReference: {fileID: 0}
+    - target: {fileID: 1709818764533265377, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
+      propertyPath: m_BrainParameters.NumStackedVectorObservations
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6541046929888668071, guid: 4bc44683090e81043bb455fcf37f6fcd, type: 3}
       propertyPath: emergencySign
       value: 

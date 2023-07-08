@@ -14,6 +14,8 @@
         AverageShortWorkWage,
         AverageReservationWage,
         AverageFoodInventoryBeforeBuying,
-        AverageLuxuryInventoryBeforeBuying
+        AverageLuxuryInventoryBeforeBuying,
+        AverageMoneyAtMonthEnd,
+        AverageRichTaxPaid
     }
 }

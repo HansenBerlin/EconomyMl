@@ -4,6 +4,7 @@ namespace NewScripts.Game.Models
 {
     public class Settings
     {
+        public decimal TotalMoneySupply { get; set; }
         public bool IsTraining { get; set; }
         public bool WriteToDatabase { get; set; }
         public int FoodOutputMultiplier { get; } = 300;

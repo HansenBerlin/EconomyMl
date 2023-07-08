@@ -18,7 +18,7 @@ namespace NewScripts.Training
             _globalHistoricValues.Add(inputValue);
         }
 
-        public double Normalize(double inputValue, bool isHardMode = false)
+        public double Normalize(double inputValue, bool isHardMode = true)
         {
             double average = _globalHistoricValues.Average();
 

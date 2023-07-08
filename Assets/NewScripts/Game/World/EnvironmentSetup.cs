@@ -28,6 +28,7 @@ namespace NewScripts.Game.World
         public int startingCapitalPlayers;
         private const int GridGap = 40;
         public bool isTraining;
+        private const decimal TotalMoneySupply = 1_000_000;
         public bool writeToDatabase;
         private bool _isInitDone;
         private Government _government;
@@ -66,14 +67,15 @@ namespace NewScripts.Game.World
         
         private void SetupGameObjects()
         {
+            ServiceLocator.Instance.Settings.TotalMoneySupply = TotalMoneySupply;
             ServiceLocator.Instance.Settings.IsTraining = isTraining;
             ServiceLocator.Instance.Settings.WriteToDatabase = writeToDatabase;
             //ServiceLocator.Instance.CompanyContainerPanelController = companyPanelGo.GetComponent<CompanyContainerPanelController>();
             var priceBidCalculator = new BidCalculatorService();
-            ServiceLocator.Instance.LaborMarket.InitWorkers(1000, priceBidCalculator);
+            ServiceLocator.Instance.LaborMarket.InitWorkers(1000, priceBidCalculator, TotalMoneySupply / 4 / 1000);
             int zPos = 0;
             int xPos = 0;
-            decimal liquidity = 300000 / (decimal) (aiPpoCompaniesPerType + playerCompaniesPerType);
+            decimal liquidity = TotalMoneySupply / 2 / (aiPpoCompaniesPerType + playerCompaniesPerType + aiSacCompaniesPerType);
             for (var i = 0; i < 100; i++)
             {
                 if (i != 0 && i % 10 == 0)
@@ -112,7 +114,7 @@ namespace NewScripts.Game.World
             
             var governmentInstance = Instantiate(governmentGo);
             _government = governmentInstance.GetComponent<Government>();
-            ServiceLocator.Instance.AddInstances(_government, companyPanelGo.GetComponent<CompanyContainerPanelController>());
+            ServiceLocator.Instance.AddInstances(_government, companyPanelGo.GetComponent<CompanyContainerPanelController>(), TotalMoneySupply / 4);
             _isInitDone = true;
         }
         
@@ -128,7 +130,8 @@ namespace NewScripts.Game.World
                 return;
             }
 
-            if (ServiceLocator.Instance.FlowController.ProceedWithAutonomous())
+            if (ServiceLocator.Instance.FlowController.ProceedWithAutonomous() 
+                && ServiceLocator.Instance.FlowController.IsGovernmentDecisionCommitted)
             {
                 StartCoroutine(Run());
             }
@@ -140,6 +143,11 @@ namespace NewScripts.Game.World
                     company.RequestMonthlyDecision();
                 }
             }
+            else if (ServiceLocator.Instance.FlowController.IsGovernmentDecisionCommitted == false)
+            {
+                _government.RequestDecision();
+            }
+            
         }
 
         private IEnumerator Run()
@@ -168,7 +176,12 @@ namespace NewScripts.Game.World
             _government.AddFoodBids();
             ServiceLocator.Instance.FoodProductMarket.ResolveMarket(isTraining, true);
             _government.DistributeFood();
-            
+
+            foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
+            {
+                worker.Consume(ProductType.Food);
+            }
+
             decimal averageLuxuryPrice = ServiceLocator.Instance.LuxuryProductMarket.AveragePriceInLastYear();
             foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
             {
@@ -176,6 +189,11 @@ namespace NewScripts.Game.World
             }
             
             ServiceLocator.Instance.LuxuryProductMarket.ResolveMarket(isTraining);
+            
+            foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
+            {
+                worker.Consume(ProductType.Luxury);
+            }
             
             foreach (var company in ServiceLocator.Instance.Companys)
             {

@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace NewScripts.Game.Entities
 {
-    public class Government : MonoBehaviour, IBidder
+    public class Government : Agent, IBidder
     {
         public List<GovernmentLedger> Ledgers { get; } = new();
         private decimal Liquidity { get; set; } = 100000;
@@ -28,102 +28,131 @@ namespace NewScripts.Game.Entities
         private float _inflationRateAggregate;
         private float _employmentRateAggregate;
 
-        public void Init(GlobalPolicies policies, int companyCount, EconomyMetricsCalculator economyMetrics, RewardNormalizer rewardNormalizer)
+        public void Init(GlobalPolicies policies, int companyCount, EconomyMetricsCalculator economyMetrics, 
+            RewardNormalizer rewardNormalizer, decimal startingLiquidity)
         {
+            Liquidity = startingLiquidity;
             _policies = policies;
             _companyCount = companyCount;
             _economyMetrics = economyMetrics;
             _rewardNormalizer = rewardNormalizer;
         }
 
-        //public override void CollectObservations(VectorSensor sensor)
-        //{
-        //    //sensor.AddObservation(_employmentRateAggregate);
-        //    //sensor.AddObservation(_inflationRateAggregate);
-        //    //sensor.AddObservation(_gdpAggregate);
-        //    //sensor.AddObservation(FoodSupply);
-        //    //sensor.AddObservation((float)Liquidity);
-        //    //sensor.AddObservation(_policies.TaxRate);
-        //    //sensor.AddObservation(_policies.SubsidyRate);
-        //    //sensor.AddObservation(_policies.FoodStamprate);
-        //    //sensor.AddObservation(_policies.SocialWelfareRate);
-        //    //sensor.AddObservation((float)_policies.MinimumWage);
-        //}
-//
-        //public override void OnActionReceived(ActionBuffers actionBuffers)
-        //{
-        //    float taxRate = ValueMapper.MapValue(actionBuffers.ContinuousActions[0], 0, 0.9F);
-        //    float minimumWage = ValueMapper.MapValue(actionBuffers.ContinuousActions[1], 1, 200F);
-        //    (float subsidyRate, float socialWelfareRate, float foodStampRate) = ValueMapper.MapPolicyActions(actionBuffers.ContinuousActions[2], 
-        //        actionBuffers.ContinuousActions[3], actionBuffers.ContinuousActions[4]);
-        //    //_policies.TaxRate = taxRate;
-        //    //_policies.MinimumWage = (decimal)minimumWage;
-        //    //_policies.SubsidyRate = subsidyRate;
-        //    //_policies.SocialWelfareRate = socialWelfareRate;
-        //    //_policies.FoodStamprate = foodStampRate;
-        //    //_inflationRateAggregate = 0;
-        //    //_gdpAggregate = 0;
-        //    ServiceLocator.Instance.FlowController.IsGovernmentDecisionCommitted = true;
-        //}
+        public override void CollectObservations(VectorSensor sensor)
+        {
+            sensor.AddObservation(FoodSupply);
+            sensor.AddObservation(_policies.RichTaxRate);
+            sensor.AddObservation((float)ServiceLocator.Instance.FoodProductMarket.AveragePriceInLastYear());
+            sensor.AddObservation(_employmentRateAggregate/ServiceLocator.Instance.FlowController.Month);
+            sensor.AddObservation(_inflationRateAggregate/ServiceLocator.Instance.FlowController.Month);
+            sensor.AddObservation(_gdpAggregate/ServiceLocator.Instance.FlowController.Month);
+            sensor.AddObservation((float)Liquidity);
+            sensor.AddObservation(_policies.CompanyTaxRate);
+            sensor.AddObservation(_policies.SubsidyRate);
+            sensor.AddObservation(_policies.FoodStamprate);
+            sensor.AddObservation(_policies.SocialWelfareRate);
+            sensor.AddObservation((float)_policies.MinimumWage);
+        }
+
+        //private bool commited = true;
+
+        public override void OnActionReceived(ActionBuffers actionBuffers)
+        {
+            if (ServiceLocator.Instance.FlowController.IsGovernmentDecisionCommitted)
+            {
+                throw new Exception("Government decision already committed");
+            }
+            ServiceLocator.Instance.FlowController.IsGovernmentDecisionCommitted = true;
+            float taxRate = ValueMapper.MapValue(actionBuffers.ContinuousActions[0], 0, 0.9F);
+            float richtaxRate = ValueMapper.MapValue(actionBuffers.ContinuousActions[5], 0, 0.5F);
+            
+            float minimumWage = ValueMapper.MapValue(actionBuffers.ContinuousActions[1], 1, 200F);
+            (float subsidyRate, float socialWelfareRate, float foodStampRate) = ValueMapper.MapPolicyActions(actionBuffers.ContinuousActions[2], 
+                actionBuffers.ContinuousActions[3], actionBuffers.ContinuousActions[4]);
+            _policies.CompanyTaxRate = taxRate;
+            _policies.RichTaxRate = richtaxRate;
+            _policies.MinimumWage = (decimal)minimumWage;
+            _policies.SubsidyRate = subsidyRate;
+            _policies.SocialWelfareRate = socialWelfareRate;
+            _policies.FoodStamprate = foodStampRate;
+           Debug.Log($"Government ({ServiceLocator.Instance.FlowController.Month}/{ServiceLocator.Instance.FlowController.Year}): TaxRate: {taxRate:0.##}, MinimumWage: {minimumWage:0}, SubsidyRate: {subsidyRate:0.##}, " +
+                     $"SocialWelfareRate: {socialWelfareRate:0.##}, FoodStamprate: {foodStampRate:0.##}, RichTaxRate: {richtaxRate:0.##}");
+        }
 
         public void EndYear()
         {
             ServiceLocator.Instance.FlowController.IsGovernmentDecisionCommitted = false;
+
             _inflationRateAggregate /= 12;
             _gdpAggregate /= 12;
             _employmentRateAggregate /= 12;
             _rewardNormalizer.AddValue(_gdpAggregate);
-            Debug.Log($"YEAR Government: InflationRate: {_inflationRateAggregate:0.##}, " +
-                      $"Gdp: {_gdpAggregate:0}, EmploymentRate: {_employmentRateAggregate:0}, " +
-                      $"Liquidity: {Liquidity}, FoodSupply: {FoodSupply}");
+           //Debug.Log($"YEAR Government: InflationRate: {_inflationRateAggregate:0.##}, " +
+           //          $"Gdp: {_gdpAggregate:0}, EmploymentRate: {_employmentRateAggregate:0}, " +
+           //          $"Liquidity: {Liquidity}, FoodSupply: {FoodSupply}");
             
-            //Academy.Instance.StatsRecorder.Add("GV/InflationRate", _inflationRateAggregate);
-            //Academy.Instance.StatsRecorder.Add("GV/Gdp", _gdpAggregate);
-            //Academy.Instance.StatsRecorder.Add("GV/EmploymentRate", _employmentRateAggregate);
-            //Academy.Instance.StatsRecorder.Add("GV/Liquidity", (float)Liquidity);
-            //Academy.Instance.StatsRecorder.Add("GV/FoodSupply", FoodSupply);
-            //Academy.Instance.StatsRecorder.Add("GV/TaxRate", _policies.TaxRate);
-            //Academy.Instance.StatsRecorder.Add("GV/SubsidyRate", _policies.SubsidyRate);
-            //Academy.Instance.StatsRecorder.Add("GV/FoodStamprate", _policies.FoodStamprate);
-            //Academy.Instance.StatsRecorder.Add("GV/SocialWelfareRate", _policies.SocialWelfareRate);
-            //Academy.Instance.StatsRecorder.Add("GV/MinimumWage", (float)_policies.MinimumWage);
+            Academy.Instance.StatsRecorder.Add("GV/InflationRate", _inflationRateAggregate);
+            Academy.Instance.StatsRecorder.Add("GV/Gdp", _gdpAggregate);
+            Academy.Instance.StatsRecorder.Add("GV/EmploymentRate", _employmentRateAggregate);
+            Academy.Instance.StatsRecorder.Add("GV/Liquidity", (float)Liquidity);
+            Academy.Instance.StatsRecorder.Add("GV/FoodSupply", FoodSupply);
+            Academy.Instance.StatsRecorder.Add("GV/CompanyTaxRate", _policies.CompanyTaxRate);
+            Academy.Instance.StatsRecorder.Add("GV/RichTaxRate", _policies.RichTaxRate);
+            Academy.Instance.StatsRecorder.Add("GV/SubsidyRate", _policies.SubsidyRate);
+            Academy.Instance.StatsRecorder.Add("GV/FoodStamprate", _policies.FoodStamprate);
+            Academy.Instance.StatsRecorder.Add("GV/SocialWelfareRate", _policies.SocialWelfareRate);
+            Academy.Instance.StatsRecorder.Add("GV/MinimumWage", (float)_policies.MinimumWage);
 
             var ledger = new GovernmentLedger
             {
                 InflationRate = _inflationRateAggregate,
                 Gdp = _gdpAggregate,
-                TaxRate = _policies.TaxRate,
+                CompanyTaxRate = _policies.CompanyTaxRate,
                 SubsidyRate = _policies.SubsidyRate,
                 FoodStamprate = _policies.FoodStamprate,
                 SocialWelfareRate = _policies.SocialWelfareRate,
                 MinimumWage = _policies.MinimumWage,
                 Liquidity = Liquidity,
-                FoodSupply = FoodSupply
+                FoodSupply = FoodSupply,
+                RichTaxRate = _policies.RichTaxRate
             };
             
             Ledgers.Add(ledger);
 
-            var gdpReward = _rewardNormalizer.Normalize(_gdpAggregate);
-            //AddReward((float)gdpReward);
-
-            if (Liquidity < 10000)
-            {
-                //SetReward(-100f);
-                //EndEpisode();
-            }
+            var gdpReward = _rewardNormalizer.Normalize(_gdpAggregate, false);
+            AddReward((float)gdpReward);
             _inflationRateAggregate = 0;
             _gdpAggregate = 0;
             _employmentRateAggregate = 0;
-            //RequestDecision();
-            ServiceLocator.Instance.FlowController.IsGovernmentDecisionCommitted = true;
+
+            if (ServiceLocator.Instance.FlowController.Year % 10 == 0)
+            {
+                EndEpisode();
+            }
+            var random = new System.Random();
+            //float minimumWage = ValueMapper.MapValue(actionBuffers.ContinuousActions[1], 1, 200F);
+            //(float subsidyRate, float socialWelfareRate, float foodStampRate) = ValueMapper.MapPolicyActions(
+              //  random.Next(-100, 101) / 100F, random.Next(-100, 101) / 100F, random.Next(-100, 101) / 100F);
+            //_policies.TaxRate = random.Next(40, 61) / 100F;
+            //_policies.SubsidyRate = subsidyRate;
+            //_policies.SocialWelfareRate = socialWelfareRate;
+            //_policies.FoodStamprate = foodStampRate;
+            
+            //ServiceLocator.Instance.FlowController.IsGovernmentDecisionCommitted = true;
+
         }
 
         public void AddFoodBids()
         {
             decimal bidPrice = ServiceLocator.Instance.FoodProductMarket.AveragePriceInLastYear();
-            int foodAmount = (int)Math.Floor(Liquidity * (decimal)_policies.FoodStamprate / bidPrice);
-            var bid = new ProductBid(ProductType.Food, this, bidPrice, foodAmount);
-            ServiceLocator.Instance.FoodProductMarket.AddBid(bid);
+            int maxBuyAmount = (int)Math.Floor(Liquidity * (decimal)_policies.FoodStamprate / bidPrice);
+            int maxNeeded = ServiceLocator.Instance.Settings.FoodDemandModifier * 50 * 1000 - FoodSupply;
+            maxBuyAmount = maxNeeded < maxBuyAmount ? maxNeeded : maxBuyAmount;
+            if (maxBuyAmount > 0)
+            {
+                var bid = new ProductBid(ProductType.Food, this, bidPrice, maxBuyAmount);
+                ServiceLocator.Instance.FoodProductMarket.AddBid(bid);
+            }
         }
 
         public void EndMonth()
@@ -139,22 +168,28 @@ namespace NewScripts.Game.Entities
         }
         
 
-        public decimal PayTaxes(decimal profit)
+        public decimal PayCompanyTaxes(decimal profit)
         {
-            var tax = profit * (decimal) _policies.TaxRate;
+            var tax = profit * (decimal) _policies.CompanyTaxRate;
             Liquidity += tax;
-            if(Liquidity < 0)
-            {
-                Debug.Log("Government is bankrupt");
-                //SetReward(-100f);
-                //EndEpisode();
-            }
+            Academy.Instance.StatsRecorder.Add("GV/CompanyTaxIncome", (float)tax);
+            return tax;
+        }
+        
+        public decimal PayRichTaxes(decimal capital)
+        {
+            var tax = capital * (decimal) _policies.RichTaxRate;
+            Liquidity += tax;
+            Academy.Instance.StatsRecorder.Add("GV/RichTaxIncome", (float)tax);
             return tax;
         }
 
         public void PayOutSubsidy()
         {
-            var startups = Companies.Where(x => x.LifetimeMonths < 12).ToList();
+            int companysCount = Companies.Count;
+            var startups = Companies
+                .Where(x => x.LifetimeMonths < 12 || x.Liquidity < ServiceLocator.Instance.Settings.TotalMoneySupply / 10 / companysCount)
+                .ToList();
             if (startups.Count == 0)
             {
                 return;
@@ -166,31 +201,26 @@ namespace NewScripts.Game.Entities
                 company.Liquidity += subsidityPerCompany;
                 Liquidity -= subsidityPerCompany;
             }
-            if(Liquidity < 0)
-            {
-                Debug.Log("Government is bankrupt");
-                //SetReward(-100f);
-                //EndEpisode();
-            }
+            Academy.Instance.StatsRecorder.Add("GV/SubsidyPaid", (float)subsidityPerCompany * startups.Count);
         }
         
         public void FullfillBid(ProductType product, int count, decimal price)
         {
+            if (count <= 0 || price <= 0)
+            {
+                throw new ArgumentException("Count and price must be positive");
+            }
             Liquidity -= count * price;
             FoodSupply += count;
-            if(Liquidity < 0)
-            {
-                Debug.Log("Government is bankrupt");
-                //SetReward(-100f);
-                //EndEpisode();
-            }
+            Academy.Instance.StatsRecorder.Add("GV/Foodxpenses", count * (float)price);
         }
 
         public void PayOutSocialFare()
         {
             var unemployed =
-                ServiceLocator.Instance.LaborMarket.Workers.Where(
-                    x => x.HasJob == false).ToList();
+                ServiceLocator.Instance.LaborMarket.Workers
+                    .Where(x => x.HasJob == false && x.Money < ServiceLocator.Instance.Settings.TotalMoneySupply / 10000)
+                    .ToList();
 
             if (unemployed.Count > 0)
             {
@@ -200,13 +230,7 @@ namespace NewScripts.Game.Entities
                     worker.PaySocialWelfare(paymentPerHousehold);
                     Liquidity -= paymentPerHousehold;
                 }
-
-            }
-            if(Liquidity < 0)
-            {
-                Debug.Log("Government is bankrupt");
-                //SetReward(-100f);
-                //EndEpisode();
+                Academy.Instance.StatsRecorder.Add("GV/SocialWelfarePaid", (float)paymentPerHousehold * unemployed.Count);
             }
         }
         
@@ -214,17 +238,21 @@ namespace NewScripts.Game.Entities
         {
             var hungry =
                 ServiceLocator.Instance.LaborMarket.Workers.Where(
-                    x => x.IsHungry == false).ToList();
-            decimal averageMarketPrice = ServiceLocator.Instance.FoodProductMarket.AveragePriceInLastYear();
+                    x => x.IsHungry).ToList();
 
             if (hungry.Count > 0)
             {
                 int foodPerHousehold = (int)Math.Floor((float)FoodSupply / hungry.Count);
+                if (foodPerHousehold == 0)
+                {
+                    return;
+                }
                 foreach (var worker in hungry)
                 {
-                    worker.GiveFood(foodPerHousehold, averageMarketPrice);
+                    worker.GiveFood(foodPerHousehold);
                     FoodSupply -= foodPerHousehold;
                 }
+                Academy.Instance.StatsRecorder.Add("GV/FoodDistributed", foodPerHousehold * hungry.Count);
             }
         }
     }

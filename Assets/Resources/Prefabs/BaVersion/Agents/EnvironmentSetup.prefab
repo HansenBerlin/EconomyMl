@@ -49,9 +49,10 @@ MonoBehaviour:
   companyPrefabPlayer: {fileID: 6206724465262390989, guid: 45d9d897b4d326242b907b74fda427ca, type: 3}
   dummyTilePrefab: {fileID: 6206724465262390989, guid: 628ab7382e3f61143b891b5b4774d10a, type: 3}
   companyPanelGo: {fileID: 0}
+  governmentGo: {fileID: 7249207890542883622, guid: c47b5a5582d4f28428bf71d51500e0a8, type: 3}
   aiPpoCompaniesPerType: 10
   aiSacCompaniesPerType: 10
-  playerCompaniesPerType: 2
+  playerCompaniesPerType: 1
   startingCapitalCompanies: 0
   startingCapitalPlayers: 0
   isTraining: 0

@@ -17,11 +17,11 @@ namespace NewScripts.Game.Entities
         private List<JobContract> Contracts { get; } = new();
         public int DemandForWorkforce { get; private set; }
 
-        public void InitWorkers(int count, BidCalculatorService bidCalculatorService)
+        public void InitWorkers(int count, BidCalculatorService bidCalculatorService, decimal startingMoneyPerWorker)
         {
             for (int i = 0; i < count; i++)
             {
-                Workers.Add(new Worker(bidCalculatorService));
+                Workers.Add(new Worker(bidCalculatorService, startingMoneyPerWorker));
             }
         }
 

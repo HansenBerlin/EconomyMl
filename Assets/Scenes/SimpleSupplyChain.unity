@@ -10098,17 +10098,9 @@ PrefabInstance:
       value: EnvironmentSetup
       objectReference: {fileID: 0}
     - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: governmentGo
-      value: 
-      objectReference: {fileID: 7249207890542883622, guid: c47b5a5582d4f28428bf71d51500e0a8, type: 3}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: companyPanelGo
       value: 
       objectReference: {fileID: 99573062}
-    - target: {fileID: 3253173641288630473, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
-      propertyPath: playerCompaniesPerType
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3727644843878505812, guid: 1458fa3f76e07bf4b8b756b528cd90da, type: 3}
       propertyPath: m_RootOrder
       value: 6

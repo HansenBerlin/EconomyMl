@@ -49,14 +49,14 @@ namespace NewScripts.Game.Services
             GetComponentInChildren<FooterMenuController>().RegisterEvents();
         }
 
-        public void AddInstances(Government government, CompanyContainerPanelController companyContainerPanelController)
+        public void AddInstances(Government government, CompanyContainerPanelController companyContainerPanelController, decimal startingLiquidityGovernment)
         {
             if (Companys.Count == 0)
             {
                 throw new Exception("No companys found");
             }
             Government = government;
-            Government.Init(Policies, Companys.Count, EconomyMetrics, new RewardNormalizer());
+            Government.Init(Policies, Companys.Count, EconomyMetrics, new RewardNormalizer(), startingLiquidityGovernment);
             CompanyContainerPanelController = companyContainerPanelController;
             FlowController = new FlowController(Companys.Select(c => c.Id).ToList());
         }

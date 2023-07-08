@@ -30,18 +30,29 @@ namespace NewScripts.Game.Models
             _monthlyMaximumDemand = monthlyMaximumDemand;
         }
 
-        public void Add(int count, decimal price)
+        public void Add(int count, decimal price, bool isFoodStamp)
         {
             //Debug.Log("Add " + count + " " + Product + " for " + price + " each");
-            if (count == 0 || _totalBought + count == 0)
+            if (count <= 0 || price <= 0 && isFoodStamp == false)
             {
+                Debug.LogError("Count or price is negative");
+                //throw new System.Exception("Count is negative");
                 return;
             }
-            Academy.Instance.StatsRecorder.Add("New/Inventory-Add-" + Product, count);
-            AvgPaid = (AvgPaid * _totalBought + price * count) / (_totalBought + count);
+
+            if (isFoodStamp)
+            {
+                Academy.Instance.StatsRecorder.Add("New/Inventory-Add-Foodstamp", count);
+                ConsumeInMonth += count;
+            }
+            else
+            {
+                Academy.Instance.StatsRecorder.Add("New/Inventory-Add-" + Product, count);
+                AvgPaid = (AvgPaid * _totalBought + price * count) / (_totalBought + count);
+                _totalBought += count;
+            }
             Count += count;
             FullfilledInMonth += count;
-            _totalBought += count;
         }
 
         public void Consume()

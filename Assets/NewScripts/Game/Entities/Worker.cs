@@ -13,7 +13,7 @@ namespace NewScripts.Game.Entities
 {
     public class Worker : IBidder
     {
-        public decimal Money { get; set; } = 300;
+        public decimal Money { get; set; }
         public bool HasJob => _jobContract != null;
         public bool IsHungry => IsMinimumFoodDemandFullfilledHungry();
         
@@ -23,8 +23,9 @@ namespace NewScripts.Game.Entities
         private JobContract _jobContract;
         private readonly BidCalculatorService _bidCalculatorService;
 
-        public Worker(BidCalculatorService bidCalculatorService)
+        public Worker(BidCalculatorService bidCalculatorService, decimal startingMoney)
         {
+            Money = startingMoney;
             _bidCalculatorService = bidCalculatorService;
             var food = new InventoryItem(ProductType.Food, 150, 50, 250, 1);
             var luxury = new InventoryItem(ProductType.Luxury, 10, 0, 100, 10);
@@ -44,16 +45,23 @@ namespace NewScripts.Game.Entities
             Money += sum;
         }
 
-        public void GiveFood(int count, decimal price)
+        public void GiveFood(int count)
         {
-            _inventory.First(x => x.Product == ProductType.Food).Add(count, price);
+            _inventory.First(x => x.Product == ProductType.Food).Add(count, 0, true);
+        }
+
+        public void Consume(ProductType type)
+        {
+            foreach (var item in _inventory.Where(x => x.Product == type))
+            {
+                item.Consume();
+            }
         }
 
         public void EndMonth()
         {
             foreach (var item in _inventory)
             {
-                item.Consume();
                 item.FullfilledInMonth = 0;
             }
             _periodData.JobStatus = _jobContract == null 
@@ -62,6 +70,13 @@ namespace NewScripts.Game.Entities
                     ? WorkerJobStatus.ShortTimeWork 
                     : WorkerJobStatus.FullyEmployed;
             _periodData.RealWage = _jobContract?.Wage ?? 0;
+            decimal richTax = 0;
+            if (Money > ServiceLocator.Instance.Settings.TotalMoneySupply / 2000)
+            {
+                richTax = ServiceLocator.Instance.Government.PayRichTaxes(Money);
+                Money -= richTax;
+            }
+            _periodData.RichTaxPaid = richTax;
             ServiceLocator.Instance.HouseholdAggregator.Add(_periodData);
             _periodData = new HouseholdData();
             
@@ -74,7 +89,7 @@ namespace NewScripts.Game.Entities
             var inventoryItem = _inventory.FirstOrDefault(x => x.Product == productType)??
                                 throw new Exception("No inventory item for " + productType);
             
-            Academy.Instance.StatsRecorder.Add("New/Money-Before-Bid " + productType, (float)Money);
+            //Academy.Instance.StatsRecorder.Add("New/Money-Before-Bid " + productType, (float)Money);
             (int low, int high) = _bidCalculatorService.DemandModifier(inventoryItem);
             inventoryItem.ConsumeInMonth = _bidCalculatorService.DemandByMarginalUtility(low, high);
             decimal bidPrice = _bidCalculatorService.DetermineBiddingPrice(averagePrice, inventoryItem);
@@ -83,24 +98,34 @@ namespace NewScripts.Game.Entities
             {
                 inventoryItem.ConsumeInMonth = (int)Math.Floor(Money / bidPrice * 0.9M);
             }
+            int consumeOld = inventoryItem.ConsumeInMonth;
+            if (productType == ProductType.Luxury)
+            {
+                var food = _inventory.FirstOrDefault(x => x.Product == ProductType.Food);
+                var fullfillRatioBaseDemand = (food!.FullfilledInMonth + 1) / ((float)food.ConsumeInMonth + 1);
+                inventoryItem.ConsumeInMonth = (int)Math.Floor(fullfillRatioBaseDemand * inventoryItem.ConsumeInMonth);
+                if (inventoryItem.ConsumeInMonth > consumeOld)
+                {
+                    Debug.LogWarning($"Luxury demand reduced. Type: {productType}, " +
+                                      $"Money: {Money}, BidPrice: {bidPrice}, " +
+                                      $"Consume: {inventoryItem.ConsumeInMonth}, consumeOld: {consumeOld}");
+                }
+            }
             if (inventoryItem.ConsumeInMonth > 0 && bidPrice > 0)
             {
-                if (productType == ProductType.Luxury)
-                {
-                    var food = _inventory.FirstOrDefault(x => x.Product == ProductType.Food);
-                    var fullfillRatioBaseDemand = (food!.FullfilledInMonth + 1) / ((float)food.ConsumeInMonth + 1);
-                    inventoryItem.ConsumeInMonth = (int)Math.Floor(fullfillRatioBaseDemand * inventoryItem.ConsumeInMonth);
-                }
                 if (Money - bidPrice * inventoryItem.ConsumeInMonth < 0)
                 {
+                    Debug.LogWarning($"Not enough money. Type: {productType}, " +
+                                   $"Money: {Money}, BidPrice: {bidPrice}, " +
+                                   $"Consume: {inventoryItem.ConsumeInMonth}, consumeOld: {consumeOld}");
                     return;
                     //throw new Exception("Not enough money");
                 }
                 var bid = new ProductBid(productType, this, bidPrice, inventoryItem.ConsumeInMonth);
                 market.AddBid(bid);
                 
-                Academy.Instance.StatsRecorder.Add("Market/BidCount " + productType, inventoryItem.ConsumeInMonth);
-                Academy.Instance.StatsRecorder.Add("Market/BidPrice " + productType, (float)bidPrice);
+                //Academy.Instance.StatsRecorder.Add("Market/BidCount " + productType, inventoryItem.ConsumeInMonth);
+                //Academy.Instance.StatsRecorder.Add("Market/BidPrice " + productType, (float)bidPrice);
             }
 
             AddData(inventoryItem, bidPrice);
@@ -133,10 +158,15 @@ namespace NewScripts.Game.Entities
 
         public void FullfillBid(ProductType product, int count, decimal price)
         {
+            if (count <= 0 || price <= 0)
+            {
+                Debug.LogError("Count and price must be positive");
+                //throw new ArgumentException("Count and price must be positive");
+            }
             var item = _inventory.FirstOrDefault(x => x.Product == product);
-            item?.Add(count, price);
+            item?.Add(count, price, false);
             Money -= count * price;
-            Academy.Instance.StatsRecorder.Add("New/Money-After-Buy " + product, (float)Money);
+            //Academy.Instance.StatsRecorder.Add("New/Money-After-Buy " + product, (float)Money);
         }
         
         public void RemoveJobContract(JobContract contract, WorkerFireReason reason)

@@ -6,6 +6,7 @@ using NewScripts.Game.Models;
 using NewScripts.Game.Services;
 using NewScripts.Interfaces;
 using Unity.MLAgents;
+using UnityEngine;
 
 namespace NewScripts.Game.Entities
 {
@@ -79,6 +80,10 @@ namespace NewScripts.Game.Entities
                         successfulDeals.Add(new Deal(offer.Price, offer.Amount));
                         bid.Buyer.FullfillBid(offer.Product, offer.Amount, offer.Price);
                         offer.Seller.FullfillBid(offer.Product, offer.Amount, offer.Price);
+                        if (offer.Amount == 0 || bid.Amount == 0)
+                        {
+                            Debug.LogWarning("Offer amount is 0");
+                        }
                         offers.Remove(offer);
                     }
                     else if (offer.Amount > bid.Amount)
@@ -87,15 +92,33 @@ namespace NewScripts.Game.Entities
                         successfulDeals.Add(new Deal(offer.Price, bid.Amount));
                         bid.Buyer.FullfillBid(offer.Product, bid.Amount, offer.Price);
                         offer.Seller.FullfillBid(offer.Product, bid.Amount, offer.Price);
+                        if (offer.Amount == 0 || bid.Amount == 0)
+                        {
+                            Debug.LogWarning("Offer amount is 0");
+                        }
                         bids.Remove(bid);
+
                     }
                     else
                     { 
                         successfulDeals.Add(new Deal(offer.Price, bid.Amount));
                         bid.Buyer.FullfillBid(offer.Product, bid.Amount, offer.Price);
                         offer.Seller.FullfillBid(offer.Product, bid.Amount, offer.Price);
+                        if (offer.Amount == 0 || bid.Amount == 0)
+                        {
+                            Debug.LogWarning("Offer amount is 0");
+                        }
                         offers.Remove(offer);
                         bids.Remove(bid);
+                    }
+
+                    if (bid.Amount == 0)
+                    {
+                        //bids.Remove(bid);
+                    }
+                    if (offer.Amount == 0)
+                    {
+                        //offers.Remove(offer);
                     }
                     _salesHistory.Add(offer.Price);
                 }
@@ -124,11 +147,15 @@ namespace NewScripts.Game.Entities
             if(isGovernmentRequest)
             {
                 GovernmentProductBids.Clear();
-                ProductOffers.Clear();
             }
             else
             {
                 PrivateProductBids.Clear();
+            }
+
+            if (isGovernmentRequest || _productType == ProductType.Luxury)
+            {
+                ProductOffers.Clear();
             }
         }
     }

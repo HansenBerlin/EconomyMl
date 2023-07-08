@@ -17,6 +17,7 @@
         AverageOpenPositions,
         AverageFiredWorkersTotal,
         AverageFiredWorkersByDecision,
-        AverageFiredWorkersByLackOfFunds
+        AverageFiredWorkersByLackOfFunds,
+        AverageTaxPaid
     }
 }

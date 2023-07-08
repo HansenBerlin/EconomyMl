@@ -108,6 +108,7 @@
      <Compile Include="Assets\Scripts\Models\ProductModel.cs" />
      <Compile Include="Assets\NewScripts\DataModelling\DecisionLedger.cs" />
      <Compile Include="Assets\NewScripts\Ui\Controller\BucketCreatorService.cs" />
+     <Compile Include="Assets\NewScripts\DataModelling\HouseholdData.cs" />
      <Compile Include="Assets\Scripts\Models\EnvironmentModel.cs" />
      <Compile Include="Assets\Scripts\Agents\ObservationDataModel.cs" />
      <Compile Include="Assets\NewScripts\Ui\Controller\TimelineDataPanelController.cs" />
@@ -151,6 +152,7 @@
      <Compile Include="Assets\Scripts\Controller\RepositoryController\JobMarketController.cs" />
      <Compile Include="Assets\Scripts\Interfaces\IProductionTemplate.cs" />
      <Compile Include="Assets\Scripts\Controller\Agents\PersonBuyActionBaseProduct.cs" />
+     <Compile Include="Assets\NewScripts\DataModelling\Aggregate.cs" />
      <Compile Include="Assets\NewScripts\DataModelling\GovernmentLedger.cs" />
      <Compile Include="Assets\NewScripts\Enums\ProductDistributionType.cs" />
      <Compile Include="Assets\Scripts\Models\TempPopulationUpdateModel.cs" />
@@ -161,6 +163,7 @@
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\TrafficLight.cs" />
      <Compile Include="Assets\NewScripts\Game\World\DummyTileActivator.cs" />
      <Compile Include="Assets\the-minimum-wage-trade-off-unity\Scripts\MWMenuManager.cs" />
+     <Compile Include="Assets\NewScripts\DataModelling\CompaniesAggregate.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\Direction.cs" />
      <Compile Include="Assets\Scripts\Controller\Agents\PersonJobAction.cs" />
      <Compile Include="Assets\Scripts\Enums\ProductRequestSearchType.cs" />
@@ -212,7 +215,6 @@
      <Compile Include="Assets\NewScripts\Ui\Controller\DecisionPanelController.cs" />
      <Compile Include="Assets\NewScripts\Game\World\EnvironmentSetup.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\RoadPlacer.cs" />
-     <Compile Include="Assets\NewScripts\DataModelling\MarketLedger.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextConsoleSimulator.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TeleType.cs" />
      <Compile Include="Assets\Scripts\Models\CountryEconomy.cs" />
@@ -278,6 +280,7 @@
      <Compile Include="Assets\Scripts\Models\ReceiptModel.cs" />
      <Compile Include="Assets\NewScripts\Game\Models\Decision.cs" />
      <Compile Include="Assets\Scripts\Policies\CompanyResourcePolicy.cs" />
+     <Compile Include="Assets\NewScripts\DataModelling\HouseholdsAggregate.cs" />
      <Compile Include="Assets\Scripts\Models\GovernmentModel.cs" />
      <Compile Include="Assets\Scripts\Agents\CompanyBaseAgent.cs" />
      <Compile Include="Assets\the-minimum-wage-trade-off-unity\Scripts\MWCompany.cs" />
