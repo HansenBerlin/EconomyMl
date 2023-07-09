@@ -80,7 +80,7 @@ namespace NewScripts.Training
         
         private float CalculateReputation()
         {
-            var reputation = (float) ((_profitReputation * 3 + _workerContractRuntimeReputation + _marketShareReputation) / 5);
+            var reputation = (float) ((_profitReputation + _workerContractRuntimeReputation + _marketShareReputation) / 3);
             //Debug.Log($"Total: {reputation*100:0.##} Profit: {_profitReputation*100:0.##}, WorkerContractRuntime: {_workerContractRuntimeReputation*100:0.##}, MarketShare: {_marketShareReputation*100:0.##}");
             return reputation;
         }

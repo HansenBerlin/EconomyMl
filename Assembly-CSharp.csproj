@@ -162,15 +162,14 @@
      <Compile Include="Assets\NewScripts\Ui\Controller\CompanyContainerPanelController.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\TrafficLight.cs" />
      <Compile Include="Assets\NewScripts\Game\World\DummyTileActivator.cs" />
-     <Compile Include="Assets\the-minimum-wage-trade-off-unity\Scripts\MWMenuManager.cs" />
      <Compile Include="Assets\NewScripts\DataModelling\CompaniesAggregate.cs" />
+     <Compile Include="Assets\the-minimum-wage-trade-off-unity\Scripts\MWMenuManager.cs" />
      <Compile Include="Assets\polyperfect\Low Poly Epic City\- Scripts\Direction.cs" />
      <Compile Include="Assets\Scripts\Controller\Agents\PersonJobAction.cs" />
      <Compile Include="Assets\Scripts\Enums\ProductRequestSearchType.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
      <Compile Include="Assets\Scripts\Settings\PersonResourceDemandSettings.cs" />
-     <Compile Include="Assets\NewScripts\Game\Services\SupplyDemandStatBuilder.cs" />
      <Compile Include="Assets\NewScripts\Game\Services\HouseholdAggregatorService.cs" />
      <Compile Include="Assets\Scripts\Interfaces\ICountryEconomy.cs" />
      <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeB.cs" />
@@ -262,6 +261,7 @@
      <Compile Include="Assets\NewScripts\Game\Models\GlobalPolicies.cs" />
      <Compile Include="Assets\Scripts\Enums\ProductType.cs" />
      <Compile Include="Assets\Scripts\Enums\AgeStatus.cs" />
+     <Compile Include="Assets\NewScripts\DataModelling\EquilibrieumPriceCalculator.cs" />
      <Compile Include="Assets\Scripts\Controller\RepositoryController\ProductController.cs" />
      <Compile Include="Assets\Scripts\Controller\Agents\PersonController.cs" />
      <Compile Include="Assets\Scripts\Factories\ProductionFactory.cs" />
@@ -343,6 +343,7 @@
      <Folder Include="Assets\PolygonTown\Models\Buildings" />
      <None Include="Library\PackageCache\com.unity.ugui@1.0.0\package.json" />
      <Folder Include="Assets\Brains\company-three" />
+     <Folder Include="Assets\Brains\final\company-v10-all-7\GovernmentNew" />
      <Folder Include="Assets\Brains\company-v2-5-66d33bd1-aeaa-42f5-9740-25328234e212" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\People_T" />
      <Folder Include="Library\PackageCache\com.unity.modules.xr@1.0.0" />
@@ -351,11 +352,13 @@
      <Folder Include="Assets\TextMesh Pro\Resources\Sprite Assets" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\- Materials\Colors\Emission" />
      <Folder Include="Assets\Scenes\SimpleSupplyChain" />
+     <Folder Include="Assets\Brains\final\company-v10-all-7" />
      <Folder Include="Assets\results\company-v6-8\run_logs" />
      <Folder Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\Textures\SMAA" />
      <Folder Include="Assets\results\company-v8-4\run_logs" />
      <Folder Include="Assets\PolygonCity\Models\Materials" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Medieval_T" />
+     <None Include="Assets\Brains\final\company-v10-all-7\run_logs\timers.json" />
      <None Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents.extensions\package.json" />
      <Folder Include="Assets\Brains\better\company-v3-3" />
      <Folder Include="Assets\NewScripts\Game" />
@@ -487,6 +490,7 @@
      <None Include="Library\PackageCache\com.unity.modules.unitywebrequestassetbundle@1.0.0\package.json" />
      <Folder Include="Assets\Mirror\Plugins" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Nature_M\Mushrooms_M" />
+     <None Include="Assets\Brains\final\company-v10-all-7\run_logs\training_status.json" />
      <Folder Include="Library\PackageCache\com.unity.feature.development@1.0.1" />
      <None Include="Assets\results\company-v8-2\run_logs\timers.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Nature_T\Grass_T" />
@@ -498,6 +502,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Survival_T" />
      <Folder Include="Assets\the-minimum-wage-trade-off-unity\Scenes\MinWageMain" />
      <Folder Include="C:\Users\Hannes\source\repos\HWR\Studienarbeit\ml-agents\com.unity.ml-agents\Plugins\ProtoBuffer\runtimes\osx\native" />
+     <Folder Include="Assets\Brains\final\company-v10-all-7\Company" />
      <Folder Include="Assets\NewScripts\Enums" />
      <Folder Include="Assets\Resources\Prefabs\Policies" />
      <None Include="Library\PackageCache\com.unity.render-pipelines.core@14.0.7\ValidationConfig.json" />
@@ -726,6 +731,7 @@
      <None Include="Assets\Mirror\Notice.txt" />
      <Folder Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\Textures\2D" />
      <Folder Include="Assets\Brains\v8\company-v8-4\Company" />
+     <Folder Include="Assets\Brains\final\company-v10-all-7\CompanySac" />
      <Folder Include="Assets\Brains\v6\company-v6-20\Company" />
      <Folder Include="Assets\TextMesh Pro\Examples &amp; Extras\Resources\Sprite Assets" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Racing_T" />
@@ -832,6 +838,8 @@
      <Folder Include="Library\PackageCache\com.unity.render-pipelines.core@14.0.7\Tests" />
      <Folder Include="Assets\Brains\final\simple-companyonly\company-v4-18\Company" />
      <Folder Include="Assets\results\company-v8-3\Company" />
+     <None Include="Assets\ML-Agents\Timers\MainGame_timers.json" />
+     <Folder Include="Assets\Brains\final\company-v10-all-7\run_logs" />
      <Folder Include="Assets\Packages\ScottPlot.4.1.64\lib\netstandard2.0" />
      <Folder Include="Assets\ScriptTemplates" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Tiles_M\Bridges_M" />

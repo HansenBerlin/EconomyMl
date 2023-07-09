@@ -20,6 +20,13 @@ namespace NewScripts.Game.Entities
         private List<ProductBid> PrivateProductBids { get; } = new();
         private List<ProductBid> GovernmentProductBids { get; } = new();
         private readonly decimal _averageStartingPrice;
+        public int LastBids { get; private set; }
+        public int LastOffers { get; private set; }
+        public decimal LastMinBidPrice { get; private set; }
+        public decimal LastMaxBidPrice { get; private set; }
+        public decimal LastMinOfferPrice { get; private set; }
+        public decimal LastMaxOfferPrice { get; private set; }
+        
 
         public ProductMarket(ProductType productType, decimal startingAverage)
         {
@@ -55,16 +62,28 @@ namespace NewScripts.Game.Entities
         public void ResolveMarket(bool isTraining, bool isGovernmentRequest = false)
         {
             var offers = ProductOffers.OrderBy(x => x.Price).ToList();
+            LastOffers = offers.Count;
+            LastMinOfferPrice = LastOffers > 0 ? offers[0].Price : 0;
+            LastMaxOfferPrice = LastOffers > 0 ? offers[LastOffers - 1].Price : 0;
             List<ProductBid> bids;
             List<Deal> successfulDeals = new();
             
             if (isGovernmentRequest)
             {
                 bids = GovernmentProductBids.OrderByDescending(x => x.Price).ToList();    
+                LastBids = bids.Count;
+                LastMaxBidPrice = LastBids > 0 ? bids[0].Price : 0;
+                LastMinBidPrice = LastBids > 0 ? bids[LastBids - 1].Price : 0;
             }
             else
             {
                 bids = PrivateProductBids.OrderByDescending(x => x.Price).ToList();
+                LastBids += bids.Count;
+                if (bids.Count > 0)
+                {
+                    LastMaxBidPrice = bids[0].Price > LastMaxBidPrice ? bids[0].Price : LastMaxBidPrice;
+                    LastMinBidPrice = bids[^1].Price < LastMinBidPrice ? bids[^1].Price : LastMinBidPrice;
+                }
                 PriceAnalysisStats = new PriceAnalysisStatsModel(ProductOffers, PrivateProductBids, _productType);
             }
 

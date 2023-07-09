@@ -58,25 +58,21 @@ namespace NewScripts.Game.Entities
 
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
-            if (ServiceLocator.Instance.FlowController.IsGovernmentDecisionCommitted)
-            {
-                throw new Exception("Government decision already committed");
-            }
             ServiceLocator.Instance.FlowController.IsGovernmentDecisionCommitted = true;
             float taxRate = ValueMapper.MapValue(actionBuffers.ContinuousActions[0], 0, 0.9F);
-            float richtaxRate = ValueMapper.MapValue(actionBuffers.ContinuousActions[5], 0, 0.5F);
-            
             float minimumWage = ValueMapper.MapValue(actionBuffers.ContinuousActions[1], 1, 200F);
-            (float subsidyRate, float socialWelfareRate, float foodStampRate) = ValueMapper.MapPolicyActions(actionBuffers.ContinuousActions[2], 
-                actionBuffers.ContinuousActions[3], actionBuffers.ContinuousActions[4]);
+            (float subsidyRate, float socialWelfareRate, float foodStampRate) = 
+                ValueMapper.MapPolicyActions(
+                    actionBuffers.ContinuousActions[2], 
+                    actionBuffers.ContinuousActions[3], 
+                    actionBuffers.ContinuousActions[4]);
+            float richtaxRate = ValueMapper.MapValue(actionBuffers.ContinuousActions[5], 0, 0.5F);
             _policies.CompanyTaxRate = taxRate;
             _policies.RichTaxRate = richtaxRate;
             _policies.MinimumWage = (decimal)minimumWage;
             _policies.SubsidyRate = subsidyRate;
             _policies.SocialWelfareRate = socialWelfareRate;
             _policies.FoodStamprate = foodStampRate;
-           Debug.Log($"Government ({ServiceLocator.Instance.FlowController.Month}/{ServiceLocator.Instance.FlowController.Year}): TaxRate: {taxRate:0.##}, MinimumWage: {minimumWage:0}, SubsidyRate: {subsidyRate:0.##}, " +
-                     $"SocialWelfareRate: {socialWelfareRate:0.##}, FoodStamprate: {foodStampRate:0.##}, RichTaxRate: {richtaxRate:0.##}");
         }
 
         public void EndYear()
@@ -127,6 +123,7 @@ namespace NewScripts.Game.Entities
 
             if (ServiceLocator.Instance.FlowController.Year % 10 == 0)
             {
+                _rewardNormalizer = new RewardNormalizer();
                 EndEpisode();
             }
             var random = new System.Random();
@@ -188,7 +185,8 @@ namespace NewScripts.Game.Entities
         {
             int companysCount = Companies.Count;
             var startups = Companies
-                .Where(x => x.LifetimeMonths < 12 || x.Liquidity < ServiceLocator.Instance.Settings.TotalMoneySupply / 10 / companysCount)
+                .Where(x => x.LifetimeMonths < 12 
+                            || x.Liquidity < ServiceLocator.Instance.Settings.TotalMoneySupply / 10 / companysCount)
                 .ToList();
             if (startups.Count == 0)
             {

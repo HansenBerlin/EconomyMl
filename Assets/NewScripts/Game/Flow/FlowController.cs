@@ -23,11 +23,6 @@ namespace NewScripts.Game.Flow
 
         public void IncrementMonth()
         {
-            if (DecisionStati.All(x => x.Value == CompanyDecisionStatus.Pending) == false)
-            {
-                throw new Exception("Not all companys have commited");
-            }
-            
             Month++;
             if (Month == 13)
             {
@@ -55,7 +50,6 @@ namespace NewScripts.Game.Flow
                 {
                     DecisionStati[keys[i]] = CompanyDecisionStatus.Pending;
                 }
-                //_isGovernmentDecisionCommitted = false;
                 return true;
             }
 

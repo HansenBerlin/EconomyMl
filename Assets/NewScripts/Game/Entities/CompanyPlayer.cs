@@ -91,11 +91,38 @@ namespace NewScripts.Game.Entities
         {
             Reward += reward;
         }
+
+        public Decision AutoDecision()
+        {
+            var decision = new Decision();
+            if (_jobContracts.Count < 50)
+            {
+                decision.WorkerChange = 50 - _jobContracts.Count;
+                decision.Wage = ServiceLocator.Instance.LaborMarket.AveragePayment() * 1.05M;
+            }
+            else
+            {
+                decision.WorkerChange = 0;
+                decision.Wage = ServiceLocator.Instance.LaborMarket.AveragePayment();
+            }
+
+            decision.AdjustWages = true;
+            var foodMarket = ServiceLocator.Instance.FoodProductMarket;
+            decimal equilibriumPrice = EquilibrieumPriceCalculator.CalculateIntersectionY(
+                0, foodMarket.LastMinOfferPrice, foodMarket.LastOffers, foodMarket.LastMaxOfferPrice,
+                0, foodMarket.LastMaxBidPrice, foodMarket.LastBids, foodMarket.LastMinBidPrice);
+            decision.PriceFood = equilibriumPrice;
+            decision.RessourceDistribution = 1;
+            return decision;
+        }
         
         
         public void StartNextPeriod(Decision decision)
         {
-            
+            if (ServiceLocator.Instance.Settings.IsAutoPlay)
+            {
+                decision = AutoDecision();
+            }
             if (DecisionStatus != CompanyDecisionStatus.Requested)
             {
                 throw new Exception("DecisionStatus != CompanyDecisionStatus.Requested");
@@ -103,7 +130,7 @@ namespace NewScripts.Game.Entities
             LastDecision = decision;
             
             var companyData = new CompanyLedger(Id, Name, ServiceLocator.Instance.FlowController.Month, ServiceLocator.Instance.FlowController.Year, LifetimeMonths);
-            var averageWage = _jobContracts.Count > 0 ? _jobContracts.Select(x => x.Wage).Average() : 100;
+            var averageWage = _jobContracts.Count > 0 ? _jobContracts.Select(x => x.Wage).Average() : 150;
             var workerLedger = new WorkersLedger(_jobContracts.Count, LastDecision.Wage, averageWage);
             var productLedgerFood = new ProductLedger(LastDecision.PriceFood, ProductStockFood);
             var productLedgerLuxury = new ProductLedger(LastDecision.PriceLuxury, ProductStockLuxury);

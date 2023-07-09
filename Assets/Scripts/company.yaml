@@ -7,7 +7,54 @@ behaviors:
       learning_rate: 0.0003
       beta: 0.002
       epsilon: 0.2
-      lambd: 0.99
+      lambd: 0.95
+      num_epoch: 3
+      learning_rate_schedule: linear
+    network_settings:
+      normalize: true
+      hidden_units: 256
+      num_layers: 3
+      vis_encode_type: simple
+    reward_signals:
+      extrinsic:
+        gamma: 0.98
+        strength: 1.0
+    keep_checkpoints: 5
+    checkpoint_interval: 10000
+    max_steps: 5000000
+    time_horizon: 512
+    summary_freq: 1000
+    threaded: false
+  CompanySac:
+    trainer_type: sac
+    hyperparameters:
+      batch_size: 512
+      buffer_size: 128000
+      learning_rate: 0.0003
+      buffer_init_steps: 1000
+      learning_rate_schedule: linear
+    network_settings:
+      normalize: true
+      hidden_units: 256
+      num_layers: 3
+      vis_encode_type: simple
+    reward_signals:
+      extrinsic:
+        gamma: 0.95
+        strength: 1.0
+    keep_checkpoints: 5
+    max_steps: 5000000
+    time_horizon: 128
+    summary_freq: 1000
+  GovernmentNew:
+    trainer_type: ppo
+    hyperparameters:
+      batch_size: 512
+      buffer_size: 25600
+      learning_rate: 0.0003
+      beta: 0.002
+      epsilon: 0.2
+      lambd: 0.98
       num_epoch: 3
       learning_rate_schedule: linear
     network_settings:
@@ -20,31 +67,6 @@ behaviors:
         gamma: 0.99
         strength: 1.0
     keep_checkpoints: 5
-    checkpoint_interval: 10000
     max_steps: 5000000
-    time_horizon: 4096
-    summary_freq: 1000
-    threaded: false
-    self_play: null
-    behavioral_cloning: null
-  CompanySac:
-    trainer_type: sac
-    hyperparameters:
-      batch_size: 512
-      buffer_size: 120000
-      learning_rate: 0.0003
-      buffer_init_steps: 1000
-      learning_rate_schedule: linear
-    network_settings:
-      normalize: true
-      hidden_units: 256
-      num_layers: 3
-      vis_encode_type: simple
-    reward_signals:
-      extrinsic:
-        gamma: 0.99
-        strength: 1.0
-    keep_checkpoints: 5
-    max_steps: 5000000
-    time_horizon: 4096
-    summary_freq: 1000
+    time_horizon: 64
+    summary_freq: 10

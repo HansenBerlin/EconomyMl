@@ -201,40 +201,39 @@ namespace NewScripts.Game.Entities
             }
             UnemployedForMonth = HasJob ? 0 : UnemployedForMonth + 1;
 
-            averageFoodPrice *= _inventory.FirstOrDefault(x => x.Product == ProductType.Food)!.MonthlyMinimumDemand;
-            double demand = ServiceLocator.Instance.LaborMarket.DemandForWorkforce;
-            double demandModifier = (demand + 1001) / 1000;
-            decimal criticalBoundary = averageIncome * 0.75M > averageFoodPrice ? averageIncome + 0.75M : averageFoodPrice;
+            averageFoodPrice *= _inventory.FirstOrDefault(x => x.Product == ProductType.Food)!.MonthlyAverageDemand;
+            //double demand = ServiceLocator.Instance.LaborMarket.DemandForWorkforce;
+            //double demandModifier = (demand + 1001) / 1000;
+            //decimal criticalBoundary = averageIncome * 0.75M > averageFoodPrice ? averageIncome + 0.75M : averageFoodPrice;
+            decimal criticalBoundary = averageFoodPrice;
 
             decimal requiredWage;
             if (HasJob)
             {
                 decimal currentWage = _jobContract.ShortWorkForMonths >= 3 ? _jobContract.Wage / 2 : _jobContract.Wage;
-                if (currentWage >= averageFoodPrice && currentWage >= averageIncome * 0.75M)
+                if (currentWage >= averageFoodPrice && _jobContract.ShortWorkForMonths < 3)
                 {
                     _periodData.ReservationWage = currentWage;
                     return;
                 }
 
-                if(_jobContract.ShortWorkForMonths == 0)
-                {
-                    requiredWage = currentWage > criticalBoundary ? currentWage * 1.1M : criticalBoundary;
-                }
-                else
-                {
-                    requiredWage = currentWage > criticalBoundary ? currentWage * 0.9M : criticalBoundary;
-                }
+                requiredWage = currentWage > criticalBoundary ? currentWage * 0.9M : criticalBoundary;
             }
             else
             {
-                decimal modifier = UnemployedForMonth < 2 ? 0.95M : UnemployedForMonth < 6 ? 0.85M : UnemployedForMonth < 12 ? 0.75M : 0.5M;
+                decimal modifier = UnemployedForMonth < 2 ? 0.95M 
+                    : UnemployedForMonth < 6 ? 0.85M 
+                    : UnemployedForMonth < 12 ? 0.75M 
+                    : UnemployedForMonth < 24 ? 0.5M 
+                    : UnemployedForMonth < 26 ? 0.3M 
+                    : 0.1M;
                 requiredWage = criticalBoundary * modifier;
                 //wage = criticalBoundary * modifier * demandModifier;
             }
             
             //Debug.Log("WORKER Wage set to " + wage + " with " + UnemployedForMonth + " months unemployed");
             
-            requiredWage = requiredWage < 25 ? 25 : requiredWage > 500 ? 500 : requiredWage;
+            requiredWage = requiredWage < 25 ? 25 : requiredWage > 300 ? 300 : requiredWage;
 
             
             var offer = new JobOffer(this, requiredWage);

@@ -1,0 +1,2492 @@
+{
+    "name": "root",
+    "gauges": {
+        "CompanySac.Policy.Entropy.mean": {
+            "value": 1.3055591583251953,
+            "min": 0.7048368453979492,
+            "max": 3.067897319793701,
+            "count": 106
+        },
+        "CompanySac.Policy.Entropy.sum": {
+            "value": 1240.28125,
+            "min": 183.2650146484375,
+            "max": 5486.76318359375,
+            "count": 106
+        },
+        "CompanySac.New.Money-Before-Job-Search.mean": {
+            "value": 139.7505812124453,
+            "min": 53.47841415828041,
+            "max": 356.83493714197624,
+            "count": 106
+        },
+        "CompanySac.New.Money-Before-Job-Search.sum": {
+            "value": 13276305.215182304,
+            "min": 1123046.6973238885,
+            "max": 95675671.15045598,
+            "count": 106
+        },
+        "CompanySac.Market.Job-Offer-Price.mean": {
+            "value": 299.5238520988149,
+            "min": 246.89982720198742,
+            "max": 299.69885179305703,
+            "count": 106
+        },
+        "CompanySac.Market.Job-Offer-Price.sum": {
+            "value": 28451171.66316223,
+            "min": 5288245.770805359,
+            "max": 94280895.614048,
+            "count": 106
+        },
+        "CompanySac.Labor.Demand.mean": {
+            "value": -938.1157894736842,
+            "min": -953.4090909090909,
+            "max": -804.1860465116279,
+            "count": 106
+        },
+        "CompanySac.Labor.Demand.sum": {
+            "value": -89121.0,
+            "min": -307553.0,
+            "max": -17266.0,
+            "count": 106
+        },
+        "CompanySac.Market.Demand.mean": {
+            "value": 93.81052631578947,
+            "min": 19.80701754385965,
+            "max": 314.3352380952381,
+            "count": 106
+        },
+        "CompanySac.Market.Demand.sum": {
+            "value": 26736.0,
+            "min": 1129.0,
+            "max": 275812.0,
+            "count": 106
+        },
+        "CompanySac.New.Inventory-Consume-Food.mean": {
+            "value": 57.03136842105263,
+            "min": 27.009428571428572,
+            "max": 137.6193982300885,
+            "count": 106
+        },
+        "CompanySac.New.Inventory-Consume-Food.sum": {
+            "value": 5417980.0,
+            "min": 567198.0,
+            "max": 40418472.0,
+            "count": 106
+        },
+        "CompanySac.New.Inventory-Consume-Luxury.mean": {
+            "value": 1.483242105263158,
+            "min": 0.06643243243243244,
+            "max": 8.41077358490566,
+            "count": 106
+        },
+        "CompanySac.New.Inventory-Consume-Luxury.sum": {
+            "value": 140908.0,
+            "min": 4916.0,
+            "max": 1209219.0,
+            "count": 106
+        },
+        "CompanySac.GV.SubsidyPaid.mean": {
+            "value": 21067.15082236842,
+            "min": 2414.8535846528553,
+            "max": 36120.47282329359,
+            "count": 106
+        },
+        "CompanySac.GV.SubsidyPaid.sum": {
+            "value": 2001379.328125,
+            "min": 50711.92527770996,
+            "max": 8347898.953125,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.DemandFood.mean": {
+            "value": 55.93418947521009,
+            "min": 26.229809545335314,
+            "max": 132.83271668020603,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.DemandFood.sum": {
+            "value": 5313.7480001449585,
+            "min": 550.8260004520416,
+            "max": 39552.04999542236,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.DemandLux.mean": {
+            "value": 1.483242092573231,
+            "min": 0.06643243220074706,
+            "max": 8.410773605670569,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.DemandLux.sum": {
+            "value": 140.90799879445694,
+            "min": 4.915999982855283,
+            "max": 1209.2189957797527,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.FulltimeWage.mean": {
+            "value": 247.88270151238692,
+            "min": 132.7431245640346,
+            "max": 247.88270151238692,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.FulltimeWage.sum": {
+            "value": 23548.856643676758,
+            "min": 4620.680740356445,
+            "max": 79408.65295410156,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.ResrvationtimeWage.mean": {
+            "value": 299.5111999511719,
+            "min": 241.45824271065848,
+            "max": 299.613092150007,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.ResrvationtimeWage.sum": {
+            "value": 28453.563995361328,
+            "min": 5449.335388183594,
+            "max": 97410.56867980957,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.PurchasingPower.mean": {
+            "value": 122.84749149523283,
+            "min": 38.24529176666623,
+            "max": 308.7768209357011,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.PurchasingPower.sum": {
+            "value": 11670.51169204712,
+            "min": 803.1511270999908,
+            "max": 78837.45639801025,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.EmploymentRate.mean": {
+            "value": 99.9526317395662,
+            "min": 18.64628572702408,
+            "max": 99.97142880922789,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.EmploymentRate.sum": {
+            "value": 9495.500015258789,
+            "min": 1122.3000087738037,
+            "max": 23570.699936389923,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.BidFood.mean": {
+            "value": 0.37211861563356297,
+            "min": 0.3605275068964277,
+            "max": 1.2084198079790387,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.BidFood.sum": {
+            "value": 35.351268485188484,
+            "min": 12.059048682451248,
+            "max": 394.8951537013054,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.BidLux.mean": {
+            "value": 0.923664336239821,
+            "min": 0.07286228496908538,
+            "max": 5.082351974721225,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.BidLux.sum": {
+            "value": 87.748111942783,
+            "min": 5.391809087712318,
+            "max": 1116.546063363552,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.Inv-Food.mean": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.Inv-Food.sum": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.Inv-Lux.mean": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 106
+        },
+        "CompanySac.Aggregates-HH.Inv-Lux.sum": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.Lifetime.mean": {
+            "value": 1955.1894736842105,
+            "min": 16.542857142857144,
+            "max": 1955.1894736842105,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.Lifetime.sum": {
+            "value": 185743.0,
+            "min": 1205.0,
+            "max": 292835.0,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.Liquidity.mean": {
+            "value": 41394.54555921053,
+            "min": 27753.399598817567,
+            "max": 47012.21168154762,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.Liquidity.sum": {
+            "value": 3932481.828125,
+            "min": 789505.8515625,
+            "max": 11707429.22265625,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.Reputation.mean": {
+            "value": 49.279084014892575,
+            "min": 48.424816351670486,
+            "max": 80.68646601626747,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.Reputation.sum": {
+            "value": 4681.512981414795,
+            "min": 1275.6273384094238,
+            "max": 27506.27104949951,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.OpenPositions.mean": {
+            "value": 0.010526315789473684,
+            "min": 0.0,
+            "max": 1.8705882352941177,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.OpenPositions.sum": {
+            "value": 1.0,
+            "min": 0.0,
+            "max": 178.0,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.SalesFood.mean": {
+            "value": 1267.9684210526316,
+            "min": 120.12162162162163,
+            "max": 6075.094339622641,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.SalesFood.sum": {
+            "value": 120457.0,
+            "min": 8889.0,
+            "max": 1026975.0,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.SalesLux.mean": {
+            "value": 52.526315789473685,
+            "min": 0.06756756756756757,
+            "max": 250.73958333333334,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.SalesLux.sum": {
+            "value": 4990.0,
+            "min": 5.0,
+            "max": 28907.0,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.StockFood.mean": {
+            "value": 106525.87368421053,
+            "min": 2403.5314285714285,
+            "max": 114462.4054054054,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.StockFood.sum": {
+            "value": 10119958.0,
+            "min": 288073.0,
+            "max": 20202527.0,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.StockLux.mean": {
+            "value": 610.4947368421052,
+            "min": 342.77714285714285,
+            "max": 4583.02,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.StockLux.sum": {
+            "value": 57997.0,
+            "min": 30302.0,
+            "max": 1153764.0,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.SupplyFood.mean": {
+            "value": 13206.07892680921,
+            "min": 1611.7299975149972,
+            "max": 13787.717469413325,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.SupplyFood.sum": {
+            "value": 1254577.498046875,
+            "min": 35845.100036621094,
+            "max": 2404362.8466796875,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.SupplyLux.mean": {
+            "value": 118.97210495597437,
+            "min": 43.84473680195055,
+            "max": 604.3543475607167,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.SupplyLux.sum": {
+            "value": 11302.349970817566,
+            "min": 833.0499992370605,
+            "max": 154583.44995498657,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.WageOffer.mean": {
+            "value": 163.339877720883,
+            "min": 138.47571738990578,
+            "max": 203.28187239797492,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.WageOffer.sum": {
+            "value": 15517.288383483887,
+            "min": 3453.569839477539,
+            "max": 64013.31399536133,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.PriceFood.mean": {
+            "value": 1.6658985765356766,
+            "min": 1.2760676898454364,
+            "max": 1.84949015964896,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.PriceFood.sum": {
+            "value": 158.26036477088928,
+            "min": 24.245286107063293,
+            "max": 471.05483186244965,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.PriceLux.mean": {
+            "value": 22.833858309294047,
+            "min": 21.353505644687388,
+            "max": 31.152337196545723,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.PriceLux.sum": {
+            "value": 2169.2165393829346,
+            "min": 410.90762424468994,
+            "max": 8806.61812210083,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.WorkersFired.mean": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.WorkersFired.sum": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.WorkersFiredByDecision.mean": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.WorkersFiredByDecision.sum": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.WorkersFiredByForce.mean": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 106
+        },
+        "CompanySac.Aggregates-CO.WorkersFiredByForce.sum": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 106
+        },
+        "CompanySac.GV.InflationRate.mean": {
+            "value": 0.26076072241578785,
+            "min": -0.48319391906261444,
+            "max": 1.2020673354466755,
+            "count": 106
+        },
+        "CompanySac.GV.InflationRate.sum": {
+            "value": 1.8253250569105148,
+            "min": -1.9327756762504578,
+            "max": 10.498576134443283,
+            "count": 106
+        },
+        "CompanySac.GV.Gdp.mean": {
+            "value": 6257.389718191965,
+            "min": 736.3241481781006,
+            "max": 8685.998413085938,
+            "count": 106
+        },
+        "CompanySac.GV.Gdp.sum": {
+            "value": 43801.72802734375,
+            "min": 4669.42138671875,
+            "max": 108700.68798828125,
+            "count": 106
+        },
+        "CompanySac.GV.EmploymentRate.mean": {
+            "value": 99.94404711042132,
+            "min": 14.843750367561976,
+            "max": 99.98452431815011,
+            "count": 106
+        },
+        "CompanySac.GV.EmploymentRate.sum": {
+            "value": 699.6083297729492,
+            "min": 130.3416748046875,
+            "max": 1875.2583541870117,
+            "count": 106
+        },
+        "CompanySac.GV.Liquidity.mean": {
+            "value": 38099.32728794643,
+            "min": 4185.606071472168,
+            "max": 89196.46419270833,
+            "count": 106
+        },
+        "CompanySac.GV.Liquidity.sum": {
+            "value": 266695.291015625,
+            "min": 8371.212142944336,
+            "max": 1439029.5478515625,
+            "count": 106
+        },
+        "CompanySac.GV.FoodSupply.mean": {
+            "value": 591.4285714285714,
+            "min": 75.83333333333333,
+            "max": 674.5,
+            "count": 106
+        },
+        "CompanySac.GV.FoodSupply.sum": {
+            "value": 4140.0,
+            "min": 455.0,
+            "max": 10759.0,
+            "count": 106
+        },
+        "CompanySac.GV.CompanyTaxRate.mean": {
+            "value": 0.4652335601193564,
+            "min": 0.34026166299978894,
+            "max": 0.5916962921619415,
+            "count": 106
+        },
+        "CompanySac.GV.CompanyTaxRate.sum": {
+            "value": 3.256634920835495,
+            "min": 0.8297508955001831,
+            "max": 12.67947143316269,
+            "count": 106
+        },
+        "CompanySac.GV.RichTaxRate.mean": {
+            "value": 0.20762506127357483,
+            "min": 0.04331167787313461,
+            "max": 0.3228461096684138,
+            "count": 106
+        },
+        "CompanySac.GV.RichTaxRate.sum": {
+            "value": 1.4533754289150238,
+            "min": 0.08662335574626923,
+            "max": 6.775376528501511,
+            "count": 106
+        },
+        "CompanySac.GV.SubsidyRate.mean": {
+            "value": 0.3630760780402592,
+            "min": 0.2280987337231636,
+            "max": 0.4521913081407547,
+            "count": 106
+        },
+        "CompanySac.GV.SubsidyRate.sum": {
+            "value": 2.5415325462818146,
+            "min": 0.6172491908073425,
+            "max": 9.943763546645641,
+            "count": 106
+        },
+        "CompanySac.GV.FoodStamprate.mean": {
+            "value": 0.32329970385347095,
+            "min": 0.22543313602606455,
+            "max": 0.4516709532056536,
+            "count": 106
+        },
+        "CompanySac.GV.FoodStamprate.sum": {
+            "value": 2.2630979269742966,
+            "min": 0.4942321479320526,
+            "max": 9.013356149196625,
+            "count": 106
+        },
+        "CompanySac.GV.SocialWelfareRate.mean": {
+            "value": 0.3136242244924818,
+            "min": 0.25595853477716446,
+            "max": 0.5269884288311004,
+            "count": 106
+        },
+        "CompanySac.GV.SocialWelfareRate.sum": {
+            "value": 2.1953695714473724,
+            "min": 0.5119170695543289,
+            "max": 10.04288025945425,
+            "count": 106
+        },
+        "CompanySac.GV.MinimumWage.mean": {
+            "value": 94.98106493268695,
+            "min": 66.55577421188354,
+            "max": 131.74383163452148,
+            "count": 106
+        },
+        "CompanySac.GV.MinimumWage.sum": {
+            "value": 664.8674545288086,
+            "min": 201.27169799804688,
+            "max": 3065.301784515381,
+            "count": 106
+        },
+        "CompanySac.New.Worker-Payment-Regular.mean": {
+            "value": 247.77555209268803,
+            "min": 176.6075166796951,
+            "max": 247.77555209268803,
+            "count": 106
+        },
+        "CompanySac.New.Worker-Payment-Regular.sum": {
+            "value": 4391821.6608428955,
+            "min": 444891.0460739136,
+            "max": 26002985.96839142,
+            "count": 106
+        },
+        "CompanySac.New.Inventory-Add-Food.mean": {
+            "value": 185.54036667738822,
+            "min": 55.7732914823798,
+            "max": 193.00315059861373,
+            "count": 106
+        },
+        "CompanySac.New.Inventory-Add-Food.sum": {
+            "value": 2307380.0,
+            "min": 178345.0,
+            "max": 19279988.0,
+            "count": 106
+        },
+        "CompanySac.GV.SocialWelfarePaid.mean": {
+            "value": 26443.195556640625,
+            "min": 1840.4230882553827,
+            "max": 50848.532118055555,
+            "count": 106
+        },
+        "CompanySac.GV.SocialWelfarePaid.sum": {
+            "value": 105772.7822265625,
+            "min": 38648.88485336304,
+            "max": 4995937.132080078,
+            "count": 106
+        },
+        "CompanySac.GV.RichTaxIncome.mean": {
+            "value": 202.9102582256193,
+            "min": 126.34068141710861,
+            "max": 282.7075102624379,
+            "count": 106
+        },
+        "CompanySac.GV.RichTaxIncome.sum": {
+            "value": 2166269.9168167114,
+            "min": 77003.72009277344,
+            "max": 14486780.039356232,
+            "count": 106
+        },
+        "CompanySac.New.Inventory-Add-Luxury.mean": {
+            "value": 15.166416115453998,
+            "min": 4.6739832149774045,
+            "max": 23.23652135719776,
+            "count": 106
+        },
+        "CompanySac.New.Inventory-Add-Luxury.sum": {
+            "value": 100887.0,
+            "min": 355.0,
+            "max": 585981.0,
+            "count": 106
+        },
+        "CompanySac.GV.Foodxpenses.mean": {
+            "value": 17145.966247558594,
+            "min": 1141.107323074341,
+            "max": 29402.18536931818,
+            "count": 106
+        },
+        "CompanySac.GV.Foodxpenses.sum": {
+            "value": 68583.86499023438,
+            "min": 5593.0537109375,
+            "max": 974460.5991306305,
+            "count": 106
+        },
+        "CompanySac.New.Inventory-Add-Foodstamp.mean": {
+            "value": 35.38085539714868,
+            "min": 2.50384024577573,
+            "max": 74.8193220338983,
+            "count": 106
+        },
+        "CompanySac.New.Inventory-Add-Foodstamp.sum": {
+            "value": 104232.0,
+            "min": 4890.0,
+            "max": 1325387.0,
+            "count": 106
+        },
+        "CompanySac.GV.FoodDistributed.mean": {
+            "value": 20846.4,
+            "min": 2445.0,
+            "max": 44143.4,
+            "count": 106
+        },
+        "CompanySac.GV.FoodDistributed.sum": {
+            "value": 104232.0,
+            "min": 4890.0,
+            "max": 1325387.0,
+            "count": 106
+        },
+        "CompanySac.Environment.EpisodeLength.mean": {
+            "value": 542.0,
+            "min": 18.0,
+            "max": 1882.0,
+            "count": 52
+        },
+        "CompanySac.Environment.EpisodeLength.sum": {
+            "value": 542.0,
+            "min": 36.0,
+            "max": 3528.0,
+            "count": 52
+        },
+        "CompanySac.Step.mean": {
+            "value": 105914.0,
+            "min": 995.0,
+            "max": 105914.0,
+            "count": 106
+        },
+        "CompanySac.Step.sum": {
+            "value": 105914.0,
+            "min": 995.0,
+            "max": 105914.0,
+            "count": 106
+        },
+        "CompanySac.Policy.ExtrinsicValue.mean": {
+            "value": 15428.4921875,
+            "min": 0.017815575003623962,
+            "max": 19841.16796875,
+            "count": 106
+        },
+        "CompanySac.Policy.ExtrinsicValue.sum": {
+            "value": 123427.9375,
+            "min": 0.7838853001594543,
+            "max": 158729.34375,
+            "count": 106
+        },
+        "CompanySac.Environment.CumulativeReward.mean": {
+            "value": 207.4967803955078,
+            "min": -84.5721475427801,
+            "max": 545.3930263519287,
+            "count": 52
+        },
+        "CompanySac.Environment.CumulativeReward.sum": {
+            "value": 207.4967803955078,
+            "min": -3721.174491882324,
+            "max": 1356.0470571517944,
+            "count": 52
+        },
+        "CompanySac.Policy.ExtrinsicReward.mean": {
+            "value": 207.4967803955078,
+            "min": -84.5721475427801,
+            "max": 545.3930263519287,
+            "count": 52
+        },
+        "CompanySac.Policy.ExtrinsicReward.sum": {
+            "value": 207.4967803955078,
+            "min": -3721.174491882324,
+            "max": 1356.0470571517944,
+            "count": 52
+        },
+        "CompanySac.New.Worker-Payment-Reduced.mean": {
+            "value": 123.91727983629382,
+            "min": 99.78270826339721,
+            "max": 123.92760724699899,
+            "count": 106
+        },
+        "CompanySac.New.Worker-Payment-Reduced.sum": {
+            "value": 18339.757415771484,
+            "min": 3991.3083305358887,
+            "max": 132513.4502105713,
+            "count": 106
+        },
+        "CompanySac.IsTraining.mean": {
+            "value": 1.0,
+            "min": 1.0,
+            "max": 1.0,
+            "count": 106
+        },
+        "CompanySac.IsTraining.sum": {
+            "value": 1.0,
+            "min": 1.0,
+            "max": 1.0,
+            "count": 106
+        },
+        "Company.Policy.Entropy.mean": {
+            "value": 2.7656338214874268,
+            "min": 2.7653422355651855,
+            "max": 3.171560525894165,
+            "count": 97
+        },
+        "Company.Policy.Entropy.sum": {
+            "value": 2544.383056640625,
+            "min": 167.81817626953125,
+            "max": 15227.248046875,
+            "count": 97
+        },
+        "Company.New.Money-Before-Job-Search.mean": {
+            "value": 131.42927172016797,
+            "min": 109.0930600720274,
+            "max": 366.85638392299416,
+            "count": 97
+        },
+        "Company.New.Money-Before-Job-Search.sum": {
+            "value": 12091492.998255454,
+            "min": 1190817.7876261324,
+            "max": 126657660.4314255,
+            "count": 97
+        },
+        "Company.Market.Job-Offer-Price.mean": {
+            "value": 298.69720434368077,
+            "min": 246.91139587566596,
+            "max": 299.67680795380124,
+            "count": 97
+        },
+        "Company.Market.Job-Offer-Price.sum": {
+            "value": 27476558.433166504,
+            "min": 1756793.2874145508,
+            "max": 157459322.09934998,
+            "count": 97
+        },
+        "Company.Labor.Demand.mean": {
+            "value": -932.5,
+            "min": -940.4166666666666,
+            "max": -842.8717948717949,
+            "count": 97
+        },
+        "Company.Labor.Demand.sum": {
+            "value": -85790.0,
+            "min": -464280.0,
+            "max": -5377.0,
+            "count": 97
+        },
+        "Company.Market.Demand.mean": {
+            "value": 96.17028985507247,
+            "min": 58.888888888888886,
+            "max": 308.6745098039216,
+            "count": 97
+        },
+        "Company.Market.Demand.sum": {
+            "value": 26543.0,
+            "min": 1060.0,
+            "max": 274906.0,
+            "count": 97
+        },
+        "Company.New.Inventory-Consume-Food.mean": {
+            "value": 57.239326086956524,
+            "min": 40.32423863636364,
+            "max": 143.52689411764706,
+            "count": 97
+        },
+        "Company.New.Inventory-Consume-Food.sum": {
+            "value": 5266018.0,
+            "min": 488004.0,
+            "max": 53302922.0,
+            "count": 97
+        },
+        "Company.New.Inventory-Consume-Luxury.mean": {
+            "value": 1.8931521739130435,
+            "min": 0.047,
+            "max": 8.663607142857144,
+            "count": 97
+        },
+        "Company.New.Inventory-Consume-Luxury.sum": {
+            "value": 174170.0,
+            "min": 705.0,
+            "max": 3195514.0,
+            "count": 97
+        },
+        "Company.GV.SubsidyPaid.mean": {
+            "value": 17767.326331097145,
+            "min": 9026.6249071757,
+            "max": 38268.11659458705,
+            "count": 97
+        },
+        "Company.GV.SubsidyPaid.sum": {
+            "value": 1634594.0224609375,
+            "min": 91858.88696289062,
+            "max": 10395822.900390625,
+            "count": 97
+        },
+        "Company.Aggregates-HH.DemandFood.mean": {
+            "value": 52.800130854482234,
+            "min": 39.17510783130472,
+            "max": 139.9967997831457,
+            "count": 97
+        },
+        "Company.Aggregates-HH.DemandFood.sum": {
+            "value": 4857.612038612366,
+            "min": 475.3669967651367,
+            "max": 51112.01411437988,
+            "count": 97
+        },
+        "Company.Aggregates-HH.DemandLux.mean": {
+            "value": 1.893152173527557,
+            "min": 0.046999999407368404,
+            "max": 8.663607163088662,
+            "count": 97
+        },
+        "Company.Aggregates-HH.DemandLux.sum": {
+            "value": 174.16999996453524,
+            "min": 0.704999991110526,
+            "max": 3195.513998064096,
+            "count": 97
+        },
+        "Company.Aggregates-HH.FulltimeWage.mean": {
+            "value": 247.87963402789572,
+            "min": 156.73429162597657,
+            "max": 247.87963402789572,
+            "count": 97
+        },
+        "Company.Aggregates-HH.FulltimeWage.sum": {
+            "value": 22804.926330566406,
+            "min": 1484.77734375,
+            "max": 133426.40269470215,
+            "count": 97
+        },
+        "Company.Aggregates-HH.ResrvationtimeWage.mean": {
+            "value": 298.6865357108738,
+            "min": 241.7249110921224,
+            "max": 299.55614217122394,
+            "count": 97
+        },
+        "Company.Aggregates-HH.ResrvationtimeWage.sum": {
+            "value": 27479.16128540039,
+            "min": 1756.7932739257812,
+            "max": 158349.14797973633,
+            "count": 97
+        },
+        "Company.Aggregates-HH.PurchasingPower.mean": {
+            "value": 112.93822599493939,
+            "min": 90.27371109886603,
+            "max": 310.32458783318015,
+            "count": 97
+        },
+        "Company.Aggregates-HH.PurchasingPower.sum": {
+            "value": 10390.316791534424,
+            "min": 810.8275375366211,
+            "max": 102592.04482269287,
+            "count": 97
+        },
+        "Company.Aggregates-HH.EmploymentRate.mean": {
+            "value": 99.97065237294073,
+            "min": 22.65720002913475,
+            "max": 99.98461561936598,
+            "count": 97
+        },
+        "Company.Aggregates-HH.EmploymentRate.sum": {
+            "value": 9197.300018310547,
+            "min": 597.0,
+            "max": 53269.20004272461,
+            "count": 97
+        },
+        "Company.Aggregates-HH.BidFood.mean": {
+            "value": 0.3611804547355227,
+            "min": 0.35528593223828536,
+            "max": 1.198656979084015,
+            "count": 97
+        },
+        "Company.Aggregates-HH.BidFood.sum": {
+            "value": 33.22860183566809,
+            "min": 4.183860570192337,
+            "max": 418.0757350921631,
+            "count": 97
+        },
+        "Company.Aggregates-HH.BidLux.mean": {
+            "value": 1.1509389656636377,
+            "min": 0.06009279213668335,
+            "max": 4.929956614971161,
+            "count": 97
+        },
+        "Company.Aggregates-HH.BidLux.sum": {
+            "value": 105.88638484105468,
+            "min": 0.9372528395615518,
+            "max": 1969.0335169248283,
+            "count": 97
+        },
+        "Company.Aggregates-HH.Inv-Food.mean": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 97
+        },
+        "Company.Aggregates-HH.Inv-Food.sum": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 97
+        },
+        "Company.Aggregates-HH.Inv-Lux.mean": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 97
+        },
+        "Company.Aggregates-HH.Inv-Lux.sum": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 97
+        },
+        "Company.Aggregates-CO.Lifetime.mean": {
+            "value": 1922.5,
+            "min": 19.108,
+            "max": 1922.5,
+            "count": 97
+        },
+        "Company.Aggregates-CO.Lifetime.sum": {
+            "value": 176870.0,
+            "min": 3124.0,
+            "max": 495483.0,
+            "count": 97
+        },
+        "Company.Aggregates-CO.Liquidity.mean": {
+            "value": 41193.254840353264,
+            "min": 28306.23239889706,
+            "max": 43470.67793412642,
+            "count": 97
+        },
+        "Company.Aggregates-CO.Liquidity.sum": {
+            "value": 3789779.4453125,
+            "min": 227593.412109375,
+            "max": 20745277.826171875,
+            "count": 97
+        },
+        "Company.Aggregates-CO.Reputation.mean": {
+            "value": 49.75359008623206,
+            "min": 48.49340187875848,
+            "max": 86.8228172751034,
+            "count": 97
+        },
+        "Company.Aggregates-CO.Reputation.sum": {
+            "value": 4577.33028793335,
+            "min": 317.8333625793457,
+            "max": 30410.443313598633,
+            "count": 97
+        },
+        "Company.Aggregates-CO.OpenPositions.mean": {
+            "value": 0.03260869565217391,
+            "min": 0.0,
+            "max": 1.3955637707948243,
+            "count": 97
+        },
+        "Company.Aggregates-CO.OpenPositions.sum": {
+            "value": 3.0,
+            "min": 0.0,
+            "max": 755.0,
+            "count": 97
+        },
+        "Company.Aggregates-CO.SalesFood.mean": {
+            "value": 1543.8804347826087,
+            "min": 114.73333333333333,
+            "max": 6073.785714285715,
+            "count": 97
+        },
+        "Company.Aggregates-CO.SalesFood.sum": {
+            "value": 142037.0,
+            "min": 1721.0,
+            "max": 2316150.0,
+            "count": 97
+        },
+        "Company.Aggregates-CO.SalesLux.mean": {
+            "value": 46.52173913043478,
+            "min": 0.0,
+            "max": 252.5,
+            "count": 97
+        },
+        "Company.Aggregates-CO.SalesLux.sum": {
+            "value": 4280.0,
+            "min": 0.0,
+            "max": 64891.0,
+            "count": 97
+        },
+        "Company.Aggregates-CO.StockFood.mean": {
+            "value": 105814.08695652174,
+            "min": 2674.648,
+            "max": 114705.52380952382,
+            "count": 97
+        },
+        "Company.Aggregates-CO.StockFood.sum": {
+            "value": 9734896.0,
+            "min": 165628.0,
+            "max": 35305155.0,
+            "count": 97
+        },
+        "Company.Aggregates-CO.StockLux.mean": {
+            "value": 583.3804347826087,
+            "min": 391.8847926267281,
+            "max": 4078.2266666666665,
+            "count": 97
+        },
+        "Company.Aggregates-CO.StockLux.sum": {
+            "value": 53671.0,
+            "min": 7091.0,
+            "max": 1249718.0,
+            "count": 97
+        },
+        "Company.Aggregates-CO.SupplyFood.mean": {
+            "value": 13386.450020168139,
+            "min": 1698.318793914795,
+            "max": 13745.30073879076,
+            "count": 97
+        },
+        "Company.Aggregates-CO.SupplyFood.sum": {
+            "value": 1231553.4018554688,
+            "min": 43888.89990234375,
+            "max": 6245926.595703125,
+            "count": 97
+        },
+        "Company.Aggregates-CO.SupplyLux.mean": {
+            "value": 107.12554319008537,
+            "min": 43.926190512520925,
+            "max": 560.7820563287091,
+            "count": 97
+        },
+        "Company.Aggregates-CO.SupplyLux.sum": {
+            "value": 9855.549973487854,
+            "min": 668.3500003814697,
+            "max": 182814.95036315918,
+            "count": 97
+        },
+        "Company.Aggregates-CO.WageOffer.mean": {
+            "value": 155.06582144032353,
+            "min": 137.08135223388672,
+            "max": 194.6784085725483,
+            "count": 97
+        },
+        "Company.Aggregates-CO.WageOffer.sum": {
+            "value": 14266.055572509766,
+            "min": 1047.8654022216797,
+            "max": 94974.51011657715,
+            "count": 97
+        },
+        "Company.Aggregates-CO.PriceFood.mean": {
+            "value": 1.6252922389818274,
+            "min": 1.3630744568506876,
+            "max": 1.8478401802681588,
+            "count": 97
+        },
+        "Company.Aggregates-CO.PriceFood.sum": {
+            "value": 149.52688598632812,
+            "min": 9.312492370605469,
+            "max": 869.4006948471069,
+            "count": 97
+        },
+        "Company.Aggregates-CO.PriceLux.mean": {
+            "value": 25.211696127186652,
+            "min": 23.18558671315511,
+            "max": 30.72724030630929,
+            "count": 97
+        },
+        "Company.Aggregates-CO.PriceLux.sum": {
+            "value": 2319.476043701172,
+            "min": 162.4444179534912,
+            "max": 15725.936534881592,
+            "count": 97
+        },
+        "Company.Aggregates-CO.WorkersFired.mean": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 97
+        },
+        "Company.Aggregates-CO.WorkersFired.sum": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 97
+        },
+        "Company.Aggregates-CO.WorkersFiredByDecision.mean": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 97
+        },
+        "Company.Aggregates-CO.WorkersFiredByDecision.sum": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 97
+        },
+        "Company.Aggregates-CO.WorkersFiredByForce.mean": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 97
+        },
+        "Company.Aggregates-CO.WorkersFiredByForce.sum": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 97
+        },
+        "Company.GV.InflationRate.mean": {
+            "value": 0.024128296545573642,
+            "min": -0.6944801807403564,
+            "max": 1.3291703462600708,
+            "count": 94
+        },
+        "Company.GV.InflationRate.sum": {
+            "value": 0.1688980758190155,
+            "min": -3.0577821359038353,
+            "max": 8.778643478639424,
+            "count": 94
+        },
+        "Company.GV.Gdp.mean": {
+            "value": 7153.931989397322,
+            "min": 905.6326053619384,
+            "max": 8621.513671875,
+            "count": 94
+        },
+        "Company.GV.Gdp.sum": {
+            "value": 50077.52392578125,
+            "min": 4984.20703125,
+            "max": 308199.583984375,
+            "count": 94
+        },
+        "Company.GV.EmploymentRate.mean": {
+            "value": 99.98452431815011,
+            "min": 21.190833503007887,
+            "max": 99.99166717529297,
+            "count": 94
+        },
+        "Company.GV.EmploymentRate.sum": {
+            "value": 699.8916702270508,
+            "min": 86.3833236694336,
+            "max": 4334.233322143555,
+            "count": 94
+        },
+        "Company.GV.Liquidity.mean": {
+            "value": 41167.28236607143,
+            "min": 10051.044921875,
+            "max": 135302.28125,
+            "count": 94
+        },
+        "Company.GV.Liquidity.sum": {
+            "value": 288170.9765625,
+            "min": 10051.044921875,
+            "max": 1846311.7670898438,
+            "count": 94
+        },
+        "Company.GV.FoodSupply.mean": {
+            "value": 560.0,
+            "min": 162.0,
+            "max": 901.0,
+            "count": 94
+        },
+        "Company.GV.FoodSupply.sum": {
+            "value": 3920.0,
+            "min": 162.0,
+            "max": 14876.0,
+            "count": 94
+        },
+        "Company.GV.CompanyTaxRate.mean": {
+            "value": 0.4600201887743814,
+            "min": 0.15417248010635376,
+            "max": 0.5749857823053995,
+            "count": 94
+        },
+        "Company.GV.CompanyTaxRate.sum": {
+            "value": 3.2201413214206696,
+            "min": 0.15417248010635376,
+            "max": 21.225848883390427,
+            "count": 94
+        },
+        "Company.GV.RichTaxRate.mean": {
+            "value": 0.25052392908505033,
+            "min": 0.15863083799680075,
+            "max": 0.33286017179489136,
+            "count": 94
+        },
+        "Company.GV.RichTaxRate.sum": {
+            "value": 1.7536675035953522,
+            "min": 0.21583089232444763,
+            "max": 10.965353906154633,
+            "count": 94
+        },
+        "Company.GV.SubsidyRate.mean": {
+            "value": 0.2797069677284786,
+            "min": 0.20015501976013184,
+            "max": 0.5132819414138794,
+            "count": 94
+        },
+        "Company.GV.SubsidyRate.sum": {
+            "value": 1.95794877409935,
+            "min": 0.20015501976013184,
+            "max": 13.864491179585457,
+            "count": 94
+        },
+        "Company.GV.FoodStamprate.mean": {
+            "value": 0.36531372581209454,
+            "min": 0.11155661940574646,
+            "max": 0.4707396328449249,
+            "count": 94
+        },
+        "Company.GV.FoodStamprate.sum": {
+            "value": 2.557196080684662,
+            "min": 0.11155661940574646,
+            "max": 15.138771444559097,
+            "count": 94
+        },
+        "Company.GV.SocialWelfareRate.mean": {
+            "value": 0.35497930220195223,
+            "min": 0.19715222716331482,
+            "max": 0.6154026389122009,
+            "count": 94
+        },
+        "Company.GV.SocialWelfareRate.sum": {
+            "value": 2.4848551154136658,
+            "min": 0.19715222716331482,
+            "max": 14.996737405657768,
+            "count": 94
+        },
+        "Company.GV.MinimumWage.mean": {
+            "value": 81.89307839529855,
+            "min": 50.945030212402344,
+            "max": 130.13238716125488,
+            "count": 94
+        },
+        "Company.GV.MinimumWage.sum": {
+            "value": 573.2515487670898,
+            "min": 50.945030212402344,
+            "max": 4393.013947725296,
+            "count": 94
+        },
+        "Company.New.Worker-Payment-Regular.mean": {
+            "value": 247.7568808229881,
+            "min": 187.63786815122242,
+            "max": 247.7568808229881,
+            "count": 97
+        },
+        "Company.New.Worker-Payment-Regular.sum": {
+            "value": 4184118.203338623,
+            "min": 427786.0324859619,
+            "max": 46730288.32267761,
+            "count": 97
+        },
+        "Company.New.Inventory-Add-Food.mean": {
+            "value": 161.50258792302589,
+            "min": 76.76752648413886,
+            "max": 204.4930715935335,
+            "count": 97
+        },
+        "Company.New.Inventory-Add-Food.sum": {
+            "value": 2433844.0,
+            "min": 35469.0,
+            "max": 42215459.0,
+            "count": 97
+        },
+        "Company.GV.SocialWelfarePaid.mean": {
+            "value": 34326.7001953125,
+            "min": 3192.790498521593,
+            "max": 56623.015625,
+            "count": 96
+        },
+        "Company.GV.SocialWelfarePaid.sum": {
+            "value": 137306.80078125,
+            "min": 9795.080810546875,
+            "max": 6306761.435546875,
+            "count": 96
+        },
+        "Company.GV.RichTaxIncome.mean": {
+            "value": 205.340975840363,
+            "min": 118.58046967924412,
+            "max": 297.95587271019065,
+            "count": 97
+        },
+        "Company.GV.RichTaxIncome.sum": {
+            "value": 2026510.0905685425,
+            "min": 95587.99423980713,
+            "max": 18468262.455667496,
+            "count": 97
+        },
+        "Company.New.Inventory-Add-Luxury.mean": {
+            "value": 20.324584016873683,
+            "min": 5.170600858369099,
+            "max": 25.450242065626682,
+            "count": 96
+        },
+        "Company.New.Inventory-Add-Luxury.sum": {
+            "value": 86725.0,
+            "min": 14.0,
+            "max": 1312254.0,
+            "count": 96
+        },
+        "Company.GV.Foodxpenses.mean": {
+            "value": 14752.68469559519,
+            "min": 2796.52685546875,
+            "max": 31867.66015625,
+            "count": 95
+        },
+        "Company.GV.Foodxpenses.sum": {
+            "value": 280301.0092163086,
+            "min": 5593.0537109375,
+            "max": 2693543.021850586,
+            "count": 95
+        },
+        "Company.New.Inventory-Add-Foodstamp.mean": {
+            "value": 41.61463215814143,
+            "min": 2.50384024577573,
+            "max": 78.0,
+            "count": 95
+        },
+        "Company.New.Inventory-Add-Foodstamp.sum": {
+            "value": 408406.0,
+            "min": 4890.0,
+            "max": 4135728.0,
+            "count": 95
+        },
+        "Company.GV.FoodDistributed.mean": {
+            "value": 29171.85714285714,
+            "min": 2445.0,
+            "max": 48672.0,
+            "count": 95
+        },
+        "Company.GV.FoodDistributed.sum": {
+            "value": 408406.0,
+            "min": 4890.0,
+            "max": 4135728.0,
+            "count": 95
+        },
+        "Company.Environment.EpisodeLength.mean": {
+            "value": 81.0,
+            "min": 5.0,
+            "max": 1515.0,
+            "count": 60
+        },
+        "Company.Environment.EpisodeLength.sum": {
+            "value": 81.0,
+            "min": 5.0,
+            "max": 1746.0,
+            "count": 60
+        },
+        "Company.Step.mean": {
+            "value": 97942.0,
+            "min": 985.0,
+            "max": 97942.0,
+            "count": 98
+        },
+        "Company.Step.sum": {
+            "value": 97942.0,
+            "min": 985.0,
+            "max": 97942.0,
+            "count": 98
+        },
+        "Company.Policy.ExtrinsicValueEstimate.mean": {
+            "value": 8.64499568939209,
+            "min": -47.533226013183594,
+            "max": 11.004854202270508,
+            "count": 98
+        },
+        "Company.Policy.ExtrinsicValueEstimate.sum": {
+            "value": 17.28999137878418,
+            "min": -617.9319458007812,
+            "max": 22.009708404541016,
+            "count": 98
+        },
+        "Company.Environment.CumulativeReward.mean": {
+            "value": -66.45768737792969,
+            "min": -96.82156372070312,
+            "max": 307.5646286010742,
+            "count": 60
+        },
+        "Company.Environment.CumulativeReward.sum": {
+            "value": -66.45768737792969,
+            "min": -5071.5214920043945,
+            "max": 307.5646286010742,
+            "count": 60
+        },
+        "Company.Policy.ExtrinsicReward.mean": {
+            "value": -66.45768737792969,
+            "min": -96.82156372070312,
+            "max": 307.5646286010742,
+            "count": 60
+        },
+        "Company.Policy.ExtrinsicReward.sum": {
+            "value": -66.45768737792969,
+            "min": -5071.5214920043945,
+            "max": 307.5646286010742,
+            "count": 60
+        },
+        "Company.New.Worker-Payment-Reduced.mean": {
+            "value": 123.87092034022014,
+            "min": 109.3452006084163,
+            "max": 123.89267056608853,
+            "count": 97
+        },
+        "Company.New.Worker-Payment-Reduced.sum": {
+            "value": 17837.4125289917,
+            "min": 1730.089599609375,
+            "max": 176086.30462646484,
+            "count": 97
+        },
+        "Company.IsTraining.mean": {
+            "value": 1.0,
+            "min": 1.0,
+            "max": 1.0,
+            "count": 98
+        },
+        "Company.IsTraining.sum": {
+            "value": 1.0,
+            "min": 1.0,
+            "max": 1.0,
+            "count": 98
+        },
+        "GovernmentNew.New.Money-Before-Job-Search.mean": {
+            "value": 142.56311990896708,
+            "min": 129.84946020796534,
+            "max": 372.0201244399495,
+            "count": 87
+        },
+        "GovernmentNew.New.Money-Before-Job-Search.sum": {
+            "value": 29225439.58133825,
+            "min": 169781.74623081088,
+            "max": 121829740.16058931,
+            "count": 87
+        },
+        "GovernmentNew.Market.Job-Offer-Price.mean": {
+            "value": 298.7482625959377,
+            "min": 270.55107024050284,
+            "max": 299.9642028544697,
+            "count": 87
+        },
+        "GovernmentNew.Market.Job-Offer-Price.sum": {
+            "value": 61230547.65687561,
+            "min": 292554.6047363281,
+            "max": 116396638.895401,
+            "count": 87
+        },
+        "GovernmentNew.Labor.Demand.mean": {
+            "value": -933.9658536585366,
+            "min": -938.2142857142857,
+            "max": -824.4074074074074,
+            "count": 87
+        },
+        "GovernmentNew.Labor.Demand.sum": {
+            "value": -191463.0,
+            "min": -377757.0,
+            "max": -828.0,
+            "count": 87
+        },
+        "GovernmentNew.Market.Demand.mean": {
+            "value": 94.63739837398374,
+            "min": 87.80902777777777,
+            "max": 292.4693084693085,
+            "count": 87
+        },
+        "GovernmentNew.Market.Demand.sum": {
+            "value": 58202.0,
+            "min": 341.0,
+            "max": 376408.0,
+            "count": 87
+        },
+        "GovernmentNew.New.Inventory-Consume-Food.mean": {
+            "value": 58.56316585365854,
+            "min": 54.08080952380952,
+            "max": 138.141,
+            "count": 87
+        },
+        "GovernmentNew.New.Inventory-Consume-Food.sum": {
+            "value": 12005449.0,
+            "min": 98279.0,
+            "max": 52907940.0,
+            "count": 87
+        },
+        "GovernmentNew.New.Inventory-Consume-Luxury.mean": {
+            "value": 1.859229268292683,
+            "min": 0.08346428571428571,
+            "max": 7.4530582524271844,
+            "count": 87
+        },
+        "GovernmentNew.New.Inventory-Consume-Luxury.sum": {
+            "value": 381142.0,
+            "min": 1224.0,
+            "max": 2302995.0,
+            "count": 87
+        },
+        "GovernmentNew.GV.InflationRate.mean": {
+            "value": 0.19702415890060365,
+            "min": -0.7240745425224304,
+            "max": 1.479200653731823,
+            "count": 87
+        },
+        "GovernmentNew.GV.InflationRate.sum": {
+            "value": 3.1523865424096584,
+            "min": -1.2054559737443924,
+            "max": 18.904484700411558,
+            "count": 87
+        },
+        "GovernmentNew.GV.Gdp.mean": {
+            "value": 7166.619201660156,
+            "min": 1421.0338745117188,
+            "max": 8973.3759765625,
+            "count": 87
+        },
+        "GovernmentNew.GV.Gdp.sum": {
+            "value": 114665.9072265625,
+            "min": 1750.42138671875,
+            "max": 268107.66796875,
+            "count": 87
+        },
+        "GovernmentNew.GV.EmploymentRate.mean": {
+            "value": 99.95104122161865,
+            "min": 34.68749809265137,
+            "max": 100.0,
+            "count": 87
+        },
+        "GovernmentNew.GV.EmploymentRate.sum": {
+            "value": 1599.2166595458984,
+            "min": 54.10000228881836,
+            "max": 3280.1916885375977,
+            "count": 87
+        },
+        "GovernmentNew.GV.Liquidity.mean": {
+            "value": 47020.77325439453,
+            "min": 2.0000000063421537e-28,
+            "max": 182231.90625,
+            "count": 87
+        },
+        "GovernmentNew.GV.Liquidity.sum": {
+            "value": 752332.3720703125,
+            "min": 2.0000000063421537e-28,
+            "max": 1729696.3634014893,
+            "count": 87
+        },
+        "GovernmentNew.GV.FoodSupply.mean": {
+            "value": 522.1875,
+            "min": 67.0,
+            "max": 841.5,
+            "count": 87
+        },
+        "GovernmentNew.GV.FoodSupply.sum": {
+            "value": 8355.0,
+            "min": 67.0,
+            "max": 17790.0,
+            "count": 87
+        },
+        "GovernmentNew.GV.CompanyTaxRate.mean": {
+            "value": 0.48789246194064617,
+            "min": 0.0,
+            "max": 0.6203274726867676,
+            "count": 87
+        },
+        "GovernmentNew.GV.CompanyTaxRate.sum": {
+            "value": 7.806279391050339,
+            "min": 0.0,
+            "max": 17.397109121084213,
+            "count": 87
+        },
+        "GovernmentNew.GV.RichTaxRate.mean": {
+            "value": 0.23425272665917873,
+            "min": 0.14640137553215027,
+            "max": 0.36196160316467285,
+            "count": 87
+        },
+        "GovernmentNew.GV.RichTaxRate.sum": {
+            "value": 3.7480436265468597,
+            "min": 0.14640137553215027,
+            "max": 9.85620254278183,
+            "count": 87
+        },
+        "GovernmentNew.GV.SubsidyRate.mean": {
+            "value": 0.29911631252616644,
+            "min": 0.20513364672660828,
+            "max": 0.43477921187877655,
+            "count": 87
+        },
+        "GovernmentNew.GV.SubsidyRate.sum": {
+            "value": 4.785861000418663,
+            "min": 0.20513364672660828,
+            "max": 12.111369006335735,
+            "count": 87
+        },
+        "GovernmentNew.GV.FoodStamprate.mean": {
+            "value": 0.3603194635361433,
+            "min": 0.171127337962389,
+            "max": 0.5811794400215149,
+            "count": 87
+        },
+        "GovernmentNew.GV.FoodStamprate.sum": {
+            "value": 5.765111416578293,
+            "min": 0.20435570180416107,
+            "max": 12.477809891104698,
+            "count": 87
+        },
+        "GovernmentNew.GV.SocialWelfareRate.mean": {
+            "value": 0.3405642155557871,
+            "min": 0.0718170776963234,
+            "max": 0.4739265739917755,
+            "count": 87
+        },
+        "GovernmentNew.GV.SocialWelfareRate.sum": {
+            "value": 5.449027448892593,
+            "min": 0.0718170776963234,
+            "max": 13.713470034301281,
+            "count": 87
+        },
+        "GovernmentNew.GV.MinimumWage.mean": {
+            "value": 90.33377480506897,
+            "min": 55.91783905029297,
+            "max": 185.8784942626953,
+            "count": 87
+        },
+        "GovernmentNew.GV.MinimumWage.sum": {
+            "value": 1445.3403968811035,
+            "min": 55.91783905029297,
+            "max": 3845.9064350128174,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.DemandFood.mean": {
+            "value": 54.5333804851625,
+            "min": 51.94439445285622,
+            "max": 138.14100646972656,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.DemandFood.sum": {
+            "value": 11179.342999458313,
+            "min": 86.9990005493164,
+            "max": 51895.437995910645,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.DemandLux.mean": {
+            "value": 1.8592292705306601,
+            "min": 0.08346428670172047,
+            "max": 7.45305825147814,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.DemandLux.sum": {
+            "value": 381.14200045878533,
+            "min": 1.2239999771118164,
+            "max": 2302.994999706745,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.FulltimeWage.mean": {
+            "value": 247.8638852003144,
+            "min": 214.20620065969186,
+            "max": 247.8638852003144,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.FulltimeWage.sum": {
+            "value": 50812.09646606445,
+            "min": 243.90457153320312,
+            "max": 97315.42070007324,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.ResrvationtimeWage.mean": {
+            "value": 298.7332765160537,
+            "min": 264.7338600781136,
+            "max": 299.8236638849432,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.ResrvationtimeWage.sum": {
+            "value": 61240.321685791016,
+            "min": 295.2046203613281,
+            "max": 116556.36505126953,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.PurchasingPower.mean": {
+            "value": 124.09549385629049,
+            "min": 104.88781773278473,
+            "max": 318.03880493164064,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.PurchasingPower.sum": {
+            "value": 25439.57624053955,
+            "min": 114.0363998413086,
+            "max": 103553.2918548584,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.EmploymentRate.mean": {
+            "value": 99.96780507157489,
+            "min": 48.8249997659163,
+            "max": 99.96780507157489,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.EmploymentRate.sum": {
+            "value": 20493.40003967285,
+            "min": 88.4000015258789,
+            "max": 38688.70016479492,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.BidFood.mean": {
+            "value": 0.3707998508360328,
+            "min": 0.3707998508360328,
+            "max": 1.174497152819778,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.BidFood.sum": {
+            "value": 76.01396942138672,
+            "min": 0.6280662417411804,
+            "max": 503.85927855968475,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.BidLux.mean": {
+            "value": 1.1126264345332435,
+            "min": 0.1213290742859898,
+            "max": 4.508387915790081,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.BidLux.sum": {
+            "value": 228.08841907931492,
+            "min": 1.076249599456787,
+            "max": 1499.5256326645613,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.Inv-Food.mean": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.Inv-Food.sum": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.Inv-Lux.mean": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-HH.Inv-Lux.sum": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.Lifetime.mean": {
+            "value": 1914.0243902439024,
+            "min": 32.675990675990676,
+            "max": 1914.0243902439024,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.Lifetime.sum": {
+            "value": 392375.0,
+            "min": 275.0,
+            "max": 621944.0,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.Liquidity.mean": {
+            "value": 40790.517616234756,
+            "min": 28552.04715983073,
+            "max": 42067.571745986235,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.Liquidity.sum": {
+            "value": 8362056.111328125,
+            "min": 34435.65234375,
+            "max": 17417139.5390625,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.Reputation.mean": {
+            "value": 49.664600595613805,
+            "min": 48.891561983342754,
+            "max": 80.99918528965541,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.Reputation.sum": {
+            "value": 10181.24312210083,
+            "min": 51.10334777832031,
+            "max": 33842.67207336426,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.OpenPositions.mean": {
+            "value": 0.03414634146341464,
+            "min": 0.0,
+            "max": 1.9090909090909092,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.OpenPositions.sum": {
+            "value": 7.0,
+            "min": 0.0,
+            "max": 407.0,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.SalesFood.mean": {
+            "value": 1524.560975609756,
+            "min": 167.78571428571428,
+            "max": 5297.902912621359,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.SalesFood.sum": {
+            "value": 312535.0,
+            "min": 1870.0,
+            "max": 1637052.0,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.SalesLux.mean": {
+            "value": 53.73658536585366,
+            "min": 0.0,
+            "max": 229.33770491803278,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.SalesLux.sum": {
+            "value": 11016.0,
+            "min": 0.0,
+            "max": 69948.0,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.StockFood.mean": {
+            "value": 103018.57073170731,
+            "min": 3586.714285714286,
+            "max": 113216.4,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.StockFood.sum": {
+            "value": 21118807.0,
+            "min": 7158.0,
+            "max": 42809572.0,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.StockLux.mean": {
+            "value": 622.6243902439024,
+            "min": 398.8292682926829,
+            "max": 5415.285714285715,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.StockLux.sum": {
+            "value": 127638.0,
+            "min": 2107.0,
+            "max": 1047818.0,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.SupplyFood.mean": {
+            "value": 13147.962185594512,
+            "min": 2815.75,
+            "max": 13733.600751201922,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.SupplyFood.sum": {
+            "value": 2695332.248046875,
+            "min": 2815.75,
+            "max": 5313794.1025390625,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.SupplyLux.mean": {
+            "value": 122.99731722343259,
+            "min": 44.69249987602234,
+            "max": 695.9500122070312,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.SupplyLux.sum": {
+            "value": 25214.45003080368,
+            "min": 330.79998779296875,
+            "max": 153775.65045166016,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.WageOffer.mean": {
+            "value": 159.0217186904535,
+            "min": 129.74384727478028,
+            "max": 209.3212890625,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.WageOffer.sum": {
+            "value": 32599.45233154297,
+            "min": 137.36557006835938,
+            "max": 78930.97225952148,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.PriceFood.mean": {
+            "value": 1.5986491941824192,
+            "min": 1.3532254154031926,
+            "max": 1.8489480018615723,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.PriceFood.sum": {
+            "value": 327.72308480739594,
+            "min": 1.647855281829834,
+            "max": 691.0531593561172,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.PriceLux.mean": {
+            "value": 25.899880060335484,
+            "min": 19.882959365844727,
+            "max": 32.79065450032552,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.PriceLux.sum": {
+            "value": 5309.475412368774,
+            "min": 19.882959365844727,
+            "max": 11341.300296783447,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.WorkersFired.mean": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.WorkersFired.sum": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.WorkersFiredByDecision.mean": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.WorkersFiredByDecision.sum": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.WorkersFiredByForce.mean": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 87
+        },
+        "GovernmentNew.Aggregates-CO.WorkersFiredByForce.sum": {
+            "value": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "count": 87
+        },
+        "GovernmentNew.Policy.Entropy.mean": {
+            "value": 1.4189385175704956,
+            "min": 1.4189382791519165,
+            "max": 1.4189385175704956,
+            "count": 84
+        },
+        "GovernmentNew.Policy.Entropy.sum": {
+            "value": 22.70301628112793,
+            "min": 1.4189385175704956,
+            "max": 52.5007209777832,
+            "count": 84
+        },
+        "GovernmentNew.New.Worker-Payment-Regular.mean": {
+            "value": 247.65117020325508,
+            "min": 210.74050023865135,
+            "max": 247.65117020325508,
+            "count": 87
+        },
+        "GovernmentNew.New.Worker-Payment-Regular.sum": {
+            "value": 9225253.741241455,
+            "min": 76872.83430480957,
+            "max": 39610306.409843445,
+            "count": 87
+        },
+        "GovernmentNew.New.Inventory-Add-Food.mean": {
+            "value": 164.7150182038835,
+            "min": 92.39019714188413,
+            "max": 233.95625,
+            "count": 87
+        },
+        "GovernmentNew.New.Inventory-Add-Food.sum": {
+            "value": 5429007.0,
+            "min": 37433.0,
+            "max": 30719155.0,
+            "count": 87
+        },
+        "GovernmentNew.GV.SocialWelfarePaid.mean": {
+            "value": 40338.474609375,
+            "min": 1009.5783081054688,
+            "max": 51279.265625,
+            "count": 86
+        },
+        "GovernmentNew.GV.SocialWelfarePaid.sum": {
+            "value": 322707.796875,
+            "min": 1009.5783081054688,
+            "max": 6097617.858520508,
+            "count": 86
+        },
+        "GovernmentNew.GV.RichTaxIncome.mean": {
+            "value": 181.07229337427964,
+            "min": 122.17995179589116,
+            "max": 271.7880137643334,
+            "count": 87
+        },
+        "GovernmentNew.GV.RichTaxIncome.sum": {
+            "value": 4305718.064146996,
+            "min": 8186.056770324707,
+            "max": 18351642.769504547,
+            "count": 87
+        },
+        "GovernmentNew.New.Inventory-Add-Luxury.mean": {
+            "value": 18.389808183090476,
+            "min": 5.205294117647059,
+            "max": 24.578734858681024,
+            "count": 86
+        },
+        "GovernmentNew.New.Inventory-Add-Luxury.sum": {
+            "value": 223381.0,
+            "min": 580.0,
+            "max": 1414779.0,
+            "count": 86
+        },
+        "GovernmentNew.GV.Foodxpenses.mean": {
+            "value": 15876.097766113282,
+            "min": 2713.5773113250734,
+            "max": 42979.9921875,
+            "count": 85
+        },
+        "GovernmentNew.GV.Foodxpenses.sum": {
+            "value": 555663.4218139648,
+            "min": 7029.12109375,
+            "max": 1691514.799866438,
+            "count": 85
+        },
+        "GovernmentNew.New.Inventory-Add-Foodstamp.mean": {
+            "value": 47.97642139497067,
+            "min": 4.252654867256637,
+            "max": 87.29558011049724,
+            "count": 85
+        },
+        "GovernmentNew.New.Inventory-Add-Foodstamp.sum": {
+            "value": 826106.0,
+            "min": 11280.0,
+            "max": 2496303.0,
+            "count": 85
+        },
+        "GovernmentNew.GV.FoodDistributed.mean": {
+            "value": 31773.30769230769,
+            "min": 4119.0,
+            "max": 48894.0,
+            "count": 85
+        },
+        "GovernmentNew.GV.FoodDistributed.sum": {
+            "value": 826106.0,
+            "min": 11280.0,
+            "max": 2496303.0,
+            "count": 85
+        },
+        "GovernmentNew.GV.SubsidyPaid.mean": {
+            "value": 16595.339239948553,
+            "min": 5289.44677734375,
+            "max": 40982.47685546875,
+            "count": 87
+        },
+        "GovernmentNew.GV.SubsidyPaid.sum": {
+            "value": 3402044.544189453,
+            "min": 5289.44677734375,
+            "max": 11091334.04711914,
+            "count": 87
+        },
+        "GovernmentNew.New.Worker-Payment-Reduced.mean": {
+            "value": 123.87091265481615,
+            "min": 111.69075012207031,
+            "max": 123.9916000366211,
+            "count": 87
+        },
+        "GovernmentNew.New.Worker-Payment-Reduced.sum": {
+            "value": 39019.33748626709,
+            "min": 123.9916000366211,
+            "max": 161710.22638320923,
+            "count": 87
+        },
+        "GovernmentNew.Environment.EpisodeLength.mean": {
+            "value": 9.0,
+            "min": 8.0,
+            "max": 9.0,
+            "count": 87
+        },
+        "GovernmentNew.Environment.EpisodeLength.sum": {
+            "value": 9.0,
+            "min": 8.0,
+            "max": 16.0,
+            "count": 87
+        },
+        "GovernmentNew.Step.mean": {
+            "value": 866.0,
+            "min": 9.0,
+            "max": 866.0,
+            "count": 87
+        },
+        "GovernmentNew.Step.sum": {
+            "value": 866.0,
+            "min": 9.0,
+            "max": 866.0,
+            "count": 87
+        },
+        "GovernmentNew.Policy.ExtrinsicValueEstimate.mean": {
+            "value": -0.15623202919960022,
+            "min": -0.21038222312927246,
+            "max": 0.07044375687837601,
+            "count": 87
+        },
+        "GovernmentNew.Policy.ExtrinsicValueEstimate.sum": {
+            "value": -0.15623202919960022,
+            "min": -0.21038222312927246,
+            "max": 0.07044375687837601,
+            "count": 87
+        },
+        "GovernmentNew.Environment.CumulativeReward.mean": {
+            "value": 3.7886297702789307,
+            "min": -0.9574038982391357,
+            "max": 7.403969764709473,
+            "count": 87
+        },
+        "GovernmentNew.Environment.CumulativeReward.sum": {
+            "value": 3.7886297702789307,
+            "min": -0.9574038982391357,
+            "max": 7.403969764709473,
+            "count": 87
+        },
+        "GovernmentNew.Policy.ExtrinsicReward.mean": {
+            "value": 3.7886297702789307,
+            "min": -0.9574038982391357,
+            "max": 7.403969764709473,
+            "count": 87
+        },
+        "GovernmentNew.Policy.ExtrinsicReward.sum": {
+            "value": 3.7886297702789307,
+            "min": -0.9574038982391357,
+            "max": 7.403969764709473,
+            "count": 87
+        },
+        "GovernmentNew.IsTraining.mean": {
+            "value": 1.0,
+            "min": 1.0,
+            "max": 1.0,
+            "count": 87
+        },
+        "GovernmentNew.IsTraining.sum": {
+            "value": 1.0,
+            "min": 1.0,
+            "max": 1.0,
+            "count": 87
+        },
+        "CompanySac.Losses.PolicyLoss.mean": {
+            "value": -96073.2772387584,
+            "min": -96073.2772387584,
+            "max": -31.530743318230886,
+            "count": 105
+        },
+        "CompanySac.Losses.PolicyLoss.sum": {
+            "value": -98379035.8924886,
+            "min": -98379035.8924886,
+            "max": -29544.30648918234,
+            "count": 105
+        },
+        "CompanySac.Losses.ValueLoss.mean": {
+            "value": 791414.4694971779,
+            "min": 6.767769088745642,
+            "max": 792692.9184549184,
+            "count": 105
+        },
+        "CompanySac.Losses.ValueLoss.sum": {
+            "value": 810408416.7651101,
+            "min": 6341.399636154667,
+            "max": 810408416.7651101,
+            "count": 105
+        },
+        "CompanySac.Losses.Q1Loss.mean": {
+            "value": 857195.5570001886,
+            "min": 19.045011668015245,
+            "max": 859440.2659070374,
+            "count": 105
+        },
+        "CompanySac.Losses.Q1Loss.sum": {
+            "value": 877768250.3681931,
+            "min": 15674.044602776547,
+            "max": 877768250.3681931,
+            "count": 105
+        },
+        "CompanySac.Losses.Q2Loss.mean": {
+            "value": 932639.0206031722,
+            "min": 18.731547922012325,
+            "max": 942621.7179067148,
+            "count": 105
+        },
+        "CompanySac.Losses.Q2Loss.sum": {
+            "value": 955022357.0976484,
+            "min": 15416.063939816144,
+            "max": 955022357.0976484,
+            "count": 105
+        },
+        "CompanySac.Policy.DiscreteEntropyCoeff.mean": {
+            "value": 154.4727098967761,
+            "min": 0.971125762183378,
+            "max": 159.4880299784404,
+            "count": 105
+        },
+        "CompanySac.Policy.DiscreteEntropyCoeff.sum": {
+            "value": 158180.05493429874,
+            "min": 870.3419051009237,
+            "max": 168259.87162725464,
+            "count": 105
+        },
+        "CompanySac.Policy.ContinuousEntropyCoeff.mean": {
+            "value": 150.45414245382602,
+            "min": 0.9142649557945786,
+            "max": 150.45414245382602,
+            "count": 105
+        },
+        "CompanySac.Policy.ContinuousEntropyCoeff.sum": {
+            "value": 154065.04187271785,
+            "min": 752.4400586189381,
+            "max": 154065.04187271785,
+            "count": 105
+        },
+        "CompanySac.Policy.LearningRate.mean": {
+            "value": 0.00029367108210963996,
+            "min": 0.00029367108210963996,
+            "max": 0.0002999009691685492,
+            "count": 105
+        },
+        "CompanySac.Policy.LearningRate.sum": {
+            "value": 0.3007191880802713,
+            "min": 0.21293348076217328,
+            "max": 0.3757166007411331,
+            "count": 105
+        },
+        "Company.Losses.PolicyLoss.mean": {
+            "value": 0.0478623626621294,
+            "min": 0.04534011231269688,
+            "max": 0.05011592913574229,
+            "count": 7
+        },
+        "Company.Losses.PolicyLoss.sum": {
+            "value": 0.0478623626621294,
+            "min": 0.04534011231269688,
+            "max": 0.05011592913574229,
+            "count": 7
+        },
+        "Company.Losses.ValueLoss.mean": {
+            "value": 6.5005564300063385,
+            "min": 6.5005564300063385,
+            "max": 1089.1178161621094,
+            "count": 7
+        },
+        "Company.Losses.ValueLoss.sum": {
+            "value": 6.5005564300063385,
+            "min": 6.5005564300063385,
+            "max": 1089.1178161621094,
+            "count": 7
+        },
+        "Company.Policy.LearningRate.mean": {
+            "value": 0.00029456088181304,
+            "min": 0.00029456088181304,
+            "max": 0.00029922360025879996,
+            "count": 7
+        },
+        "Company.Policy.LearningRate.sum": {
+            "value": 0.00029456088181304,
+            "min": 0.00029456088181304,
+            "max": 0.00029922360025879996,
+            "count": 7
+        },
+        "Company.Policy.Epsilon.mean": {
+            "value": 0.19818696000000005,
+            "min": 0.19818696000000005,
+            "max": 0.19974120000000004,
+            "count": 7
+        },
+        "Company.Policy.Epsilon.sum": {
+            "value": 0.19818696000000005,
+            "min": 0.19818696000000005,
+            "max": 0.19974120000000004,
+            "count": 7
+        },
+        "Company.Policy.Beta.mean": {
+            "value": 0.001963920504,
+            "min": 0.001963920504,
+            "max": 0.0019948498800000003,
+            "count": 7
+        },
+        "Company.Policy.Beta.sum": {
+            "value": 0.001963920504,
+            "min": 0.001963920504,
+            "max": 0.0019948498800000003,
+            "count": 7
+        }
+    },
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1688902029",
+        "python_version": "3.9.13 (tags/v3.9.13:6de2ca5, May 17 2022, 16:36:42) [MSC v.1929 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\Users\\Hannes\\AppData\\Local\\Programs\\Python\\Python39\\Scripts\\mlagents-learn assets/scripts/company.yaml --num-envs=4 --env=builds/economyml.exe --run-id=company-v11-all-build-2",
+        "mlagents_version": "0.30.0",
+        "mlagents_envs_version": "0.30.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.0.1+cpu",
+        "numpy_version": "1.21.2",
+        "end_time_seconds": "1688914010"
+    },
+    "total": 11980.7600463,
+    "count": 1,
+    "self": 0.0233645999996952,
+    "children": {
+        "run_training.setup": {
+            "total": 0.3587655999999999,
+            "count": 1,
+            "self": 0.3587655999999999
+        },
+        "TrainerController.start_learning": {
+            "total": 11980.3779161,
+            "count": 1,
+            "self": 0.5091902000385744,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 43.0936322,
+                    "count": 1,
+                    "self": 43.0936322
+                },
+                "TrainerController.advance": {
+                    "total": 11936.763963199961,
+                    "count": 9522,
+                    "self": 0.8763479001863743,
+                    "children": {
+                        "env_step": {
+                            "total": 958.726490499903,
+                            "count": 9522,
+                            "self": 865.0143405000151,
+                            "children": {
+                                "SubprocessEnvManager._take_step": {
+                                    "total": 93.35624099987102,
+                                    "count": 12521,
+                                    "self": 3.6255143999052706,
+                                    "children": {
+                                        "TorchPolicy.evaluate": {
+                                            "total": 89.73072659996575,
+                                            "count": 22613,
+                                            "self": 89.73072659996575
+                                        }
+                                    }
+                                },
+                                "workers": {
+                                    "total": 0.35590900001680836,
+                                    "count": 9521,
+                                    "self": 0.0,
+                                    "children": {
+                                        "worker_root": {
+                                            "total": 47582.51643869998,
+                                            "count": 12517,
+                                            "is_parallel": true,
+                                            "self": 44903.33661329992,
+                                            "children": {
+                                                "steps_from_proto": {
+                                                    "total": 0.005658699999990802,
+                                                    "count": 8,
+                                                    "is_parallel": true,
+                                                    "self": 0.0031056999999812263,
+                                                    "children": {
+                                                        "_process_rank_one_or_two_observation": {
+                                                            "total": 0.0025530000000095754,
+                                                            "count": 16,
+                                                            "is_parallel": true,
+                                                            "self": 0.0025530000000095754
+                                                        }
+                                                    }
+                                                },
+                                                "UnityEnvironment.step": {
+                                                    "total": 2679.1741667000642,
+                                                    "count": 12517,
+                                                    "is_parallel": true,
+                                                    "self": 862.9437831000407,
+                                                    "children": {
+                                                        "UnityEnvironment._generate_step_input": {
+                                                            "total": 7.234201599962169,
+                                                            "count": 12517,
+                                                            "is_parallel": true,
+                                                            "self": 7.234201599962169
+                                                        },
+                                                        "communicator.exchange": {
+                                                            "total": 1793.695090000055,
+                                                            "count": 12517,
+                                                            "is_parallel": true,
+                                                            "self": 1793.695090000055
+                                                        },
+                                                        "steps_from_proto": {
+                                                            "total": 15.30109200000632,
+                                                            "count": 37507,
+                                                            "is_parallel": true,
+                                                            "self": 9.0229928001162,
+                                                            "children": {
+                                                                "_process_rank_one_or_two_observation": {
+                                                                    "total": 6.278099199890121,
+                                                                    "count": 75014,
+                                                                    "is_parallel": true,
+                                                                    "self": 6.278099199890121
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "trainer_advance": {
+                            "total": 10977.161124799872,
+                            "count": 28523,
+                            "self": 1.64589449973937,
+                            "children": {
+                                "process_trajectory": {
+                                    "total": 87.55239520007552,
+                                    "count": 28523,
+                                    "self": 86.32152160007598,
+                                    "children": {
+                                        "RLTrainer._checkpoint": {
+                                            "total": 1.2308735999995406,
+                                            "count": 9,
+                                            "self": 1.2308735999995406
+                                        }
+                                    }
+                                },
+                                "_update_policy": {
+                                    "total": 10887.962835100057,
+                                    "count": 9351,
+                                    "self": 13.474998500058064,
+                                    "children": {
+                                        "OffPolicyTrainer._update_policy": {
+                                            "total": 10856.894061399997,
+                                            "count": 9344,
+                                            "self": 3897.073096700112,
+                                            "children": {
+                                                "TorchSACOptimizer.update": {
+                                                    "total": 6959.820964699885,
+                                                    "count": 105169,
+                                                    "self": 6959.820964699885
+                                                }
+                                            }
+                                        },
+                                        "TorchPPOOptimizer.update": {
+                                            "total": 17.59377520000271,
+                                            "count": 1056,
+                                            "self": 17.59377520000271
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "trainer_threads": {
+                    "total": 1.8999999156221747e-06,
+                    "count": 1,
+                    "self": 1.8999999156221747e-06
+                },
+                "TrainerController._save_models": {
+                    "total": 0.011128600001029554,
+                    "count": 1,
+                    "self": 9.390000195708126e-05,
+                    "children": {
+                        "RLTrainer._checkpoint": {
+                            "total": 0.011034699999072473,
+                            "count": 1,
+                            "self": 0.011034699999072473
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

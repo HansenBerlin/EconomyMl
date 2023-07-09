@@ -73,7 +73,8 @@ namespace NewScripts.Game.Entities
             LifetimeMonths = 0;
             ProductStockFood /= 2;
             ProductStockLuxury /= 2;
-            _jobRampup = 0;
+            
+            _jobRampup = 0.1F;
             _foodPriceRampup = 0.6F;
             _luxPriceRampup = 6;
             _wageRampup = 70;
@@ -164,7 +165,7 @@ namespace NewScripts.Game.Entities
             }
         }
 
-        private float _jobRampup;
+        private float _jobRampup = 0.1F;
         private float _foodPriceRampup = 0.6F;
         private float _luxPriceRampup = 6;
         private float _wageRampup = 70;
@@ -181,7 +182,7 @@ namespace NewScripts.Game.Entities
 
             if(LifetimeMonths == 12)
             {
-                _jobRampup = Math.Abs(_jobRampup - 1) > 0.01F ? _jobRampup + 0.1F : 1;
+                _jobRampup = _jobRampup < 1F ? _jobRampup + 0.1F : 1;
                 _wageRampup = _wageRampup > 0 ? _wageRampup - 7 : 0;
                 _foodPriceRampup = _foodPriceRampup > 0 ? _foodPriceRampup - 0.06F : 0;
                 _luxPriceRampup = _luxPriceRampup > 0 ? _luxPriceRampup - 0.6F : 0;
@@ -191,7 +192,10 @@ namespace NewScripts.Game.Entities
             int workerDecision = actionBuffers.DiscreteActions[0];
             LastDecision.AdjustWages = actionBuffers.DiscreteActions[1] == 1;
             float wageLowerBoundary = LifetimeMonths > 12 ? (float)ServiceLocator.Instance.Policies.MinimumWage : 10 + _wageRampup;
-            LastDecision.Wage = (decimal)ValueMapper.MapValue(actionBuffers.ContinuousActions[0], wageLowerBoundary, 800 - 6 * _wageRampup);
+            float wageUpperBoundary = 500 - 4 * _wageRampup < wageLowerBoundary
+                ? wageLowerBoundary + 100
+                : 500 - 4 * _wageRampup;
+            LastDecision.Wage = (decimal)ValueMapper.MapValue(actionBuffers.ContinuousActions[0], wageLowerBoundary, wageUpperBoundary);
             LastDecision.PriceFood = (decimal)ValueMapper.MapValue(actionBuffers.ContinuousActions[1], 0.1F + _foodPriceRampup, 5F - _foodPriceRampup * 5);
             LastDecision.PriceLuxury = (decimal)ValueMapper.MapValue(actionBuffers.ContinuousActions[2], 1F + _luxPriceRampup, 100F - _luxPriceRampup * 10);
             LastDecision.RessourceDistribution = ValueMapper.MapValue(actionBuffers.ContinuousActions[3], 0.1F, 1F);
@@ -211,7 +215,7 @@ namespace NewScripts.Game.Entities
             
             if(workerDecision == 1)
             {
-                OpenPositions = (int)ValueMapper.MapValue(actionBuffers.ContinuousActions[5], 1, 1000 * _jobRampup);
+                OpenPositions = (int)ValueMapper.MapValue(actionBuffers.ContinuousActions[5], 1, 100 * _jobRampup);
                 LastDecision.WorkerChange = OpenPositions;
             }
             else if(workerDecision == 2 && _jobContracts.Count > 0)
@@ -356,7 +360,7 @@ namespace NewScripts.Game.Entities
                 {
                     if (LifetimeMonths > 24)
                     {
-                        contract.QuitContract(WorkerFireReason.LackOfFunds);
+                        //contract.QuitContract(WorkerFireReason.LackOfFunds);
                     }
                 }
             }
@@ -408,7 +412,7 @@ namespace NewScripts.Game.Entities
             _reputationAggregator.AddWorkerContractRuntimeChange();
             float reputation = _reputationAggregator.Reputation;
             Ledger[^1].Reputation = reputation;
-            AddReward(reputation);
+            AddReward(reputation + 1);
             ServiceLocator.Instance.HouseholdAggregator.Add(Ledger[^1]);
             ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
             if (reputation <= -0.75 && year > 2)
@@ -420,6 +424,14 @@ namespace NewScripts.Game.Entities
             {
                 SetReward(100);
                 EndEpisode();
+            }
+            if(year > 1)
+            {
+                if(Ledger[^3].Workers.EndCount == 0 && Ledger[^2].Workers.EndCount == 0 && Ledger[^1].Workers.EndCount == 0 && LifetimeMonths > 24)
+                {
+                    AddReward(-0.2F);
+                    //EndEpisode();
+                }
             }
         }
 

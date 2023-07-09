@@ -201,7 +201,6 @@ namespace NewScripts.Game.World
             }
             
             _government.PayOutSocialFare();
-            _government.PayOutSubsidy();
             
             
             foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
@@ -213,6 +212,7 @@ namespace NewScripts.Game.World
             {
                 company.AddRewards(ServiceLocator.Instance.FlowController.Year);
             }
+            _government.PayOutSubsidy();
             
             _government.EndMonth();
             if (ServiceLocator.Instance.FlowController.Month == 12)
