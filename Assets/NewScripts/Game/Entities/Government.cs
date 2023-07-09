@@ -204,10 +204,6 @@ namespace NewScripts.Game.Entities
         
         public void FullfillBid(ProductType product, int count, decimal price)
         {
-            if (count <= 0 || price <= 0)
-            {
-                throw new ArgumentException("Count and price must be positive");
-            }
             Liquidity -= count * price;
             FoodSupply += count;
             Academy.Instance.StatsRecorder.Add("GV/Foodxpenses", count * (float)price);

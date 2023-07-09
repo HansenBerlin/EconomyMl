@@ -1,0 +1,49 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1688919255",
+        "python_version": "3.9.13 (tags/v3.9.13:6de2ca5, May 17 2022, 16:36:42) [MSC v.1929 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\Users\\Hannes\\AppData\\Local\\Programs\\Python\\Python39\\Scripts\\mlagents-learn assets/scripts/company.yaml --num-envs=4 --env=builds/economyml.exe --run-id=company-v11-all-build-2 --resume",
+        "mlagents_version": "0.30.0",
+        "mlagents_envs_version": "0.30.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.0.1+cpu",
+        "numpy_version": "1.21.2",
+        "end_time_seconds": "1688919299"
+    },
+    "total": 44.188100600000006,
+    "count": 1,
+    "self": 0.9244659000000084,
+    "children": {
+        "run_training.setup": {
+            "total": 0.41675109999999904,
+            "count": 1,
+            "self": 0.41675109999999904
+        },
+        "TrainerController.start_learning": {
+            "total": 42.8468836,
+            "count": 1,
+            "self": 0.0001334999999969,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 42.343187,
+                    "count": 1,
+                    "self": 42.343187
+                },
+                "TrainerController._save_models": {
+                    "total": 0.5035631000000009,
+                    "count": 1,
+                    "self": 0.0033286000000032345,
+                    "children": {
+                        "RLTrainer._checkpoint": {
+                            "total": 0.5002344999999977,
+                            "count": 2,
+                            "self": 0.5002344999999977
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

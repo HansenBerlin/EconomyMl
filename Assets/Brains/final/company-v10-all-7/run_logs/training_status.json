@@ -1,0 +1,87 @@
+{
+    "Company": {
+        "checkpoints": [
+            {
+                "steps": 219992,
+                "file_path": "results\\company-v10-all-7\\Company\\Company-219992.onnx",
+                "reward": -52.667885621388756,
+                "creation_time": 1688880828.2252343,
+                "auxillary_file_paths": [
+                    "results\\company-v10-all-7\\Company\\Company-219992.pt"
+                ]
+            },
+            {
+                "steps": 229928,
+                "file_path": "results\\company-v10-all-7\\Company\\Company-229928.onnx",
+                "reward": -56.263360326940365,
+                "creation_time": 1688882360.0211616,
+                "auxillary_file_paths": [
+                    "results\\company-v10-all-7\\Company\\Company-229928.pt"
+                ]
+            },
+            {
+                "steps": 239968,
+                "file_path": "results\\company-v10-all-7\\Company\\Company-239968.onnx",
+                "reward": -51.373269762311665,
+                "creation_time": 1688883910.3907626,
+                "auxillary_file_paths": [
+                    "results\\company-v10-all-7\\Company\\Company-239968.pt"
+                ]
+            },
+            {
+                "steps": 249972,
+                "file_path": "results\\company-v10-all-7\\Company\\Company-249972.onnx",
+                "reward": -50.474161638532365,
+                "creation_time": 1688885479.5178335,
+                "auxillary_file_paths": [
+                    "results\\company-v10-all-7\\Company\\Company-249972.pt"
+                ]
+            },
+            {
+                "steps": 249972,
+                "file_path": "results\\company-v10-all-7\\Company\\Company-249972.onnx",
+                "reward": null,
+                "creation_time": 1688887019.545254,
+                "auxillary_file_paths": [
+                    "results\\company-v10-all-7\\Company\\Company-249972.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 249972,
+            "file_path": "results\\company-v10-all-7\\Company.onnx",
+            "reward": null,
+            "creation_time": 1688887019.545254,
+            "auxillary_file_paths": [
+                "results\\company-v10-all-7\\Company\\Company-249972.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "2.0.1+cpu"
+    },
+    "CompanySac": {
+        "checkpoints": [
+            {
+                "steps": 0,
+                "file_path": "results\\company-v10-all-7\\CompanySac\\CompanySac-0.onnx",
+                "reward": null,
+                "creation_time": 1688887019.693963,
+                "auxillary_file_paths": [
+                    "results\\company-v10-all-7\\CompanySac\\CompanySac-0.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 0,
+            "file_path": "results\\company-v10-all-7\\CompanySac.onnx",
+            "reward": null,
+            "creation_time": 1688887019.693963,
+            "auxillary_file_paths": [
+                "results\\company-v10-all-7\\CompanySac\\CompanySac-0.pt"
+            ]
+        }
+    }
+}

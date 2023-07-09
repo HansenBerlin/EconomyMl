@@ -21,15 +21,15 @@ behaviors:
         strength: 1.0
     keep_checkpoints: 5
     checkpoint_interval: 10000
-    max_steps: 5000000
+    max_steps: 200000
     time_horizon: 512
-    summary_freq: 1000
+    summary_freq: 10000
     threaded: false
   CompanySac:
     trainer_type: sac
     hyperparameters:
       batch_size: 512
-      buffer_size: 128000
+      buffer_size: 12800
       learning_rate: 0.0003
       buffer_init_steps: 1000
       learning_rate_schedule: linear
@@ -43,19 +43,16 @@ behaviors:
         gamma: 0.95
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 5000000
+    max_steps: 100000
     time_horizon: 128
-    summary_freq: 1000
+    summary_freq: 10000
   GovernmentNew:
-    trainer_type: ppo
+    trainer_type: sac
     hyperparameters:
       batch_size: 512
-      buffer_size: 25600
+      buffer_size: 12800
       learning_rate: 0.0003
-      beta: 0.002
-      epsilon: 0.2
-      lambd: 0.98
-      num_epoch: 3
+      buffer_init_steps: 1000
       learning_rate_schedule: linear
     network_settings:
       normalize: true
@@ -64,9 +61,9 @@ behaviors:
       vis_encode_type: simple
     reward_signals:
       extrinsic:
-        gamma: 0.99
+        gamma: 0.95
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 5000000
-    time_horizon: 64
+    max_steps: 1000
+    time_horizon: 56
     summary_freq: 10

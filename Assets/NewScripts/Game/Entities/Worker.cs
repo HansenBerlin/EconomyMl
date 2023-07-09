@@ -22,13 +22,17 @@ namespace NewScripts.Game.Entities
         private HouseholdData _periodData = new();
         private JobContract _jobContract;
         private readonly BidCalculatorService _bidCalculatorService;
+        private Models.Settings _settings;
 
-        public Worker(BidCalculatorService bidCalculatorService, decimal startingMoney)
+        public Worker(BidCalculatorService bidCalculatorService, decimal startingMoney, Models.Settings settings)
         {
+            _settings = settings;
             Money = startingMoney;
             _bidCalculatorService = bidCalculatorService;
-            var food = new InventoryItem(ProductType.Food, 150, 50, 250, 1);
-            var luxury = new InventoryItem(ProductType.Luxury, 10, 0, 100, 10);
+            var food = new InventoryItem(ProductType.Food, 150, 50, 250, 
+                (settings.LowerPriceBoundaryFood + settings.UpperPriceBoundaryFood) / 2);
+            var luxury = new InventoryItem(ProductType.Luxury, 10, 0, 100, 
+                (settings.LowerPriceBoundaryLuxury + settings.UpperPriceBoundaryLuxury) / 2);
             _inventory.Add(food);
             _inventory.Add(luxury);
         }
@@ -98,34 +102,16 @@ namespace NewScripts.Game.Entities
             {
                 inventoryItem.ConsumeInMonth = (int)Math.Floor(Money / bidPrice * 0.9M);
             }
-            int consumeOld = inventoryItem.ConsumeInMonth;
             if (productType == ProductType.Luxury)
             {
                 var food = _inventory.FirstOrDefault(x => x.Product == ProductType.Food);
                 var fullfillRatioBaseDemand = (food!.FullfilledInMonth + 1) / ((float)food.ConsumeInMonth + 1);
                 inventoryItem.ConsumeInMonth = (int)Math.Floor(fullfillRatioBaseDemand * inventoryItem.ConsumeInMonth);
-                if (inventoryItem.ConsumeInMonth > consumeOld)
-                {
-                    Debug.LogWarning($"Luxury demand reduced. Type: {productType}, " +
-                                      $"Money: {Money}, BidPrice: {bidPrice}, " +
-                                      $"Consume: {inventoryItem.ConsumeInMonth}, consumeOld: {consumeOld}");
-                }
             }
             if (inventoryItem.ConsumeInMonth > 0 && bidPrice > 0)
             {
-                if (Money - bidPrice * inventoryItem.ConsumeInMonth < 0)
-                {
-                    Debug.LogWarning($"Not enough money. Type: {productType}, " +
-                                   $"Money: {Money}, BidPrice: {bidPrice}, " +
-                                   $"Consume: {inventoryItem.ConsumeInMonth}, consumeOld: {consumeOld}");
-                    return;
-                    //throw new Exception("Not enough money");
-                }
                 var bid = new ProductBid(productType, this, bidPrice, inventoryItem.ConsumeInMonth);
                 market.AddBid(bid);
-                
-                //Academy.Instance.StatsRecorder.Add("Market/BidCount " + productType, inventoryItem.ConsumeInMonth);
-                //Academy.Instance.StatsRecorder.Add("Market/BidPrice " + productType, (float)bidPrice);
             }
 
             AddData(inventoryItem, bidPrice);
@@ -134,8 +120,6 @@ namespace NewScripts.Game.Entities
         private bool IsMinimumFoodDemandFullfilledHungry()
         {
             var foodInventory = _inventory.FirstOrDefault(x => x.Product == ProductType.Food)!;
-            //int fullfilled = foodInventory.FullfilledInMonth - foodInventory.MonthlyMinimumDemand;
-            //int inInventory = foodInventory.Count;
             return foodInventory.Count < foodInventory.MonthlyMinimumDemand;
         }
 
@@ -158,15 +142,9 @@ namespace NewScripts.Game.Entities
 
         public void FullfillBid(ProductType product, int count, decimal price)
         {
-            if (count <= 0 || price <= 0)
-            {
-                Debug.LogError("Count and price must be positive");
-                //throw new ArgumentException("Count and price must be positive");
-            }
             var item = _inventory.FirstOrDefault(x => x.Product == product);
             item?.Add(count, price, false);
             Money -= count * price;
-            //Academy.Instance.StatsRecorder.Add("New/Money-After-Buy " + product, (float)Money);
         }
         
         public void RemoveJobContract(JobContract contract, WorkerFireReason reason)
@@ -202,9 +180,6 @@ namespace NewScripts.Game.Entities
             UnemployedForMonth = HasJob ? 0 : UnemployedForMonth + 1;
 
             averageFoodPrice *= _inventory.FirstOrDefault(x => x.Product == ProductType.Food)!.MonthlyAverageDemand;
-            //double demand = ServiceLocator.Instance.LaborMarket.DemandForWorkforce;
-            //double demandModifier = (demand + 1001) / 1000;
-            //decimal criticalBoundary = averageIncome * 0.75M > averageFoodPrice ? averageIncome + 0.75M : averageFoodPrice;
             decimal criticalBoundary = averageFoodPrice;
 
             decimal requiredWage;
@@ -233,7 +208,11 @@ namespace NewScripts.Game.Entities
             
             //Debug.Log("WORKER Wage set to " + wage + " with " + UnemployedForMonth + " months unemployed");
             
-            requiredWage = requiredWage < 25 ? 25 : requiredWage > 300 ? 300 : requiredWage;
+            requiredWage = requiredWage < _settings.LowerWageBoundary 
+                ? _settings.LowerWageBoundary 
+                : requiredWage > _settings.UpperWageBoundary 
+                    ? _settings.UpperWageBoundary 
+                    : requiredWage;
 
             
             var offer = new JobOffer(this, requiredWage);

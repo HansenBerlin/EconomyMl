@@ -151,7 +151,7 @@ checkpoint_settings:
   run_id: company-v11-all-build-2
   initialize_from: null
   load_model: false
-  resume: false
+  resume: true
   force: false
   train_model: false
   inference: false

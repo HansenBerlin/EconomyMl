@@ -389,6 +389,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Tiles_M\Tunnel_M" />
      <Folder Include="Assets\Brains" />
      <None Include="Assets\results\company-v6-6\run_logs\training_status.json" />
+     <None Include="Assets\Brains\finalfinal\company-v11-all-build-2\run_logs\timers.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Space_T" />
      <None Include="Assets\results\company-v6-7\run_logs\timers.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Racing_T" />
@@ -470,6 +471,7 @@
      <Folder Include="Assets\results\company-v6-7\Company" />
      <Folder Include="Assets\PolygonTown" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Vehicles_T\Air_AI_T" />
+     <Folder Include="Assets\Brains\finalfinal" />
      <Folder Include="Assets\results" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Roman_M" />
      <Folder Include="Assets\results\company-v8-1\Company" />
@@ -522,6 +524,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Beach_M" />
      <Folder Include="Assets\PolygonStarter\Materials\Misc" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Nature_M\Stones_M" />
+     <Folder Include="Assets\Brains\finalfinal\company-v11-all-build-2\run_logs" />
      <Folder Include="Library\PackageCache\com.unity.modules.unitywebrequestassetbundle@1.0.0" />
      <Folder Include="Assets\results\company-v7-1\Company" />
      <None Include="Assets\Brains\final\simple-companyonly\company-v4-18\run_logs\training_status.json" />
@@ -702,6 +705,7 @@
      <None Include="Assets\Brains\v8\company-v8-4\run_logs\training_status.json" />
      <Folder Include="Assets\results\company-v6-3\Company" />
      <Folder Include="Assets\results\company-v8-2" />
+     <Folder Include="Assets\Brains\finalfinal\company-v11-all-build-2\GovernmentNew" />
      <Folder Include="Assets\results\company-v7-2\Company" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Meshes_T\Buildings_T" />
      <Folder Include="Assets\results\company-v6-4\Company" />
@@ -780,6 +784,7 @@
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Racing_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Buildings_T\Parts_T" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Vehicles_M\Cars_AI_M" />
+     <None Include="Assets\Brains\finalfinal\company-v11-all-build-2\run_logs\training_status.json" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Furniture_M" />
      <None Include="Assets\Brains\company-v2-7\run_logs\training_status.json" />
      <Folder Include="Assets\Packages\ScottPlot.4.1.64" />
@@ -810,6 +815,7 @@
      <Folder Include="Library\PackageCache\com.unity.render-pipelines.universal@14.0.7\Textures\BlueNoise16" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\T\- Prefabs_T\Terrains_T\Hexagons_T" />
      <Folder Include="Assets\TextMesh Pro\Examples &amp; Extras\Scenes" />
+     <Folder Include="Assets\Brains\finalfinal\company-v11-all-build-2\CompanySac" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Survival_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Egypt_M" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Nature_M\Grass_M" />
@@ -961,6 +967,7 @@
      <Folder Include="Assets\Brains\better\company-v3-3\Company" />
      <Folder Include="Assets\NewScripts\Ui\Panels" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Meshes_M\Sport_M" />
+     <Folder Include="Assets\Brains\finalfinal\company-v11-all-build-2" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
      <Folder Include="Assets\results\company-v6-5\Company" />
      <Folder Include="Assets\Packages\MathNet.Numerics.5.0.0\lib\netstandard2.0" />
@@ -976,6 +983,7 @@
      <Folder Include="Assets\results\company-v6-1\Company" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Medieval_M" />
      <Folder Include="Assets\Scripts" />
+     <Folder Include="Assets\Brains\finalfinal\company-v11-all-build-2\Company" />
      <Folder Include="Assets\polyperfect\Low Poly Epic City\M\- Prefabs_M\Tiles_M\Tile-buildings_M" />
      <None Include="Assets\ML-Agents\Timers\SimpleSupplyChain_timers.json" />
      <Folder Include="Library\PackageCache\com.unity.modules.unitywebrequesttexture@1.0.0" />

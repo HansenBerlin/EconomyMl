@@ -11,17 +11,17 @@ namespace NewScripts.Http
         public int month;
         public int year;
         public double liquidity;
-        public double realWage;
+        public double profit;
         public double price;
         public int workers;
         public double wage;
         public int sales;
-        public int stock;
+        public int production;
         public int lifetime;
         public int openPositions;
         public bool isTraining;
-        public bool isStartup;
-        public int emergencyRounds;
+        public int marketDemand;
+        public double marketBidPrice;
     }
 }
 

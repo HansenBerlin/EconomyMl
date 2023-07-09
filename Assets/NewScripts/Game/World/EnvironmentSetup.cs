@@ -72,7 +72,7 @@ namespace NewScripts.Game.World
             ServiceLocator.Instance.Settings.WriteToDatabase = writeToDatabase;
             //ServiceLocator.Instance.CompanyContainerPanelController = companyPanelGo.GetComponent<CompanyContainerPanelController>();
             var priceBidCalculator = new BidCalculatorService();
-            ServiceLocator.Instance.LaborMarket.InitWorkers(1000, priceBidCalculator, TotalMoneySupply / 4 / 1000);
+            ServiceLocator.Instance.LaborMarket.InitWorkers(1000, priceBidCalculator, TotalMoneySupply / 4 / 1000, ServiceLocator.Instance.Settings);
             int zPos = 0;
             int xPos = 0;
             decimal liquidity = TotalMoneySupply / 2 / (aiPpoCompaniesPerType + playerCompaniesPerType + aiSacCompaniesPerType);
@@ -154,6 +154,7 @@ namespace NewScripts.Game.World
         {
             decimal averageIncome = ServiceLocator.Instance.LaborMarket.AveragePayment();
             decimal averageFoodPrice = ServiceLocator.Instance.FoodProductMarket.AveragePriceInLastYear();
+            decimal averageFoodDemand = ServiceLocator.Instance.FoodProductMarket.DemandForProduct;
             foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
             {
                 worker.SearchForJob(averageIncome, averageFoodPrice);
@@ -197,7 +198,7 @@ namespace NewScripts.Game.World
             
             foreach (var company in ServiceLocator.Instance.Companys)
             {
-                company.EndMonth();
+                company.EndMonth((double)averageFoodPrice, (int)averageFoodDemand);
             }
             
             _government.PayOutSocialFare();

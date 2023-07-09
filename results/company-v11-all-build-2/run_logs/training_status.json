@@ -2,15 +2,6 @@
     "Company": {
         "checkpoints": [
             {
-                "steps": 49616,
-                "file_path": "results\\company-v11-all-build-2\\Company\\Company-49616.onnx",
-                "reward": -56.277200317382814,
-                "creation_time": 1688907960.9622684,
-                "auxillary_file_paths": [
-                    "results\\company-v11-all-build-2\\Company\\Company-49616.pt"
-                ]
-            },
-            {
                 "steps": 59706,
                 "file_path": "results\\company-v11-all-build-2\\Company\\Company-59706.onnx",
                 "reward": -41.656628926595054,
@@ -45,12 +36,52 @@
                 "auxillary_file_paths": [
                     "results\\company-v11-all-build-2\\Company\\Company-89628.pt"
                 ]
+            },
+            {
+                "steps": 89628,
+                "file_path": "results\\company-v11-all-build-2\\Company\\Company-89628.onnx",
+                "reward": null,
+                "creation_time": 1688919298.2149346,
+                "auxillary_file_paths": [
+                    "results\\company-v11-all-build-2\\Company\\Company-89628.pt"
+                ]
             }
-        ]
+        ],
+        "final_checkpoint": {
+            "steps": 89628,
+            "file_path": "results\\company-v11-all-build-2\\Company.onnx",
+            "reward": null,
+            "creation_time": 1688919298.2149346,
+            "auxillary_file_paths": [
+                "results\\company-v11-all-build-2\\Company\\Company-89628.pt"
+            ]
+        }
     },
     "metadata": {
         "stats_format_version": "0.3.0",
         "mlagents_version": "0.30.0",
         "torch_version": "2.0.1+cpu"
+    },
+    "CompanySac": {
+        "checkpoints": [
+            {
+                "steps": 0,
+                "file_path": "results\\company-v11-all-build-2\\CompanySac\\CompanySac-0.onnx",
+                "reward": null,
+                "creation_time": 1688919298.319935,
+                "auxillary_file_paths": [
+                    "results\\company-v11-all-build-2\\CompanySac\\CompanySac-0.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 0,
+            "file_path": "results\\company-v11-all-build-2\\CompanySac.onnx",
+            "reward": null,
+            "creation_time": 1688919298.319935,
+            "auxillary_file_paths": [
+                "results\\company-v11-all-build-2\\CompanySac\\CompanySac-0.pt"
+            ]
+        }
     }
 }

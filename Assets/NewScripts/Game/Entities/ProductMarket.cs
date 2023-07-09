@@ -147,8 +147,7 @@ namespace NewScripts.Game.Entities
                 }
             }
 
-            DemandForProduct = bids.Count - offers.Count;
-            Academy.Instance.StatsRecorder.Add("Market/Demand", DemandForProduct);
+            
 
             if (isTraining == false)
             {
@@ -163,12 +162,14 @@ namespace NewScripts.Game.Entities
                 }
             }
 
-            if(isGovernmentRequest)
+            if (isGovernmentRequest)
             {
                 GovernmentProductBids.Clear();
+                DemandForProduct = 0;
             }
             else
             {
+                DemandForProduct = bids.Count - offers.Count;
                 PrivateProductBids.Clear();
             }
 
@@ -176,6 +177,7 @@ namespace NewScripts.Game.Entities
             {
                 ProductOffers.Clear();
             }
+            Academy.Instance.StatsRecorder.Add("Market/Demand", DemandForProduct);
         }
     }
 }

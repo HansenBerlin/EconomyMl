@@ -15,7 +15,6 @@ namespace NewScripts.Game.Services
             float modifier = (ratio + 1) / 2;
             int low = (int)(inventoryItem.MonthlyMinimumDemand * modifier);
             int high = (int)(inventoryItem.MonthlyMaximumDemand * modifier);
-            //inventoryItem.FullfilledInMonth = 0;
             return (low, high);
         }
 
@@ -41,11 +40,6 @@ namespace NewScripts.Game.Services
         {
             double random = _rand.NextDouble();
             int demand = minDemand + (int)Math.Round(Math.Pow(random, 2) * (maxDemand - minDemand));
-            if (demand < 0)
-            {
-                Debug.Log("Demand is negative");
-                //throw new Exception("Demand is negative");
-            }
             return demand;
         }
     }

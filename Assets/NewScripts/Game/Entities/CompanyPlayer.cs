@@ -231,34 +231,32 @@ namespace NewScripts.Game.Entities
 
         private int _lastWorkers;
         
-        public void EndMonth()
+        private void WriteToDatabase(double lastBidProceFood, int lastDemandFood)
         {
-            if (_writeToDatabase)
+            var ledger = new Http.CompanyLedger
             {
-                var ledger = new Http.CompanyLedger
-                {
-                    companyId = Id,
-                    openPositions = OpenPositions,
-                    month = ServiceLocator.Instance.FlowController.Month,
-                    year = ServiceLocator.Instance.FlowController.Year,
-                    liquidity = (double)Liquidity,
-                    realWage = _jobContracts.Count > 0 ? (double)_jobContracts.Average(x => x.Wage) : 0,
-                    workers = _jobContracts.Count,
-                    price = (double)LastDecision.PriceFood,
-                    wage = (double)LastDecision.Wage,
-                    sales = 1,
-                    stock = ProductStockFood,
-                    lifetime = LifetimeMonths,
-                    sessionId = ServiceLocator.Instance.SessionId,
-                    emergencyRounds = 0,
-                    isStartup = false,
-                    isTraining = _isTraining
-                };
-                StartCoroutine(HttpService.Insert("http://localhost:5000/companies/ledger", ledger));
-            }
-
-            
-
+                companyId = Id,
+                openPositions = OpenPositions,
+                month = ServiceLocator.Instance.FlowController.Month,
+                year = ServiceLocator.Instance.FlowController.Year,
+                liquidity = (double)Ledger[^1].Books.LiquidityEndCheck,
+                profit = (double)(Ledger[^1].Books.LiquidityEndCheck - Ledger[^1].Books.LiquidityStart),
+                production = Ledger[^1].Food.Production,
+                workers = _jobContracts.Count,
+                price = (double)Ledger[^1].Food.PriceSet,
+                wage = (double)Ledger[^1].Workers.AverageWage,
+                sales = Ledger[^1].Food.Sales,
+                lifetime = LifetimeMonths,
+                sessionId = ServiceLocator.Instance.SessionId,
+                isTraining = _isTraining,
+                marketBidPrice = lastBidProceFood,
+                marketDemand = lastDemandFood,
+            };
+            StartCoroutine(HttpService.Insert("http://localhost:5000/companies/ledger", ledger));
+        }
+        
+        public void EndMonth(double lastBidProceFood, int lastDemandFood)
+        {
             for (var i = _jobContracts.Count - 1; i >= 0; i--)
             {
                 var contract = _jobContracts[i];
@@ -276,73 +274,51 @@ namespace NewScripts.Game.Entities
                 }
                 else
                 {
-                    contract.QuitContract(WorkerFireReason.LackOfFunds);
+                    //contract.QuitContract(WorkerFireReason.LackOfFunds);
                 }
-            }
-            
-            if (Liquidity < 10 || _jobContracts.Count == 0)
-            {
-                Reputation--;
-                AddReward(-0.1F);
-            }
-
-            if (_jobContracts.Count > _lastWorkers)
-            {
-                AddReward(0.1F);
-            }
-            else if (_jobContracts.Count == _lastWorkers)
-            {
-                AddReward(0.01F);
-            }
-            else
-            {
-                AddReward(-0.11F);
             }
 
             //PaySocialFare();
             
             LifetimeMonths++;
             
-            //UpdateCanvasText(false);
-            AddReward(Reputation*0.01F);
-            AddReward((float)Liquidity*0.01F);
-            //AddReward(_jobContracts.Count*1F);
-            if (Reputation >= 1000)
-            {
-                AddReward(1000F);
-                //ProductStock = 0;
-                //EndEpisode();
-            }
-            else if (Reputation <= -1000)
-            {
-                for (int i = _jobContracts.Count - 1; i >= 0; i--)
-                {
-                    //var contract = _jobContracts[i];
-                    //contract.QuitContract();
-                }
-                AddReward(-100F);
-                //ProductStock = 0;
-                //EndEpisode();
-            }
-
-            //int availableSpace = _jobContracts.Count * 400;
+            
             int destroy = (int)(ProductStockFood * 0.1M);
             Ledger[^1].Food.Destroyed = destroy;
             ProductStockFood -= destroy;
+            ProductStockLuxury -= (int)(ProductStockLuxury * 0.1M);
             
-            SetBuilding();
 
             Ledger[^1].Food.StockEndCheck = ProductStockFood;
             Ledger[^1].Luxury.StockEndCheck = ProductStockLuxury;
             Ledger[^1].Books.LiquidityEndCheck = Liquidity;
             Ledger[^1].Workers.EndCount = _jobContracts.Count;
+            
+            var lastPeriodData = Ledger[^1];
+            decimal profit = lastPeriodData.Books.LiquidityEndCheck - lastPeriodData.Books.LiquidityStart;
+            decimal taxPaid = 0;
+            if (LifetimeMonths > 3 && profit > 0)
+            {
+                taxPaid = ServiceLocator.Instance.Government.PayCompanyTaxes(profit);
+                Liquidity -= taxPaid;
+            }
+            
+            Ledger[^1].Books.TaxPayments = taxPaid;
+            Ledger[^1].Books.LiquidityEndCheck = Liquidity;
+            
+            SetBuilding();
+            _lastWorkers = _jobContracts.Count;
+
+            if (_writeToDatabase)
+            {
+                WriteToDatabase(lastBidProceFood, lastDemandFood);
+            }
             ServiceLocator.Instance.FlowController.CommitCompanyDecision(Id, DecisionStatus = CompanyDecisionStatus.Pending);
 
 
             
             //ServiceLocator.Instance.FlowController.CommitDecision();
             //yield return new WaitForFixedUpdate();
-            _lastWorkers = _jobContracts.Count;
         }
 
         public void AddRewards(int year)
