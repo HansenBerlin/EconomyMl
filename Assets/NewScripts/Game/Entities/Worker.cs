@@ -100,7 +100,7 @@ namespace NewScripts.Game.Entities
             
             if (inventoryItem.ConsumeInMonth * bidPrice > Money)
             {
-                inventoryItem.ConsumeInMonth = (int)Math.Floor(Money / bidPrice * 0.9M);
+                inventoryItem.ConsumeInMonth = (int)Math.Floor(Money / bidPrice * 0.98M);
             }
             if (productType == ProductType.Luxury)
             {

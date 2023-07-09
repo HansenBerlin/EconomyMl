@@ -12,16 +12,24 @@ namespace NewScripts.Http
         public int year;
         public double liquidity;
         public double profit;
-        public double price;
+        public double priceFood;
+        public double priceLux;
         public int workers;
         public double wage;
-        public int sales;
-        public int production;
+        public int salesFood;
+        public int salesLux;
+        public int productionFood;
+        public int productionLux;
+        public int stockFood;
+        public int stockLux;
         public int lifetime;
         public int openPositions;
         public bool isTraining;
-        public int marketDemand;
-        public double marketBidPrice;
+        public int marketDemandFood;
+        public double marketBidPriceFood;
+        public int marketDemandLux;
+        public double marketBidPriceLux;
+        public double ressourceAllocation;
     }
 }
 

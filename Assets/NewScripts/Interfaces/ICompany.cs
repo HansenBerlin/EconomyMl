@@ -24,7 +24,7 @@ namespace NewScripts.Interfaces
         void RequestMonthlyDecision();
         void StartNextPeriod(Decision decision);
         void Produce();
-        void EndMonth(double lastBidProceFood, int lastDemandFood);
-        void AddRewards(int year);
+        void EndMonth();
+        void AddRewards(int year, double lastBidProceFood, int lastDemandFood, double lastBidProceLux, int lastDemandLux);
     }
 }

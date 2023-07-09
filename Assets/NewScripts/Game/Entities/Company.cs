@@ -55,13 +55,13 @@ namespace NewScripts.Game.Entities
             //SetupAgent();
             Name = CompanyNames.PickRandomName();
             _reputationAggregator = ServiceLocator.Instance.ReputationAggregatorFactory.Create();
-            if (_isTraining == false)
-            {
-                _jobRampup = 1;
-                _foodPriceRampup = 0;
-                _luxPriceRampup = 0;
-                _wageRampup = 0;
-            }
+            //if (_isTraining == false)
+            //{
+            //    _jobRampup = 1;
+            //    _foodPriceRampup = 0;
+            //    _luxPriceRampup = 0;
+            //    _wageRampup = 0;
+            //}
         }
 
         private void Update() {  
@@ -80,11 +80,20 @@ namespace NewScripts.Game.Entities
             LifetimeMonths = 0;
             ProductStockFood /= 2;
             ProductStockLuxury /= 2;
-            
-            _jobRampup = 0.1F;
-            _foodPriceRampup = 0.6F;
-            _luxPriceRampup = 6;
-            _wageRampup = 70;
+            //if (_isTraining == false)
+            //{
+            //    _jobRampup = 1;
+            //    _foodPriceRampup = 0;
+            //    _luxPriceRampup = 0;
+            //    _wageRampup = 0;
+            //}
+            //else
+            //{
+                _jobRampup = 0.1F;
+                _foodPriceRampup = 0.6F;
+                _luxPriceRampup = 6;
+                _wageRampup = 70;
+            //}
             _reputationAggregator = ServiceLocator.Instance.ReputationAggregatorFactory.Create();
             SetBuilding();
         }
@@ -170,6 +179,12 @@ namespace NewScripts.Game.Entities
                 //actionMask.SetActionEnabled(0, 0, false);
                 actionMask.SetActionEnabled(0, 2, false);
             }
+
+            if (ServiceLocator.Instance.Settings.IsAutoPlay)
+            {
+                actionMask.SetActionEnabled(0, 1, false);
+                actionMask.SetActionEnabled(0, 2, false);
+            }
         }
 
         private float _jobRampup = 0.1F;
@@ -187,7 +202,7 @@ namespace NewScripts.Game.Entities
                 throw new Exception("ACT: DecisionStatus != CompanyDecisionStatus.Requested");
             }
 
-            if(LifetimeMonths == 12 && _isTraining)
+            if(LifetimeMonths == 12 && _isTraining || _isTraining == false)
             {
                 _jobRampup = _jobRampup < 1F ? _jobRampup + 0.1F : 1;
                 _wageRampup = _wageRampup > 0 ? _wageRampup - 7 : 0;
@@ -200,7 +215,7 @@ namespace NewScripts.Game.Entities
             LastDecision = new Decision();
             int workerDecision = actionBuffers.DiscreteActions[0];
             LastDecision.AdjustWages = actionBuffers.DiscreteActions[1] == 1;
-            if (_isTraining)
+            if (_isTraining || _isTraining == false)
             {
                 float wageLowerBoundary = LifetimeMonths > 12 ? (float)ServiceLocator.Instance.Policies.MinimumWage 
                     : (float)settings.LowerWageBoundary + _wageRampup;
@@ -223,6 +238,7 @@ namespace NewScripts.Game.Entities
                 LastDecision.PriceLuxury = (decimal)ValueMapper.MapValue(actionBuffers.ContinuousActions[2], 
                     (float)settings.LowerPriceBoundaryLuxury, (float)settings.UpperPriceBoundaryLuxury);
             }
+            
             LastDecision.RessourceDistribution = ValueMapper.MapValue(actionBuffers.ContinuousActions[3], 
                 0.1F, 1F);
 
@@ -252,6 +268,17 @@ namespace NewScripts.Game.Entities
             {
                 LastDecision.WorkerChange = 0;
                 OpenPositions = 0;
+            }
+            
+            if (ServiceLocator.Instance.Settings.IsAutoPlay)
+            {
+                LastDecision.AdjustWages = true;
+                if (_jobContracts.Count < 40)
+                {
+                    OpenPositions = 40 - _jobContracts.Count;
+                    LastDecision.WorkerChange = OpenPositions;
+                    LastDecision.Wage = ServiceLocator.Instance.LaborMarket.AveragePayment();
+                }
             }
 
             var decisionLedger = new DecisionLedger(LastDecision);
@@ -340,7 +367,7 @@ namespace NewScripts.Game.Entities
 
         private int lastWorkers;
 
-        private void WriteToDatabase(double lastBidProceFood, int lastDemandFood)
+        private void WriteToDatabase(double lastBidProceFood, int lastDemandFood, double lastBidProceLux, int lastDemandLux)
         {
             var ledger = new Http.CompanyLedger
             {
@@ -350,21 +377,28 @@ namespace NewScripts.Game.Entities
                 year = ServiceLocator.Instance.FlowController.Year,
                 liquidity = (double)Ledger[^1].Books.LiquidityEndCheck,
                 profit = (double)(Ledger[^1].Books.LiquidityEndCheck - Ledger[^1].Books.LiquidityStart),
-                production = Ledger[^1].Food.Production,
+                productionFood = Ledger[^1].Food.Production,
+                productionLux = Ledger[^1].Luxury.Production,
                 workers = _jobContracts.Count,
-                price = (double)Ledger[^1].Food.PriceSet,
+                priceFood = (double)Ledger[^2].Food.PriceSet,
+                priceLux = (double)Ledger[^2].Luxury.PriceSet,
                 wage = (double)Ledger[^1].Workers.AverageWage,
-                sales = Ledger[^1].Food.Sales,
+                salesFood = Ledger[^1].Food.Sales,
+                salesLux = Ledger[^1].Luxury.Sales,
                 lifetime = LifetimeMonths,
                 sessionId = ServiceLocator.Instance.SessionId,
                 isTraining = _isTraining,
-                marketBidPrice = lastBidProceFood,
-                marketDemand = lastDemandFood,
+                marketBidPriceFood = lastBidProceFood,
+                marketDemandFood = lastDemandFood,
+                marketBidPriceLux = lastBidProceLux,
+                marketDemandLux = lastDemandLux,
+                ressourceAllocation = Ledger[^2].Decision.ResourceDistribution
+                
             };
             StartCoroutine(HttpService.Insert("http://localhost:5000/companies/ledger", ledger));
         }
         
-        public void EndMonth(double lastBidProceFood, int lastDemandFood)
+        public void EndMonth()
         {
             for (var i = _jobContracts.Count - 1; i >= 0; i--)
             {
@@ -385,7 +419,7 @@ namespace NewScripts.Game.Entities
                 {
                     if (LifetimeMonths > 24)
                     {
-                        //contract.QuitContract(WorkerFireReason.LackOfFunds);
+                        contract.QuitContract(WorkerFireReason.LackOfFunds);
                     }
                 }
             }
@@ -408,7 +442,8 @@ namespace NewScripts.Game.Entities
             Ledger[^1].Workers.EndCount = _jobContracts.Count;
 
             var lastPeriodData = Ledger[^1];
-            decimal profit = lastPeriodData.Books.LiquidityEndCheck - lastPeriodData.Books.LiquidityStart;
+            decimal profit = lastPeriodData.Books.Income - lastPeriodData.Books.WagePayments;
+            
             decimal taxPaid = 0;
             if (LifetimeMonths > 3 && profit > 0)
             {
@@ -417,26 +452,36 @@ namespace NewScripts.Game.Entities
             }
             
             Ledger[^1].Books.TaxPayments = taxPaid;
-            Ledger[^1].Books.LiquidityEndCheck = Liquidity;
+            
+
+            //if (Ledger[^1].Books.LiquidityEndCheck - Ledger[^1].Books.LiquidityStart 
+            //    != Ledger[^1].Books.Income - Ledger[^1].Books.WagePayments - Ledger[^1].Books.TaxPayments)
+            //{
+            //    Debug.LogError("Liquidity not matching " + (Ledger[^1].Books.LiquidityEndCheck - Ledger[^1].Books.LiquidityStart));
+            //    Debug.LogError("Income not matching " + (Ledger[^1].Books.Income - Ledger[^1].Books.WagePayments - Ledger[^1].Books.TaxPayments));
+            //}
             _reputationAggregator.AddValuesToNormalizers((double)profit, lastPeriodData.Lifetime, _jobContracts, lastPeriodData.Food.Sales, lastPeriodData.Luxury.Sales);
           
             
             SetBuilding();
             lastWorkers = _jobContracts.Count;
 
-            if (_writeToDatabase && Ledger.Count > 1)
-            {
-                WriteToDatabase(lastBidProceFood, lastDemandFood);
-            }
             
-            ServiceLocator.Instance.FlowController.CommitCompanyDecision(Id, DecisionStatus = CompanyDecisionStatus.Pending);
+            
+            
             
             //ServiceLocator.Instance.FlowController.CommitDecision();
             //yield return new WaitForFixedUpdate();
         }
 
-        public void AddRewards(int year)
+        public void AddRewards(int year, double lastBidProceFood, int lastDemandFood, double lastBidProceLux, int lastDemandLux)
         {
+            Ledger[^1].Books.LiquidityEndCheck = Liquidity;
+            if (_writeToDatabase && Ledger.Count > 1)
+            {
+                WriteToDatabase(lastBidProceFood, lastDemandFood, lastBidProceLux, lastDemandLux);
+            }
+            
             _reputationAggregator.AddLifetimeChange();
             _reputationAggregator.AddProfitChange();
             _reputationAggregator.AddMarketShareChange();
@@ -445,18 +490,19 @@ namespace NewScripts.Game.Entities
             Ledger[^1].Reputation = reputation;
             AddReward(reputation + 1);
             ServiceLocator.Instance.HouseholdAggregator.Add(Ledger[^1]);
+            ServiceLocator.Instance.FlowController.CommitCompanyDecision(Id, DecisionStatus = CompanyDecisionStatus.Pending);
             ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
-            if (reputation <= -0.75 && year > 2)
+            if (reputation <= -0.75 && year > 2 && _isTraining)
             {
                 SetReward(-100);
                 EndEpisode();
             }
-            else if (reputation >= 0.75 && year > 2)
+            else if (reputation >= 0.75 && year > 2 && _isTraining)
             {
                 SetReward(100);
                 EndEpisode();
             }
-            if(year > 1)
+            if(year > 1 && _isTraining)
             {
                 if(Ledger[^3].Workers.EndCount == 0 && Ledger[^2].Workers.EndCount == 0 && Ledger[^1].Workers.EndCount == 0 && LifetimeMonths > 24)
                 {

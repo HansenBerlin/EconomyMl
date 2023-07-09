@@ -6,6 +6,7 @@ namespace NewScripts.Game.Models
     {
         public decimal TotalMoneySupply { get; set; }
         public bool IsTraining { get; set; }
+        public bool IsGovernmentTraining { get; set; }
         public bool WriteToDatabase { get; set; }
         public int FoodOutputMultiplier { get; } = 300;
         public int LuxuryOutputMultiplier { get; } = 20;
@@ -16,9 +17,9 @@ namespace NewScripts.Game.Models
         public bool IsPaused { get; set; }
         public decimal LowerWageBoundary { get; set; } = 100;
         public decimal UpperWageBoundary { get; set; } = 400;
-        public decimal LowerPriceBoundaryFood { get; set; } = 0.5M;
+        public decimal LowerPriceBoundaryFood { get; set; } = 0.2M;
         public decimal UpperPriceBoundaryFood { get; set; } = 3;
-        public decimal LowerPriceBoundaryLuxury { get; set; } = 5M;
+        public decimal LowerPriceBoundaryLuxury { get; set; } = 1M;
         public decimal UpperPriceBoundaryLuxury { get; set; } = 50;
         public int LowerJobPositionsBoundary { get; set; } = 1;
         public int UpperJobPositionsBoundary { get; set; } = 50;

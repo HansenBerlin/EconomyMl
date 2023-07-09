@@ -27,10 +27,12 @@ namespace NewScripts.Game.Entities
         private float _gdpAggregate;
         private float _inflationRateAggregate;
         private float _employmentRateAggregate;
+        private Models.Settings _settings;
 
         public void Init(GlobalPolicies policies, int companyCount, EconomyMetricsCalculator economyMetrics, 
-            RewardNormalizer rewardNormalizer, decimal startingLiquidity)
+            RewardNormalizer rewardNormalizer, decimal startingLiquidity, Models.Settings settings)
         {
+            _settings = settings;
             Liquidity = startingLiquidity;
             _policies = policies;
             _companyCount = companyCount;
@@ -59,14 +61,27 @@ namespace NewScripts.Game.Entities
         public override void OnActionReceived(ActionBuffers actionBuffers)
         {
             ServiceLocator.Instance.FlowController.IsGovernmentDecisionCommitted = true;
-            float taxRate = ValueMapper.MapValue(actionBuffers.ContinuousActions[0], 0, 0.9F);
-            float minimumWage = ValueMapper.MapValue(actionBuffers.ContinuousActions[1], 1, 200F);
+            float taxLowerBoundary = _settings.IsAutoPlay == false ? 0 : 0.5F;
+            float taxUpperBoundary = _settings.IsAutoPlay == false ? 0.9F : 0.7F;
+            float richTaxLowerBoundary = _settings.IsAutoPlay == false ? 0 : 0.5F;
+            float richTaxUpperBoundary = _settings.IsAutoPlay == false ? 0.8F : 0.7F;
+            float wageUpperBoundary = _settings.IsAutoPlay == false
+                ? (float) _settings.UpperWageBoundary * 0.5F
+                : (float) _settings.LowerWageBoundary + 100;
+            float taxRate = ValueMapper.MapValue(actionBuffers.ContinuousActions[0], taxLowerBoundary, taxUpperBoundary);
+            float minimumWage = ValueMapper.MapValue(actionBuffers.ContinuousActions[1], (float)_settings.LowerWageBoundary, wageUpperBoundary);
             (float subsidyRate, float socialWelfareRate, float foodStampRate) = 
                 ValueMapper.MapPolicyActions(
                     actionBuffers.ContinuousActions[2], 
                     actionBuffers.ContinuousActions[3], 
                     actionBuffers.ContinuousActions[4]);
-            float richtaxRate = ValueMapper.MapValue(actionBuffers.ContinuousActions[5], 0, 0.5F);
+            if (_settings.IsAutoPlay)
+            {
+                subsidyRate = 0.333F;
+                socialWelfareRate = 0.333F;
+                foodStampRate = 0.333F;
+            }
+            float richtaxRate = ValueMapper.MapValue(actionBuffers.ContinuousActions[5], richTaxLowerBoundary, richTaxUpperBoundary);
             _policies.CompanyTaxRate = taxRate;
             _policies.RichTaxRate = richtaxRate;
             _policies.MinimumWage = (decimal)minimumWage;
@@ -83,21 +98,21 @@ namespace NewScripts.Game.Entities
             _gdpAggregate /= 12;
             _employmentRateAggregate /= 12;
             _rewardNormalizer.AddValue(_gdpAggregate);
-           //Debug.Log($"YEAR Government: InflationRate: {_inflationRateAggregate:0.##}, " +
-           //          $"Gdp: {_gdpAggregate:0}, EmploymentRate: {_employmentRateAggregate:0}, " +
-           //          $"Liquidity: {Liquidity}, FoodSupply: {FoodSupply}");
-            
-            Academy.Instance.StatsRecorder.Add("GV/InflationRate", _inflationRateAggregate);
-            Academy.Instance.StatsRecorder.Add("GV/Gdp", _gdpAggregate);
-            Academy.Instance.StatsRecorder.Add("GV/EmploymentRate", _employmentRateAggregate);
-            Academy.Instance.StatsRecorder.Add("GV/Liquidity", (float)Liquidity);
-            Academy.Instance.StatsRecorder.Add("GV/FoodSupply", FoodSupply);
-            Academy.Instance.StatsRecorder.Add("GV/CompanyTaxRate", _policies.CompanyTaxRate);
-            Academy.Instance.StatsRecorder.Add("GV/RichTaxRate", _policies.RichTaxRate);
-            Academy.Instance.StatsRecorder.Add("GV/SubsidyRate", _policies.SubsidyRate);
-            Academy.Instance.StatsRecorder.Add("GV/FoodStamprate", _policies.FoodStamprate);
-            Academy.Instance.StatsRecorder.Add("GV/SocialWelfareRate", _policies.SocialWelfareRate);
-            Academy.Instance.StatsRecorder.Add("GV/MinimumWage", (float)_policies.MinimumWage);
+
+            if (_settings.IsGovernmentTraining)
+            {
+                Academy.Instance.StatsRecorder.Add("GV/InflationRate", _inflationRateAggregate);
+                Academy.Instance.StatsRecorder.Add("GV/Gdp", _gdpAggregate);
+                Academy.Instance.StatsRecorder.Add("GV/EmploymentRate", _employmentRateAggregate);
+                Academy.Instance.StatsRecorder.Add("GV/Liquidity", (float)Liquidity);
+                Academy.Instance.StatsRecorder.Add("GV/FoodSupply", FoodSupply);
+                Academy.Instance.StatsRecorder.Add("GV/CompanyTaxRate", _policies.CompanyTaxRate);
+                Academy.Instance.StatsRecorder.Add("GV/RichTaxRate", _policies.RichTaxRate);
+                Academy.Instance.StatsRecorder.Add("GV/SubsidyRate", _policies.SubsidyRate);
+                Academy.Instance.StatsRecorder.Add("GV/FoodStamprate", _policies.FoodStamprate);
+                Academy.Instance.StatsRecorder.Add("GV/SocialWelfareRate", _policies.SocialWelfareRate);
+                Academy.Instance.StatsRecorder.Add("GV/MinimumWage", (float)_policies.MinimumWage);
+            }
 
             var ledger = new GovernmentLedger
             {
@@ -121,22 +136,11 @@ namespace NewScripts.Game.Entities
             _gdpAggregate = 0;
             _employmentRateAggregate = 0;
 
-            if (ServiceLocator.Instance.FlowController.Year % 10 == 0)
+            if (ServiceLocator.Instance.FlowController.Year % 10 == 0 && _settings.IsGovernmentTraining)
             {
                 _rewardNormalizer = new RewardNormalizer();
                 EndEpisode();
             }
-            var random = new System.Random();
-            //float minimumWage = ValueMapper.MapValue(actionBuffers.ContinuousActions[1], 1, 200F);
-            //(float subsidyRate, float socialWelfareRate, float foodStampRate) = ValueMapper.MapPolicyActions(
-              //  random.Next(-100, 101) / 100F, random.Next(-100, 101) / 100F, random.Next(-100, 101) / 100F);
-            //_policies.TaxRate = random.Next(40, 61) / 100F;
-            //_policies.SubsidyRate = subsidyRate;
-            //_policies.SocialWelfareRate = socialWelfareRate;
-            //_policies.FoodStamprate = foodStampRate;
-            
-            //ServiceLocator.Instance.FlowController.IsGovernmentDecisionCommitted = true;
-
         }
 
         public void AddFoodBids()
@@ -183,23 +187,24 @@ namespace NewScripts.Game.Entities
 
         public void PayOutSubsidy()
         {
-            int companysCount = Companies.Count;
-            var startups = Companies
-                .Where(x => x.LifetimeMonths < 12 
-                            || x.Liquidity < ServiceLocator.Instance.Settings.TotalMoneySupply / 10 / companysCount)
-                .ToList();
-            if (startups.Count == 0)
-            {
-                return;
-            }
+            //int companysCount = Companies.Count;
+            //var startups = Companies
+            //    .Where(x => x.LifetimeMonths < 12 
+            //                || x.Liquidity < ServiceLocator.Instance.Settings.TotalMoneySupply / 10 / companysCount)
+            //    .ToList();
+            //if (startups.Count == 0)
+            //{
+            //    return;
+            //}
 
-            decimal subsidityPerCompany = Liquidity * (decimal) _policies.SubsidyRate / startups.Count;
-            foreach (var company in startups)
+            //decimal subsidityPerCompany = Liquidity * (decimal) _policies.SubsidyRate / startups.Count;
+            decimal subsidityPerCompany = Liquidity * (decimal) _policies.SubsidyRate / Companies.Count;
+            foreach (var company in Companies)
             {
                 company.Liquidity += subsidityPerCompany;
                 Liquidity -= subsidityPerCompany;
             }
-            Academy.Instance.StatsRecorder.Add("GV/SubsidyPaid", (float)subsidityPerCompany * startups.Count);
+            //Academy.Instance.StatsRecorder.Add("GV/SubsidyPaid", (float)subsidityPerCompany * startups.Count);
         }
         
         public void FullfillBid(ProductType product, int count, decimal price)

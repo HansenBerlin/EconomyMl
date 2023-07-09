@@ -56,7 +56,7 @@ namespace NewScripts.Game.Services
                 throw new Exception("No companys found");
             }
             Government = government;
-            Government.Init(Policies, Companys.Count, EconomyMetrics, new RewardNormalizer(), startingLiquidityGovernment);
+            Government.Init(Policies, Companys.Count, EconomyMetrics, new RewardNormalizer(), startingLiquidityGovernment, Settings);
             CompanyContainerPanelController = companyContainerPanelController;
             FlowController = new FlowController(Companys.Select(c => c.Id).ToList());
         }

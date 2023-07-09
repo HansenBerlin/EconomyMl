@@ -11,6 +11,7 @@ namespace NewScripts.DataModelling
             SetWorkerWage = decision.Wage;
             SetFoodPrice = decision.PriceFood;
             SetLuxuryPrice = decision.PriceLuxury;
+            ResourceDistribution = decision.RessourceDistribution;
         }
 
         public int FireWorkers { get; }
@@ -18,5 +19,6 @@ namespace NewScripts.DataModelling
         public decimal SetWorkerWage { get; }
         public decimal SetFoodPrice { get; }
         public decimal SetLuxuryPrice { get; }
+        public double ResourceDistribution { get; }
     }
 }

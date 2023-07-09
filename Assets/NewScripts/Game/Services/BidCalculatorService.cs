@@ -10,11 +10,13 @@ namespace NewScripts.Game.Services
         
         public (int low, int high) DemandModifier(InventoryItem inventoryItem)
         {
-            float ratio = inventoryItem.FullfilledInMonth > 0 && inventoryItem.ConsumeInMonth > 0 ? 
-                inventoryItem.FullfilledInMonth / (float)inventoryItem.ConsumeInMonth : 0;
-            float modifier = (ratio + 1) / 2;
-            int low = (int)(inventoryItem.MonthlyMinimumDemand * modifier);
-            int high = (int)(inventoryItem.MonthlyMaximumDemand * modifier);
+            //float ratio = inventoryItem.FullfilledInMonth > 0 && inventoryItem.ConsumeInMonth > 0 ? 
+            //    inventoryItem.FullfilledInMonth / (float)inventoryItem.ConsumeInMonth : 0;
+            //float modifier = (ratio + 1) / 2;
+            //int low = (int)(inventoryItem.MonthlyMinimumDemand * modifier);
+            //int high = (int)(inventoryItem.MonthlyMaximumDemand * modifier);
+            int low = inventoryItem.MonthlyMinimumDemand;
+            int high = inventoryItem.MonthlyMaximumDemand;
             return (low, high);
         }
 

@@ -28,6 +28,7 @@ namespace NewScripts.Game.World
         public int startingCapitalPlayers;
         private const int GridGap = 40;
         public bool isTraining;
+        public bool isGovermnentTraining;
         private const decimal TotalMoneySupply = 1_000_000;
         public bool writeToDatabase;
         private bool _isInitDone;
@@ -69,6 +70,7 @@ namespace NewScripts.Game.World
         {
             ServiceLocator.Instance.Settings.TotalMoneySupply = TotalMoneySupply;
             ServiceLocator.Instance.Settings.IsTraining = isTraining;
+            ServiceLocator.Instance.Settings.IsGovernmentTraining = isGovermnentTraining;
             ServiceLocator.Instance.Settings.WriteToDatabase = writeToDatabase;
             //ServiceLocator.Instance.CompanyContainerPanelController = companyPanelGo.GetComponent<CompanyContainerPanelController>();
             var priceBidCalculator = new BidCalculatorService();
@@ -113,6 +115,8 @@ namespace NewScripts.Game.World
             }
             
             var governmentInstance = Instantiate(governmentGo);
+            var agent = governmentInstance.GetComponent<BehaviorParameters>();
+            agent.BehaviorType = isGovermnentTraining ? BehaviorType.Default : BehaviorType.InferenceOnly;
             _government = governmentInstance.GetComponent<Government>();
             ServiceLocator.Instance.AddInstances(_government, companyPanelGo.GetComponent<CompanyContainerPanelController>(), TotalMoneySupply / 4);
             _isInitDone = true;
@@ -155,6 +159,7 @@ namespace NewScripts.Game.World
             decimal averageIncome = ServiceLocator.Instance.LaborMarket.AveragePayment();
             decimal averageFoodPrice = ServiceLocator.Instance.FoodProductMarket.AveragePriceInLastYear();
             decimal averageFoodDemand = ServiceLocator.Instance.FoodProductMarket.DemandForProduct;
+            decimal averageLuxDemand = ServiceLocator.Instance.LuxuryProductMarket.DemandForProduct;
             foreach (var worker in ServiceLocator.Instance.LaborMarket.Workers)
             {
                 worker.SearchForJob(averageIncome, averageFoodPrice);
@@ -198,7 +203,7 @@ namespace NewScripts.Game.World
             
             foreach (var company in ServiceLocator.Instance.Companys)
             {
-                company.EndMonth((double)averageFoodPrice, (int)averageFoodDemand);
+                company.EndMonth();
             }
             
             _government.PayOutSocialFare();
@@ -209,11 +214,12 @@ namespace NewScripts.Game.World
                 worker.EndMonth();
             }
             
+            _government.PayOutSubsidy();
             foreach (var company in ServiceLocator.Instance.Companys)
             {
-                company.AddRewards(ServiceLocator.Instance.FlowController.Year);
+                company.AddRewards(ServiceLocator.Instance.FlowController.Year, (double)averageFoodPrice, (int)averageFoodDemand, 
+                    (double)averageLuxuryPrice, (int)averageLuxDemand);
             }
-            _government.PayOutSubsidy();
             
             _government.EndMonth();
             if (ServiceLocator.Instance.FlowController.Month == 12)

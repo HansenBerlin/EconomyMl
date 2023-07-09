@@ -4,6 +4,7 @@ using NewScripts.DataModelling;
 using NewScripts.Game.Models;
 using NewScripts.Game.Services;
 using NewScripts.Interfaces;
+using TMPro;
 using Unity.MLAgents;
 using UnityEngine;
 
@@ -16,9 +17,11 @@ namespace NewScripts.Game.Entities
         private List<JobBid> JobBids { get; } = new();
         private List<JobContract> Contracts { get; } = new();
         public int DemandForWorkforce { get; private set; }
+        private Models.Settings _settings;
 
         public void InitWorkers(int count, BidCalculatorService bidCalculatorService, decimal startingMoneyPerWorker, Models.Settings settings)
         {
+            _settings = settings;
             for (int i = 0; i < count; i++)
             {
                 Workers.Add(new Worker(bidCalculatorService, startingMoneyPerWorker, settings));
@@ -27,7 +30,16 @@ namespace NewScripts.Game.Entities
 
         public decimal AveragePayment()
         {
-            decimal average = Contracts.Count > 0 ? Contracts.Select(x => x.Wage).Average() : 150;
+            decimal average;
+            if (_settings.IsAutoPlay)
+            {
+                average = (_settings.LowerWageBoundary + _settings.UpperWageBoundary) / 2;
+            }
+            else
+            {
+                average = Contracts.Count > 0 ? Contracts.Select(x => x.Wage).Average() 
+                    : (_settings.LowerWageBoundary + _settings.UpperWageBoundary) / 2;
+            }
             return average;
         }
 

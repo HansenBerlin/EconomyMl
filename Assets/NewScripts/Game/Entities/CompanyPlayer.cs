@@ -95,9 +95,9 @@ namespace NewScripts.Game.Entities
         public Decision AutoDecision()
         {
             var decision = new Decision();
-            if (_jobContracts.Count < 50)
+            if (_jobContracts.Count < 40)
             {
-                decision.WorkerChange = 50 - _jobContracts.Count;
+                decision.WorkerChange = 40 - _jobContracts.Count;
                 decision.Wage = ServiceLocator.Instance.LaborMarket.AveragePayment() * 1.05M;
             }
             else
@@ -190,12 +190,10 @@ namespace NewScripts.Game.Entities
             ServiceLocator.Instance.FlowController.CommitCompanyDecision(Id, DecisionStatus = CompanyDecisionStatus.Commited);
             ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
             hourglass.SetActive(false);
-            Debug.Log("1B Decisions done.");
         }
 
        public void RequestMonthlyDecision()
        {
-           Debug.Log("1A Decision requested.");
            ServiceLocator.Instance.FlowController.CommitCompanyDecision(Id, DecisionStatus = CompanyDecisionStatus.Requested);
            ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
            hourglass.SetActive(true);
@@ -231,7 +229,7 @@ namespace NewScripts.Game.Entities
 
         private int _lastWorkers;
         
-        private void WriteToDatabase(double lastBidProceFood, int lastDemandFood)
+        private void WriteToDatabase(double lastBidProceFood, int lastDemandFood, double lastBidProceLux, int lastDemandLux)
         {
             var ledger = new Http.CompanyLedger
             {
@@ -241,21 +239,27 @@ namespace NewScripts.Game.Entities
                 year = ServiceLocator.Instance.FlowController.Year,
                 liquidity = (double)Ledger[^1].Books.LiquidityEndCheck,
                 profit = (double)(Ledger[^1].Books.LiquidityEndCheck - Ledger[^1].Books.LiquidityStart),
-                production = Ledger[^1].Food.Production,
+                productionFood = Ledger[^1].Food.Production,
+                productionLux = Ledger[^1].Luxury.Production,
                 workers = _jobContracts.Count,
-                price = (double)Ledger[^1].Food.PriceSet,
+                priceFood = (double)Ledger[^2].Food.PriceSet,
+                priceLux = (double)Ledger[^2].Luxury.PriceSet,
                 wage = (double)Ledger[^1].Workers.AverageWage,
-                sales = Ledger[^1].Food.Sales,
+                salesFood = Ledger[^1].Food.Sales,
+                salesLux = Ledger[^1].Luxury.Sales,
                 lifetime = LifetimeMonths,
                 sessionId = ServiceLocator.Instance.SessionId,
                 isTraining = _isTraining,
-                marketBidPrice = lastBidProceFood,
-                marketDemand = lastDemandFood,
+                marketBidPriceFood = lastBidProceFood,
+                marketDemandFood = lastDemandFood,
+                marketBidPriceLux = lastBidProceLux,
+                marketDemandLux = lastDemandLux,
+                ressourceAllocation = Ledger[^2].Decision.ResourceDistribution
             };
             StartCoroutine(HttpService.Insert("http://localhost:5000/companies/ledger", ledger));
         }
         
-        public void EndMonth(double lastBidProceFood, int lastDemandFood)
+        public void EndMonth()
         {
             for (var i = _jobContracts.Count - 1; i >= 0; i--)
             {
@@ -304,16 +308,13 @@ namespace NewScripts.Game.Entities
             }
             
             Ledger[^1].Books.TaxPayments = taxPaid;
-            Ledger[^1].Books.LiquidityEndCheck = Liquidity;
+            
             
             SetBuilding();
             _lastWorkers = _jobContracts.Count;
 
-            if (_writeToDatabase)
-            {
-                WriteToDatabase(lastBidProceFood, lastDemandFood);
-            }
-            ServiceLocator.Instance.FlowController.CommitCompanyDecision(Id, DecisionStatus = CompanyDecisionStatus.Pending);
+            
+            
 
 
             
@@ -321,11 +322,17 @@ namespace NewScripts.Game.Entities
             //yield return new WaitForFixedUpdate();
         }
 
-        public void AddRewards(int year)
+        public void AddRewards(int year, double lastBidProceFood, int lastDemandFood, double lastBidProceLux, int lastDemandLux)
         {
+            Ledger[^1].Books.LiquidityEndCheck = Liquidity;
+            if (_writeToDatabase)
+            {
+                WriteToDatabase(lastBidProceFood, lastDemandFood, lastBidProceLux, lastDemandLux);
+            }
             Ledger[^1].Reputation = Reputation;
             ServiceLocator.Instance.HouseholdAggregator.Add(Ledger[^1]);
             ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
+            ServiceLocator.Instance.FlowController.CommitCompanyDecision(Id, DecisionStatus = CompanyDecisionStatus.Pending);
         }
 
         private void PaySocialFare()

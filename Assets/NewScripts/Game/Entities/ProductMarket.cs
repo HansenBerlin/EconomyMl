@@ -61,6 +61,10 @@ namespace NewScripts.Game.Entities
         
         public void ResolveMarket(bool isTraining, bool isGovernmentRequest = false)
         {
+            if(isGovernmentRequest == false || _productType == ProductType.Luxury)
+            {
+                DemandForProduct = 0;
+            }
             var offers = ProductOffers.OrderBy(x => x.Price).ToList();
             LastOffers = offers.Count;
             LastMinOfferPrice = LastOffers > 0 ? offers[0].Price : 0;
@@ -147,8 +151,6 @@ namespace NewScripts.Game.Entities
                 }
             }
 
-            
-
             if (isTraining == false)
             {
                 PriceAnalysisStats.Deals = successfulDeals;
@@ -165,11 +167,9 @@ namespace NewScripts.Game.Entities
             if (isGovernmentRequest)
             {
                 GovernmentProductBids.Clear();
-                DemandForProduct = 0;
             }
             else
             {
-                DemandForProduct = bids.Count - offers.Count;
                 PrivateProductBids.Clear();
             }
 
@@ -177,6 +177,7 @@ namespace NewScripts.Game.Entities
             {
                 ProductOffers.Clear();
             }
+            DemandForProduct += bids.Count - offers.Count;
             Academy.Instance.StatsRecorder.Add("Market/Demand", DemandForProduct);
         }
     }

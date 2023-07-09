@@ -18,6 +18,7 @@ namespace NewScripts.Ui.Controller
         public Toggle isTrainingToggle;
         public Toggle writeToDatabaseToggle;
         public Toggle isAutomode;
+        public Toggle isGovermnentTraining;
         public TextMeshProUGUI playerCountText;
         public TextMeshProUGUI aiCountText;
         public TextMeshProUGUI aiCountTwoText;
@@ -51,6 +52,7 @@ namespace NewScripts.Ui.Controller
             setup.writeToDatabase = writeToDatabaseToggle.isOn;
             setup.isTraining = isTrainingToggle.isOn;
             setup.aiSacCompaniesPerType = (int)aiCountSliderTwo.value;
+            setup.isGovermnentTraining = isGovermnentTraining.isOn;
             setupGo.SetActive(true);
             gameObject.SetActive(false);
         }
