@@ -187,19 +187,19 @@ namespace NewScripts.Game.Entities
 
         public void PayOutSubsidy()
         {
-            //int companysCount = Companies.Count;
-            //var startups = Companies
-            //    .Where(x => x.LifetimeMonths < 12 
-            //                || x.Liquidity < ServiceLocator.Instance.Settings.TotalMoneySupply / 10 / companysCount)
-            //    .ToList();
-            //if (startups.Count == 0)
-            //{
-            //    return;
-            //}
+            int companysCount = Companies.Count;
+            var startups = Companies
+                .Where(x => x.LifetimeMonths < 12 
+                            || x.Liquidity < ServiceLocator.Instance.Settings.TotalMoneySupply / 10 / companysCount)
+                .ToList();
+            if (startups.Count == 0)
+            {
+                return;
+            }
 
-            //decimal subsidityPerCompany = Liquidity * (decimal) _policies.SubsidyRate / startups.Count;
-            decimal subsidityPerCompany = Liquidity * (decimal) _policies.SubsidyRate / Companies.Count;
-            foreach (var company in Companies)
+            decimal subsidityPerCompany = Liquidity * (decimal) _policies.SubsidyRate / startups.Count;
+            //decimal subsidityPerCompany = Liquidity * (decimal) _policies.SubsidyRate / Companies.Count;
+            foreach (var company in startups)
             {
                 company.Liquidity += subsidityPerCompany;
                 Liquidity -= subsidityPerCompany;

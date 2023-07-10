@@ -75,19 +75,20 @@ namespace NewScripts.Game.Entities
             if (isGovernmentRequest)
             {
                 bids = GovernmentProductBids.OrderByDescending(x => x.Price).ToList();    
-                LastBids = bids.Count;
-                LastMaxBidPrice = LastBids > 0 ? bids[0].Price : 0;
-                LastMinBidPrice = LastBids > 0 ? bids[LastBids - 1].Price : 0;
-            }
-            else
-            {
-                bids = PrivateProductBids.OrderByDescending(x => x.Price).ToList();
                 LastBids += bids.Count;
                 if (bids.Count > 0)
                 {
                     LastMaxBidPrice = bids[0].Price > LastMaxBidPrice ? bids[0].Price : LastMaxBidPrice;
                     LastMinBidPrice = bids[^1].Price < LastMinBidPrice ? bids[^1].Price : LastMinBidPrice;
                 }
+            }
+            else
+            {
+                bids = PrivateProductBids.OrderByDescending(x => x.Price).ToList();
+                LastBids = bids.Count;
+                LastMaxBidPrice = LastBids > 0 ? bids[0].Price : 0;
+                LastMinBidPrice = LastBids > 0 ? bids[LastBids - 1].Price : 0;
+                
                 PriceAnalysisStats = new PriceAnalysisStatsModel(ProductOffers, PrivateProductBids, _productType);
             }
 

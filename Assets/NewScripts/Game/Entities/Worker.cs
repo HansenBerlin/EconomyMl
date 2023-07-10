@@ -104,9 +104,10 @@ namespace NewScripts.Game.Entities
             }
             if (productType == ProductType.Luxury)
             {
-                var food = _inventory.FirstOrDefault(x => x.Product == ProductType.Food);
-                var fullfillRatioBaseDemand = (food!.FullfilledInMonth + 1) / ((float)food.ConsumeInMonth + 1);
-                inventoryItem.ConsumeInMonth = (int)Math.Floor(fullfillRatioBaseDemand * inventoryItem.ConsumeInMonth);
+                //var food = _inventory.FirstOrDefault(x => x.Product == ProductType.Food);
+                //var fullfillRatioBaseDemand = (food!.FullfilledInMonth + 1) / ((float)food.ConsumeInMonth + 1);
+                //inventoryItem.ConsumeInMonth = (int)Math.Floor(fullfillRatioBaseDemand * inventoryItem.ConsumeInMonth);
+                inventoryItem.ConsumeInMonth = 0;
             }
             if (inventoryItem.ConsumeInMonth > 0 && bidPrice > 0)
             {
@@ -179,7 +180,7 @@ namespace NewScripts.Game.Entities
             }
             UnemployedForMonth = HasJob ? 0 : UnemployedForMonth + 1;
 
-            averageFoodPrice *= _inventory.FirstOrDefault(x => x.Product == ProductType.Food)!.MonthlyAverageDemand;
+            averageFoodPrice *= _inventory.FirstOrDefault(x => x.Product == ProductType.Food)!.MonthlyMinimumDemand;
             decimal criticalBoundary = averageFoodPrice;
 
             decimal requiredWage;
@@ -192,13 +193,13 @@ namespace NewScripts.Game.Entities
                     return;
                 }
 
-                requiredWage = currentWage > criticalBoundary ? currentWage * 0.9M : criticalBoundary;
+                requiredWage = currentWage * 0.8M > criticalBoundary ? currentWage * 0.8M : criticalBoundary * 0.95M;
             }
             else
             {
-                decimal modifier = UnemployedForMonth < 2 ? 0.95M 
-                    : UnemployedForMonth < 6 ? 0.85M 
-                    : UnemployedForMonth < 12 ? 0.75M 
+                decimal modifier = UnemployedForMonth < 2 ? 0.9M 
+                    : UnemployedForMonth < 6 ? 0.8M 
+                    : UnemployedForMonth < 12 ? 0.7M 
                     : UnemployedForMonth < 24 ? 0.5M 
                     : UnemployedForMonth < 26 ? 0.3M 
                     : 0.1M;

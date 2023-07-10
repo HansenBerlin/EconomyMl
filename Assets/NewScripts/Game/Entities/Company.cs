@@ -55,13 +55,13 @@ namespace NewScripts.Game.Entities
             //SetupAgent();
             Name = CompanyNames.PickRandomName();
             _reputationAggregator = ServiceLocator.Instance.ReputationAggregatorFactory.Create();
-            //if (_isTraining == false)
-            //{
-            //    _jobRampup = 1;
-            //    _foodPriceRampup = 0;
-            //    _luxPriceRampup = 0;
-            //    _wageRampup = 0;
-            //}
+            if (_isTraining == false)
+            {
+                _jobRampup = 1;
+                _foodPriceRampup = 0;
+                _luxPriceRampup = 0;
+                _wageRampup = 0;
+            }
         }
 
         private void Update() {  
@@ -80,20 +80,20 @@ namespace NewScripts.Game.Entities
             LifetimeMonths = 0;
             ProductStockFood /= 2;
             ProductStockLuxury /= 2;
-            //if (_isTraining == false)
-            //{
-            //    _jobRampup = 1;
-            //    _foodPriceRampup = 0;
-            //    _luxPriceRampup = 0;
-            //    _wageRampup = 0;
-            //}
-            //else
-            //{
+            if (_isTraining == false)
+            {
+                _jobRampup = 1;
+                _foodPriceRampup = 0;
+                _luxPriceRampup = 0;
+                _wageRampup = 0;
+            }
+            else
+            {
                 _jobRampup = 0.1F;
                 _foodPriceRampup = 0.6F;
                 _luxPriceRampup = 6;
                 _wageRampup = 70;
-            //}
+            }
             _reputationAggregator = ServiceLocator.Instance.ReputationAggregatorFactory.Create();
             SetBuilding();
         }
@@ -202,7 +202,7 @@ namespace NewScripts.Game.Entities
                 throw new Exception("ACT: DecisionStatus != CompanyDecisionStatus.Requested");
             }
 
-            if(LifetimeMonths == 12 && _isTraining || _isTraining == false)
+            if(LifetimeMonths == 12 && _isTraining)
             {
                 _jobRampup = _jobRampup < 1F ? _jobRampup + 0.1F : 1;
                 _wageRampup = _wageRampup > 0 ? _wageRampup - 7 : 0;
@@ -215,7 +215,7 @@ namespace NewScripts.Game.Entities
             LastDecision = new Decision();
             int workerDecision = actionBuffers.DiscreteActions[0];
             LastDecision.AdjustWages = actionBuffers.DiscreteActions[1] == 1;
-            if (_isTraining || _isTraining == false)
+            if (_isTraining)
             {
                 float wageLowerBoundary = LifetimeMonths > 12 ? (float)ServiceLocator.Instance.Policies.MinimumWage 
                     : (float)settings.LowerWageBoundary + _wageRampup;
@@ -226,6 +226,10 @@ namespace NewScripts.Game.Entities
                     wageLowerBoundary, wageUpperBoundary);
                 LastDecision.PriceFood = (decimal)ValueMapper.MapValue(actionBuffers.ContinuousActions[1], 
                     0.1F + _foodPriceRampup, 5F - _foodPriceRampup * 5);
+                if (LastDecision.PriceFood > 2)
+                {
+                    Debug.LogError("ACT: LastDecision.PriceFood > 2");
+                }
                 LastDecision.PriceLuxury = (decimal)ValueMapper.MapValue(actionBuffers.ContinuousActions[2], 
                     1F + _luxPriceRampup, 100F - _luxPriceRampup * 10);
             }
@@ -239,9 +243,9 @@ namespace NewScripts.Game.Entities
                     (float)settings.LowerPriceBoundaryLuxury, (float)settings.UpperPriceBoundaryLuxury);
             }
             
-            LastDecision.RessourceDistribution = ValueMapper.MapValue(actionBuffers.ContinuousActions[3], 
-                0.1F, 1F);
-
+            //LastDecision.RessourceDistribution = ValueMapper.MapValue(actionBuffers.ContinuousActions[3], 
+            //    0.1F, 1F);
+            LastDecision.RessourceDistribution = 1;
            
             var companyData = new CompanyLedger(Id, Name, ServiceLocator.Instance.FlowController.Month, 
                 ServiceLocator.Instance.FlowController.Year, LifetimeMonths);
@@ -276,8 +280,15 @@ namespace NewScripts.Game.Entities
                 if (_jobContracts.Count < 40)
                 {
                     OpenPositions = 40 - _jobContracts.Count;
+                    workerLedger.OpenPositions = OpenPositions;
+                    workerDecision = 1;
                     LastDecision.WorkerChange = OpenPositions;
                     LastDecision.Wage = ServiceLocator.Instance.LaborMarket.AveragePayment();
+                }
+                else
+                {
+                    workerDecision = 0;
+                    LastDecision.WorkerChange = 0;
                 }
             }
 
@@ -376,12 +387,12 @@ namespace NewScripts.Game.Entities
                 month = ServiceLocator.Instance.FlowController.Month,
                 year = ServiceLocator.Instance.FlowController.Year,
                 liquidity = (double)Ledger[^1].Books.LiquidityEndCheck,
-                profit = (double)(Ledger[^1].Books.LiquidityEndCheck - Ledger[^1].Books.LiquidityStart),
+                profit = (double)(Ledger[^1].Books.LiquidityEndCheck - Ledger[^2].Books.LiquidityStart),
                 productionFood = Ledger[^1].Food.Production,
                 productionLux = Ledger[^1].Luxury.Production,
                 workers = _jobContracts.Count,
-                priceFood = (double)Ledger[^2].Food.PriceSet,
-                priceLux = (double)Ledger[^2].Luxury.PriceSet,
+                priceFood = (double)Ledger[^1].Food.PriceSet,
+                priceLux = (double)Ledger[^1].Luxury.PriceSet,
                 wage = (double)Ledger[^1].Workers.AverageWage,
                 salesFood = Ledger[^1].Food.Sales,
                 salesLux = Ledger[^1].Luxury.Sales,
@@ -392,7 +403,10 @@ namespace NewScripts.Game.Entities
                 marketDemandFood = lastDemandFood,
                 marketBidPriceLux = lastBidProceLux,
                 marketDemandLux = lastDemandLux,
-                ressourceAllocation = Ledger[^2].Decision.ResourceDistribution
+                ressourceAllocation = Ledger[^1].Decision.ResourceDistribution,
+                incomeFood = (double)Ledger[^1].Food.Income,
+                incomeLux = (double)Ledger[^1].Luxury.Income,
+                playerType = "rl-ai"
                 
             };
             StartCoroutine(HttpService.Insert("http://localhost:5000/companies/ledger", ledger));
@@ -419,7 +433,7 @@ namespace NewScripts.Game.Entities
                 {
                     if (LifetimeMonths > 24)
                     {
-                        contract.QuitContract(WorkerFireReason.LackOfFunds);
+                        //contract.QuitContract(WorkerFireReason.LackOfFunds);
                     }
                 }
             }
@@ -549,12 +563,14 @@ namespace NewScripts.Game.Entities
             if(product == ProductType.Luxury)
             {
                 Ledger[^1].Luxury.Sales += count;
+                Ledger[^1].Luxury.Income += count * price;
                 ProductStockLuxury -= count;
                 //Reputation++;
             }
             else if(product == ProductType.Food)
             {
                 Ledger[^1].Food.Sales += count;
+                Ledger[^1].Food.Income += count * price;
                 ProductStockFood -= count;
             }
             

@@ -6,6 +6,7 @@ namespace NewScripts.Http
     public class CompanyLedger
     {
         public string sessionId;
+        public string playerType;
         public int id;
         public int companyId;
         public int month;
@@ -30,6 +31,8 @@ namespace NewScripts.Http
         public int marketDemandLux;
         public double marketBidPriceLux;
         public double ressourceAllocation;
+        public double incomeLux;
+        public double incomeFood;
     }
 }
 

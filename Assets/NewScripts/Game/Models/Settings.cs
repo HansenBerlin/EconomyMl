@@ -18,7 +18,7 @@ namespace NewScripts.Game.Models
         public decimal LowerWageBoundary { get; set; } = 100;
         public decimal UpperWageBoundary { get; set; } = 400;
         public decimal LowerPriceBoundaryFood { get; set; } = 0.2M;
-        public decimal UpperPriceBoundaryFood { get; set; } = 3;
+        public decimal UpperPriceBoundaryFood { get; set; } = 5;
         public decimal LowerPriceBoundaryLuxury { get; set; } = 1M;
         public decimal UpperPriceBoundaryLuxury { get; set; } = 50;
         public int LowerJobPositionsBoundary { get; set; } = 1;

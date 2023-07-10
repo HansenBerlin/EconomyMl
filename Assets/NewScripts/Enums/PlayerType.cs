@@ -3,6 +3,8 @@
     public enum PlayerType
     {
         Ai,
-        Human
+        Human,
+        Classic,
+        Regression
     }
 }

@@ -74,7 +74,7 @@ namespace NewScripts.Game.World
             ServiceLocator.Instance.Settings.WriteToDatabase = writeToDatabase;
             //ServiceLocator.Instance.CompanyContainerPanelController = companyPanelGo.GetComponent<CompanyContainerPanelController>();
             var priceBidCalculator = new BidCalculatorService();
-            ServiceLocator.Instance.LaborMarket.InitWorkers(1000, priceBidCalculator, TotalMoneySupply / 4 / 1000, ServiceLocator.Instance.Settings);
+            ServiceLocator.Instance.LaborMarket.InitWorkers(1000, priceBidCalculator, TotalMoneySupply / 2 / 1000, ServiceLocator.Instance.Settings);
             int zPos = 0;
             int xPos = 0;
             decimal liquidity = TotalMoneySupply / 2 / (aiPpoCompaniesPerType + playerCompaniesPerType + aiSacCompaniesPerType);
@@ -118,7 +118,8 @@ namespace NewScripts.Game.World
             var agent = governmentInstance.GetComponent<BehaviorParameters>();
             agent.BehaviorType = isGovermnentTraining ? BehaviorType.Default : BehaviorType.InferenceOnly;
             _government = governmentInstance.GetComponent<Government>();
-            ServiceLocator.Instance.AddInstances(_government, companyPanelGo.GetComponent<CompanyContainerPanelController>(), TotalMoneySupply / 4);
+            ServiceLocator.Instance.AddInstances(_government, companyPanelGo.GetComponent<CompanyContainerPanelController>(), 
+                0);
             _isInitDone = true;
         }
         

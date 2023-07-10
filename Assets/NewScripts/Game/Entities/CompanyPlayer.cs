@@ -33,7 +33,7 @@ namespace NewScripts.Game.Entities
         public int WorkerCount => _jobContracts.Count;
         public PlayerType PlayerType { get; } = PlayerType.Human;
         public CompanyDecisionStatus DecisionStatus { get; private set; }
-        public decimal AverageWageRate => _jobContracts.Count == 0 ? 100 : _jobContracts.Average(x => x.Wage);
+        public decimal AverageWageRate => _jobContracts.Count == 0 ? 150 : _jobContracts.Average(x => x.Wage);
 
         public Decision LastDecision { get; private set; } = new();
         public int Id => GetInstanceID();
@@ -111,6 +111,18 @@ namespace NewScripts.Game.Entities
             decimal equilibriumPrice = EquilibrieumPriceCalculator.CalculateIntersectionY(
                 0, foodMarket.LastMinOfferPrice, foodMarket.LastOffers, foodMarket.LastMaxOfferPrice,
                 0, foodMarket.LastMaxBidPrice, foodMarket.LastBids, foodMarket.LastMinBidPrice);
+            int foodProduction = (int)Math.Floor(_jobContracts.Count *
+                                                 ServiceLocator.Instance.Settings.OutputMultiplier(ProductType.Food) *
+                                                 LastDecision.RessourceDistribution);
+            if (ProductStockFood / 2 > foodProduction)
+            {
+                var reduction = foodProduction / ProductStockFood / 2;
+                equilibriumPrice *= reduction;
+                equilibriumPrice = equilibriumPrice < 0.2M 
+                    ? ServiceLocator.Instance.FoodProductMarket.AveragePriceInLastYear() * 0.9M
+                    : equilibriumPrice;
+            }
+            Debug.Log($"Equilibrium Price: {equilibriumPrice}");
             decision.PriceFood = equilibriumPrice;
             decision.RessourceDistribution = 1;
             return decision;
@@ -119,13 +131,15 @@ namespace NewScripts.Game.Entities
         
         public void StartNextPeriod(Decision decision)
         {
-            if (ServiceLocator.Instance.Settings.IsAutoPlay)
-            {
-                decision = AutoDecision();
-            }
+            
             if (DecisionStatus != CompanyDecisionStatus.Requested)
             {
                 throw new Exception("DecisionStatus != CompanyDecisionStatus.Requested");
+            }
+
+            if (ServiceLocator.Instance.Settings.IsAutoPlay)
+            {
+                decision = AutoDecision();
             }
             LastDecision = decision;
             
@@ -188,16 +202,20 @@ namespace NewScripts.Game.Entities
             SetBuilding();
             //UpdateCanvasText(false);
             ServiceLocator.Instance.FlowController.CommitCompanyDecision(Id, DecisionStatus = CompanyDecisionStatus.Commited);
-            ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
-            hourglass.SetActive(false);
+            if (ServiceLocator.Instance.Settings.IsAutoPlay == false)
+            {
+                ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
+                hourglass.SetActive(false);
+                
+            }
         }
 
        public void RequestMonthlyDecision()
        {
            ServiceLocator.Instance.FlowController.CommitCompanyDecision(Id, DecisionStatus = CompanyDecisionStatus.Requested);
-           ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
            hourglass.SetActive(true);
            hourglass.GetComponent<RotationController>().ActivateAnimation();
+           ServiceLocator.Instance.UiUpdateManager.BroadcastUpdateDecisionValuesEvent(this);
        }
 
         public void Produce()
@@ -238,12 +256,12 @@ namespace NewScripts.Game.Entities
                 month = ServiceLocator.Instance.FlowController.Month,
                 year = ServiceLocator.Instance.FlowController.Year,
                 liquidity = (double)Ledger[^1].Books.LiquidityEndCheck,
-                profit = (double)(Ledger[^1].Books.LiquidityEndCheck - Ledger[^1].Books.LiquidityStart),
+                profit = (double)(Ledger[^1].Books.LiquidityEndCheck - Ledger[^2].Books.LiquidityStart),
                 productionFood = Ledger[^1].Food.Production,
                 productionLux = Ledger[^1].Luxury.Production,
                 workers = _jobContracts.Count,
-                priceFood = (double)Ledger[^2].Food.PriceSet,
-                priceLux = (double)Ledger[^2].Luxury.PriceSet,
+                priceFood = (double)Ledger[^1].Food.PriceSet,
+                priceLux = (double)Ledger[^1].Luxury.PriceSet,
                 wage = (double)Ledger[^1].Workers.AverageWage,
                 salesFood = Ledger[^1].Food.Sales,
                 salesLux = Ledger[^1].Luxury.Sales,
@@ -254,7 +272,10 @@ namespace NewScripts.Game.Entities
                 marketDemandFood = lastDemandFood,
                 marketBidPriceLux = lastBidProceLux,
                 marketDemandLux = lastDemandLux,
-                ressourceAllocation = Ledger[^2].Decision.ResourceDistribution
+                ressourceAllocation = Ledger[^1].Decision.ResourceDistribution,
+                incomeFood = (double)Ledger[^1].Food.Income,
+                incomeLux = (double)Ledger[^1].Luxury.Income,
+                playerType = "auto-classic"
             };
             StartCoroutine(HttpService.Insert("http://localhost:5000/companies/ledger", ledger));
         }
@@ -267,7 +288,6 @@ namespace NewScripts.Game.Entities
                 if (contract.Wage < Liquidity)
                 {
                     contract.PayWorker();
-                    Ledger[^1].Workers.ReducedPaidCount++;
                     Ledger[^1].Books.WagePayments += contract.Wage;
                 }
                 else if (contract.Wage / 2 < Liquidity && contract.ShortWorkForMonths <= 3)
@@ -291,15 +311,13 @@ namespace NewScripts.Game.Entities
             Ledger[^1].Food.Destroyed = destroy;
             ProductStockFood -= destroy;
             ProductStockLuxury -= (int)(ProductStockLuxury * 0.1M);
-            
-
             Ledger[^1].Food.StockEndCheck = ProductStockFood;
             Ledger[^1].Luxury.StockEndCheck = ProductStockLuxury;
-            Ledger[^1].Books.LiquidityEndCheck = Liquidity;
             Ledger[^1].Workers.EndCount = _jobContracts.Count;
-            
+
             var lastPeriodData = Ledger[^1];
-            decimal profit = lastPeriodData.Books.LiquidityEndCheck - lastPeriodData.Books.LiquidityStart;
+            decimal profit = lastPeriodData.Books.Income - lastPeriodData.Books.WagePayments;
+            
             decimal taxPaid = 0;
             if (LifetimeMonths > 3 && profit > 0)
             {
@@ -335,52 +353,7 @@ namespace NewScripts.Game.Entities
             ServiceLocator.Instance.FlowController.CommitCompanyDecision(Id, DecisionStatus = CompanyDecisionStatus.Pending);
         }
 
-        private void PaySocialFare()
-        {
-            decimal baseSafety = 100000 / (decimal) ServiceLocator.Instance.Companys.Count / 4;
-            var liquidity = Liquidity;
-            if (Liquidity > baseSafety)
-            {
-                //AddReward((float)Liquidity - (float)baseSafety);
-                decimal companyReserve = (Liquidity - baseSafety) * 0.10M;
-                var unemployed =
-                    ServiceLocator.Instance.LaborMarket.Workers.Where(
-                        x => x.HasJob == false && x.Money < 100).ToList();
-
-                if (unemployed.Count > 0)
-                {
-                    decimal societyShare = (Liquidity - baseSafety - companyReserve) / unemployed.Count;
-                    foreach (var worker in unemployed)
-                    {
-                        worker.PaySocialWelfare(societyShare);
-                        Ledger[^1].Books.TaxPayments += societyShare;
-                    }
-                    Liquidity = companyReserve + baseSafety;
-                }
-
-
-                var companys = ServiceLocator.Instance.Companys.Select(x => x.Liquidity).Sum();
-                var workers = ServiceLocator.Instance.LaborMarket.Workers.Select(x => x.Money).Sum();
-                if (companys + workers < 99999.9M || companys + workers > 100000.1M)
-                {
-                    Debug.LogError("Society is bankrupt " + Liquidity + " " + liquidity);
-                }
-
-            }
-            //AddReward((float)societyShare);
-
-            //var unemployed =
-            //    ServiceLocator.Instance.LaborMarket.Workers.Where(
-            //        x => x.HasJob == false && x.Money < 100).ToList();
-            //double societyShare = unemployed.Count > 0 ? (Liquidity - companyReserve) / unemployed.Count : 0;
-//
-            //foreach (var worker in unemployed)
-            //{
-            //    worker.Pay(societyShare);
-            //}
-//
-            //Liquidity = societyShare > 0 ? companyReserve : Liquidity;
-        }
+       
 
         public void AddContract(JobContract contract)
         {
@@ -414,11 +387,14 @@ namespace NewScripts.Game.Entities
             if(product == ProductType.Luxury)
             {
                 Ledger[^1].Luxury.Sales += count;
+                Ledger[^1].Luxury.Income += count * price;
                 ProductStockLuxury -= count;
+                //Reputation++;
             }
             else if(product == ProductType.Food)
             {
                 Ledger[^1].Food.Sales += count;
+                Ledger[^1].Food.Income += count * price;
                 ProductStockFood -= count;
             }
             

@@ -13,6 +13,7 @@
         public int Production { get; set; }
         public int Destroyed { get; set; }
         public int Sales { get; set; } 
+        public decimal Income { get; set; } 
         public int StockEndCheck { get; set; }
     }
 }
